@@ -87,3 +87,5 @@ CreateXEditor: Generate an editor into a window, using data from the Database.
 # History (for lore enjoyers)
 
 This started as Etrian Editor, then became Crystal Tools, then Crystal Editor, and now Game Editor Studio. :3
+
+Test3
