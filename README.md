@@ -1,4 +1,4 @@
-# Crystal Editor
+# Game Editor Studio
 
 NOT open source, but i plan on figuring out lisencing stuff later.
 
@@ -83,3 +83,7 @@ Editor files / Code  (Go from either New or Load to Create)
 NewXEditor:    Load editor data from preset into the Database.
 LoadXEditor:   Load editor data from   XML  into the Database.
 CreateXEditor: Generate an editor into a window, using data from the Database.
+
+# History (for lore enjoyers)
+
+This started as Etrian Editor, then became Crystal Tools, then Crystal Editor, and now Game Editor Studio.
