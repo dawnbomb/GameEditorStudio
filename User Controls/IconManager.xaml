@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="GameEditorStudio.UserControlEditorIcons"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d" 
+             HorizontalAlignment="Stretch" 
+             VerticalAlignment="Stretch" >
+    <Border Grid.Row="2">
+        <DockPanel>
+            <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
+                <Label Content="Icon Manager" FontWeight="Bold" DockPanel.Dock="Left"/>
+                
+                <Button x:Name="ExitButton" Content=" Exit Icon Manager " Margin="4" HorizontalAlignment="Right" Click="ToggleMyTabControl"  DockPanel.Dock="Right"/>
+                <Button Content=" Import Icon " Margin="4" HorizontalAlignment="Right" Style="{DynamicResource ButtonError}"  DockPanel.Dock="Right"/>
+            </DockPanel>
+            <DockPanel>
+                <TabControl Name="GraphicsTabber" TabStripPlacement="Left" MinHeight="400" DockPanel.Dock="Top">
+
+                </TabControl>
+            </DockPanel>
+        </DockPanel>
+    </Border>
+    
+    
+</UserControl>

@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="GameEditorStudio.MainMenu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d" >
+    <Menu Name="TheMenu" Height="22" >
+        <MenuItem x:Name="WorkshopMenu" Header="File" FontSize="16" SubmenuOpened="FileMenuOpened"  >
+            <MenuItem Header="Save Everything" Click="SaveAll"/>            
+            <Separator Style="{DynamicResource KeySeperator}"/>
+            <MenuItem Header="Save Editors" Click="SaveEditors" Name="MenuSaveEditors"/>
+            <MenuItem Header="Save Game Data"   Click="SaveGameData" Name="MenuSaveGameData"/>
+            <MenuItem Header="Save Workshop Documents"  Click="SaveWorkshopDocuments" Name="MenuSaveWorkshopDocuments"/>
+            <MenuItem Header="Save Project Documents"  Click="SaveProjectDocuments" Name="MenuSaveProjectDocuments"/>
+            <MenuItem Header="Save Events" Click="SaveEvents" />
+            <Separator Style="{DynamicResource KeySeperator}"/>
+            <MenuItem Header="Create New Editor"  Click="FileNewEditor" Name="NewEditorItem"/>
+            <Separator Style="{DynamicResource KeySeperator}"/>
+            <MenuItem Header="Export ALL data table editors to excel files." Click="ExportEditors" Name="ItemExportEditors" />
+        </MenuItem>
+        <MenuItem x:Name="ToolsMenu" Header="Tools" FontSize="16" SubmenuOpened="ToolsMenuOpened">
+            <MenuItem Header = "Tools Setup" Click = "OpenToolsWindow" />
+            <!--NOTE: toolmanager.xaml.cs i commented out stuff with checkboxes that interacted with menus and made text...red? FIX THIS LATER? (or atleast look into it)-->
+            <MenuItem.ItemTemplate>
+                <DataTemplate>
+                    <MenuItem Header="{Binding Name}" Command="{Binding DataContext.LaunchToolCommand, RelativeSource={RelativeSource AncestorType=Menu}}" CommandParameter="{Binding}" />
+                </DataTemplate>
+            </MenuItem.ItemTemplate>
+        </MenuItem>
+        <MenuItem x:Name="EventsMenu" Header="Events" FontSize="16" SubmenuOpened="EventsMenu_SubmenuOpened">
+            <MenuItem Header="Events Setup" Click="OpenEventsWindow" Name="ItemEventsSetup" />
+        </MenuItem>
+        <MenuItem Name="ShortcutsMenu" Header="Shortcuts" FontSize="16" >
+            <MenuItem x:Name="MenuInputShortcut" Header="Open Project Input Folder" Click="OpenInputFolder"/>
+            <MenuItem x:Name="MenuOutputShortcut" Header="Open Project Output Folder" Click="OpenOutputFolder"/>
+            <MenuItem Header="Open Workshop Folder" Click="OpenWorkshopFolder"/>
+            <MenuItem Header="Open Downloads Folder" Click="OpenDownloadsFolder"/>
+            <MenuItem Header="Open Crystal Editor Folder" Click="OpenCrystalEditorFolder"/>
+        </MenuItem>
+        <MenuItem Name="ExtrasMenu" Header="Extras" FontSize="16" >
+            <MenuItem Header="⚙ Settings"  Click="OpenSettingsWindow" Foreground="#FF2C2C"/>
+            <MenuItem Header="Report a Bug, or Request a Feature" Foreground="#FF2C2C"/>
+            <MenuItem Header="Request support for a new Tool" Foreground="#FF2C2C"/>
+            <MenuItem Header="File a Complaint" Foreground="#FF2C2C"/>
+            <MenuItem Header="Publish a Workshop or Editor Checklist" Foreground="#FF2C2C"/>
+            <MenuItem Header="Help" Foreground="#FF2C2C"/>
+            <MenuItem Header="About" Foreground="#FF2C2C"/>
+            <MenuItem Header="DevTools"  Click="OpenDevWindow" Foreground="#FF2C2C"/>
+            <MenuItem Header="HexTest"  Click="OpenHexTest" Foreground="#FF2C2C"/>            
+            <MenuItem Header="Set 1080P"  Click="Set1080P"/>
+        </MenuItem>
+    </Menu>
+</UserControl>

@@ -1,0 +1,38 @@
+﻿<Application x:Class="GameEditorStudio.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="Windows/TermsAndConditions.xaml">
+             <!--xmlns:local="clr-namespace:Crystal_Editor"
+             xmlns:properties="clr-namespace:Crystal_Editor.Properties"-->
+                          
+
+    <!--List of styles used in this program. A style is basically a cosmetic skin, or how something visually looks. 
+    This is just an index of them, each relevant file has the code for it's own style.-->
+    
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/Colors/Colors.xaml"/>
+
+                <ResourceDictionary Source="Styles/MenuStyle.xaml"/>
+                <ResourceDictionary Source="Styles/ApplicationStyle.xaml"/>
+                <ResourceDictionary Source="Styles/TextboxStyle.xaml"/>
+                <ResourceDictionary Source="Styles/ComboBoxStyle.xaml"/>
+
+                <ResourceDictionary Source="Styles/TreeviewStyle.xaml"/>
+                <ResourceDictionary Source="Styles/RadioButtonStyle.xaml"/>
+                <ResourceDictionary Source="Styles/ScrollViewerStyle.xaml"/>
+                <ResourceDictionary Source="Styles/TabControlStyle.xaml"/>
+                <ResourceDictionary Source="Styles/TitleBarStyle.xaml"/>
+                <ResourceDictionary Source="Styles/ContextMenuStyle.xaml"/>
+                <ResourceDictionary Source="Styles/DataGridStyle.xaml"/>
+                <ResourceDictionary Source="Styles/CheckBoxStyle.xaml"/> <!--Checkbox appears not to work?-->
+
+                <ResourceDictionary Source="Themes.xaml"/>
+
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="{x:Type Window}" BasedOn="{StaticResource DarkModeWindowStyle}"/>
+        </ResourceDictionary>
+    </Application.Resources>
+    
+</Application>

@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="GameEditorStudio.TheLeftBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="250">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="200"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0">
+            <DockPanel>
+                <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
+                    <Label Content="Items" FontWeight="Bold"/>
+                    <TextBox Name="SearchBar" Margin="15,4,4,4" Text="🔎 Search....." TextChanged="SearchBarTextChanged"/>
+                </DockPanel>
+                <TreeView Name="ItemsTree"  SelectedItemChanged="ItemsTreeSelectedItemChanged" />
+            </DockPanel>
+        </Border>
+
+        <GridSplitter Style="{DynamicResource SplitterHorizontal}" Grid.Row="1"   />
+
+        <Border Grid.Row="2">
+            <DockPanel>
+                <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
+                    <Label Content="Item Info" FontWeight="Bold"/>
+                    
+                    <Label Content="Chars: XX / YY" Name="LabelCharacterCount" FontWeight="Bold" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+                </DockPanel>
+                <Grid Margin="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="Name" Grid.Row="0" Grid.Column="0"/>
+                    <TextBox x:Name="ItemNameTextbox" Grid.Row="0" Grid.Column="1" Width="Auto" Margin="3" PreviewKeyDown="ItemNameboxPreviewKeyDown" KeyDown="ItemNameboxKeyDown" TextChanged="ItemNameboxTextChanged"/>
+
+                    <Label Content="Note" Grid.Row="1" Grid.Column="0"/>
+                    <TextBox x:Name="ItemNoteTextbox" Grid.Row="1" Grid.Column="1" Margin="3" KeyDown="ItemNoteboxKeyDown" />
+
+                    <TextBox x:Name="ItemNotepadTextbox" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" TextChanged="NotepadTextChanged" />
+                </Grid>                
+            </DockPanel>
+        </Border>
+
+        <!--<GridSplitter x:Name="TranslationSplitter" Style="{DynamicResource SplitterHorizontal}" Grid.Row="3"   />-->
+
+        <Border Grid.Row="4" x:Name="TranslationsPanelBorder" Visibility="Collapsed"> 
+            <local:TranslationsPanel x:Name="TranslationsPanel"  />
+        </Border>
+
+    </Grid>
+</UserControl>

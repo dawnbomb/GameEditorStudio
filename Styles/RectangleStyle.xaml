@@ -1,0 +1,21 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:properties="clr-namespace:GameEditorStudio.Properties">
+    
+    <Style x:Key="Hai" TargetType="{x:Type Rectangle}">
+        <Style.Triggers>
+            <!--Light Mode-->
+            <DataTrigger Binding="{Binding Source={x:Static properties:Settings.Default}, Path=ColorTheme}" Value="Light">
+                <Setter Property="Stroke" Value="{StaticResource ResourceKey= Black}"/>  <!--THIS COLOR ELEMENT HAS NOT YET BEEN MODIFIED AND IT STILL NEEDS TO BE-->
+            </DataTrigger>
+
+            <!--Dark Mode-->
+            <DataTrigger Binding="{Binding Source={x:Static properties:Settings.Default}, Path=ColorTheme}" Value="Dark">
+                <Setter Property="Stroke" Value="{StaticResource ResourceKey= Light}"/>  <!--THIS COLOR ELEMENT HAS NOT YET BEEN MODIFIED AND IT STILL NEEDS TO BE-->
+                <!--<Setter Property="BorderThickness" Value="4,1,1,1"/>-->
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+
+</ResourceDictionary>

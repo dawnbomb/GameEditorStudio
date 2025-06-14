@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <ServerGarbageCollection>true</ServerGarbageCollection>
+	  <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
+    <RootNamespace>Crystal_Editor</RootNamespace>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Graphics\Game Editor Studio Icon.ico</ApplicationIcon>
+    <StartupObject></StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Art\**" />
+    <EmbeddedResource Remove="Art\**" />
+    <None Remove="Art\**" />
+    <Page Remove="Art\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="User Controls\Start Address 010.png" />
+    <None Remove="User Controls\Text Row 010.png" />
+    <None Remove="User Controls\Text Row HxD.png" />
+    <None Remove="User Controls\Text Size 010.png" />
+    <None Remove="User Controls\Tutorial New Workshop Get Base Address Part 2.png" />
+    <None Remove="User Controls\Tutorial New Workshop Get Base Address Part 3.png" />
+    <None Remove="User Controls\Tutorial New Workshop Get Base Address.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Graphics\Game Editor Studio Icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EPPlus" Version="8.0.5" />
+    <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.5" />
+    <PackageReference Include="WPFHexaEditor" Version="2.1.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="User Controls\Start Address 010.png" />
+    <Resource Include="User Controls\Text Row 010.png" />
+    <Resource Include="User Controls\Text Row HxD.png" />
+    <Resource Include="User Controls\Text Size 010.png" />
+    <Resource Include="User Controls\Tutorial New Workshop Get Base Address Part 2.png" />
+    <Resource Include="User Controls\Tutorial New Workshop Get Base Address Part 3.png" />
+    <Resource Include="User Controls\Tutorial New Workshop Get Base Address.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  
+
+</Project>

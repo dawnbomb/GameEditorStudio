@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="GameEditorStudio.UserControlCrossReference"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="565">
+    <Grid>
+        <DataGrid x:Name="EntryValueInsightDataGrid" AutoGenerateColumns="False"  HorizontalContentAlignment="Left" GridLinesVisibility="Vertical" HeadersVisibility="Column" AlternatingRowBackground="#FF484848" HorizontalScrollBarVisibility="Disabled"  IsReadOnly="True">>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Value" Binding="{Binding Number}" Width="Auto" IsReadOnly="True" MinWidth="40" />
+                <DataGridTextColumn Header="Count" Binding="{Binding Count}" Width="Auto" IsReadOnly="True" MinWidth="80" />
+                <DataGridTextColumn Header="Locations / Item ID#'s        ( If text is offscreen, click row )" Binding="{Binding RowIndicesAsString}" Width="*"  IsReadOnly="True"  />
+            </DataGrid.Columns>
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding RowIndicesAsString}" TextWrapping="Wrap"/>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+        </DataGrid>
+    </Grid>
+</UserControl>

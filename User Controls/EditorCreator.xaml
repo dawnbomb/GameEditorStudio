@@ -1,0 +1,176 @@
+﻿<UserControl x:Class="GameEditorStudio.UserControlEditorCreator"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d"
+             d:DesignHeight="810" d:DesignWidth="1100"
+             BorderThickness="0"
+             Background="Transparent">
+    <Grid Style="{DynamicResource BorderGrid}"  >
+        <Border Margin="20,30,20,30" BorderThickness="2" Background="Transparent">
+            <DockPanel Background="Transparent">
+                <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
+                    <Label Content="Editor Creator" FontWeight="Bold"/>
+                    <Button Content=" Exit Editor Creator " Margin="4" HorizontalAlignment="Right"  Click="CancelEditorCreation" />
+                </DockPanel>
+                <Grid  >
+                    <TabControl x:Name="TabMaker"  >
+                        <TabItem Header="Select Editor Type" Name="TabEditorType">
+                            <Grid Style="{DynamicResource BorderGrid}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="387*"/>
+                                    <ColumnDefinition Width="712*"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Margin="0,8,0,0" Grid.ColumnSpan="2">
+                                    <DockPanel>
+                                        <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
+                                            <Label Content="Editor Info" FontWeight="Bold"/>
+                                        </DockPanel>
+                                        <Grid>
+                                            <Label Content="Editor Name:" FontSize="22" HorizontalAlignment="Left" Margin="10,13,0,0" VerticalAlignment="Top"/>
+                                            <TextBox x:Name="TextboxEditorName" HorizontalAlignment="Left" Margin="151,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160" FontSize="20" TextChanged="EditorNameTextboxTextChanged"/>
+                                            <Label Content="Name should be plural &amp; without the word &quot;editor&quot;. (Enemys, Weapons, Items). &#xA;If your guessing, add a ? Mark. (Spells?, Classes?, Arts?) &#xA;If you don't know at all what the data is, name it something like Unknown or ???." HorizontalAlignment="Left" Margin="10,49,0,0" VerticalAlignment="Top"/>
+
+                                            <!--<Label Content="Editor Icon:"  FontSize="32" HorizontalAlignment="Left" Margin="191,125,0,0" VerticalAlignment="Top"/>
+                                            <Label Content="( Yes selecting an icon&#xD;&#xA;is mandatory :P )" HorizontalAlignment="Left" Margin="191,169,0,0" VerticalAlignment="Top"/>
+                                            <Border Margin="414,130,0,0" HorizontalAlignment="Left" Height="134"  VerticalAlignment="Top" Width="130">
+                                                <DockPanel Background="#FF23242B">
+                                                    <Label Name="LabelDemoEditorName" Content="Name" DockPanel.Dock="Bottom" HorizontalAlignment="Center" />
+                                                    <Image Name="DemoEditorImage" DockPanel.Dock="Top" SnapsToDevicePixels="True" UseLayoutRounding="True" RenderOptions.BitmapScalingMode="NearestNeighbor" Margin="2" Stretch="UniformToFill" />
+                                                </DockPanel>
+                                            </Border>
+                                            <local:UserControlEditorIcons x:Name="MenusForToolsAndEvents" Margin="592,10,10,0" Height="531" VerticalAlignment="Top"  />-->
+
+                                            <Label Content="Editor types" FontSize="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,215,0,0"/>
+                                            <Label x:Name="LabelErrorNotice" Content="" HorizontalAlignment="Left" Margin="203,233,0,0" VerticalAlignment="Top"  Foreground="Red" />
+
+                                            <Button Content="Standard Editor" HorizontalAlignment="Left" Margin="13,276,0,0" VerticalAlignment="Top" Height="73" Width="238" Click="GoToStandardWidth"/>
+                                            <Label Content="Create an editor for standard game data. &#xA;(Character Editor, Weapon Editor, Armors, &#xD;&#xA;Accessorys, Spells, items, Enemys, Shops, Etc)." HorizontalAlignment="Left" Margin="254,276,0,0" VerticalAlignment="Top"/>
+                                            <Button Content="Text Editor" HorizontalAlignment="Left" Margin="13,359,0,0" VerticalAlignment="Top" Height="72" Width="238" Click="GoToTextEditor"/>
+                                            <Button Content="Trigger Event" HorizontalAlignment="Left" Margin="13,520,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
+                                            <Label Content="TIP: If this game needs to repack files (like when romhacking), &#xD;&#xA;learn about eventing and setup file auto-repacking." HorizontalAlignment="Left" Margin="13,595,0,0" VerticalAlignment="Top"/>
+                                            <Label Content="This editor lets you group .txt, xml, etc files.&#xD;&#xA;Kinda like how Notepad++ or obsidian does. &#xA;Best for code scripts like Enemy AI or Events.  " HorizontalAlignment="Left" Margin="259,360,0,0" VerticalAlignment="Top"/>
+                                            <Label Content="Looks like an editor, but triggers an event.&#xA;Set it to open third party editors! :D &#xD;&#xA;(Graphics editor, Music, 3D Maps, etc)  " HorizontalAlignment="Left" Margin="255,520,0,0" VerticalAlignment="Top"/>
+                                            <Button Content="Text Table Editor" HorizontalAlignment="Left" Margin="13,441,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
+                                            <Label Content="Will be for multi-line text tables.  Note: &#xA;Editors already edit Names &amp; Descriptions. &#xA;For translations (Cutscene, Dialogue, etc).  " HorizontalAlignment="Left" Margin="255,442,0,0" VerticalAlignment="Top"/>
+                                            
+                                            <Button Content="XML Editor" HorizontalAlignment="Left" Margin="561,563,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
+                                            <Button Content="JSON Editor" HorizontalAlignment="Left" Margin="818,563,0,0" VerticalAlignment="Top" Height="71" Width="219" Background="#FF3E0101"/>
+
+
+
+                                        </Grid>
+
+                                    </DockPanel>
+                                </Border>
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="Text Source" Name="TabTextSource">
+                            <DockPanel  Style="{DynamicResource BorderDock}">
+                                <Border Margin="0,8,0,0" DockPanel.Dock="Top">
+                                    <DockPanel Background="Transparent" LastChildFill="True" >
+                                        <DockPanel Background="#FF301E3C" DockPanel.Dock="Top"  LastChildFill="False">
+                                            <DockPanel Background="Transparent" DockPanel.Dock="Bottom" LastChildFill="False" HorizontalAlignment="Center" >
+                                                <Button x:Name="CreateEditorPart3ButtonPrevious_Copy2" Content="Back: Table Size"  Height="33" Width="148" Click="ButtonBackToWidth" />
+                                                <Button x:Name="CreateEditorPart3ButtonNext_Copy1" Content="Next: Data Table"  Height="33" Width="158" Click="ButtonNextToFinalFILE" Margin="35,0,0,0" />
+                                            </DockPanel>
+                                        </DockPanel>
+
+                                        <local:TextSourceManager x:Name="TextSourceManager"  DockPanel.Dock="Top"   />
+
+
+                                    </DockPanel>
+                                </Border>
+
+
+                            </DockPanel>
+                        </TabItem>
+                        <TabItem Header="Data Table" Name="StandardWidthPart2">
+                            <DockPanel x:Name="CreateEditorPartDataTable" Style="{DynamicResource BorderDock}" Background="#FF635521">
+
+                                <DockPanel Background="Transparent">
+                                    <local:FileManager x:Name="FileManager" HorizontalAlignment="Left" Width="269" Margin="0,8,8,0"  />
+                                </DockPanel>
+
+                                <Border Margin="0,8,0,10" DockPanel.Dock="Top">
+                                    <DockPanel>
+                                        <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
+                                            <Label Content="Editor Info                       (Standard width tables only, variable width support will come later)" FontWeight="Bold"/>
+                                            <Button Content="Debug" Name="DataTableDebugButton" Click="DebugButtonClick" Margin="3"/>
+                                        </DockPanel>
+                                        <Grid>
+                                            <Label Content="Base Address" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top"/>
+                                            <TextBox x:Name="TextBoxDataTableBaseAddress" HorizontalAlignment="Left" Margin="164,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                                            <Label Content="Row Size" HorizontalAlignment="Left" Margin="0,32,0,0" VerticalAlignment="Top"/>
+                                            <TextBox x:Name="TextBoxDataTableRowSize" HorizontalAlignment="Left" Margin="164,40,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+
+                                            <Button x:Name="CreateEditorPart2ButtonNext" Content="Next: Final Review" HorizontalAlignment="Left" Margin="540,19,0,0" VerticalAlignment="Top" Height="33" Width="212" Click="ButtonNextToNameList" FontSize="20"/>
+                                            <Button Content="Back: Text Data" HorizontalAlignment="Left" Margin="310,19,0,0" VerticalAlignment="Top" Click="ButtonBackToNameAndFile" Height="33" Width="206"/>
+                                            <Label Content="Note: Mistakes here can't current be fixed after creating, but you can always just remake the editor." HorizontalAlignment="Left" Margin="0,68,0,0" VerticalAlignment="Top"/>
+                                        </Grid>
+
+                                    </DockPanel>
+                                </Border>
+
+
+
+
+                                <Border Margin="0,0,0,0">
+                                    <DockPanel>
+                                        <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
+                                            <Label Content="Helpful Info!" FontWeight="Bold"/>
+                                        </DockPanel>
+                                        <ScrollViewer>
+                                            <Grid>
+                                                <Label Content="Table Base Address Help:&#xA;To find the base address in 010 editor,   &#xA;(1) highlight the start byte of the table, then &#xA;(2) you can see it at the bottom right.   &#xA;Note: This program wants it in DECIMAL, NOT HEX! &#xA;So the correct Base Address in this example is 128, not 80h." HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
+                                                <Label Content="Table Row Size Help:  &#xA;This is how wide 1 row of the table is.&#xA;(3) Highlight 1 full row of the table and the row size &#xD;&#xA;will be shown at the bottom left. &#xD;&#xA;&#xD;&#xA;Note: Again, Decimals only, so in this example &#xD;&#xA;the correct number is 120, not 78h" HorizontalAlignment="Left" Margin="10,355,0,0" VerticalAlignment="Top"/>
+                                                <Image HorizontalAlignment="Left" Height="256" Margin="406,295,0,0" VerticalAlignment="Top" Width="412" Source="/User Controls/Tutorial New Workshop Get Base Address Part 3.png"/>
+                                                <Image HorizontalAlignment="Left" Height="140" Margin="516,0,0,0" VerticalAlignment="Top" Width="304" Source="/User Controls/Tutorial New Workshop Get Base Address.png"/>
+                                                <Image HorizontalAlignment="Left" Height="126" Margin="313,148,0,0" VerticalAlignment="Top" Width="549" Source="/User Controls/Tutorial New Workshop Get Base Address Part 2.png"/>
+                                            </Grid>
+                                        </ScrollViewer>
+                                        
+
+                                    </DockPanel>
+                                </Border>
+
+
+                            </DockPanel>
+                        </TabItem>
+
+                        <TabItem Header="Final Review" Name="StandardWidthPartF">
+                            <Grid x:Name="CreateEditorPartReview" Grid.Column="1" Grid.Row="1" Style="{DynamicResource BorderGrid}">
+                                <Border Margin="0,8,0,0" DockPanel.Dock="Top">
+                                    <DockPanel>
+                                        <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
+                                            <Label Content="Final Review" FontWeight="Bold"/>
+                                        </DockPanel>
+                                        <Grid>
+                                            <Button x:Name="CreateNewEditor" Content="Create New Editor! :D" HorizontalAlignment="Left" Margin="355,284,0,0" VerticalAlignment="Top" Height="39" Width="265" Click="ButtonCreateStandardWidthEditor"/>
+                                            <Label Content="In the future this you will be able to review everything here, but i didn't care enough so &#xD;&#xA;It will be added later.&#xA;&#xA;Once you click create new editor, you won't be able to go back anymore,&#xA;but you can still change most details even after creation, &#xD;&#xA;or delete and remake it. (right click an editor and select and delete).&#xA;&#xA;In future versions of the program, i hope to add support for changing from manual item list&#xA;to an item list from file even after an editor is created, among other things." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                                            <Button Content="Back" HorizontalAlignment="Left" Margin="47,284,0,0" VerticalAlignment="Top" Height="39" Width="179" Click="ButtonBackToNameList"/>
+                                        </Grid>
+
+                                    </DockPanel>
+                                </Border>
+
+
+                            </Grid>
+                        </TabItem>
+
+
+
+
+                    </TabControl>
+                </Grid>
+            </DockPanel>
+        </Border>
+    </Grid>
+
+
+
+
+
+</UserControl>

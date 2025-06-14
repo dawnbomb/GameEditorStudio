@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="GameEditorStudio.FileManager"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="200"/>
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0">
+            <DockPanel>
+                <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
+                    <Label Name="ItemsLabel" Content="Workshop Files" FontWeight="Bold"/>
+                    <Button Name="AddFileButton" Content="Add File" DockPanel.Dock="Right" Click="ButtonAddFileToWorkshop" Width="100" HorizontalAlignment="Right" Margin="3"/>                   
+
+                </DockPanel>
+                <TreeView x:Name="TreeGameFiles" SelectedItemChanged="SelectedTreeItemChanged" />
+            </DockPanel>
+        </Border>
+        <GridSplitter Style="{DynamicResource SplitterHorizontal}" Grid.Row="1"   />
+        <Border Grid.Row="2">
+            <DockPanel>
+                <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
+                    <Label Content="File" FontWeight="Bold"/>
+                    
+
+                </DockPanel>
+
+                <Grid Margin="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="Location" Grid.Row="0" Grid.Column="0"/>
+                    <TextBox x:Name="FileLocationTextbox" Grid.Row="0" Grid.Column="1" Width="Auto" Margin="3" />
+
+                    <Label Content="File Note" Grid.Row="1" Grid.Column="0"/>
+                    <TextBox x:Name="FileNoteBox" Grid.Row="1" Grid.Column="1" Margin="3" TextChanged="FileNoteBoxTextChanged"  />
+
+                    <TextBox x:Name="FileNotepadTextbox" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" TextChanged="FileNotepadTextChanged" />
+                </Grid>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>

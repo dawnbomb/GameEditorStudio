@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="GameEditorStudio.SettingsColors"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d" 
+             HorizontalAlignment="Stretch" 
+             VerticalAlignment="Stretch" >
+
+
+    <Grid>
+        <Label Content="Color Theme" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,46,0,0"/>
+        <ComboBox x:Name="ThemeComboBox" HorizontalAlignment="Left" Margin="165,52,0,0" VerticalAlignment="Top" Width="200" DropDownClosed="ThemeComboBox_DropDownClosed" >
+            <!--DropDownClosed="ColorModeComboBox_DropDownClosed"-->
+            <ComboBoxItem Content="Light Mode"/>
+            <ComboBoxItem Content="Dark Mode"/>
+            <ComboBoxItem Content="Thing"/>
+        </ComboBox>
+
+        <Label Content="Value is Always 0" HorizontalAlignment="Left" Margin="0,81,0,0" VerticalAlignment="Top"/>
+        <ComboBox Name="ComboBoxAlways0" HorizontalAlignment="Left" Margin="165,86,0,0" VerticalAlignment="Top" Width="200"/>
+        <Label Content="Value is always Same" HorizontalAlignment="Left" Margin="0,115,0,0" VerticalAlignment="Top"/>
+        <ComboBox Name="ComboBoxAlwaysSame" HorizontalAlignment="Left" Margin="165,121,0,0" VerticalAlignment="Top" Width="200"/>
+        <Label Content="Value is less then X" HorizontalAlignment="Left" Margin="0,154,0,0" VerticalAlignment="Top"/>
+        <ComboBox Name="ComboBoxLessThanX" HorizontalAlignment="Left" Margin="165,158,0,0" VerticalAlignment="Top" Width="200"/>
+        <Label Content="Value is Disabled" HorizontalAlignment="Left" Margin="0,193,0,0" VerticalAlignment="Top"/>
+        <ComboBox Name="ComboBoxDisabled" HorizontalAlignment="Left" Margin="165,199,0,0" VerticalAlignment="Top" Width="200"/>
+        <Label Content="Value is actually Text" HorizontalAlignment="Left" Margin="0,231,0,0" VerticalAlignment="Top"/>
+        <ComboBox Name="ComboBoxText" HorizontalAlignment="Left" Margin="165,237,0,0" VerticalAlignment="Top" Width="200"/>
+        <Label Content="Value is actually Name" HorizontalAlignment="Left" Margin="0,267,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="ComboBoxName" HorizontalAlignment="Left" Margin="165,273,0,0" VerticalAlignment="Top" Width="200" DropDownClosed="ChangeColor"/>
+
+    </Grid>
+</UserControl>

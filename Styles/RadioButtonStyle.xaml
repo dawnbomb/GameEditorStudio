@@ -1,0 +1,44 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:properties="clr-namespace:GameEditorStudio.Properties">
+
+    <Style TargetType="RadioButton">
+        <Setter Property="Foreground" Value="#FFFFFF" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border x:Name="circleBorder" Width="16" Height="16" CornerRadius="8" BorderThickness="2" 
+                                BorderBrush="#000000" Background="#1E1E1E" />
+                        <Ellipse x:Name="circleInner" Width="8" Height="8" Fill="Transparent" />
+
+                        <Border Grid.Column="1" Background="Transparent">
+                            <ContentPresenter Margin="4,0,0,0" VerticalAlignment="Center" Content="{TemplateBinding Content}" />
+                        </Border>
+
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="circleInner" Property="Fill" Value="#808080" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="circleBorder" Property="BorderBrush" Value="#333333" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="#888888" />
+                            <Setter TargetName="circleBorder" Property="BorderBrush" Value="#444444" />
+                            <Setter TargetName="circleInner" Property="Fill" Value="#444444" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

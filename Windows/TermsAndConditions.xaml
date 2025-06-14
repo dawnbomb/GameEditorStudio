@@ -1,0 +1,30 @@
+﻿<Window x:Class="GameEditorStudio.TermsAndConditions"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GameEditorStudio"
+        mc:Ignorable="d"
+        Title="Terms And Conditions" Height="1050" Width="800">
+    <Grid>
+        <Label Content="WELCOME TO CRYSTAL EDITOR! :D" HorizontalAlignment="Center" Margin="0,4,0,0" VerticalAlignment="Top" FontSize="24" Foreground="#FF47FF2D"/>
+        <Label Content="Hey-o~ :3 I've Devoted countless hours of my life, heart, and soul into crystal editor.&#xA;This IS my life's work, my MASTERPIECE. It Fills my deep wish for simplified game modding.&#xA;Now before you start, i've been modding since age 10, and i have some things to say. &#xA;&#xA;Unacceptably to many times, i have seen people in modding spaces act to &quot;Claim&quot; them.&#xA;Motivated by clout, patreon, spite, moral superiority, &quot;Ownership&quot; of the space, i've seen it all.&#xA;Hell, half of my drive creating this program was from the anger i felt at these damn people. &#xA;They make editors and refuse to share them, or create mods then say no one else can.  &#xA;Worse yet sometimes they try to declare what parts of a game your ALLOWED to mod.&#xA;&quot;No modding the DLC!&quot;, &quot;Your NOT ALLOWED to use my mod!&quot;, or worst of all booby trapping mods! &#xA;(Looking at you FF14 Gshade virus installer, or the guy who made Special-K and put force crash in it).&#xA;&#xA;Don't lose hope. For every gatekeeping community like BotW or Persona,&#xA;there are some really amazing ones like Touhou, Fire Emblem, or Pokemon.&#xA;If your using this, were ALL modders, we ALL make mods without asking for permission.&#xA;Don't let people pressure you out of modding a game in the way you want, or using what you want.  &#xA;Mods make the world a more fun place, they get people through depression, or become a best experience.  &#xA;Towards that goal, i want to do what i can to fight against toxic modders. &#xA; &#xA;This program i've poured myself into automatically generates high quality editors from game files.&#xA;Editors are easy to use, and designed extremely on purpose for ANYONE to make changes to and redistribute.&#xD;&#xA;I want to fight back against toxic, selfish modders, and help create a better modding community at large. " HorizontalAlignment="Left" Margin="15,45,0,0" VerticalAlignment="Top"/>
+
+
+
+        <Border Margin="43,542,0,0" Height="399" VerticalAlignment="Top" HorizontalAlignment="Left" Width="693">
+            <DockPanel>
+                <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
+                    <Label Content="TERMS AND CONDITIONS  (That you may actually care about)" FontWeight="Bold"/>
+                </DockPanel>
+                <Grid>
+                    <Label Content="You acknowledge and agree to ALL of the following:.&#xA;- Things made with this program, ANYONE can make changes to. (Editors, mods, anything) &#xA;- ANYONE can distribute any versions of anything made using this, modified or not. &#xA;- Workshops / Editors may be added to a master list that anyone can download from and use.&#xA;- You can still credit yourself, but you give up / surrender any ownership rights.&#xA;- This means anything you create is a &quot;Contribution&quot;, (aka open source).&#xA;- Any later changes apply retroactivly. (but will keep the obvious spirit of this agreement) &#xA; &#xA;If you leak it on accident, it still counts. &#xA;If someone else leaks it without permission, it still counts. &#xA;If you attempt to sell it and people share it without your permission, it still counts.&#xA;If something insane happens, it still counts.&#xA;&#xA;This program is intended to make editors and mods everyone can use. Don't be selfish. " HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Button Content="I AGREE TO THE TERMS AND CONDITIONS." HorizontalAlignment="Left" Margin="92,313,0,0" VerticalAlignment="Top" Height="33" Width="468" Click="ButtonIAgreeToToS"/>
+                </Grid>
+
+            </DockPanel>
+        </Border>
+        <Label Content="PS: If some game banana moderator won't let you put your mod there, or romhacking won't let you,&#xD;&#xA;reach out to me and i'll host it for you. (Unless it's a cheat mod for a competative game :p )" HorizontalAlignment="Left" Margin="20,946,0,0" VerticalAlignment="Top"/>
+
+    </Grid>
+</Window>
