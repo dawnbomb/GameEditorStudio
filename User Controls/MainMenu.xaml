@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameEditorStudio"
              mc:Ignorable="d" >
-    <Menu Name="TheMenu" Height="22" >
-        <MenuItem x:Name="WorkshopMenu" Header="File" FontSize="16" SubmenuOpened="FileMenuOpened"  >
+    <Menu Name="TheMenu" Height="27" >
+        <MenuItem x:Name="WorkshopMenu" Header="File" SubmenuOpened="FileMenuOpened" >
             <MenuItem Header="Save Everything" Click="SaveAll"/>            
             <Separator Style="{DynamicResource KeySeperator}"/>
             <MenuItem Header="Save Editors" Click="SaveEditors" Name="MenuSaveEditors"/>
@@ -19,7 +19,7 @@
             <Separator Style="{DynamicResource KeySeperator}"/>
             <MenuItem Header="Export ALL data table editors to excel files." Click="ExportEditors" Name="ItemExportEditors" />
         </MenuItem>
-        <MenuItem x:Name="ToolsMenu" Header="Tools" FontSize="16" SubmenuOpened="ToolsMenuOpened">
+        <MenuItem x:Name="ToolsMenu" Header="Tools" SubmenuOpened="ToolsMenuOpened">
             <MenuItem Header = "Tools Setup" Click = "OpenToolsWindow" />
             <!--NOTE: toolmanager.xaml.cs i commented out stuff with checkboxes that interacted with menus and made text...red? FIX THIS LATER? (or atleast look into it)-->
             <MenuItem.ItemTemplate>
@@ -28,17 +28,17 @@
                 </DataTemplate>
             </MenuItem.ItemTemplate>
         </MenuItem>
-        <MenuItem x:Name="EventsMenu" Header="Events" FontSize="16" SubmenuOpened="EventsMenu_SubmenuOpened">
+        <MenuItem x:Name="EventsMenu" Header="Events" SubmenuOpened="EventsMenu_SubmenuOpened">
             <MenuItem Header="Events Setup" Click="OpenEventsWindow" Name="ItemEventsSetup" />
         </MenuItem>
-        <MenuItem Name="ShortcutsMenu" Header="Shortcuts" FontSize="16" >
+        <MenuItem Name="ShortcutsMenu" Header="Shortcuts"  >
             <MenuItem x:Name="MenuInputShortcut" Header="Open Project Input Folder" Click="OpenInputFolder"/>
             <MenuItem x:Name="MenuOutputShortcut" Header="Open Project Output Folder" Click="OpenOutputFolder"/>
             <MenuItem Header="Open Workshop Folder" Click="OpenWorkshopFolder"/>
             <MenuItem Header="Open Downloads Folder" Click="OpenDownloadsFolder"/>
             <MenuItem Header="Open Crystal Editor Folder" Click="OpenCrystalEditorFolder"/>
         </MenuItem>
-        <MenuItem Name="ExtrasMenu" Header="Extras" FontSize="16" >
+        <MenuItem Name="ExtrasMenu" Header="Extras"  >
             <MenuItem Header="⚙ Settings"  Click="OpenSettingsWindow" Foreground="#FF2C2C"/>
             <MenuItem Header="Report a Bug, or Request a Feature" Foreground="#FF2C2C"/>
             <MenuItem Header="Request support for a new Tool" Foreground="#FF2C2C"/>

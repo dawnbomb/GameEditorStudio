@@ -30,22 +30,14 @@
 
 
 
-        <DockPanel Grid.Column="1" Grid.ColumnSpan="3"  Grid.RowSpan="1" LastChildFill="False" Margin="0,8,0,8" Style="{DynamicResource BorderDock}" >
+        <DockPanel Grid.Column="1" Grid.ColumnSpan="3"  Grid.RowSpan="1" LastChildFill="False" Margin="0,6,0,6" Style="{DynamicResource BorderDock}" >
             <local:MainMenu x:Name="MenusForToolsAndEvents"  />
 
-            <DockPanel   LastChildFill="False" Margin="50,0,0,0" Style="{DynamicResource BorderDock}" >
 
-
-                <Button Content=" I-ID " DockPanel.Dock="Left" Click="ToggleItemIDNumberVisibility" Margin="5,0,10,0" ToolTip="Toggles if the item list displays item ID numbers. ID numbers are shown using the real, internal game data order, not the order you arrange them in."/>
-
-
-                <DockPanel Background="#FF382E4E">
-                    <Label Content="Dec to Hex:" Margin="0,-5,0,0"/>
-                    <TextBox  Width="75" Margin="5,3,5,3" TextChanged="TextBoxDecConvert" Name="DecBox"/>
-                    <TextBox  Width="75" Margin="5,3,5,3" TextChanged="TextBoxHexConvert" Name="HexBox"/>
-                </DockPanel>
-
-
+            <DockPanel Background="#FF382E4E" Margin="0,0,0,0">
+                <Label Content="Dec to Hex:" Margin="0,-2,0,0"/>
+                <TextBox  Width="75" Margin="5,2,5,2" TextChanged="TextBoxDecConvert" Name="DecBox"/>
+                <TextBox  Width="75" Margin="5,2,5,2" TextChanged="TextBoxHexConvert" Name="HexBox"/>
             </DockPanel>
 
             <local:TopEastMenu DockPanel.Dock="Right" ></local:TopEastMenu>
@@ -54,24 +46,34 @@
 
         <Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" Margin="0,0,0,5">
             <DockPanel>
-                <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}" LastChildFill="False">
-                    <Label Content="Editors" FontWeight="Bold"/>
+                <DockPanel DockPanel.Dock="Top">
+                    <Button DockPanel.Dock="Left" x:Name="ButtonHome" Content=" Home "    Click="ButtonHome_Click" Margin="3,2,0,2"/>
+                    <ScrollViewer  DockPanel.Dock="Left" x:Name="EditorBarScrollViewer" Background="#FF272A2B" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" PreviewMouseWheel="EditorBarMouseWheel">
+                        <DockPanel x:Name="EditorBar" Background="{x:Null}" LastChildFill="False" >
 
-                    <Button DockPanel.Dock="Left" x:Name="ButtonHome" Content=" Home "    Click="ButtonHome_Click" Margin="15,2,0,2"/>
-                    <DockPanel  Background="{x:Null}" Margin="25,2,0,2">
+                        </DockPanel>
+                    </ScrollViewer>
+                </DockPanel>
+                
+                <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}" LastChildFill="False">
+
+                    
+                    <DockPanel  Background="{x:Null}" Margin="0,2,0,2">
+                        <Button Content=" I-ID " DockPanel.Dock="Left" Click="ToggleItemIDNumberVisibility" Margin="5,0,5,0" ToolTip="Toggles if the item list displays item ID numbers. ID numbers are shown using the real, internal game data order, not the order you arrange them in."/>
+                        <Button Content="アA" Width="35" DockPanel.Dock="Left" x:Name="TranslationToggle" Style="{DynamicResource ButtonError}"  Click="ToggleTranslationPanel" Margin="2,0,2,0" ToolTip="Toggles the translation panel, which lets you see the origonal item's name translated to english using diffrent translation tools. Useful for creating english menu patches for JRPGs."/>
+                        
                         <Button Content="🔍" DockPanel.Dock="Left" x:Name="EntryAddressButton2"  Click="ToggleEntrySynbology" Margin="2,0,2,0" ToolTip="Toggles Symbology to appear or not. Symbology is actually really useful and quickly tells you information about a entry across the entire editor. VERY useful when first creating a editor to help learn what each value might represent."/>
                         <Button Content=" E-ID " DockPanel.Dock="Left" x:Name="EntryAddressButton"  Click="EntryAddressToggle" Margin="2,0,2,0" ToolTip="Display Entry ID numbers. The number represents what byte # the entry is for in a row."/>
                         <Button DockPanel.Dock="Left" x:Name="EntryAddressTypeButton" Content="DEC" Width="40" Click="EntryAddressType" Margin="2,0,2,0" ToolTip="Changes the Entry ID number between displaying in Decimal (Numbers 0~9) and Hex (Numbers 00~FF). "/>
                         <TextBox DockPanel.Dock="Left" x:Name="EntryAddressOffsetTextbox" Text="0" Width="35" Margin="2,1,2,1" KeyDown="EntryOffsetTextboxKeyDown" ToolTip="This textbox makes each entry ID appear as +/- X number. Such as -3 or +5. Useful for debugging, and not much else. " />
                         <Button Content="👁" DockPanel.Dock="Left" x:Name="EntryHiddenToggle"   Click="ToggleHiddenEntrys" Margin="2,0,2,0" ToolTip="Toggles entrys tagged as Hidden between being Visible or Hidden. When visable they appear red."/>
-                        <Button Content="アA" Width="35" DockPanel.Dock="Left" x:Name="TranslationToggle" Style="{DynamicResource ButtonError}"  Click="ToggleTranslationPanel" Margin="2,0,2,0" ToolTip="Toggles the translation panel, which lets you see the origonal item's name translated to english using diffrent translation tools. Useful for creating english menu patches for JRPGs."/>
-                    </DockPanel>
-                </DockPanel>
-                <ScrollViewer x:Name="EditorBarScrollViewer" Background="#FF272A2B" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" PreviewMouseWheel="EditorBarMouseWheel">
-                    <DockPanel x:Name="EditorBar" Background="{x:Null}" LastChildFill="False" >
+                        
+
+                        
 
                     </DockPanel>
-                </ScrollViewer>
+                </DockPanel>
+                
             </DockPanel>
         </Border>
 
@@ -133,13 +135,13 @@
 
                                                         <Label Content="Input Folder" Grid.Column="1"  Grid.Row="2"/>
                                                         <DockPanel Grid.Row="2" Grid.Column="2" Margin="3,3,3,3" Background="Transparent">
-                                                            <Button Name="OpenInputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="22" DockPanel.Dock="Right" Click="OpenWorkshopInputButton"/>
+                                                            <Button Name="OpenInputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="25" DockPanel.Dock="Right" Click="OpenWorkshopInputButton"/>
                                                             <TextBox x:Name="PropertiesEditorReadGameDataFrom" Grid.Row="1" Grid.Column="2" Margin="0" TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Input" />
                                                         </DockPanel>
 
                                                         <Label Content="Output Folder"  Grid.Row="3" Grid.Column="1" />
                                                         <DockPanel Grid.Row="3" Grid.Column="2" Margin="3,3,3,3" Background="Transparent">
-                                                            <Button Name="OpenOutputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="22" DockPanel.Dock="Right" Click="OpenWorkshopOutputButton"/>
+                                                            <Button Name="OpenOutputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="25" DockPanel.Dock="Right" Click="OpenWorkshopOutputButton"/>
                                                             <TextBox x:Name="EditorOutputLocationTextbox" Grid.Row="2" Grid.Column="2"  TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Output"/>
 
                                                         </DockPanel>

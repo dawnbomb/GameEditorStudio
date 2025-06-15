@@ -33,9 +33,9 @@ namespace GameEditorStudio
         EventHandler statusChangedHandler = null;
 
 
-        public TheLeftBar(Workshop AWorkshop, WorkshopData ADatabase, Editor AEditor)
+        public TheLeftBar(Workshop AWorkshop, WorkshopData ADatabase, Editor AEditor) //
         {
-            InitializeComponent();            
+            InitializeComponent();
 
             TheWorkshop = AWorkshop;
             Database = ADatabase;

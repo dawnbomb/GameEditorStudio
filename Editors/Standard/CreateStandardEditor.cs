@@ -435,7 +435,6 @@ namespace GameEditorStudio
 
 
             Label Label = new Label();
-            Label.FontSize = 15;
             Label.Content = CatClass.CategoryName;// "Entry X";    //"Row X";
             DockPanel.SetDock(Label, Dock.Left);
             Label.VerticalAlignment = VerticalAlignment.Top; //Top Bottom
@@ -572,6 +571,8 @@ namespace GameEditorStudio
             DockPanel.SetDock(ColumnGrid, Dock.Left);
             ColumnGrid.Margin = new Thickness(1, 1, 1, 1); // Left Top Right Bottom 
 
+            ColumnGrid.Visibility = Visibility.Visible;
+
             ColumnClass.ColumnRow = RowClass;
 
             if (Index == -1) { RowClass.CategoryDockPanel.Children.Add(ColumnGrid); }
@@ -630,10 +631,9 @@ namespace GameEditorStudio
 
 
             Label Label = new Label();
-            Label.FontSize = 15;
-            Label.Height = 28;
+            Label.Height = 36;
             //Label.Width = 120;
-            Label.Margin = new Thickness(2, 0, 0, 0); // Left Top Right Bottom 
+            Label.Margin = new Thickness(2, -5, 0, 0); // Left Top Right Bottom 
             Label.Content = ColumnClass.ColumnName; //"This is Column X";
             DockPanel.SetDock(Label, Dock.Top);
             Label.HorizontalContentAlignment = HorizontalAlignment.Center;
@@ -1062,7 +1062,7 @@ namespace GameEditorStudio
             //NameBox.Background = Brushes.IndianRed;
             //NameBox.Height = 30;
             NameBox.MinWidth = 80;
-            NameBox.FontSize = 15;
+            NameBox.FontSize = 20;
             NameBox.HorizontalAlignment = HorizontalAlignment.Left;
             NameBox.VerticalContentAlignment = VerticalAlignment.Center;
             EntryDockPanel.Children.Add(NameBox);

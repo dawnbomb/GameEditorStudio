@@ -14,7 +14,7 @@
     </Window.Resources>
     <Grid Name="LibraryGrid" Style="{DynamicResource BorderGrid}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="32"/>
             <RowDefinition Height="10"/>
             <RowDefinition Height="132*"/>
             <RowDefinition Height="16"/>
@@ -36,7 +36,7 @@
         <!--<GridSplitter  Grid.Column="2" Grid.Row="3" Grid.RowSpan="2" Style="{DynamicResource SplitterVertical}" Width="4"   />-->
 
 
-        <DockPanel Margin="0,5,0,0" Grid.Column="1" Grid.ColumnSpan="5"  Grid.Row="0" Grid.RowSpan="1" LastChildFill="False" Style="{DynamicResource BorderDock}">
+        <DockPanel Margin="0,4,0,0" Grid.Column="1" Grid.ColumnSpan="5"  Grid.Row="0" Grid.RowSpan="1" LastChildFill="False" Style="{DynamicResource BorderDock}">
             <local:MainMenu x:Name="MenusForToolsAndEvents" DockPanel.Dock="Left" />
             <local:TopEastMenu DockPanel.Dock="Right"  />
 
@@ -134,7 +134,7 @@
 
                         <Button DockPanel.Dock="Right" x:Name="ButtonCreateWorkshop" Content="New" Width="50" Click="ButtonCreateWorkshop2" FontSize="16" Margin="3,3,10,3" />
                         <Button DockPanel.Dock="Right" x:Name="ButtonEditWorkshop" Content="Edit"  Width="50" Click="ButtonEditWorkshop2" FontSize="16" Margin="3" />
-                        <Button DockPanel.Dock="Right" x:Name="ButtonLaunchPreview"   Content="Preview"  Click="LaunchWorkshopPreviewMode"  Width="70"  FontSize="16" Margin="3" />
+                        <Button DockPanel.Dock="Right" x:Name="ButtonLaunchPreview"   Content="Preview"  Click="LaunchWorkshopPreviewMode"  Width="70"  FontSize="16" Margin="3"  />
                     </DockPanel>
 
                     <TreeView  x:Name="LibraryTreeOfWorkshops"  SelectedItemChanged="LibraryTreeOfWorkshops_SelectedItemChanged" DockPanel.Dock="Top" />
@@ -146,15 +146,14 @@
 
             
         </DockPanel>
-        
-        
-
-        
-
-        
 
 
-        
+
+
+
+
+
+              
 
 
 
@@ -165,7 +164,7 @@
                 <DockPanel DockPanel.Dock="Bottom" Background="{x:Null}" >
 
                     <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
-                        <Label Content="Project Resources" FontWeight="Bold" />
+                        <Label Content="Hello World!  Dawn Test すべての力の源よ New File..." FontWeight="Bold" /> <!--Project Resources-->
                         <Label Name="LabelForMissingProjectResources" Content="Some last known locations seem to be wrong!" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="22" Padding="5,0,5,2" Margin="10,0,0,0" />
                     </DockPanel>
                     <!--Note: Only local files/folders appear here, never child ones, because the user doesn't need to actually set them (thats the point of child items).--> 
@@ -185,6 +184,17 @@
                 </DockPanel>
             </Border>
 
+            <Border DockPanel.Dock="Top" Margin="0,0,0,10">
+                <DockPanel>
+                    <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
+                        <Label Content="Hello World!  Dawn Test すべての力の源よ New File..." FontWeight="Bold" HorizontalAlignment="Center" DockPanel.Dock="Top" />
+
+                    </DockPanel>
+                    <Label Content="Hello World!  Dawn Test すべての力の源よ New File..." DockPanel.Dock="Top"/>
+                    <Label Content="Hello World!  Dawn Test すべての力の源よ New File...&#xD;&#xA;Hello World!  Dawn Test すべての力の源よ New File...&#xD;&#xA;Hello World!  Dawn Test すべての力の源よ New File..." DockPanel.Dock="Top"/>
+                </DockPanel>
+            </Border>
+
             <Border DockPanel.Dock="Top">
                 <DockPanel>
                     <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
@@ -192,7 +202,7 @@
 
                     </DockPanel>
                     <ScrollViewer Background="Transparent" VerticalScrollBarVisibility="Auto">
-                        <TextBox x:Name="TextBoxWorkshopReadMe"  TextWrapping="Wrap" Text="Welcome to the first public release of my attempt at the worlds best game modding tool. &#xD;&#xA; &#xD;&#xA;This program makes it extremely easy to automatically generate fully functional game editors! It also provides quick and easy access to major romhacking tools.&#xD;&#xA;&#xD;&#xA;Save often in case of crashes or bugs and report any you come across :(&#xD;&#xA;&#xD;&#xA;PS: Many things in the program have right click options.&#xD;&#xA; &#xD;&#xA;Want to help development? reach out to me on discord! (Link in the top right)  Made in C# / WPF / .Net 8 &#xD;&#xA;Lets lower the complexity of game modding and simplify it so everyone can create mods! " Margin="10,5,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False" Width="580" Height="480"  />
+                        <TextBox x:Name="TextBoxWorkshopReadMe"  TextWrapping="Wrap" Text="Welcome to the first public release of my attempt at the worlds best game modding tool. &#xD;&#xA; &#xD;&#xA;This program makes it extremely easy to automatically generate fully functional game editors! It also provides quick and easy access to major romhacking tools.&#xD;&#xA;&#xD;&#xA;Save often in case of crashes or bugs and report any you come across :(&#xD;&#xA;&#xD;&#xA;PS: Many things in the program have right click options.&#xD;&#xA; &#xD;&#xA;Want to help development? reach out to me on discord! (Link in the top right)  Made in C# / WPF / .Net 8 &#xD;&#xA;Lets lower the complexity of game modding and simplify it so everyone can create mods! " Margin="10,5,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False" Width="580" Height="480"   />
 
                     </ScrollViewer>
                 </DockPanel>
@@ -237,6 +247,8 @@
                         <TreeView x:Name="EditorsTree"/>
 
                     </Grid>
+                    
+                    
                 </DockPanel>
 
             </Border>

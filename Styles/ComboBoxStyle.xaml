@@ -17,7 +17,8 @@
     <Style x:Key="MyComboBoxItemStyle" TargetType="ComboBoxItem">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
-        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontFamily" Value="Dawns 10px ArkPixel" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBoxItem">
@@ -58,7 +59,8 @@
 
     <Style TargetType="ComboBox">
         <Setter Property="Background" Value="{DynamicResource DropDownBack}"/>
-        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontFamily" Value="Dawns 10px ArkPixel" />
         <Setter Property="OverridesDefaultStyle" Value="true"/>
         
         <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
