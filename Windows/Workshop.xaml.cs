@@ -1171,7 +1171,7 @@ namespace GameEditorStudio
                 Run runFolder = new Run();
                 runFolder.Foreground = Brushes.Yellow;
                 runFolder.Text = "📁 ";
-                run1.Text = ItemInfo.ItemName + " ";
+                run1.Text = ItemInfo.ItemName + " "; //We never show the index of a folder.
                 TextBlockItem.Inlines.Add(runFolder);
             }
 

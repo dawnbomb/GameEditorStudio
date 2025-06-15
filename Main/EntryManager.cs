@@ -500,7 +500,7 @@ namespace GameEditorStudio
             TextBox NumberBox = new TextBox();
             NumberBox.Height = 25;
             NumberBox.MinWidth = 50;
-            NumberBox.FontSize = 17;
+            NumberBox.FontSize = 20;
             NumberBox.Margin = new Thickness(0, 0, 3, 0); // Left Top Right Bottom
             NumberBox.HorizontalAlignment = HorizontalAlignment.Stretch;
             EntryClass.EntryDockPanel.Children.Add(NumberBox);

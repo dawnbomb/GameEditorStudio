@@ -13,11 +13,7 @@
         </TreeView>
 
         <TabControl Margin="125,29,0,0">
-            <TabItem Header="dedge">
-                <Grid >
-                    <local:SettingsColors DockPanel.Dock="Top" ></local:SettingsColors>
-                </Grid>
-            </TabItem>
+            
             
             
             <TabItem Header="Themes">
@@ -63,6 +59,13 @@
                     </Border>
 
 
+                </Grid>
+            </TabItem>
+
+
+            <TabItem Header="dedge">
+                <Grid >
+                    <local:SettingsColors DockPanel.Dock="Top" ></local:SettingsColors>
                 </Grid>
             </TabItem>
         </TabControl>

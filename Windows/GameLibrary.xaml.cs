@@ -164,7 +164,7 @@ namespace GameEditorStudio
 
             try
             {
-                ColorTheme LastTheme = LibraryMan.ColorThemeList.FirstOrDefault(e => e.Name == "Yami");
+                ColorTheme LastTheme = LibraryMan.ColorThemeList.FirstOrDefault(e => e.Name == "Asperite");
                 LibraryMan.SwitchToColorTheme(LastTheme);
             }
             catch 
