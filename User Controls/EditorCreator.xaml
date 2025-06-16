@@ -97,7 +97,7 @@
                                 <Border Margin="0,8,0,10" DockPanel.Dock="Top">
                                     <DockPanel>
                                         <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
-                                            <Label Content="Editor Info                       (Standard width tables only, variable width support will come later)" FontWeight="Bold"/>
+                                            <Label Content="Editor Info    (Standard width only, variable width coming later)" FontWeight="Bold"/>
                                             <Button Content="Debug" Name="DataTableDebugButton" Click="DebugButtonClick" Margin="3"/>
                                         </DockPanel>
                                         <Grid>
@@ -108,7 +108,7 @@
 
                                             <Button x:Name="CreateEditorPart2ButtonNext" Content="Next: Final Review" HorizontalAlignment="Left" Margin="540,19,0,0" VerticalAlignment="Top" Height="33" Width="212" Click="ButtonNextToNameList" FontSize="20"/>
                                             <Button Content="Back: Text Data" HorizontalAlignment="Left" Margin="310,19,0,0" VerticalAlignment="Top" Click="ButtonBackToNameAndFile" Height="33" Width="206"/>
-                                            <Label Content="Note: Mistakes here can't current be fixed after creating, but you can always just remake the editor." HorizontalAlignment="Left" Margin="0,68,0,0" VerticalAlignment="Top"/>
+                                            <Label Content="Note: Mistakes here can't be fixed later, but you can just remake the editor." HorizontalAlignment="Left" Margin="0,68,0,0" VerticalAlignment="Top"/>
                                         </Grid>
 
                                     </DockPanel>
@@ -124,11 +124,11 @@
                                         </DockPanel>
                                         <ScrollViewer>
                                             <Grid>
-                                                <Label Content="Table Base Address Help:&#xA;To find the base address in 010 editor,   &#xA;(1) highlight the start byte of the table, then &#xA;(2) you can see it at the bottom right.   &#xA;Note: This program wants it in DECIMAL, NOT HEX! &#xA;So the correct Base Address in this example is 128, not 80h." HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
-                                                <Label Content="Table Row Size Help:  &#xA;This is how wide 1 row of the table is.&#xA;(3) Highlight 1 full row of the table and the row size &#xD;&#xA;will be shown at the bottom left. &#xD;&#xA;&#xD;&#xA;Note: Again, Decimals only, so in this example &#xD;&#xA;the correct number is 120, not 78h" HorizontalAlignment="Left" Margin="10,355,0,0" VerticalAlignment="Top"/>
+                                                <Label Content="Table Base Address Help:&#xA;To find the base address in 010 editor,   &#xA;(1) highlight the start byte of the table, then &#xA;(2) you can see it at the bottom right.   &#xA;Note: This program wants it in DECIMAL, NOT HEX! &#xA;So the correct Base Address in this&#xD;&#xA;example is 128, not 80h." HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
+                                                <Label Content="Table Row Size Help:  &#xA;This is how wide 1 row of the table is.&#xA;(3) Highlight 1 full row of the table &#xD;&#xA;and the row size will be shown at &#xD;&#xA;the bottom left. &#xA;&#xA;Note: Again, Decimals only, so in this example &#xA;the correct number is 120, not 78h" HorizontalAlignment="Left" Margin="10,355,0,0" VerticalAlignment="Top"/>
                                                 <Image HorizontalAlignment="Left" Height="256" Margin="406,295,0,0" VerticalAlignment="Top" Width="412" Source="/User Controls/Tutorial New Workshop Get Base Address Part 3.png"/>
-                                                <Image HorizontalAlignment="Left" Height="140" Margin="516,0,0,0" VerticalAlignment="Top" Width="304" Source="/User Controls/Tutorial New Workshop Get Base Address.png"/>
-                                                <Image HorizontalAlignment="Left" Height="126" Margin="313,148,0,0" VerticalAlignment="Top" Width="549" Source="/User Controls/Tutorial New Workshop Get Base Address Part 2.png"/>
+                                                <Image HorizontalAlignment="Left" Height="140" Margin="497,0,0,0" VerticalAlignment="Top" Width="304" Source="/User Controls/Tutorial New Workshop Get Base Address.png"/>
+                                                <Image HorizontalAlignment="Left" Height="126" Margin="259,156,0,0" VerticalAlignment="Top" Width="549" Source="/User Controls/Tutorial New Workshop Get Base Address Part 2.png"/>
                                             </Grid>
                                         </ScrollViewer>
                                         

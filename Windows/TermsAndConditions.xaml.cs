@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace GameEditorStudio
 {
@@ -23,6 +24,13 @@ namespace GameEditorStudio
         {
             InitializeComponent();
             this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+
+            //Mouse.OverrideCursor = new Cursor("AsperiteCursor.cur");
+
+            Mouse.OverrideCursor = new Cursor(Application.GetResourceStream(
+                new Uri("pack://application:,,,/AsperiteCursor.cur")).Stream);
+
+
 
             Dispatcher.InvokeAsync(async () => await GithubUpdater.CheckForUpdatesAsync());
         }

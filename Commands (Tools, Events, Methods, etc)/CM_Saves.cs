@@ -295,7 +295,7 @@ namespace GameEditorStudio
 
                                     foreach (var column in row.ColumnList)
                                     {
-                                        writer.WriteStartElement("Group");
+                                        writer.WriteStartElement("Column");                                        
                                         writer.WriteElementString("Name", column.ColumnName);
                                         writer.WriteElementString("Key", column.Key);
 

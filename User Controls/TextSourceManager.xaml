@@ -36,7 +36,7 @@
                             <Grid x:Name="GridListFromTable" Background="#FF635521" >
                                 <local:FileManager x:Name="DataFileManager" HorizontalAlignment="Left" Width="278"  />
 
-                                <Border Margin="285,9,0,0" HorizontalAlignment="Left" Width="264" Height="213" VerticalAlignment="Top">
+                                <Border Margin="285,9,0,0" HorizontalAlignment="Left" Width="293" Height="213" VerticalAlignment="Top">
                                     <DockPanel>
                                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                             <Label Content="Info" FontWeight="Bold" />
@@ -44,26 +44,26 @@
                                         </DockPanel>
                                         <Grid>
                                             <Label Content="Start Byte" HorizontalAlignment="Left" Margin="10,88,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="FileStartTextBox" HorizontalAlignment="Left" Margin="125,91,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged" ToolTip="This is asking, What is the Base Address of the Table, and it want's it in decimal (Not hex). "/>
+                                            <TextBox x:Name="FileStartTextBox" HorizontalAlignment="Left" Margin="158,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged" ToolTip="This is asking, What is the Base Address of the Table, and it want's it in decimal (Not hex). "/>
                                             <Label Content="Row Size" HorizontalAlignment="Left" Margin="10,32,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="FileFullRowSizeTextBox" HorizontalAlignment="Left" Margin="125,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
+                                            <TextBox x:Name="FileFullRowSizeTextBox" HorizontalAlignment="Left" Margin="158,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
                                             <Label Content="Text Size" HorizontalAlignment="Left" Margin="10,60,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="FileTextSizeTextBox" HorizontalAlignment="Left" Margin="125,64,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
+                                            <TextBox x:Name="FileTextSizeTextBox" HorizontalAlignment="Left" Margin="158,64,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
                                             <Label Content="Character Set" HorizontalAlignment="Left" Margin="10,1,0,0" VerticalAlignment="Top"/>
-                                            <ComboBox x:Name="CharacterSetComboBox" HorizontalAlignment="Left" Margin="125,5,0,0" VerticalAlignment="Top" Width="120" DropDownClosed="DataFileCharacterSetDropdownClosed">
+                                            <ComboBox x:Name="CharacterSetComboBox" HorizontalAlignment="Left" Margin="158,4,0,0" VerticalAlignment="Top" Width="120" DropDownClosed="DataFileCharacterSetDropdownClosed">
                                                 <ComboBoxItem Content="ASCII+ANSI" x:Name="AsciiItem"/>
                                                 <ComboBoxItem Content="Shift-JIS" x:Name="ShiftJISItem" IsSelected="True"/>
                                             </ComboBox>
-                                            <Label x:Name="NameIDLabel" Content="First Name ID" HorizontalAlignment="Left" Margin="10,149,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="FileNameIDTextBox" HorizontalAlignment="Left" Margin="125,152,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
-                                            <Label x:Name="LabelNameCount" Content="Name Count" HorizontalAlignment="Left" Margin="10,119,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="FileNameCountTextBox" HorizontalAlignment="Left" Margin="125,123,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
+                                            <Label x:Name="NameIDLabel" Content="First Name ID" HorizontalAlignment="Left" Margin="10,145,0,0" VerticalAlignment="Top"/>
+                                            <TextBox x:Name="FileNameIDTextBox" HorizontalAlignment="Left" Margin="158,150,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
+                                            <Label x:Name="LabelNameCount" Content="Name Count" HorizontalAlignment="Left" Margin="10,116,0,0" VerticalAlignment="Top"/>
+                                            <TextBox x:Name="FileNameCountTextBox" HorizontalAlignment="Left" Margin="158,121,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
 
                                         </Grid>
                                     </DockPanel>
                                 </Border>
 
-                                <Border Margin="563,9,17,0" Height="213" VerticalAlignment="Top">
+                                <Border Margin="583,9,17,0" Height="213" VerticalAlignment="Top">
                                     <DockPanel>
                                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                             <Label Content="Name List Preview  (Any changes are not saved)" FontWeight="Bold" />
@@ -186,7 +186,7 @@
                             <Grid x:Name="GridListFromTable2" Background="#FF204A61" >
                                 <local:FileManager x:Name="FileManagerForTextFiles" HorizontalAlignment="Left" Width="278"  />
 
-                                <Border Margin="564,10,10,0" Height="212" VerticalAlignment="Top">
+                                <Border Margin="574,10,10,0" Height="212" VerticalAlignment="Top">
                                     <DockPanel>
                                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                             <Label Content="Name List Preview  (Any changes are not saved)" FontWeight="Bold" />
@@ -196,19 +196,19 @@
                                         </ScrollViewer>
                                     </DockPanel>
                                 </Border>
-                                <Border Margin="285,9,0,0" HorizontalAlignment="Left" Width="264" Height="213" VerticalAlignment="Top">
+                                <Border Margin="285,9,0,0" HorizontalAlignment="Left" Width="274" Height="213" VerticalAlignment="Top">
                                     <DockPanel>
                                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                             <Label Content="Info" FontWeight="Bold" />
                                         </DockPanel>
                                         <Grid>
                                             <Label Content="First Line" HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="TextFirstLineTextBox" HorizontalAlignment="Left" Margin="125,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput"/>
+                                            <TextBox x:Name="TextFirstLineTextBox" HorizontalAlignment="Left" Margin="136,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput"/>
                                             <Label x:Name="TextLastLineNameLabel" Content="Last Line" HorizontalAlignment="Left" Margin="10,42,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="TextLastLineTextBox" HorizontalAlignment="Left" Margin="125,46,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput"/>
+                                            <TextBox x:Name="TextLastLineTextBox" HorizontalAlignment="Left" Margin="136,46,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput"/>
                                             <Label x:Name="TextFileNameIDLabel" Content="Starting ID#" HorizontalAlignment="Left" Margin="10,112,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="TextFileFileNameIDTextBox" HorizontalAlignment="Left" Margin="125,116,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput"/>
-                                            <Button x:Name="ButtonSetLastLine" Content="Set Last Line to actual last line" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top" Width="233" Click="TextFileSetAllRowsButton"/>
+                                            <TextBox x:Name="TextFileFileNameIDTextBox" HorizontalAlignment="Left" Margin="136,116,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput"/>
+                                            <Button x:Name="ButtonSetLastLine" Content="Set to actual last line" HorizontalAlignment="Left" Margin="10,76,0,0" VerticalAlignment="Top" Width="246" Click="TextFileSetAllRowsButton"/>
                                         </Grid>
                                     </DockPanel>
                                 </Border>
@@ -252,14 +252,14 @@
 
                                 </Border>
 
-                                <Border Margin="358,10,0,0" HorizontalAlignment="Left" Width="254" Height="250" VerticalAlignment="Top">
+                                <Border Margin="358,10,0,0" HorizontalAlignment="Left" Width="262" Height="250" VerticalAlignment="Top">
                                     <DockPanel>
                                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                             <Label Content="Info" FontWeight="Bold" />
                                         </DockPanel>
                                         <Grid>
                                             <Label x:Name="EditorNameIDLabel" Content="First Name ID" HorizontalAlignment="Left" Margin="7,7,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="EditorFileNameIDTextBox" HorizontalAlignment="Left" Margin="128,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="110" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="EditorFirstNameIDTextboxTextChanged"/>
+                                            <TextBox x:Name="EditorFileNameIDTextBox" HorizontalAlignment="Left" Margin="143,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="110" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="EditorFirstNameIDTextboxTextChanged"/>
                                         </Grid>
                                     </DockPanel>
                                 </Border>
@@ -318,7 +318,7 @@
 
                                 <Grid Margin="350,0,0,0" Background="#FF330F4E">
 
-                                    <Border Margin="10,10,0,0" HorizontalAlignment="Left" Width="303" Height="173" VerticalAlignment="Top">
+                                    <Border Margin="10,10,0,0" HorizontalAlignment="Left" Width="373" Height="173" VerticalAlignment="Top">
                                         <DockPanel>
                                             <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                                 <Label Content="Info" FontWeight="Bold" />

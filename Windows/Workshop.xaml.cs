@@ -1264,7 +1264,7 @@ namespace GameEditorStudio
             NewRow.SWData.CategoryList.Insert(TheIndex, NewRow);
 
 
-            CreateStandardEditor CreateSWEditorCode = new();
+            GenerateStandardEditor CreateSWEditorCode = new();
             CreateSWEditorCode.CreateCategory(EditorClass.StandardEditorData, NewRow, this, MyDatabase, TheIndex);
 
 
@@ -1287,7 +1287,7 @@ namespace GameEditorStudio
             NewRow.SWData.CategoryList.Insert(TheIndex, NewRow);
 
 
-            CreateStandardEditor CreateSWEditorCode = new();
+            GenerateStandardEditor CreateSWEditorCode = new();
             CreateSWEditorCode.CreateCategory(EditorClass.StandardEditorData, NewRow, this, MyDatabase, TheIndex);
 
 
@@ -1384,7 +1384,7 @@ namespace GameEditorStudio
             Column.ColumnRow.ColumnList.Insert(TheIndex, Column);
 
 
-            CreateStandardEditor CreateSWEditorCode = new();
+            GenerateStandardEditor CreateSWEditorCode = new();
             CreateSWEditorCode.CreateColumn(Column.ColumnRow, Column, this, MyDatabase, TheIndex);
 
         }
@@ -1399,7 +1399,7 @@ namespace GameEditorStudio
             Column.ColumnRow.ColumnList.Insert(TheIndex, Column);
 
 
-            CreateStandardEditor CreateSWEditorCode = new();
+            GenerateStandardEditor CreateSWEditorCode = new();
             CreateSWEditorCode.CreateColumn(Column.ColumnRow, Column, this, MyDatabase, TheIndex);
 
         }

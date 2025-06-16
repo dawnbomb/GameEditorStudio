@@ -15,7 +15,7 @@ namespace GameEditorStudio
     class LoadStandardEditor
     {
 
-        public void NewSWEditorIntoDatabase(Workshop TheWorkshop, UserControlEditorCreator Maker) //This triggers when the user creates a new editor.
+        public void NewStandardEditorIntoDatabase(Workshop TheWorkshop, UserControlEditorCreator Maker) //This triggers when the user creates a new editor.
         {
             WorkshopData Database = TheWorkshop.MyDatabase;
 
@@ -154,8 +154,8 @@ namespace GameEditorStudio
 
             Database.GameEditors.Add(TheWorkshop.EditorName, EditorClass);
 
-            CreateStandardEditor EditorMaker = new CreateStandardEditor();
-            EditorMaker.CreateNormalEditor(TheWorkshop, Database, EditorClass); //Create a editor with this information.
+            GenerateStandardEditor EditorMaker = new GenerateStandardEditor();
+            EditorMaker.GenerateNormalEditor(TheWorkshop, Database, EditorClass); //Create a editor with this information.
             //This is not inside any loop, so it really just makes an editor.
 
             
@@ -303,7 +303,7 @@ namespace GameEditorStudio
 
                 EditorClass.StandardEditorData.CategoryList.Add(CategoryClass);
 
-                foreach (XElement Xcolumn in Xrow.Descendants("Group"))
+                foreach (XElement Xcolumn in Xrow.Descendants("Column"))
                 {
                     string columnName = Xcolumn.Element("Name")?.Value;
                     string columnKey = Xcolumn.Element("Key")?.Value;

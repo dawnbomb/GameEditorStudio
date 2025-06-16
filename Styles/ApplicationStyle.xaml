@@ -43,8 +43,14 @@
     </Style>
 
 
-
-    <Style TargetType="{x:Type Button}">
+    <!--<Style  TargetType="{x:Type ContextMenu}" >
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationBorder}"/>
+    </Style>-->
+    
+    
+    
+    <!--<Style TargetType="{x:Type Button}">
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontFamily" Value="Dawns 10px ArkPixel" />
         <Setter Property="Background" Value="{DynamicResource ResourceKey=ButtonBack}"/>
@@ -78,15 +84,114 @@
                 <Setter Property="BorderBrush" Value="{DynamicResource ResourceKey=ButtonDownBorder}"/>
             </Trigger>
         </Style.Triggers>
+    </Style>-->
+
+    <Style TargetType="Button">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="FontFamily" Value="Dawns 10px ArkPixel"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Padding" Value="2,0"/>
+        <Setter Property="Background" Value="#2d2d2d"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid SnapsToDevicePixels="True">
+
+                        <!-- Background Layer -->
+                        <Border x:Name="MainBackground"
+                        Background="{TemplateBinding Background}"/>
+
+                        <!-- Outer Border -->
+                        <Border BorderThickness="2"
+                        BorderBrush="#171717"/> 
+
+                        <!-- Inner Border -->
+                        <Border x:Name="InnerBorder" BorderThickness="2"
+                        BorderBrush="#4d4d4d"
+                        Margin="2"/>
+
+                        
+                        <!-- Content -->
+                        <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  RecognizesAccessKey="True"/>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="MainBackground" Property="Background" Value="#4d4d4d"/>
+                            <Setter TargetName="InnerBorder" Property="BorderBrush" Value="#2d2d2d"/>
+                        </Trigger>
+
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="MainBackground" Property="Background" Value="#2d2d2d"/>
+                            <Setter TargetName="InnerBorder" Property="BorderBrush" Value="#2d2d2d"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 
-    <Style TargetType="{x:Type Button}" x:Key="ButtonError">
+    <Style TargetType="Button" x:Key="ButtonError">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="FontFamily" Value="Dawns 10px ArkPixel"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Foreground" Value="{StaticResource ResourceKey= ErrorText}"/>
+        <Setter Property="Padding" Value="2,0"/>
+        <Setter Property="Background" Value="{StaticResource ResourceKey= ErrorRed}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid SnapsToDevicePixels="True">
+
+                        <!-- Background Layer -->
+                        <Border x:Name="MainBackground"
+                    Background="{TemplateBinding Background}"/>
+
+                        <!-- Outer Border -->
+                        <Border BorderThickness="2"
+                    BorderBrush="{StaticResource ResourceKey= ErrorRed}"/>
+
+                        <!-- Inner Border -->
+                        <Border x:Name="InnerBorder" BorderThickness="2"
+                    BorderBrush="{StaticResource ResourceKey= ErrorText}"
+                    Margin="2"/>
+
+
+                        <!-- Content -->
+                        <ContentPresenter HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              RecognizesAccessKey="True"/>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="MainBackground" Property="Background" Value="#4d4d4d"/>
+                        </Trigger>
+
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="MainBackground" Property="Background" Value="{StaticResource ResourceKey= ErrorRed}"/>
+                            <Setter TargetName="InnerBorder" Property="BorderBrush" Value="{StaticResource ResourceKey= ErrorText}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
+    <!--<Style TargetType="{x:Type Button}" x:Key="ButtonError">
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontFamily" Value="Dawns 10px ArkPixel" />
         <Setter Property="Background" Value="{StaticResource ResourceKey= ErrorRed}"/>
         <Setter Property="Foreground" Value="{StaticResource ResourceKey= ErrorText}"/>
-    </Style>
+    </Style>-->
 
 
     <!--Panels aka default-->
@@ -101,7 +206,8 @@
 
     <!--BUG: Sometimes a border background color appears at the very top of a listview. Fix this eventually! Obvious is set to a color like red.-->
     <Style TargetType="{x:Type Border}" >
-        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ResourceKey= PanelBorder}"/>
     </Style>

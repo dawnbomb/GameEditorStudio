@@ -1,0 +1,28 @@
+========================== Font =====================================
+
+I used Ark Pixel Font from here 
+https://github.com/TakWolf/ark-pixel-font
+I'm using 10px Propertional JA (The JA means using the japanese region version of symbol appearance of JP symbols)
+and i got it on June 15 2025
+
+I then used FontForge and changed it...
+I change the space character (20) from 500 width to 400 width
+In Element -> Font Info, i change the font name in the PS names tab.
+And in the OS/2 tab -> Metrics tab, i clicked really use type metrics, and -400 typo line gap
+Then i generated fonts using type: TrueType
+
+After that, i double clicked the new font file, installed, and moved the font file into my project.
+
+In the future its a good idea to update the font to the latest, as not all JP symbols have been made yet.
+Although, if a user attempts to see a missing symbol, WPF seems to default back to segoe UI font. 
+
+Although it was tempting to yoink the asperite font, if you change asperites language to Japanese, 
+the JP glyphs look eye burningly horrible. Sorry asperite, but you really need better JP support! D:
+
+========================== Cursor =====================================
+
+I was surprised to find out while googleing for a cursor, because i liked asperites and they inspired me, 
+but actually they yoinked their cursor from this pack https://aspecsgaming.itch.io/pixel-art-cursors
+
+So i'm doing the exact same thing! I like the cursor, what can i say. 
+I'm especially a fan of it using inverted colors. <3

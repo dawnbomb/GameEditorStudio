@@ -257,6 +257,8 @@ namespace GameEditorStudio
             }
 
             ContextMenu contextMenu = new ContextMenu();
+            EditorDock.ContextMenu = contextMenu;
+
             MenuItem menuItem1 = new MenuItem();
             menuItem1.Header = "Delete Editor";
             menuItem1.Click += MenuItem1_Click; // Event handler for click action
@@ -385,7 +387,7 @@ namespace GameEditorStudio
             }
             
 
-            EditorDock.ContextMenu = contextMenu;
+            
 
 
             //DockPanel.SetDock(EditorBorder, Dock.Left);
@@ -398,6 +400,7 @@ namespace GameEditorStudio
             TheWorkshop.EditorBar.Children.Add(EditorDock);
 
             Border EditorBorder = new();
+            EditorBorder.BorderThickness = new Thickness(2);
             EditorDock.Children.Add(EditorBorder);
             DockPanel EditorDock2 = new();
             EditorBorder.Child = EditorDock2;
