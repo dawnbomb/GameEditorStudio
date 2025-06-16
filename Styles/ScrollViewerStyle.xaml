@@ -10,8 +10,9 @@
 
 
     <Style TargetType="{x:Type ScrollBar}">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="MinWidth" Value="15"/>
+        <Setter Property="Background" Value="Black"/>
+        <Setter Property="MinWidth" Value="22"/>
+        <Setter Property="MinHeight" Value="22"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ScrollBar}">
@@ -26,28 +27,46 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Track x:Name="PART_Track" Grid.Row="1" Grid.Column="1">
-                            <Track.Resources>
-                                <Style TargetType="{x:Type RepeatButton}">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </Style>
-                            </Track.Resources>
-                            <Track.DecreaseRepeatButton>
-                                <RepeatButton Command="ScrollBar.PageUpCommand"/>
-                            </Track.DecreaseRepeatButton>
-                            <Track.Thumb>
-                                <Thumb>
-                                    <Thumb.Template>
-                                        <ControlTemplate TargetType="{x:Type Thumb}">
-                                            <Rectangle Fill="#444444" RadiusX="7.5" RadiusY="7.5"/>
-                                        </ControlTemplate>
-                                    </Thumb.Template>
-                                </Thumb>
-                            </Track.Thumb>
-                            <Track.IncreaseRepeatButton>
-                                <RepeatButton Command="ScrollBar.PageDownCommand"/>
-                            </Track.IncreaseRepeatButton>
-                        </Track>
+                        <Border Grid.Row="1" Grid.Column="1" BorderBrush="Black" Background="#1A1A1A" Margin="0,0,2,0">
+                            <Track x:Name="PART_Track">
+                                <Track.Resources>
+                                    <Style TargetType="{x:Type RepeatButton}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </Style>
+                                </Track.Resources>
+
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageUpCommand"/>
+                                </Track.DecreaseRepeatButton>
+
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="{x:Type Thumb}">
+                                                <Grid SnapsToDevicePixels="True" Margin="1,1,1,1">
+                                                    <!-- Outer Black Border -->
+                                                    <Border Background="Black" Padding="0" BorderThickness="0">
+                                                        <!-- Inner Gray Border -->
+                                                        <Border x:Name="MainPart" BorderBrush="Gray" Background="#444444" Padding="0" BorderThickness="2"/>
+                                                    </Border>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="MainPart" Property="BorderBrush" Value="#0A7ABA"/>
+                                                        <Setter TargetName="MainPart" Property="Background" Value="#0A7ABA"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageDownCommand"/>
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Border>
+
                     </Grid>
                     <ControlTemplate.Triggers>
                         <DataTrigger Binding="{Binding Orientation, RelativeSource={RelativeSource Self}}" Value="Vertical">

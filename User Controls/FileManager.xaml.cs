@@ -60,7 +60,7 @@ namespace GameEditorStudio
                 if (IsTextEditor == true)
                 {
                     ItemsLabel.Content = "Text Files";
-                    AddFileButton.Content = "Manage Files";
+                    AddFileButton.Content = "Manage";
                     AddFileButton.Click -= ButtonAddFileToWorkshop;
                     AddFileButton.Click += (s, e) => ButtonManageTextEditorFiles();
                 }

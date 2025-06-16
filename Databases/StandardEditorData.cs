@@ -127,15 +127,24 @@ namespace GameEditorStudio
     
     public class Column
     {
-        public string ColumnName { get; set; } = "New Group"; //XML The name of a column.
+        public string ColumnName { get; set; } = "New Column"; //XML The name of a column.
         public DockPanel? ColumnGrid { get; set; }
         public List<Entry>? EntryList { get; set; } = new();
         public Label ColumnLabel { get; set; }
         public Category ColumnRow { get; set; }
 
-        public string Key { get; set; } = LibraryMan.GenerateKey(); //This is only incase it's needed for future features, but is currently unused.  (Also i cant even think of any scenario where this would be required)
+        public string Key { get; set; } = LibraryMan.GenerateKey(); //Unused, Only exists incase of future features. 
     }
 
+    public class Group //A way to group entries together, like a folder.
+    {
+        public string GroupName { get; set; } = "New Group"; //XML The name of a column.
+        public DockPanel? GroupGrid { get; set; }
+        public List<Entry>? EntryList { get; set; } = new();
+        public Label GroupLabel { get; set; }
+        public Column GroupColumn { get; set; }
+        public string Key { get; set; } = LibraryMan.GenerateKey(); //Unused, Only exists incase of future features. 
+    }
     
 
     public class Entry

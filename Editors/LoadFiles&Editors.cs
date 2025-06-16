@@ -142,8 +142,8 @@ namespace GameEditorStudio.Loading
             {
                 if (TheEditor.EditorType == "DataTable")
                 {
-                    CreateStandardEditor Maker = new CreateStandardEditor();
-                    Maker.CreateNormalEditor(TheWorkshop, Database, TheEditor); //Create a editor with this information.
+                    GenerateStandardEditor Maker = new GenerateStandardEditor();
+                    Maker.GenerateNormalEditor(TheWorkshop, Database, TheEditor); //Create a editor with this information.
 
                 }
                 if (TheEditor.EditorType == "TextEditor")

@@ -15,7 +15,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="0"/>
-            <RowDefinition Height="Auto" MinHeight="60"/>
+            <RowDefinition Height="34"/>
+            <RowDefinition Height="36"/>
             <RowDefinition/>
             <RowDefinition Height="5"/>
             <RowDefinition Height="0"/>
@@ -30,59 +31,64 @@
 
 
 
-        <DockPanel Grid.Column="1" Grid.ColumnSpan="3"  Grid.RowSpan="1" LastChildFill="False" Margin="0,6,0,6" Style="{DynamicResource BorderDock}" >
+        <DockPanel Grid.Column="1" Grid.ColumnSpan="3"  Grid.RowSpan="1" LastChildFill="False" Margin="0,6,0,4" Style="{DynamicResource BorderDock}" >
             <local:MainMenu x:Name="MenusForToolsAndEvents"  />
 
 
-            <DockPanel Background="#FF382E4E" Margin="0,0,0,0">
-                <Label Content="Dec to Hex:" Margin="0,-2,0,0"/>
-                <TextBox  Width="75" Margin="5,2,5,2" TextChanged="TextBoxDecConvert" Name="DecBox"/>
+            <DockPanel Background="#FF382E4E" Margin="30,0,0,0">
+                <Label Content="Dec:" Margin="0,-2,0,0"/>
+                <TextBox  Width="75" Margin="0,2,5,2" TextChanged="TextBoxDecConvert" Name="DecBox"/>
+                <Label Content="Hex:" Margin="0,-2,0,0"/>
                 <TextBox  Width="75" Margin="5,2,5,2" TextChanged="TextBoxHexConvert" Name="HexBox"/>
+                <Label Content="Calc" Margin="0,-2,0,0"/>
             </DockPanel>
 
             <local:TopEastMenu DockPanel.Dock="Right" ></local:TopEastMenu>
         </DockPanel>
 
 
-        <Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" Margin="0,0,0,5">
-            <DockPanel>
-                <DockPanel DockPanel.Dock="Top">
-                    <Button DockPanel.Dock="Left" x:Name="ButtonHome" Content=" Home "    Click="ButtonHome_Click" Margin="3,2,0,2"/>
-                    <ScrollViewer  DockPanel.Dock="Left" x:Name="EditorBarScrollViewer" Background="#FF272A2B" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" PreviewMouseWheel="EditorBarMouseWheel">
-                        <DockPanel x:Name="EditorBar" Background="{x:Null}" LastChildFill="False" >
+        <DockPanel DockPanel.Dock="Top" Background="Transparent"  Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" Margin="0,0,0,0"  >
+            <Button DockPanel.Dock="Left" x:Name="ButtonHome" Content=" Home "    Click="ButtonHome_Click" Margin="1,1,0,1"/>
+            <ScrollViewer  DockPanel.Dock="Left" x:Name="EditorBarScrollViewer" Background="Transparent" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" PreviewMouseWheel="EditorBarMouseWheel" >
+                <!--Background="#FF272A2B"-->
+                <DockPanel x:Name="EditorBar" Background="{x:Null}" LastChildFill="False" >
 
-                        </DockPanel>
-                    </ScrollViewer>
                 </DockPanel>
+            </ScrollViewer>
+        </DockPanel>
+
+        <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="0,0,0,5" BorderThickness="0" Grid.RowSpan="1" >
+            <DockPanel Background="Transparent">
                 
+
                 <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}" LastChildFill="False">
 
-                    
+
                     <DockPanel  Background="{x:Null}" Margin="0,2,0,2">
                         <Button Content=" I-ID " DockPanel.Dock="Left" Click="ToggleItemIDNumberVisibility" Margin="5,0,5,0" ToolTip="Toggles if the item list displays item ID numbers. ID numbers are shown using the real, internal game data order, not the order you arrange them in."/>
-                        <Button Content="アA" Width="35" DockPanel.Dock="Left" x:Name="TranslationToggle" Style="{DynamicResource ButtonError}"  Click="ToggleTranslationPanel" Margin="2,0,2,0" ToolTip="Toggles the translation panel, which lets you see the origonal item's name translated to english using diffrent translation tools. Useful for creating english menu patches for JRPGs."/>
-                        
-                        <Button Content="🔍" DockPanel.Dock="Left" x:Name="EntryAddressButton2"  Click="ToggleEntrySynbology" Margin="2,0,2,0" ToolTip="Toggles Symbology to appear or not. Symbology is actually really useful and quickly tells you information about a entry across the entire editor. VERY useful when first creating a editor to help learn what each value might represent."/>
-                        <Button Content=" E-ID " DockPanel.Dock="Left" x:Name="EntryAddressButton"  Click="EntryAddressToggle" Margin="2,0,2,0" ToolTip="Display Entry ID numbers. The number represents what byte # the entry is for in a row."/>
-                        <Button DockPanel.Dock="Left" x:Name="EntryAddressTypeButton" Content="DEC" Width="40" Click="EntryAddressType" Margin="2,0,2,0" ToolTip="Changes the Entry ID number between displaying in Decimal (Numbers 0~9) and Hex (Numbers 00~FF). "/>
-                        <TextBox DockPanel.Dock="Left" x:Name="EntryAddressOffsetTextbox" Text="0" Width="35" Margin="2,1,2,1" KeyDown="EntryOffsetTextboxKeyDown" ToolTip="This textbox makes each entry ID appear as +/- X number. Such as -3 or +5. Useful for debugging, and not much else. " />
-                        <Button Content="👁" DockPanel.Dock="Left" x:Name="EntryHiddenToggle"   Click="ToggleHiddenEntrys" Margin="2,0,2,0" ToolTip="Toggles entrys tagged as Hidden between being Visible or Hidden. When visable they appear red."/>
-                        
+                        <Button Content="アA" Width="45" DockPanel.Dock="Left" x:Name="TranslationToggle" Style="{DynamicResource ButtonError}"  Click="ToggleTranslationPanel" Margin="2,0,2,0" ToolTip="Toggles the translation panel, which lets you see the origonal item's name translated to english using diffrent translation tools. Useful for creating english menu patches for JRPGs."/>
 
-                        
+                        <Button Content=" 🔍 " DockPanel.Dock="Left" x:Name="EntryAddressButton2"  Click="ToggleEntrySynbology" Margin="2,0,2,0" ToolTip="Toggles Symbology to appear or not. Symbology is actually really useful and quickly tells you information about a entry across the entire editor. VERY useful when first creating a editor to help learn what each value might represent." Width="42"/>
+                        <Button Content=" E-ID " DockPanel.Dock="Left" x:Name="EntryAddressButton"  Click="EntryAddressToggle" Margin="2,0,2,0" ToolTip="Display Entry ID numbers. The number represents what byte # the entry is for in a row." Width="58"/>
+                        <Button DockPanel.Dock="Left" x:Name="EntryAddressTypeButton" Content="DEC" Width="50" Click="EntryAddressType" Margin="2,0,2,0" ToolTip="Changes the Entry ID number between displaying in Decimal (Numbers 0~9) and Hex (Numbers 00~FF). "/>
+                        <TextBox DockPanel.Dock="Left" x:Name="EntryAddressOffsetTextbox" Text="0" Width="35" Margin="2,1,2,1" KeyDown="EntryOffsetTextboxKeyDown" ToolTip="This textbox makes each entry ID appear as +/- X number. Such as -3 or +5. Useful for debugging, and not much else. " />
+                        <Button Content="👁" DockPanel.Dock="Left" x:Name="EntryHiddenToggle"   Click="ToggleHiddenEntrys" Margin="2,0,2,0" ToolTip="Toggles entrys tagged as Hidden between being Visible or Hidden. When visable they appear red." Width="38"/>
+
+
+
 
                     </DockPanel>
                 </DockPanel>
-                
+
             </DockPanel>
         </Border>
 
 
 
 
-        <GridSplitter Style="{DynamicResource SplitterVertical}" Grid.Column="2" Grid.Row="2" Grid.RowSpan="2"   />
+        <GridSplitter Style="{DynamicResource SplitterVertical}" Grid.Column="2" Grid.Row="4" Grid.RowSpan="3"   />
 
-        <Grid Name="EastPanel" Grid.Column="3" Grid.ColumnSpan="1" Grid.Row="2" Grid.RowSpan="2" Style="{DynamicResource BorderGrid}" Margin="0,0,0,0">
+        <Grid Name="EastPanel" Grid.Column="3" Grid.ColumnSpan="1" Grid.Row="4" Grid.RowSpan="2" Style="{DynamicResource BorderGrid}">
 
 
             <!--<Grid.RowDefinitions>
@@ -91,7 +97,7 @@
                 <RowDefinition Height="200"/>
             </Grid.RowDefinitions>-->
 
-            <TabControl Name="MainTabControl" Grid.Row="0" >
+            <TabControl Name="MainTabControl" Grid.Row="3" >
                 <TabItem Name="GeneralTab" Header="General">
                     <Border>
                         <DockPanel Name="GeneralPanel" LastChildFill="True" Grid.Row="0" Margin="0,0,0,0" Background="Transparent" >
@@ -133,18 +139,13 @@
                                                         <Label Content="Icon" Grid.Column="1"  Grid.Row="1" Visibility="Collapsed"/>
                                                         <Button Name="IconManagerButton" Content="Icon Manager" Visibility="Collapsed" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="25" Width="115"  Click="OpenIconManager" HorizontalAlignment="Left"/>
 
-                                                        <Label Content="Input Folder" Grid.Column="1"  Grid.Row="2"/>
-                                                        <DockPanel Grid.Row="2" Grid.Column="2" Margin="3,3,3,3" Background="Transparent">
-                                                            <Button Name="OpenInputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="25" DockPanel.Dock="Right" Click="OpenWorkshopInputButton"/>
-                                                            <TextBox x:Name="PropertiesEditorReadGameDataFrom" Grid.Row="1" Grid.Column="2" Margin="0" TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Input" />
-                                                        </DockPanel>
+                                                        <Label Content="Primary Color" Grid.Column="1"  Grid.Row="2"/>
+                                                        <Label Content="(Coming Soon)" Grid.Column="2"  Grid.Row="2"/>
 
-                                                        <Label Content="Output Folder"  Grid.Row="3" Grid.Column="1" />
-                                                        <DockPanel Grid.Row="3" Grid.Column="2" Margin="3,3,3,3" Background="Transparent">
-                                                            <Button Name="OpenOutputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="25" DockPanel.Dock="Right" Click="OpenWorkshopOutputButton"/>
-                                                            <TextBox x:Name="EditorOutputLocationTextbox" Grid.Row="2" Grid.Column="2"  TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Output"/>
-
-                                                        </DockPanel>
+                                                        <Label Content="Secondary Color"  Grid.Row="3" Grid.Column="1" />
+                                                        <Label Content="(Coming Soon)"  Grid.Row="3" Grid.Column="2" />
+                                                        
+                                                        
                                                     </Grid>
                                                 </DockPanel>
                                             </Border>
@@ -216,7 +217,8 @@
                                                             <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="Auto"/>
-
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
                                                         </Grid.RowDefinitions>
 
                                                         <!-- Row 2 -->
@@ -224,10 +226,25 @@
                                                         <TextBox Grid.Row="0" Grid.Column="2" Margin="3" x:Name="DataTableFileBox" TextWrapping="NoWrap" IsEnabled="False" />
 
                                                         <Label Content="Start Byte" Grid.Column="1" Grid.Row="1" />
-                                                        <TextBox Grid.Row="1" Grid.Column="2" Margin="3" x:Name="PropertiesEditorTableStart" TextWrapping="Wrap"/>
+                                                        <TextBox Grid.Row="1" Grid.Column="2" Margin="3" x:Name="PropertiesEditorTableStart" TextWrapping="Wrap" IsEnabled="False"/>
 
                                                         <Label Content="Row Size" Grid.Column="1" Grid.Row="2" />
-                                                        <TextBox Grid.Row="2" Grid.Column="2" Margin="3" x:Name="PropertiesEditorTableWidth" TextWrapping="Wrap"/>
+                                                        <TextBox Grid.Row="2" Grid.Column="2" Margin="3" x:Name="PropertiesEditorTableWidth" TextWrapping="Wrap" IsEnabled="False"/>
+
+                                                        <Label Content="Input Folder" Grid.Column="1"  Grid.Row="3"/>
+                                                        <DockPanel Grid.Row="3" Grid.Column="2" Margin="3,3,3,3" Background="Transparent">
+                                                            <Button Name="OpenInputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="30" DockPanel.Dock="Right" Click="OpenWorkshopInputButton" Width="60"/>
+                                                            <TextBox x:Name="PropertiesEditorReadGameDataFrom" Grid.Row="1" Grid.Column="2" Margin="0" TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Input" />
+                                                        </DockPanel>
+
+                                                        <Label Content="Output Folder"  Grid.Row="4" Grid.Column="1" />
+                                                        <DockPanel Grid.Row="4" Grid.Column="2" Margin="3,3,3,3" Background="Transparent">
+                                                            <Button Name="OpenOutputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="30" DockPanel.Dock="Right" Click="OpenWorkshopOutputButton" Width="60"/>
+                                                            <TextBox x:Name="EditorOutputLocationTextbox" Grid.Row="2" Grid.Column="2"  TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Output"/>
+
+                                                        </DockPanel>
+
+                                                        <Label Content="Support for changing Data Table data will be&#xD;&#xA;added in a post-release update. &#xD;&#xA;Meanwhile, if you really need to, you can&#xD;&#xA;create another editor and delete this one." Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2"/>
                                                     </Grid>
                                                 </DockPanel>
                                             </Border>
@@ -296,7 +313,7 @@
                                                         </Grid.RowDefinitions>
 
                                                         <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
-                                                        <TextBox x:Name="PropertiesColumnNameBox" Grid.Row="0" Grid.Column="2" Margin="3" Text="New Group" TextWrapping="Wrap"  KeyDown="PropertiesColumnNameTextBox_KeyDown"/>
+                                                        <TextBox x:Name="PropertiesColumnNameBox" Grid.Row="0" Grid.Column="2" Margin="3" Text="New Column" TextWrapping="Wrap"  KeyDown="PropertiesColumnNameTextBox_KeyDown"/>
                                                     </Grid>
                                                 </DockPanel>
                                             </Border>
@@ -358,7 +375,7 @@
                                                         </ComboBox>-->
 
                                                         <Label Content="Byte Size" Grid.Row="4" Grid.Column="1" Margin="0"/>
-                                                        <ComboBox x:Name="PropertiesEntryByteSizeComboBox" Grid.Row="4" Grid.Column="2" Margin="3" DropDownClosed="PropertiesEntryByteSizeComboBox_DropDownClosed">
+                                                        <ComboBox x:Name="PropertiesEntryByteSizeComboBox" Grid.Row="4" Grid.Column="2" Margin="3" DropDownClosed="PropertiesEntryByteSizeComboBox_DropDownClosed" >
                                                             <ComboBoxItem Content="1 Byte"/>
                                                             <ComboBoxItem Content="2 Bytes Little Endian"/>
                                                             <ComboBoxItem Content="4 Bytes Little Endian"/>
@@ -378,19 +395,18 @@
                                             <Border DockPanel.Dock="Top">
                                                 <TabControl Name="EntryElementProperties" DockPanel.Dock="Top">
                                                     <TabItem Header="NumberBox" Name="EntryTab1">
-                                                        <DockPanel Height="180">
+                                                        <DockPanel Height="149">
                                                             <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                                                 <Label Content="Numberbox Properties" FontWeight="Bold" />
                                                             </DockPanel>
                                                             <Grid DockPanel.Dock="Top">
-                                                                <Label Content="Accept Negative Values" Grid.Column="0"  HorizontalAlignment="Left" Width="200"/>
-                                                                <CheckBox Name="NumberboxSignCheckbox"  Margin="182,3,6,114" Checked="SetNumberboxSigned" Unchecked="SetNumberboxUnsigned" >
+                                                                <Label Content="Accept Negative Values?" Grid.Column="0"  HorizontalAlignment="Left" Width="247" Height="38" VerticalAlignment="Top"/>
+                                                                <CheckBox Name="NumberboxSignCheckbox"  Margin="247,-26,0,0" Checked="SetNumberboxSigned" Unchecked="SetNumberboxUnsigned" ToolTip="When devs need negative numbers, they make values &#xA;higher then half the max byte size read as a negative. &#xA;So for a 1Byte example (where values are from 0~255)...  &#xA;(1 = +1) (255 = -1) (11 = +11) (245 = -11) (233 = -23) etc.&#xA;You should suspect very high numbers of being negative." Height="46" VerticalAlignment="Top" HorizontalAlignment="Left" Width="259" >
                                                                     <CheckBox.LayoutTransform>
                                                                         <ScaleTransform ScaleX="2" ScaleY="2" />
                                                                     </CheckBox.LayoutTransform>
                                                                 </CheckBox>
-                                                                <Label Content="(It's Complicated)" HorizontalAlignment="Left" Margin="213,1,0,0" VerticalAlignment="Top" Width="189" Height="34"/>
-                                                                <Label Content="When devs need negative numbers, they make values &#xA;higher then half the max byte size read as a negative. &#xA;So for a 1Byte example (where values are from 0~255)...  &#xA;(1 = +1) (255 = -1) (11 = +11) (245 = -11) (233 = -23) etc.&#xA;You should suspect very high numbers of being negative." HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top"/>
+                                                                <Label Content="(This is what lets a game use negative&#xD;&#xA;numbers, but the details are complicated.&#xD;&#xA;Mouse hover the checkbox for a long tooltip)" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top"/>
                                                             </Grid>
                                                         </DockPanel>
                                                     </TabItem>
@@ -401,10 +417,10 @@
                                                             </DockPanel>
                                                             <Grid>
                                                                 <Label Content="Checked Value" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="9,8,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryCheckText" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100" Margin="186,12,0,0" IsEnabled="False"/>
+                                                                <TextBox x:Name="PropertiesEntryCheckText" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100" Margin="186,10,0,0" IsEnabled="False"/>
                                                                 <Label Content="Unchecked Value" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top"/>
-                                                                <TextBox x:Name="PropertiesEntryUncheckText" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100" Margin="187,41,0,0" IsEnabled="False"/>
-                                                                <Label Content="I'll add this post-release, For now values are always 1 &amp; 0 ^^;" HorizontalAlignment="Center" Margin="0,69,0,0" VerticalAlignment="Top"/>
+                                                                <TextBox x:Name="PropertiesEntryUncheckText" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100" Margin="186,41,0,0" IsEnabled="False"/>
+                                                                <Label Content="I'll add this post-release, &#xD;&#xA;For now values are always 1 &amp; 0 ^^;" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top"/>
 
                                                             </Grid>
                                                         </DockPanel>
@@ -414,16 +430,16 @@
                                                             <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                                                 <Label Content="Bitflag Properties     (Names / Checked / Unchecked)" FontWeight="Bold" />
                                                             </DockPanel>
-                                                            <Grid Margin="0,3,0,12">
+                                                            <Grid Margin="0,3,0,7">
 
-                                                                <TextBox x:Name="PropertiesEntryBitFlag1Name" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,8,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryBitFlag2Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,34,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryBitFlag3Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,61,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryBitFlag4Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,87,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryBitFlag5Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,9,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryBitFlag6Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,34,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryBitFlag7Name" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,61,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryBitFlag8Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,87,0,0"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag1Name" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,5,0,0"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag2Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,36,0,0"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag3Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,66,0,0"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag4Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,96,0,0"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag5Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,5,0,0"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag6Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,36,0,0"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag7Name" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,66,0,0"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag8Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,96,0,0"/>
 
                                                             </Grid>
                                                         </DockPanel>
@@ -442,10 +458,10 @@
                                                                 <Label Content="Linked to:" HorizontalAlignment="Left" Margin="15,37,0,0" VerticalAlignment="Top" />
                                                                 <Label Content="Nothing" HorizontalAlignment="Left" Margin="186,35,0,0" VerticalAlignment="Top" />
 
-                                                                <Button Name="ButtonMenuManager" Content="Menu Manager" HorizontalAlignment="Left" Margin="30,66,0,0" VerticalAlignment="Top" Click="DoThing2" Width="150" />
+                                                                <Button Name="ButtonMenuManager" Content="Menu Manager" HorizontalAlignment="Left" Margin="15,69,0,0" VerticalAlignment="Top" Click="DoThing2" Width="150" Height="30" />
 
 
-                                                                <Label Content="In the future, Editor linking will be support name notes. :D" HorizontalAlignment="Left" Margin="10,92,0,0" VerticalAlignment="Top"/>
+                                                                <Label Content="In the future, Editor linking will &#xD;&#xA;also support name notes. :D" HorizontalAlignment="Left" Margin="10,93,0,0" VerticalAlignment="Top"/>
 
                                                             </Grid>
                                                         </DockPanel>
@@ -461,27 +477,26 @@
                                                         <Label Content="Hex Info" FontWeight="Bold" />
                                                     </DockPanel>
                                                     <Grid DockPanel.Dock="Top">
-                                                        <Label Content="Bytes" HorizontalAlignment="Left" Margin="4,0,0,0" VerticalAlignment="Top"/>
-                                                        <Label Content="Decimal" HorizontalAlignment="Left" Margin="61,0,0,0" VerticalAlignment="Top"/>
-                                                        <Label Content="Hex" HorizontalAlignment="Left" Margin="180,0,0,0" VerticalAlignment="Top"/>
+                                                        <Label Content="Decimal" HorizontalAlignment="Left" Margin="50,0,0,0" VerticalAlignment="Top"/>
+                                                        <Label Content="Hex" HorizontalAlignment="Left" Margin="184,0,0,0" VerticalAlignment="Top"/>
 
 
                                                         <Label Content="1" HorizontalAlignment="Left" Margin="4,24,0,0" VerticalAlignment="Top"/>
-                                                        <Label Content="2B" HorizontalAlignment="Left" Margin="4,105,0,0" VerticalAlignment="Top"/>
-                                                        <Label Content="2L" HorizontalAlignment="Left" Margin="4,53,0,0" VerticalAlignment="Top"/>
-                                                        <Label Content="4B" HorizontalAlignment="Left" Margin="4,132,0,0" VerticalAlignment="Top"/>
-                                                        <Label Content="4L" HorizontalAlignment="Left" Margin="4,79,0,0" VerticalAlignment="Top"/>
-                                                        <TextBox x:Name="PropertiesEntry1Byte" HorizontalAlignment="Left" Margin="44,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                        <TextBox x:Name="PropertiesEntry2ByteB" HorizontalAlignment="Left" Margin="44,109,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                        <TextBox x:Name="PropertiesEntry2ByteL" HorizontalAlignment="Left" Margin="44,56,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                        <TextBox x:Name="PropertiesEntry4ByteB" HorizontalAlignment="Left" Margin="44,136,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                        <TextBox x:Name="PropertiesEntry4ByteL" HorizontalAlignment="Left" Margin="44,83,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                        <TextBox x:Name="PropertiesEntryHex1Byte" HorizontalAlignment="Left" Margin="149,29,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                        <TextBox x:Name="PropertiesEntryHex2ByteB" HorizontalAlignment="Left" Margin="149,109,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                        <TextBox x:Name="PropertiesEntryHex2ByteL" HorizontalAlignment="Left" Margin="149,56,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                        <TextBox x:Name="PropertiesEntryHex4ByteB" HorizontalAlignment="Left" Margin="149,136,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                        <TextBox x:Name="PropertiesEntryHex4ByteL" HorizontalAlignment="Left" Margin="149,83,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                        <Label Content="Little Endian (00 right) &#xA;Ex: 1400  2B00&#xA;&#xA;Big Endian (00 left)&#xA;Ex: 0014  002B&#xA;&#xA;Most consoles use big" Margin="249,0,0,0" Height="159" VerticalAlignment="Top" HorizontalAlignment="Left" Width="166"/>
+                                                        <Label Content="2B" HorizontalAlignment="Left" Margin="4,115,0,0" VerticalAlignment="Top"/>
+                                                        <Label Content="2L" HorizontalAlignment="Left" Margin="4,55,0,0" VerticalAlignment="Top"/>
+                                                        <Label Content="4B" HorizontalAlignment="Left" Margin="4,141,0,0" VerticalAlignment="Top"/>
+                                                        <Label Content="4L" HorizontalAlignment="Left" Margin="4,84,0,0" VerticalAlignment="Top"/>
+                                                        <TextBox x:Name="PropertiesEntry1Byte" HorizontalAlignment="Left" Margin="40,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
+                                                        <TextBox x:Name="PropertiesEntry2ByteB" HorizontalAlignment="Left" Margin="40,117,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
+                                                        <TextBox x:Name="PropertiesEntry2ByteL" HorizontalAlignment="Left" Margin="40,58,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
+                                                        <TextBox x:Name="PropertiesEntry4ByteB" HorizontalAlignment="Left" Margin="40,146,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
+                                                        <TextBox x:Name="PropertiesEntry4ByteL" HorizontalAlignment="Left" Margin="40,88,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
+                                                        <TextBox x:Name="PropertiesEntryHex1Byte" HorizontalAlignment="Left" Margin="153,29,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
+                                                        <TextBox x:Name="PropertiesEntryHex2ByteB" HorizontalAlignment="Left" Margin="153,117,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
+                                                        <TextBox x:Name="PropertiesEntryHex2ByteL" HorizontalAlignment="Left" Margin="153,58,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
+                                                        <TextBox x:Name="PropertiesEntryHex4ByteB" HorizontalAlignment="Left" Margin="153,146,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
+                                                        <TextBox x:Name="PropertiesEntryHex4ByteL" HorizontalAlignment="Left" Margin="153,88,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
+                                                        <Label Content="Lil Endian 00 right &#xA;Ex: 1400  2B00&#xA;Big Endian 00 left&#xA;Ex: 0014  002B&#xD;&#xA;&#xA;Most consoles use&#xD;&#xA;big" Margin="254,0,0,0" Height="176" VerticalAlignment="Center" HorizontalAlignment="Left" Width="193"/>
 
                                                     </Grid>
                                                 </DockPanel>
@@ -523,7 +538,7 @@
                             <Label Content="Information" FontWeight="Bold" DockPanel.Dock="Left"/>
                             <!--<Label Content="See how many times a value appears." DockPanel.Dock="Right"/>-->
                         </DockPanel>
-                        <Label Content="This Info and Entry Symbology only work on 1 byte entrys. &#xD;&#xA;Support for entrys with 2+ bytes will be added in the future." Margin="5,5,5,5" DockPanel.Dock="Top"/>
+                        <Label Content="This Info and Entry Symbology only work on 1 byte &#xD;&#xA;entrys. Support for entrys with 2+ bytes &#xD;&#xA;will be added in the future." Margin="5,5,5,5" DockPanel.Dock="Top"/>
                         <local:UserControlCrossReference Margin="5,5,5,5"/>
                     </DockPanel>
                 </TabItem>
@@ -558,7 +573,7 @@
                                 </Grid.RowDefinitions>
 
 
-                                <Label Content="Instant Mod: Apply a math formula to EVERY item!&#xD;&#xA;Examples: 50% MP Costs, 200% enemy HP, 0% Buy Prices, etc." Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0" />
+                                <Label Content="Instant Mod: Apply a math formula to EVERY &#xD;&#xA;item! Examples: 50% MP Costs,&#xD;&#xA;200% Enemy HP, 0% Buy Prices, etc." Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0" />
 
                                 <Label Content="Action " Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Margin="0" />
                                 <ComboBox x:Name="FormulaComboBox" Grid.Row="3" Grid.Column="1" Margin="3">
@@ -579,7 +594,7 @@
                                 <Label Content="Don't mod the&#xA;last X items in list: " Grid.Row="7" Grid.Column="0"/>
                                 <TextBox x:Name="FormulaDoNotModTextBox" Grid.Row="7" Grid.Column="1" TextWrapping="Wrap" Text="0" Margin="3" />
 
-                                <Button Content="Apply mod to all items" Grid.Row="8" Grid.Column="0" Click="ApplyFormulaToEntryAcrossAllItems"/>
+                                <Button Content="Apply to all items" Grid.Row="8" Grid.Column="0" Click="ApplyFormulaToEntryAcrossAllItems"/>
                                 <Label Content="Note: Cannot be Undone!" Grid.Row="8" Grid.Column="1" Foreground="#FFFDA200"/>
                                 <Grid Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2">
                                     <Label Content="`Multiply` Must always end in %. (50%  120%  300%  70%)" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
@@ -617,7 +632,7 @@
         </Grid>
 
 
-        <Grid x:Name="MidGrid"  Grid.Column="1" Grid.Row="3" Background="#FF150303" >
+        <Grid x:Name="MidGrid"  Grid.Column="1" Grid.Row="4" Background="#FF150303" >
             <DockPanel x:Name="DockPanelHome">
                 <Grid x:Name="GridHome"  >
                     <Grid.ColumnDefinitions>
@@ -627,7 +642,8 @@
                     </Grid.ColumnDefinitions>
                     <local:FileManager x:Name="FileManager"  Grid.Column="0" />
                     <GridSplitter Style="{DynamicResource SplitterVertical}" Grid.Column="1"/>
-                    <local:Community x:Name="Community2"   Grid.Column="2" />
+
+                    <local:Community x:Name="Community2"   Grid.Column="2" Visibility="Collapsed"/>
 
 
                 </Grid>

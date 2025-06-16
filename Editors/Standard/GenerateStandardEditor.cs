@@ -37,10 +37,10 @@ using Path = System.IO.Path;
 
 namespace GameEditorStudio
 {
-    public class CreateStandardEditor
+    public class GenerateStandardEditor
     {
 
-        public void CreateNormalEditor(Workshop TheWorkshop, WorkshopData Database, Editor EditorClass)
+        public void GenerateNormalEditor(Workshop TheWorkshop, WorkshopData Database, Editor EditorClass)
         {
             //This triggers when the user makes a new editor in SetupNewEditor (not a loop)
             //or when the workshop is first launched via LoadEditorModeAuto (A loop) -> LoadTheDatabase.
@@ -403,7 +403,7 @@ namespace GameEditorStudio
             DockPanel RowPanel = CatClass.CategoryDockPanel;
             RowPanel.Style = (Style)Application.Current.Resources["RowStyle"];
             DockPanel.SetDock(RowPanel, Dock.Top);
-            RowPanel.VerticalAlignment = VerticalAlignment.Top; //Top Bottom
+            RowPanel.VerticalAlignment = VerticalAlignment.Stretch; //Top Bottom
             RowPanel.HorizontalAlignment = HorizontalAlignment.Stretch; //Left Right
 
             //RowPanel.Margin = new Thickness(18, 10, 18, 10); // Left Top Right Bottom 
@@ -564,9 +564,12 @@ namespace GameEditorStudio
         {
             DockPanel ColumnGrid = new DockPanel();
             ColumnGrid.Style = (Style)Application.Current.Resources["ColumnStyle"];
+            ColumnGrid.MinWidth = 70;
             //ColumnGrid.Width = 400;
             //ColumnGrid.Height = 200;
             ColumnGrid.VerticalAlignment = VerticalAlignment.Top; //Top Bottom
+            ColumnGrid.VerticalAlignment = VerticalAlignment.Stretch; //Top Bottom //Needed to make entrys drop anywhere work properly.
+            ColumnGrid.LastChildFill = false;
             ColumnGrid.HorizontalAlignment = HorizontalAlignment.Left; //Left Right
             DockPanel.SetDock(ColumnGrid, Dock.Left);
             ColumnGrid.Margin = new Thickness(1, 1, 1, 1); // Left Top Right Bottom 
@@ -582,7 +585,7 @@ namespace GameEditorStudio
             ColumnClass.ColumnGrid = ColumnGrid;
 
 
-            DockPanel Header = new();
+            DockPanel Header = new(); //The top part of a column, where the label is, and you can right click this part, and only this part, for a context menu.
             Header.Style = (Style)Application.Current.Resources["ColumnStyle"];
             DockPanel.SetDock(Header, Dock.Top);
             ColumnGrid.Children.Add(Header);
@@ -722,7 +725,7 @@ namespace GameEditorStudio
                         ColumnClass.ColumnRow.CategoryDockPanel.Children.Insert(ToIndex + 1, InputColumn.ColumnGrid);
                         ColumnClass.ColumnRow.ColumnList.Insert(ToIndex, InputColumn);
 
-                        //InputColumn.ColumnRow = ColumnClass.ColumnRow; //DO NOT REFER TO COLUMN CLASS DIRECTLY, I HAVE NO IDEA WHY.                    
+                        //InputColumn.ColumnRow = ColumnClass.ColumnRow; //DO NOT REFER TO COLUMN CLASS DIRECTLY, ALTHOUGH I DONT REMEMBER WHY.                    
                         InputColumn.ColumnRow = ColumnClass.ColumnRow;
                     }
 
@@ -740,9 +743,11 @@ namespace GameEditorStudio
 
             //This is part of how entrys can move with the mouse. The other part is the MouseMove event in CreateEntry.
 
-            Header.Drop += ColumnGrid_Drop;
-            //ColumnGrid.Drop += ColumnGrid_Drop;
-            void ColumnGrid_Drop(object sender, DragEventArgs e)
+            
+            Header.AllowDrop = true;
+            Header.Drop += DropEntryOnColumnheader;
+            //This makes an entry drop up at the top of a column. 
+            void DropEntryOnColumnheader(object sender, DragEventArgs e)
             {
                 if (e.Data.GetDataPresent("MoveEntryClass") && Keyboard.IsKeyUp(Key.LeftShift))
                 {
@@ -783,7 +788,52 @@ namespace GameEditorStudio
 
 
             }
-            Header.AllowDrop = true;
+
+
+            ColumnGrid.AllowDrop = true;
+            ColumnGrid.Drop += DropEntryOnColumnBody;
+            //This makes an entry drop down at the bottom of a column. 
+            void DropEntryOnColumnBody(object sender, DragEventArgs e)
+            {
+                if (e.Data.GetDataPresent("MoveEntryClass") && Keyboard.IsKeyUp(Key.LeftShift))
+                {
+                    Entry InputEntry = (Entry)e.Data.GetData("MoveEntryClass");
+
+                    InputEntry.EntryColumn.ColumnGrid.Children.Remove(InputEntry.EntryBorder);
+                    int FromIndex = InputEntry.EntryColumn.EntryList.IndexOf(InputEntry);
+                    InputEntry.EntryColumn.EntryList.RemoveAt(FromIndex);
+
+                    ColumnGrid.Children.Add(InputEntry.EntryBorder);
+                    ColumnClass.EntryList.Add(InputEntry);
+
+
+                    InputEntry.EntryColumn = ColumnClass;
+                    InputEntry.EntryRow = ColumnClass.ColumnRow;
+
+                }
+                else if (e.Data.GetDataPresent("MoveEntryClassGroup") && Keyboard.IsKeyDown(Key.LeftShift))
+                {
+
+                    for (int i = 0; i < TheWorkshop.EntryMoveList.Count; i++)
+                    {
+
+                        var InputEntry = TheWorkshop.EntryMoveList[i];
+
+                        InputEntry.EntryColumn.ColumnGrid.Children.Remove(InputEntry.EntryBorder);
+                        InputEntry.EntryColumn.EntryList.RemoveAt(InputEntry.EntryColumn.EntryList.IndexOf(InputEntry));
+
+                        ColumnGrid.Children.Add(InputEntry.EntryBorder);
+                        ColumnClass.EntryList.Add(InputEntry);
+
+                        InputEntry.EntryColumn = ColumnClass;
+                        InputEntry.EntryRow = ColumnClass.ColumnRow;
+                    }
+                }
+
+
+
+
+            }
 
         }
 
@@ -799,7 +849,7 @@ namespace GameEditorStudio
             //end of temp block
 
             Border Border = new();
-            Border.BorderThickness = new Thickness(1);
+            Border.BorderThickness = new Thickness(2);
             Border.CornerRadius = new CornerRadius(3);
             DockPanel.SetDock(Border, Dock.Top);
             Border.Margin = new Thickness(4, 0, 5, 3);// Left Top Right Bottom 
@@ -966,8 +1016,9 @@ namespace GameEditorStudio
 
 
 
-
+            EntryDockPanel.AllowDrop = true;
             EntryDockPanel.Drop += EntryDrop;
+            
             void EntryDrop(object sender, DragEventArgs e)
             {
 
@@ -1022,10 +1073,10 @@ namespace GameEditorStudio
                 }
 
 
-
+                e.Handled = true; // 🛑 Prevent the entry's parent (Column, and later maybe Group / entry folders) from stealing the drop.
 
             }
-            EntryDockPanel.AllowDrop = true;
+            
 
 
 

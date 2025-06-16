@@ -264,7 +264,7 @@ namespace GameEditorStudio
         {
 
             LoadStandardEditor EditorMaker = new LoadStandardEditor();
-            EditorMaker.NewSWEditorIntoDatabase(TheWorkshop, this);
+            EditorMaker.NewStandardEditorIntoDatabase(TheWorkshop, this);
 
             RequestClose?.Invoke(this, EventArgs.Empty);
 

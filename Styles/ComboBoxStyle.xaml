@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:properties="clr-namespace:GameEditorStudio.Properties">
 
-    <Thickness x:Key="MyComboBoxStyle_Border_Thickness">1</Thickness>
+    <Thickness x:Key="MyComboBoxStyle_Border_Thickness">2</Thickness>
     <Thickness x:Key="MyComboBoxStyle_Padding">4,2</Thickness>
     <HorizontalAlignment x:Key="MyComboBoxStyle_HorizontalContentAlignment">Left</HorizontalAlignment>
     <VerticalAlignment x:Key="MyComboBoxStyle_VerticalContentAlignment">Center</VerticalAlignment>
@@ -11,7 +11,7 @@
     <Style TargetType="Separator">
         <Setter Property="Margin" Value="0,2" />
         <Setter Property="Background" Value="Black" />
-        <Setter Property="Height" Value="1" />
+        <Setter Property="Height" Value="2" />
     </Style>
 
     <Style x:Key="MyComboBoxItemStyle" TargetType="ComboBoxItem">
@@ -19,6 +19,7 @@
         <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontFamily" Value="Dawns 10px ArkPixel" />
+        <Setter Property="BorderThickness" Value="2" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBoxItem">

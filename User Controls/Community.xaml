@@ -12,8 +12,8 @@
                 <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}" Height="30" VerticalAlignment="Top">
                     <Label Content="Community" FontWeight="Bold"/>
                     <Button Content="Add Link" DockPanel.Dock="Right"  Width="100" HorizontalAlignment="Right" Margin="3" Style="{DynamicResource ButtonError}"/>
-                    <Button Content="Add Discord" DockPanel.Dock="Right"  Width="100" HorizontalAlignment="Right" Margin="3" Style="{DynamicResource ButtonError}"/>
-                    <Button Content="Add Forumn" DockPanel.Dock="Right"  Width="100" HorizontalAlignment="Right" Margin="3" Style="{DynamicResource ButtonError}"/>
+                    <Button Content="Add Discord" DockPanel.Dock="Right"  Width="114" Margin="3" Style="{DynamicResource ButtonError}"/>
+                    <Button Content="Add Forumn" DockPanel.Dock="Right"  Width="111" Margin="3" Style="{DynamicResource ButtonError}"/>
                     <Button Content="Add Mod" DockPanel.Dock="Right"  Width="100" HorizontalAlignment="Right" Margin="3" Style="{DynamicResource ButtonError}"/>
                     <Button Content="Add Text" DockPanel.Dock="Right"  Width="100" HorizontalAlignment="Right" Margin="3" Style="{DynamicResource ButtonError}"/>
                 </DockPanel>
