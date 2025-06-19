@@ -61,6 +61,19 @@ namespace GameEditorStudio
             GameFile GameFile = Item.Tag as GameFile;
             if (GameFile == null) { return; }
 
+            TheLineBox.Clear();
+            string[] lines = TheTextBox.Text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                TheLineBox.AppendText((i + 1).ToString() + Environment.NewLine);
+
+
+            }
+
+
+
+
             //TheTextBox.Text;
         }
     }

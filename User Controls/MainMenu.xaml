@@ -42,10 +42,6 @@
             <MenuItem Header="⚙ Settings"  Click="OpenSettingsWindow" Foreground="#FF2C2C"/>
             <MenuItem Header="Report a Bug, or Request a Feature" Foreground="#FF2C2C"/>
             <MenuItem Header="Request support for a new Tool" Foreground="#FF2C2C"/>
-            <MenuItem Header="File a Complaint" Foreground="#FF2C2C"/>
-            <MenuItem Header="Publish a Workshop or Editor Checklist" Foreground="#FF2C2C"/>
-            <MenuItem Header="Help" Foreground="#FF2C2C"/>
-            <MenuItem Header="About" Foreground="#FF2C2C"/>
             <MenuItem Header="DevTools"  Click="OpenDevWindow" Foreground="#FF2C2C"/>
             <MenuItem Header="HexTest"  Click="OpenHexTest" Foreground="#FF2C2C"/>            
             <MenuItem Header="Set 1080P"  Click="Set1080P"/>

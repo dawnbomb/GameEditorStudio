@@ -39,16 +39,86 @@ namespace GameEditorStudio
 {
     public class GenerateStandardEditor
     {
+        ScrollViewer ScrollViewer = new(); //This is the scrollviewer that allows the user to scroll through the editor.
+
+        bool isMiddleMouseDragging = false;
+        Point mouseDragStartPoint;
+        Point scrollStartOffset;
+
+        private void ScrollViewer_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Middle)
+            {
+                isMiddleMouseDragging = true;
+                mouseDragStartPoint = e.GetPosition(ScrollViewer);
+                scrollStartOffset = new Point(ScrollViewer.HorizontalOffset, ScrollViewer.VerticalOffset);
+                ScrollViewer.CaptureMouse();
+                ScrollViewer.Cursor = Cursors.ScrollAll;
+                e.Handled = true;
+            }
+        }
+
+        private void ScrollViewer_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Middle)
+            {
+                isMiddleMouseDragging = false;
+                ScrollViewer.ReleaseMouseCapture();
+                ScrollViewer.Cursor = Cursors.Arrow;
+                e.Handled = true;
+            }
+        }
+
+        private void ScrollViewer_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (isMiddleMouseDragging)
+            {
+                Point currentMousePosition = e.GetPosition(ScrollViewer);
+                Vector delta = currentMousePosition - mouseDragStartPoint;
+
+                ScrollViewer.ScrollToHorizontalOffset(scrollStartOffset.X - delta.X);
+                ScrollViewer.ScrollToVerticalOffset(scrollStartOffset.Y - delta.Y);
+            }
+        }
+
+
+
+
+
+
+
+        //////////////////////////////////////// Lazy put together move scrollviewer with mouse code.
+        ////////////////////////////////////////
+        //////////////////////////////////////// The actual Generation code for standard editors. 
+
+
+
+
 
         public void GenerateNormalEditor(Workshop TheWorkshop, WorkshopData Database, Editor EditorClass)
         {
+            // HEY - In the future i want to instead have a xaml for a standard editor, and greatly reduce the amount of code.
+            // I tried doing it myself, but for some reason i can't understand, the LeftBar.xaml won't load in properly. 
+            // I will consider this post release. 
+
             //This triggers when the user makes a new editor in SetupNewEditor (not a loop)
             //or when the workshop is first launched via LoadEditorModeAuto (A loop) -> LoadTheDatabase.
             //Either way, this method is what actually creates an editor.
             //This method pulls information from the Database, and builds an editor based on that.
             //The database is loaded from files on system, or for a new editor, information the user input during editor creation.
-            EditorClass.StandardEditorData.SelectedEntry = EditorClass.StandardEditorData.CategoryList[0].ColumnList[0].EntryList[0];
-                       
+            foreach (var category in EditorClass.StandardEditorData.CategoryList) //Select thr fir
+            {
+                foreach (var column in category.ColumnList)
+                {
+                    if (column.EntryList != null && column.EntryList.Count > 0)
+                    {
+                        EditorClass.StandardEditorData.SelectedEntry = column.EntryList[0];
+                        break; // Exit as soon as one is found
+                    }
+                }
+                if (EditorClass.StandardEditorData.SelectedEntry != null) { break; }
+            }
+
             EditorClass.Workshop = TheWorkshop; 
 
             CreateEditor(EditorClass, TheWorkshop, Database);  //Creates the main DockPanel of the editor. All Editor GUI stuff goes inside this Dockpanel.
@@ -70,18 +140,21 @@ namespace GameEditorStudio
             {
                 CreateCategory(EditorClass.StandardEditorData, CatClass, TheWorkshop, Database, -1);
 
-                foreach (Column ColumnClass in CatClass.ColumnList)
+                foreach (Column ColumnClass in CatClass.ColumnList/*.ToList()*/)
                 {
+                    //if (ColumnClass.EntryList == null || ColumnClass.EntryList.Count == 0) //Delete column if it's empty. 
+                    //{
+                    //    CatClass.ColumnList.Remove(ColumnClass); 
+                    //    continue; 
+                    //}
+
                     CreateColumn(CatClass, ColumnClass, TheWorkshop, Database, -1);
 
-                    if (ColumnClass.EntryList != null)
+                    foreach (Entry EntryClass in ColumnClass.EntryList)
                     {
-                        foreach (Entry EntryClass in ColumnClass.EntryList)
-                        {
-                            CreateEntry(EditorClass, CatClass, ColumnClass, EntryClass, TheWorkshop, Database);
-                        }
-                        TheWorkshop.LabelWidth(ColumnClass);
+                        CreateEntry(EditorClass, CatClass, ColumnClass, EntryClass, TheWorkshop, Database);
                     }
+                    TheWorkshop.LabelWidth(ColumnClass);
 
                 }
             }
@@ -89,10 +162,11 @@ namespace GameEditorStudio
             //Finally, we select the first option of every tree. A few things happen during this.
             //A lot of Various information is updated when a item becomes the selected item, so it gets it's own method. 
             EntryManager EManager = new();
-            EManager.EntryBecomeActive(EditorClass.StandardEditorData.CategoryList[0].ColumnList[0].EntryList[0]);
+            EManager.EntryBecomeActive(EditorClass.StandardEditorData.SelectedEntry);  //EditorClass.StandardEditorData.CategoryList[0].ColumnList[0].EntryList[0]
             EManager.UpdateEntryProperties(TheWorkshop, EditorClass);
 
-
+            StandardEditorMethods StandardEditorMethods = new();
+            StandardEditorMethods.DeleteEmptyColumnsAndMakeNewOnes(EditorClass.StandardEditorData);
 
         }
 
@@ -202,7 +276,7 @@ namespace GameEditorStudio
                 DockPanel.SetDock(DescriptionsPanel, Dock.Bottom);
                 //DescriptionsPanel.VerticalAlignment = VerticalAlignment.Top;
                 DescriptionsBorder.Child = DescriptionsPanel;
-                DescriptionsPanel.Height = 198;
+                //DescriptionsPanel.Height = 198;
 
 
                 EditorClass.StandardEditorData.EditorDescriptionsPanel = new();
@@ -212,12 +286,13 @@ namespace GameEditorStudio
                 DockPanel.SetDock(DescriptionsHeader, Dock.Top);
                 DescriptionsPanel.Children.Add(DescriptionsHeader);
                 DescriptionsHeader.Style = DescriptionsHeader.TryFindResource("HeaderDock") as Style;
-                DescriptionsHeader.Height = 30;
+                DescriptionsHeader.Height = 34;
                 DescriptionsHeader.VerticalAlignment = VerticalAlignment.Top;
                 
                 Button ButtonDescriptionManager = new();
+                ButtonDescriptionManager.Height = 30;
                 ButtonDescriptionManager.Content = "  Description Manager  ";
-                ButtonDescriptionManager.Margin = new Thickness(4);
+                ButtonDescriptionManager.Margin = new Thickness(4,2,4,2);
                 DescriptionsHeader.Children.Add(ButtonDescriptionManager);
                 DockPanel.SetDock(ButtonDescriptionManager, Dock.Right);
                 ButtonDescriptionManager.Click += delegate //When clicking this button, hide the previous page, and show the selected page.
@@ -241,36 +316,21 @@ namespace GameEditorStudio
 
 
 
-            //DockPanel PageBar = new();
-            //PageBar.Background = new SolidColorBrush(Colors.DarkBlue);
-            //DockPanel.SetDock(PageBar, Dock.Top);
-            //EditorClass.SWData.EditorRightDockPanel.Children.Add(PageBar);
-            //PageBar.Height = 30;
-            //EditorClass.SWData.EditorDescriptionsPanel.PageBar = PageBar;
-            //PageBar.Visibility = Visibility.Collapsed;
-
-            //Button ButtonNewPage = new Button();
-            //ButtonNewPage.Height = 30;
-            //ButtonNewPage.Width = 150;
-            //ButtonNewPage.Content = "The Banished Pile";
-            //DockPanel.SetDock(ButtonNewPage, Dock.Right);
-            //ButtonNewPage.Click += delegate
-            //{
-
-
-            //};
-            //EditorClass.SWData.EditorDescriptionsPanel.PageBar.Children.Add(ButtonNewPage);
 
 
 
-
-
-            ScrollViewer ScrollViewer = new();
+            
             //ScrollViewer.Background = Brushes.Red;  ////////////////////////////////////////////////////////////COLOR////////////////////////////////////
             //ScrollViewer.Background = Brushes.Black;
             DockPanel.SetDock(ScrollViewer, Dock.Top);
             EditorPanel.Children.Add(ScrollViewer);
             ScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+
+            ScrollViewer.PreviewMouseDown += ScrollViewer_PreviewMouseDown;
+            ScrollViewer.PreviewMouseUp += ScrollViewer_PreviewMouseUp;
+            ScrollViewer.PreviewMouseMove += ScrollViewer_PreviewMouseMove;
+
+
 
             DockPanel ScrollPanel = new();
             ScrollPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -278,7 +338,6 @@ namespace GameEditorStudio
             ScrollViewer.Content = ScrollPanel;
             EditorClass.StandardEditorData.MainDockPanel = ScrollPanel;
             //ScrollPanel.Background = Brushes.DarkRed;
-            //ScrollPanel.Style = (Style)Application.Current.Resources["PageStyle"];
             ScrollPanel.Style = (Style)Application.Current.Resources["BorderDock"];
             //ScrollPanel.Background = Brushes.Black;
             //ScrollPanel.Background = Brushes.Green;
@@ -286,20 +345,20 @@ namespace GameEditorStudio
 
             for (int i = 0; i < EditorClass.StandardEditorData.DescriptionTableList.Count; i++) //a foreach loop but using for explicitly so i can remove itself if it's invalid a little later here. 
             {
-                var ExtraTable = EditorClass.StandardEditorData.DescriptionTableList[i];
+                var DescriptionTable = EditorClass.StandardEditorData.DescriptionTableList[i];
 
-                if (ExtraTable.LinkType == DescriptionTable.LinkTypes.DataFile)
+                if (DescriptionTable.LinkType == DescriptionTable.LinkTypes.DataFile)
                 {
-                    if (ExtraTable.Start == 0 || ExtraTable.RowSize == 0 || ExtraTable.TextSize == 0 || ExtraTable.FileTextTable == null || ExtraTable.FileTextTable.FileLocation == null)
+                    if (DescriptionTable.Start == 0 || DescriptionTable.RowSize == 0 || DescriptionTable.TextSize == 0 || DescriptionTable.FileTextTable == null || DescriptionTable.FileTextTable.FileLocation == null)
                     {
                         // Remove and break
                         EditorClass.StandardEditorData.DescriptionTableList.RemoveAt(i);
                         continue;
                     }
                 }
-                if (ExtraTable.LinkType == DescriptionTable.LinkTypes.TextFile) 
+                if (DescriptionTable.LinkType == DescriptionTable.LinkTypes.TextFile) 
                 {
-                    if (ExtraTable.FileTextTable == null || ExtraTable.FileTextTable.FileLocation == null)
+                    if (DescriptionTable.FileTextTable == null || DescriptionTable.FileTextTable.FileLocation == null)
                     {
                         // Remove and break
                         EditorClass.StandardEditorData.DescriptionTableList.RemoveAt(i);
@@ -308,67 +367,69 @@ namespace GameEditorStudio
                 }
 
                 
+                /////////////////////////// HEY - DESCRIPTION TEXT BOX CODE WAS MOVED TO THE LEFTBAR, AND KIND OF THE CHARACTER SET MANAGER. (I may move it again later)
+                /////////////////////////// I now generate a new textbox every time the item in the item list changes, although, i may move it back here in the future.
 
-                TextBox ExtraTextBox = new();
-                ExtraTextBox.AcceptsReturn = true;
-                ExtraTextBox.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-                ExtraTextBox.TextWrapping = TextWrapping.NoWrap;
-                ExtraTextBox.Margin = new Thickness(5);
-                DockPanel.SetDock(ExtraTextBox, Dock.Top);
-                EditorClass.StandardEditorData.EditorDescriptionsPanel.TopPanel.Children.Add(ExtraTextBox);
-                ExtraTextBox.Height = 67;
-                ExtraTable.ExtraTableTextBox = ExtraTextBox;
-                ExtraTable.ExtraTableEncodeIsEnabled = true;
-                ExtraTextBox.VerticalAlignment = VerticalAlignment.Top;
-                if (TheWorkshop.IsPreviewMode == true) { ExtraTextBox.IsEnabled = false; }
+                //TextBox DescriptionTextBox = new();
+                //DescriptionTextBox.AcceptsReturn = true;
+                //DescriptionTextBox.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                //DescriptionTextBox.TextWrapping = TextWrapping.NoWrap;
+                //DescriptionTextBox.Margin = new Thickness(5);
+                //DockPanel.SetDock(DescriptionTextBox, Dock.Top);
+                //EditorClass.StandardEditorData.EditorDescriptionsPanel.TopPanel.Children.Add(DescriptionTextBox);
+                //DescriptionTextBox.Height = 67;
+                //DescriptionTable.ExtraTableTextBox = DescriptionTextBox;
+                //DescriptionTable.ExtraTableEncodeIsEnabled = true;
+                //DescriptionTextBox.VerticalAlignment = VerticalAlignment.Top;
+                //if (TheWorkshop.IsPreviewMode == true) { DescriptionTextBox.IsEnabled = false; }
 
-                ExtraTextBox.PreviewKeyDown += (sender, e) =>
-                {
-                    if (e.Key == Key.Enter)
-                    {
-                        e.Handled = true;
+                //DescriptionTextBox.PreviewKeyDown += (sender, e) =>
+                //{
+                //    if (e.Key == Key.Enter)
+                //    {
+                //        e.Handled = true;
 
-                        if (ExtraTable.TextSize == ExtraTable.ExtraTableTextBox.Text.Length) { return; }
+                //        if (DescriptionTable.TextSize == DescriptionTable.ExtraTableTextBox.Text.Length) { return; }
 
-                        TextBox textBox = sender as TextBox;
+                //        TextBox textBox = sender as TextBox;
 
-                        int caretIndex = textBox.CaretIndex;
-                        textBox.Text = textBox.Text.Insert(caretIndex, "\n");
-                        textBox.CaretIndex = caretIndex + 1;
-                    }
-                };
+                //        int caretIndex = textBox.CaretIndex;
+                //        textBox.Text = textBox.Text.Insert(caretIndex, "\n");
+                //        textBox.CaretIndex = caretIndex + 1;
+                //    }
+                //};
 
-                ExtraTextBox.PreviewTextInput += (sender, e) =>
-                {
-                    string NewText = ExtraTable.ExtraTableTextBox.Text + e.Text;
+                //DescriptionTextBox.PreviewTextInput += (sender, e) =>
+                //{
+                //    string NewText = DescriptionTable.ExtraTableTextBox.Text + e.Text;
 
-                    Encoding encoding;
-                    if (ExtraTable.CharacterSet == "ASCII+ANSI") { encoding = Encoding.ASCII; }
-                    else if (ExtraTable.CharacterSet == "Shift-JIS") { encoding = Encoding.GetEncoding("shift_jis"); }
-                    else { return; }
-                    int NewByteSize = encoding.GetByteCount(NewText);
+                //    Encoding encoding;
+                //    if (DescriptionTable.CharacterSet == "ASCII+ANSI") { encoding = Encoding.ASCII; }
+                //    else if (DescriptionTable.CharacterSet == "Shift-JIS") { encoding = Encoding.GetEncoding("shift_jis"); }
+                //    else { return; }
+                //    int NewByteSize = encoding.GetByteCount(NewText);
 
-                    if (NewByteSize > ExtraTable.TextSize)
-                    {
-                        e.Handled = true;  // Mark the event as handled so the input is ignored
-                    }
-                    //else { TheWorkshop.DebugBox2.Text = "Current NameBox Text Length\n" + (NameBox.Text.Length + 1).ToString(); }
+                //    if (NewByteSize > DescriptionTable.TextSize)
+                //    {
+                //        e.Handled = true;  // Mark the event as handled so the input is ignored
+                //    }
+                //    //else { TheWorkshop.DebugBox2.Text = "Current NameBox Text Length\n" + (NameBox.Text.Length + 1).ToString(); }
 
-                };
+                //};
 
-                ExtraTextBox.TextChanged += (sender, e) =>
-                {
-                    TreeViewItem selectedItem = EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.SelectedItem as TreeViewItem;
-                    ItemInfo ItemInfo = selectedItem.Tag as ItemInfo;
-                    if (selectedItem == null || selectedItem.Tag == null || ItemInfo.IsFolder == true || ExtraTable.ExtraTableEncodeIsEnabled == false)
-                    {
-                        return;
-                    }
+                //DescriptionTextBox.TextChanged += (sender, e) =>
+                //{
+                //    TreeViewItem selectedItem = EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.SelectedItem as TreeViewItem;
+                //    ItemInfo ItemInfo = selectedItem.Tag as ItemInfo;
+                //    if (selectedItem == null || selectedItem.Tag == null || ItemInfo.IsFolder == true || DescriptionTable.ExtraTableEncodeIsEnabled == false)
+                //    {
+                //        return;
+                //    }
 
-                    CharacterSetManager CharacterSetManager = new();
-                    CharacterSetManager.EncodeExtra(TheWorkshop, EditorClass, ExtraTable);
+                //    CharacterSetManager CharacterSetManager = new();
+                //    CharacterSetManager.EncodeDescription(TheWorkshop, EditorClass, DescriptionTable);
 
-                };
+                //};
 
 
 
@@ -378,9 +439,7 @@ namespace GameEditorStudio
 
 
         }
-
-
-
+        
 
 
 
@@ -562,6 +621,8 @@ namespace GameEditorStudio
 
         public void CreateColumn(Category RowClass, Column ColumnClass, Workshop TheWorkshop, WorkshopData Database, int Index)
         {
+            
+
             DockPanel ColumnGrid = new DockPanel();
             ColumnGrid.Style = (Style)Application.Current.Resources["ColumnStyle"];
             ColumnGrid.MinWidth = 70;
@@ -570,11 +631,12 @@ namespace GameEditorStudio
             ColumnGrid.VerticalAlignment = VerticalAlignment.Top; //Top Bottom
             ColumnGrid.VerticalAlignment = VerticalAlignment.Stretch; //Top Bottom //Needed to make entrys drop anywhere work properly.
             ColumnGrid.LastChildFill = false;
-            ColumnGrid.HorizontalAlignment = HorizontalAlignment.Left; //Left Right
+            //ColumnGrid.HorizontalAlignment = HorizontalAlignment.Left; //Left Right
             DockPanel.SetDock(ColumnGrid, Dock.Left);
-            ColumnGrid.Margin = new Thickness(1, 1, 1, 1); // Left Top Right Bottom 
+            ColumnGrid.Margin = new Thickness(0, 5, 0, 1); // Left Top Right Bottom 
 
-            ColumnGrid.Visibility = Visibility.Visible;
+
+
 
             ColumnClass.ColumnRow = RowClass;
 
@@ -590,13 +652,13 @@ namespace GameEditorStudio
             DockPanel.SetDock(Header, Dock.Top);
             ColumnGrid.Children.Add(Header);
 
-
-
+            Header.Visibility = Visibility.Collapsed;
+            ColumnGrid.Background = Brushes.Transparent;
 
             ContextMenu ContextMenu = new ContextMenu();
 
             MenuItem MenuItemNewColumnLeft = new MenuItem();
-            MenuItemNewColumnLeft.Header = "  Create New Group  (Left)  ";
+            MenuItemNewColumnLeft.Header = "  Create New Column  (Left)  ";
             ContextMenu.Items.Add(MenuItemNewColumnLeft);
             MenuItemNewColumnLeft.Click += new RoutedEventHandler(NewColumnLeft);
             void NewColumnLeft(object sender, RoutedEventArgs e)
@@ -606,7 +668,7 @@ namespace GameEditorStudio
             }
 
             MenuItem MenuItemNewColumnRight = new MenuItem();
-            MenuItemNewColumnRight.Header = "  Create New Group  (Right)  ";
+            MenuItemNewColumnRight.Header = "  Create New Column  (Right)  ";
             ContextMenu.Items.Add(MenuItemNewColumnRight);
             MenuItemNewColumnRight.Click += new RoutedEventHandler(NewColumnRight);
             void NewColumnRight(object sender, RoutedEventArgs e)
@@ -618,7 +680,7 @@ namespace GameEditorStudio
 
 
             MenuItem MenuItemDeleteColumn = new MenuItem();
-            MenuItemDeleteColumn.Header = "  Delete Group  ";
+            MenuItemDeleteColumn.Header = "  Delete Column  ";
             ContextMenu.Items.Add(MenuItemDeleteColumn);
             MenuItemDeleteColumn.Click += new RoutedEventHandler(DeleteColumn_Click);
             void DeleteColumn_Click(object sender, RoutedEventArgs e)
@@ -784,7 +846,7 @@ namespace GameEditorStudio
                     }
                 }
 
-
+                e.Handled = true; // 🛑 Prevent the entry's parent from stealing the drop.
 
 
             }
@@ -795,43 +857,16 @@ namespace GameEditorStudio
             //This makes an entry drop down at the bottom of a column. 
             void DropEntryOnColumnBody(object sender, DragEventArgs e)
             {
-                if (e.Data.GetDataPresent("MoveEntryClass") && Keyboard.IsKeyUp(Key.LeftShift))
-                {
-                    Entry InputEntry = (Entry)e.Data.GetData("MoveEntryClass");
-
-                    InputEntry.EntryColumn.ColumnGrid.Children.Remove(InputEntry.EntryBorder);
-                    int FromIndex = InputEntry.EntryColumn.EntryList.IndexOf(InputEntry);
-                    InputEntry.EntryColumn.EntryList.RemoveAt(FromIndex);
-
-                    ColumnGrid.Children.Add(InputEntry.EntryBorder);
-                    ColumnClass.EntryList.Add(InputEntry);
-
-
-                    InputEntry.EntryColumn = ColumnClass;
-                    InputEntry.EntryRow = ColumnClass.ColumnRow;
-
-                }
-                else if (e.Data.GetDataPresent("MoveEntryClassGroup") && Keyboard.IsKeyDown(Key.LeftShift))
+                if (e.Data.GetDataPresent("EntryMoveList"))
                 {
 
-                    for (int i = 0; i < TheWorkshop.EntryMoveList.Count; i++)
-                    {
+                    List<Entry> EntryMoveList = (List<Entry>)e.Data.GetData("EntryMoveList");
 
-                        var InputEntry = TheWorkshop.EntryMoveList[i];
-
-                        InputEntry.EntryColumn.ColumnGrid.Children.Remove(InputEntry.EntryBorder);
-                        InputEntry.EntryColumn.EntryList.RemoveAt(InputEntry.EntryColumn.EntryList.IndexOf(InputEntry));
-
-                        ColumnGrid.Children.Add(InputEntry.EntryBorder);
-                        ColumnClass.EntryList.Add(InputEntry);
-
-                        InputEntry.EntryColumn = ColumnClass;
-                        InputEntry.EntryRow = ColumnClass.ColumnRow;
-                    }
+                    StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
+                    standardEditorMethods.MoveEntrysToColumn(EntryMoveList, ColumnClass);
                 }
 
-
-
+                e.Handled = true; // 🛑 Prevent the entry's parent from stealing the drop.
 
             }
 
@@ -871,6 +906,7 @@ namespace GameEditorStudio
             //EntryDockPanel.Margin = new Thickness(3, 0, 4, 3); // Left Top Right Bottom 
 
             Label SymbolLabel = new();
+            SymbolLabel.Margin = new Thickness(-13, 0, 0, 0); // Left Top Right Bottom
             EntryClass.Symbology = SymbolLabel;
             EntryDockPanel.Children.Add(SymbolLabel);
             DockPanel.SetDock(SymbolLabel, Dock.Left);
@@ -879,6 +915,75 @@ namespace GameEditorStudio
             EntryClass.EntryEditor = EditorClass;//I say what it's parents all are for easy access.
             EntryClass.EntryRow = CatClass;
             EntryClass.EntryColumn = ColumnClass;
+
+
+
+
+
+            ContextMenu contextMenu = new ContextMenu(); // THE RIGHT CLICK MENU
+            EntryDockPanel.ContextMenu = contextMenu;
+
+
+            //MenuItem EntryToNewGroup = new MenuItem();
+            //EntryToNewGroup.Header = "  Create New Group  ";
+            //contextMenu.Items.Add(EntryToNewGroup);
+            //EntryToNewGroup.Click += new RoutedEventHandler(NewGroup);
+            //void NewGroup(object sender, RoutedEventArgs e)
+            //{
+                
+            //}
+
+
+            MenuItem EntryToNewRightColumn = new MenuItem();
+            EntryToNewRightColumn.Header = "  Move into New Column  (Right)  ";
+            contextMenu.Items.Add(EntryToNewRightColumn);
+            EntryToNewRightColumn.Click += new RoutedEventHandler(NewColumnRight);
+            void NewColumnRight(object sender, RoutedEventArgs e)
+            {
+                // Call the DeleteColumn method here
+                TheWorkshop.CreateNewColumnRight(EntryClass.EntryColumn);
+
+                //For some reason, refering to Column is problematic, but EntryClass.EntryColumn works fine.
+                //Im guessing it's because "ColumnClass" thats referenced HERE in code, isn't the same as EntryClass.EntryColumn...
+
+                List<Entry> ListOfEntrys = new();
+                ListOfEntrys.Add(EntryClass);
+
+                int index = EntryClass.EntryColumn.ColumnRow.ColumnList.IndexOf(EntryClass.EntryColumn);
+                Column toColumn = EntryClass.EntryColumn.ColumnRow.ColumnList[index + 1];
+
+                StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
+                standardEditorMethods.MoveEntrysToColumn(ListOfEntrys, toColumn);
+            }
+
+
+            MenuItem EntryToNewLeftColumn = new MenuItem();
+            EntryToNewLeftColumn.Header = "  Move into New Column  (Left)  ";
+            contextMenu.Items.Add(EntryToNewLeftColumn);
+            EntryToNewLeftColumn.Click += new RoutedEventHandler(NewColumnLeft);
+            void NewColumnLeft(object sender, RoutedEventArgs e)
+            {
+                // Call the DeleteColumn method here
+                TheWorkshop.CreateNewColumnLeft(EntryClass.EntryColumn);
+
+                //For some reason, refering to Column is problematic, but EntryClass.EntryColumn works fine.
+                //Im guessing it's because "ColumnClass" thats referenced HERE in code, isn't the same as EntryClass.EntryColumn...
+
+                List<Entry> ListOfEntrys = new();
+                ListOfEntrys.Add(EntryClass);
+
+                int index = EntryClass.EntryColumn.ColumnRow.ColumnList.IndexOf(EntryClass.EntryColumn);
+                Column toColumn = EntryClass.EntryColumn.ColumnRow.ColumnList[index - 1];
+
+                StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
+                standardEditorMethods.MoveEntrysToColumn(ListOfEntrys, toColumn);
+            }
+
+
+            
+
+
+
 
             EntryDockPanel.MouseLeftButtonDown += EntryGrid_MouseLeftButtonDown;
             // define the event handler method
@@ -918,7 +1023,7 @@ namespace GameEditorStudio
             }
 
 
-
+            
 
 
 
@@ -962,12 +1067,17 @@ namespace GameEditorStudio
                     {
                         if (Keyboard.IsKeyUp(Key.LeftShift)) // Single Entry capture
                         {
+
+                            //I forget what all this math code does, but i think it makes sure the mouse has actually moved, so its not dropping on itself on frame 1.
                             var currentPosition = e.GetPosition(theBorder);
                             var minimumDistance = (SystemParameters.MinimumHorizontalDragDistance + SystemParameters.MinimumVerticalDragDistance) / 2;
 
                             if (Math.Sqrt(Math.Pow(currentPosition.X, 2) + Math.Pow(currentPosition.Y, 2)) >= minimumDistance)
                             {
-                                var data = new DataObject("MoveEntryClass", EntryClass);
+                                List<Entry> EntrysToMove = new();
+                                EntrysToMove.Add(EntryClass);
+
+                                var data = new DataObject("EntryMoveList", EntrysToMove);
                                 DragDrop.DoDragDrop(theBorder, data, DragDropEffects.Move);
                             }
                             theDockPanel.ReleaseMouseCapture();
@@ -978,14 +1088,15 @@ namespace GameEditorStudio
 
                             if (ActiveEntry.EntryColumn == EntryClass.EntryColumn)
                             {
-                                TheWorkshop.EntryMoveList.Clear(); // This chunk adds all entrys to a new list, so we can move all of them.
+                                List<Entry> EntrysToMove = new();
+
                                 int iOne = EntryClass.EntryColumn.EntryList.IndexOf(EntryClass);
                                 int iTwo = EditorClass.StandardEditorData.SelectedEntry.EntryColumn.EntryList.IndexOf(EditorClass.StandardEditorData.SelectedEntry);
                                 int startIndex = Math.Min(iOne, iTwo);
                                 int endIndex = Math.Max(iOne, iTwo);
                                 for (int i = startIndex; i <= endIndex; i++)
                                 {
-                                    TheWorkshop.EntryMoveList.Add(EntryClass.EntryColumn.EntryList[i]);
+                                    EntrysToMove.Add(EntryClass.EntryColumn.EntryList[i]);
                                 }
 
                                 var currentPosition = e.GetPosition(theBorder);
@@ -993,7 +1104,7 @@ namespace GameEditorStudio
 
                                 if (Math.Sqrt(Math.Pow(currentPosition.X, 2) + Math.Pow(currentPosition.Y, 2)) >= minimumDistance)
                                 {
-                                    var data = new DataObject("MoveEntryClassGroup", EntryClass);
+                                    var data = new DataObject("EntryMoveList", EntrysToMove);
                                     DragDrop.DoDragDrop(theBorder, data, DragDropEffects.Move);
                                 }
                                 theDockPanel.ReleaseMouseCapture();
@@ -1011,69 +1122,24 @@ namespace GameEditorStudio
 
 
 
-
-
-
-
-
             EntryDockPanel.AllowDrop = true;
             EntryDockPanel.Drop += EntryDrop;
             
             void EntryDrop(object sender, DragEventArgs e)
             {
 
-                if (e.Data.GetDataPresent("MoveEntryClass") && Keyboard.IsKeyUp(Key.LeftShift)) //Single Entry Drop
+                if (e.Data.GetDataPresent("EntryMoveList") ) //Entry Drop
                 {
-                    Entry InputEntry = (Entry)e.Data.GetData("MoveEntryClass");
+                    List<Entry> EntryMoveList = (List<Entry>)e.Data.GetData("EntryMoveList");
 
-                    if (InputEntry != EntryClass)
-                    {
-                        InputEntry.EntryColumn.ColumnGrid.Children.Remove(InputEntry.EntryBorder);
-                        int FromIndex = InputEntry.EntryColumn.EntryList.IndexOf(InputEntry);
-                        int ToIndex = EntryClass.EntryColumn.ColumnGrid.Children.IndexOf(EntryClass.EntryBorder);
-                        InputEntry.EntryColumn.EntryList.RemoveAt(FromIndex);
-
-                        EntryClass.EntryColumn.ColumnGrid.Children.Insert(ToIndex + 1, InputEntry.EntryBorder);
-                        EntryClass.EntryColumn.EntryList.Insert(ToIndex, InputEntry);
-
-                        InputEntry.EntryColumn = EntryClass.EntryColumn; //DO NOT REFER TO COLUMN CLASS DIRECTLY, I HAVE NO IDEA WHY.                    
-                        InputEntry.EntryRow = EntryClass.EntryRow;
-                    }
+                    StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
+                    standardEditorMethods.MoveEntrysToEntry(EntryMoveList, EntryClass);
 
 
                 }
-                else if (e.Data.GetDataPresent("MoveEntryClassGroup") && Keyboard.IsKeyDown(Key.LeftShift)) //Group Entry Drop
-                {
-
-                    for (int i = 0; i < TheWorkshop.EntryMoveList.Count; i++)
-                    {
-                        if (EntryClass == TheWorkshop.EntryMoveList[i])
-                        {
-                            return;
-                        }
-                    }
 
 
-                    for (int i = 0; i < TheWorkshop.EntryMoveList.Count; i++)
-                    {
-                        var InputEntry = TheWorkshop.EntryMoveList[i];
-
-                        InputEntry.EntryColumn.ColumnGrid.Children.Remove(InputEntry.EntryBorder);
-                        int FromIndex = InputEntry.EntryColumn.EntryList.IndexOf(InputEntry);
-                        int ToIndex = EntryClass.EntryColumn.ColumnGrid.Children.IndexOf(EntryClass.EntryBorder);
-                        //int TheIndex = ColumnClass.ColumnGrid.Children.IndexOf(EntryClass.EntryBorder); //Counting starts at 1, but the first child is 0.
-                        InputEntry.EntryColumn.EntryList.RemoveAt(InputEntry.EntryColumn.EntryList.IndexOf(InputEntry));
-
-                        EntryClass.EntryColumn.ColumnGrid.Children.Insert(ToIndex + 1 + i, InputEntry.EntryBorder);
-                        EntryClass.EntryColumn.EntryList.Insert(ToIndex + 0 + i, InputEntry);
-
-                        InputEntry.EntryColumn = EntryClass.EntryColumn; //DO NOT REFER TO COLUMN CLASS DIRECTLY, I HAVE NO IDEA WHY.     
-                        InputEntry.EntryRow = EntryClass.EntryRow;
-                    }
-                }
-
-
-                e.Handled = true; // 🛑 Prevent the entry's parent (Column, and later maybe Group / entry folders) from stealing the drop.
+                e.Handled = true; // 🛑 Prevent the entry's parent from stealing the drop.
 
             }
             
@@ -1088,24 +1154,24 @@ namespace GameEditorStudio
             EntryClass.EntryBorder = Border;
             if (EntryClass.Bytes == 0) { EntryClass.EntryBorder.Visibility = Visibility.Collapsed; }
 
-            Label Prefix = new Label();
+            Label PrefixEID = new Label(); //Entry ID Prefix. 
             //Prefix.Height = 30;
             //Prefix.MinWidth = 15;
-            Prefix.Width = 50;
-            Prefix.Margin = new Thickness(0,0,-23,0);
-            Prefix.FontSize = 14;
-            Prefix.Content = EntryClass.RowOffset;  //"P-x";//EntryClass.EntryName;// "Entry X";
-            Prefix.Foreground = (Brush)new BrushConverter().ConvertFrom("#20A098");
-            Prefix.HorizontalAlignment = HorizontalAlignment.Left;
-            Prefix.VerticalContentAlignment = VerticalAlignment.Center;
+            PrefixEID.Width = 58;
+            PrefixEID.Margin = new Thickness(0,0,-23,0);
+            PrefixEID.FontSize = 20;
+            PrefixEID.Content = EntryClass.RowOffset;  //"P-x";//EntryClass.EntryName;// "Entry X";
+            PrefixEID.Foreground = (Brush)new BrushConverter().ConvertFrom("#20A098");
+            PrefixEID.HorizontalAlignment = HorizontalAlignment.Left;
+            PrefixEID.VerticalContentAlignment = VerticalAlignment.Center;
             //Prefix.Margin = new Thickness(0, 0, 0, 0); // Left Top Right Bottom 
-            Prefix.Visibility = Visibility.Collapsed;
-            if (Properties.Settings.Default.ShowEntryAddress == false) { Prefix.Visibility = Visibility.Collapsed; }
-            if (Properties.Settings.Default.ShowEntryAddress == true) { Prefix.Visibility = Visibility.Visible; }
-            if (Properties.Settings.Default.EntryAddressType == "Decimal") { Prefix.Content = EntryClass.RowOffset; }
-            if (Properties.Settings.Default.EntryAddressType == "Hex") { Prefix.Content = (EntryClass.RowOffset + int.Parse(TheWorkshop.EntryAddressOffsetTextbox.Text)).ToString("X"); }
-            EntryDockPanel.Children.Add(Prefix);
-            EntryClass.EntryPrefix = Prefix;
+            PrefixEID.Visibility = Visibility.Collapsed;
+            if (Properties.Settings.Default.ShowEntryAddress == false) { PrefixEID.Visibility = Visibility.Collapsed; }
+            if (Properties.Settings.Default.ShowEntryAddress == true) { PrefixEID.Visibility = Visibility.Visible; }
+            if (Properties.Settings.Default.EntryAddressType == "Decimal") { PrefixEID.Content = EntryClass.RowOffset; }
+            if (Properties.Settings.Default.EntryAddressType == "Hex") { PrefixEID.Content = (EntryClass.RowOffset + int.Parse(TheWorkshop.EntryAddressOffsetTextbox.Text)).ToString("X"); }
+            EntryDockPanel.Children.Add(PrefixEID);
+            EntryClass.EntryPrefix = PrefixEID;
 
 
             //add a option to properties where a entrys can have a Icon on the left side. for easy, universal, user styling / expression.

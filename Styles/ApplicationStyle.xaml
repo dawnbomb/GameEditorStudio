@@ -43,13 +43,38 @@
     </Style>
 
 
-    <!--<Style  TargetType="{x:Type ContextMenu}" >
-        <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationBorder}"/>
-    </Style>-->
-    
-    
-    
+    <Style TargetType="ToolTip">
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="HasDropShadow" Value="False"/>
+        <Setter Property="Background" Value="#FF1E1E1E"/>
+        <Setter Property="Foreground" Value="#F0F0F0"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="FontFamily" Value="Dawns 10px ArkPixel"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToolTip">
+                    <Border Background="Gray" Padding="2">
+                        <!-- Middle brown border (4px) -->
+                        <Border Background="Black" Padding="1">
+                            <!-- Inner black border (2px) -->
+                            <Border Background="{TemplateBinding Background}" 
+            BorderThickness="0" 
+            SnapsToDevicePixels="True">
+                                <ContentPresenter 
+            Margin="2" 
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center" 
+            RecognizesAccessKey="True"/>
+                            </Border>
+                        </Border>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
     <!--<Style TargetType="{x:Type Button}">
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontFamily" Value="Dawns 10px ArkPixel" />

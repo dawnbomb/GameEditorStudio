@@ -14,12 +14,14 @@ namespace GameEditorStudio
 {
     class CharacterSetManager
     {
+        //This file is a cluster fuck, i know.
+
         //This file handles decoding and encoding text in the Item List, and any Extra Tables.
         //It changes from Hex to english or other languages, and those languages back to hex.
         //A "Character Set" is a list of symbols associated with hex. Standard ASCII is english text (an english character set). Shift-JIS is Japanese text.
-        
-        //Maybe I should have a function that decodes just one string, and then the plural version command just runs the single version X times?
-                
+
+        //At some point, remake this entire file, into only "DecodeText" and "EncodeText", and have decode just return the decoded string, and encode just return the encoded bytes.
+        //Maybe also later have a function that decodes a text table based on variable width table definitions? 
 
         public void Decode(Workshop TheWorkshop, Editor EditorClass, string Doing)
         {
@@ -98,7 +100,7 @@ namespace GameEditorStudio
             
         }
 
-        public void DecodeExtras(Workshop TheWorkshop, Editor EditorClass) 
+        public void DecodeDescriptions(Workshop TheWorkshop, Editor EditorClass) 
         {
             if (TheWorkshop.IsPreviewMode == true) { return; }
 
@@ -192,28 +194,28 @@ namespace GameEditorStudio
             
             for (int i = 0; i < EditorClass.StandardEditorData.DescriptionTableList.Count; i++)
             {
-                var ExtraTable = EditorClass.StandardEditorData.DescriptionTableList[i];
+                var DescriptionTable = EditorClass.StandardEditorData.DescriptionTableList[i];
 
 
-                TextBox ExtraTextBox = new();
-                ExtraTextBox.AcceptsReturn = true;
-                ExtraTextBox.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-                ExtraTextBox.TextWrapping = TextWrapping.NoWrap;
-                ExtraTextBox.Margin = new Thickness(5);
-                DockPanel.SetDock(ExtraTextBox, Dock.Top);
-                EditorClass.StandardEditorData.EditorDescriptionsPanel.TopPanel.Children.Add(ExtraTextBox);
-                ExtraTextBox.Height = 67;
-                ExtraTable.ExtraTableTextBox = ExtraTextBox;
-                ExtraTable.ExtraTableEncodeIsEnabled = true;
-                ExtraTextBox.VerticalAlignment = VerticalAlignment.Top;
+                TextBox DescriptionTextBox = new();
+                DescriptionTextBox.AcceptsReturn = true;
+                DescriptionTextBox.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                DescriptionTextBox.TextWrapping = TextWrapping.NoWrap;
+                DescriptionTextBox.Margin = new Thickness(5);
+                DockPanel.SetDock(DescriptionTextBox, Dock.Top);
+                EditorClass.StandardEditorData.EditorDescriptionsPanel.TopPanel.Children.Add(DescriptionTextBox);
+                DescriptionTextBox.MinHeight = 76;
+                DescriptionTable.ExtraTableTextBox = DescriptionTextBox;
+                DescriptionTable.ExtraTableEncodeIsEnabled = true;
+                DescriptionTextBox.VerticalAlignment = VerticalAlignment.Top;
 
-                ExtraTextBox.PreviewKeyDown += (sender, e) =>
+                DescriptionTextBox.PreviewKeyDown += (sender, e) =>
                 {
-                    if (ExtraTable.LinkType == DescriptionTable.LinkTypes.DataFile && e.Key == Key.Enter)
+                    if (DescriptionTable.LinkType == DescriptionTable.LinkTypes.DataFile && e.Key == Key.Enter)
                     {
                         e.Handled = true;
 
-                        if (ExtraTable.TextSize == ExtraTable.ExtraTableTextBox.Text.Length) { return; }
+                        if (DescriptionTable.TextSize == DescriptionTable.ExtraTableTextBox.Text.Length) { return; }
 
                         TextBox textBox = sender as TextBox;
 
@@ -221,27 +223,27 @@ namespace GameEditorStudio
                         textBox.Text = textBox.Text.Insert(caretIndex, "\n");
                         textBox.CaretIndex = caretIndex + 1;
                     }
-                    if (ExtraTable.LinkType == DescriptionTable.LinkTypes.TextFile && e.Key == Key.Enter)
+                    if (DescriptionTable.LinkType == DescriptionTable.LinkTypes.TextFile && e.Key == Key.Enter)
                     {
                         e.Handled = true;
                     }
                 };
 
-                ExtraTextBox.PreviewTextInput += (sender, e) =>
+                DescriptionTextBox.PreviewTextInput += (sender, e) =>
                 {
-                    string NewText = ExtraTable.ExtraTableTextBox.Text + e.Text;
+                    string NewText = DescriptionTable.ExtraTableTextBox.Text + e.Text;
 
                     Encoding encoding;
-                    if (ExtraTable.CharacterSet == "ASCII+ANSI") { encoding = Encoding.ASCII; }
-                    else if (ExtraTable.CharacterSet == "Shift-JIS") { encoding = Encoding.GetEncoding("shift_jis"); }
+                    if (DescriptionTable.CharacterSet == "ASCII+ANSI") { encoding = Encoding.ASCII; }
+                    else if (DescriptionTable.CharacterSet == "Shift-JIS") { encoding = Encoding.GetEncoding("shift_jis"); }
                     else { return; }
                     int NewByteSize = encoding.GetByteCount(NewText);
 
-                    if (ExtraTable.LinkType == DescriptionTable.LinkTypes.DataFile && NewByteSize > ExtraTable.TextSize)
+                    if (DescriptionTable.LinkType == DescriptionTable.LinkTypes.DataFile && NewByteSize > DescriptionTable.TextSize)
                     {
                         e.Handled = true;  // Mark the event as handled so the input is ignored
                     }
-                    if (ExtraTable.LinkType == DescriptionTable.LinkTypes.TextFile && (e.Text.Contains("\r") || e.Text.Contains("\n")))
+                    if (DescriptionTable.LinkType == DescriptionTable.LinkTypes.TextFile && (e.Text.Contains("\r") || e.Text.Contains("\n")))
                     {
                         e.Handled = true;  // Mark the event as handled so the input is ignored
                     }
@@ -249,17 +251,17 @@ namespace GameEditorStudio
 
                 };
 
-                ExtraTextBox.TextChanged += (sender, e) =>
+                DescriptionTextBox.TextChanged += (sender, e) =>
                 {
                     TreeViewItem selectedItem = EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.SelectedItem as TreeViewItem;
                     ItemInfo ItemInfo = selectedItem.Tag as ItemInfo;
-                    if (selectedItem == null || selectedItem.Tag == null || ItemInfo.IsFolder == true || ExtraTable.ExtraTableEncodeIsEnabled == false)
+                    if (selectedItem == null || selectedItem.Tag == null || ItemInfo.IsFolder == true || DescriptionTable.ExtraTableEncodeIsEnabled == false)
                     {
                         return;
                     }
 
                     CharacterSetManager CharacterSetManager = new();
-                    CharacterSetManager.EncodeExtra(TheWorkshop, EditorClass, ExtraTable);
+                    CharacterSetManager.EncodeDescription(TheWorkshop, EditorClass, DescriptionTable);
 
                 };
 
@@ -352,7 +354,7 @@ namespace GameEditorStudio
         }
 
 
-        public void EncodeExtra(Workshop TheWorkshop, Editor EditorClass, DescriptionTable ExtraTable) 
+        public void EncodeDescription(Workshop TheWorkshop, Editor EditorClass, DescriptionTable ExtraTable) 
         {
             if (ExtraTable.LinkType == DescriptionTable.LinkTypes.DataFile) 
             {

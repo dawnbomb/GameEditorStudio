@@ -563,7 +563,7 @@ namespace GameEditorStudio
                 if (EditorClass.StandardEditorData.DescriptionTableList.Count > 0)
                 {                   
                     CharacterSetManager CharacterSetManager = new();
-                    CharacterSetManager.DecodeExtras(TheWorkshop, EditorClass);    
+                    CharacterSetManager.DecodeDescriptions(TheWorkshop, EditorClass);    
                     
                 }
 

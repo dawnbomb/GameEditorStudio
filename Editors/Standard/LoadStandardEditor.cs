@@ -24,6 +24,7 @@ namespace GameEditorStudio
             
 
             Editor EditorClass = new(); //Creates the base class of the editor. Everything else becomes a child of this class, including other classes.
+            EditorClass.StandardEditorData.TheEditor = EditorClass;
             EditorClass.EditorName = Maker.TextboxEditorName.Text;
             EditorClass.EditorKey = LibraryMan.GenerateKey();
             EditorClass.EditorType = "DataTable";
@@ -176,6 +177,7 @@ namespace GameEditorStudio
 
 
             Editor EditorClass = new();          //Creates a EditorClass
+            EditorClass.StandardEditorData.TheEditor = EditorClass; 
             EditorClass.Workshop = TheWorkshop;
             EditorClass.EditorName = xml.Element("Name")?.Value;
             EditorClass.EditorType = xml.Element("Type")?.Value;
@@ -533,11 +535,13 @@ namespace GameEditorStudio
                         ColumnClass.EntryList.Add(EntryClass);
                     }
                 }
+                
+
 
             }
 
 
-            
+
         }
 
 

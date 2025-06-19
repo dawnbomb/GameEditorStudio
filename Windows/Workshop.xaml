@@ -51,9 +51,7 @@
             <Button DockPanel.Dock="Left" x:Name="ButtonHome" Content=" Home "    Click="ButtonHome_Click" Margin="1,1,0,1"/>
             <ScrollViewer  DockPanel.Dock="Left" x:Name="EditorBarScrollViewer" Background="Transparent" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" PreviewMouseWheel="EditorBarMouseWheel" >
                 <!--Background="#FF272A2B"-->
-                <DockPanel x:Name="EditorBar" Background="{x:Null}" LastChildFill="False" >
-
-                </DockPanel>
+                <DockPanel x:Name="EditorBar" Background="{x:Null}" LastChildFill="False" />
             </ScrollViewer>
         </DockPanel>
 
@@ -65,14 +63,14 @@
 
 
                     <DockPanel  Background="{x:Null}" Margin="0,2,0,2">
-                        <Button Content=" I-ID " DockPanel.Dock="Left" Click="ToggleItemIDNumberVisibility" Margin="5,0,5,0" ToolTip="Toggles if the item list displays item ID numbers. ID numbers are shown using the real, internal game data order, not the order you arrange them in."/>
-                        <Button Content="アA" Width="45" DockPanel.Dock="Left" x:Name="TranslationToggle" Style="{DynamicResource ButtonError}"  Click="ToggleTranslationPanel" Margin="2,0,2,0" ToolTip="Toggles the translation panel, which lets you see the origonal item's name translated to english using diffrent translation tools. Useful for creating english menu patches for JRPGs."/>
+                        <Button Content=" I-ID " DockPanel.Dock="Left" Click="ToggleItemIDNumberVisibility" Margin="5,0,5,0" ToolTip="Toggles item ID numbers. &#xD;&#xA;ID numbers are shown using the real, internal game data order, not the order you arrange them in. &#xD;&#xA;If you didn't know, you can drag items around and reorder them!&#xD;&#xA;Anyway, because the ID numbers can become almost useless, you have the option to turn them off."/>
+                        <Button Content="アA" Width="45" DockPanel.Dock="Left" x:Name="TranslationToggle" Style="{DynamicResource ButtonError}"  Click="ToggleTranslationPanel" Margin="2,0,2,0" ToolTip="Toggles the translation panel.&#xD;&#xA;This is an upcoming feature, and will be useful for people making english patches."/>
 
-                        <Button Content=" 🔍 " DockPanel.Dock="Left" x:Name="EntryAddressButton2"  Click="ToggleEntrySynbology" Margin="2,0,2,0" ToolTip="Toggles Symbology to appear or not. Symbology is actually really useful and quickly tells you information about a entry across the entire editor. VERY useful when first creating a editor to help learn what each value might represent." Width="42"/>
-                        <Button Content=" E-ID " DockPanel.Dock="Left" x:Name="EntryAddressButton"  Click="EntryAddressToggle" Margin="2,0,2,0" ToolTip="Display Entry ID numbers. The number represents what byte # the entry is for in a row." Width="58"/>
-                        <Button DockPanel.Dock="Left" x:Name="EntryAddressTypeButton" Content="DEC" Width="50" Click="EntryAddressType" Margin="2,0,2,0" ToolTip="Changes the Entry ID number between displaying in Decimal (Numbers 0~9) and Hex (Numbers 00~FF). "/>
-                        <TextBox DockPanel.Dock="Left" x:Name="EntryAddressOffsetTextbox" Text="0" Width="35" Margin="2,1,2,1" KeyDown="EntryOffsetTextboxKeyDown" ToolTip="This textbox makes each entry ID appear as +/- X number. Such as -3 or +5. Useful for debugging, and not much else. " />
-                        <Button Content="👁" DockPanel.Dock="Left" x:Name="EntryHiddenToggle"   Click="ToggleHiddenEntrys" Margin="2,0,2,0" ToolTip="Toggles entrys tagged as Hidden between being Visible or Hidden. When visable they appear red." Width="38"/>
+                        <Button Content=" 🔍 " DockPanel.Dock="Left" x:Name="EntryAddressButton2"  Click="ToggleEntrySynbology" Margin="2,0,2,0" ToolTip="Toggles Symbology. &#xD;&#xA;Symbology tries to tell you information useful for discovering what an entry byte actually does. &#xD;&#xA;You can mouseover an entry symbol to learn more detailed information." Width="42"/>
+                        <Button Content=" E-ID " DockPanel.Dock="Left" x:Name="EntryAddressButton"  Click="EntryAddressToggle" Margin="2,0,2,0" ToolTip="Toggles the display of Entry ID numbers. &#xD;&#xA;The number represents what byte # the entry is, for the row it's in.&#xD;&#xA;For nerds, this is a Byte's Offset Value. " Width="58"/>
+                        <Button DockPanel.Dock="Left" x:Name="EntryAddressTypeButton" Content="DEC" Width="50" Click="EntryAddressType" Margin="2,0,2,0" ToolTip="Changes the Entry ID number between displaying... &#xD;&#xA;in Decimal (Numbers 0~9) &#xD;&#xA;and Hex (Numbers 00~FF). "/>
+                        <TextBox DockPanel.Dock="Left" x:Name="EntryAddressOffsetTextbox" Text="0" Width="35" Margin="2,1,2,1" KeyDown="EntryOffsetTextboxKeyDown" ToolTip="This textbox makes each entry ID appear as if it was +/- X number. Such as -3 or +5. &#xD;&#xA;This is useful for debugging, and not much else. " />
+                        <Button Content="👁" DockPanel.Dock="Left" x:Name="EntryHiddenToggle"   Click="ToggleHiddenEntrys" Margin="2,0,2,0" ToolTip="Toggles the visibility of hidden entrys. &#xD;&#xA;When visable, a hidden entry will appear red. &#xD;&#xA;Note that any entrys that represent text are forced to hidden when the workshop opens, even if you set them not to be." Width="38"/>
 
 
 
@@ -139,11 +137,11 @@
                                                         <Label Content="Icon" Grid.Column="1"  Grid.Row="1" Visibility="Collapsed"/>
                                                         <Button Name="IconManagerButton" Content="Icon Manager" Visibility="Collapsed" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="25" Width="115"  Click="OpenIconManager" HorizontalAlignment="Left"/>
 
-                                                        <Label Content="Primary Color" Grid.Column="1"  Grid.Row="2"/>
-                                                        <Label Content="(Coming Soon)" Grid.Column="2"  Grid.Row="2"/>
+                                                        <!--<Label Content="Color Theme" Grid.Column="1"  Grid.Row="2"/>
+                                                        <Label Content="(Coming Soon)" Grid.Column="2"  Grid.Row="2"/>-->
 
-                                                        <Label Content="Secondary Color"  Grid.Row="3" Grid.Column="1" />
-                                                        <Label Content="(Coming Soon)"  Grid.Row="3" Grid.Column="2" />
+                                                        <!--<Label Content="Secondary Color"  Grid.Row="3" Grid.Column="1" />
+                                                        <Label Content="(Coming Soon)"  Grid.Row="3" Grid.Column="2" />-->
                                                         
                                                         
                                                     </Grid>
@@ -244,7 +242,7 @@
 
                                                         </DockPanel>
 
-                                                        <Label Content="Support for changing Data Table data will be&#xD;&#xA;added in a post-release update. &#xD;&#xA;Meanwhile, if you really need to, you can&#xD;&#xA;create another editor and delete this one." Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2"/>
+                                                        <Label Content="Support for changing Data Table data will be&#xA;added in a post-release update." Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2"/>
                                                     </Grid>
                                                 </DockPanel>
                                             </Border>
@@ -432,14 +430,14 @@
                                                             </DockPanel>
                                                             <Grid Margin="0,3,0,7">
 
-                                                                <TextBox x:Name="PropertiesEntryBitFlag1Name" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,5,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryBitFlag2Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,36,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryBitFlag3Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,66,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryBitFlag4Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,96,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryBitFlag5Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,5,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryBitFlag6Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,36,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryBitFlag7Name" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,66,0,0"/>
-                                                                <TextBox x:Name="PropertiesEntryBitFlag8Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,96,0,0"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag1Name" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,5,0,0" KeyDown="Bitflag1NameTextboxTextChanged"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag2Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,36,0,0" KeyDown="Bitflag2NameTextboxTextChanged"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag3Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,66,0,0" KeyDown="Bitflag3NameTextboxTextChanged"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag4Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,96,0,0" KeyDown="Bitflag4NameTextboxTextChanged"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag5Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,5,0,0" KeyDown="Bitflag5NameTextboxTextChanged"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag6Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,36,0,0" KeyDown="Bitflag6NameTextboxTextChanged"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag7Name" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,66,0,0" KeyDown="Bitflag7NameTextboxTextChanged"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag8Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,96,0,0" KeyDown="Bitflag8NameTextboxTextChanged"/>
 
                                                             </Grid>
                                                         </DockPanel>
