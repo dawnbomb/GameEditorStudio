@@ -10,13 +10,7 @@
     <!--List of styles used in this program. A style is basically a cosmetic skin, or how something visually looks. 
     This is just an index of them, each relevant file has the code for it's own style.-->
     
-    <Application.Resources>
-
-        <!--<local:WidthMinusTwoConverter x:Key="WidthMinusTwo"/>
-        <local:HeightMinusTwoConverter x:Key="HeightMinusTwo"/>
-        <local:BottomYMinus1Converter x:Key="BottomYMinus1"/>
-        <local:RightXMinus1Converter x:Key="RightXMinus1"/>-->
-
+    <Application.Resources>   
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/Colors/Colors.xaml"/>

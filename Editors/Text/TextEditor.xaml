@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="750" d:DesignWidth="900">
     <DockPanel Name="BackPanel">
-        <Grid x:Name="MainGrid">            
+        <Grid x:Name="MainGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="Auto"/>
@@ -15,9 +15,15 @@
             </Grid.ColumnDefinitions>
             <local:FileManager x:Name="TextFileManager"  Grid.Column="0"    />
 
-            <GridSplitter Style="{DynamicResource SplitterVertical}" Grid.Column="1"   />
+            <GridSplitter Style="{DynamicResource SplitterVertical}" Grid.Column="1" Background="Transparent"  />
 
-            <TextBox Name="TheTextBox" Grid.Column="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" TextChanged="TextBoxTextChanged"/>
+            <ScrollViewer Grid.Column="2" Background="Transparent">
+                <DockPanel Background="Transparent" >
+                    <TextBox Name="TheLineBox" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" DockPanel.Dock="Left" IsReadOnly="True" MinWidth="30"/>
+                    <TextBox Name="TheTextBox" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden" DockPanel.Dock="Left" TextChanged="TextBoxTextChanged"  AcceptsReturn="True"/>
+                </DockPanel>
+            </ScrollViewer>
+
         </Grid>
     </DockPanel>
 </UserControl>

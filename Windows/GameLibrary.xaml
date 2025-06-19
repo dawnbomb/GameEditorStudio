@@ -165,8 +165,7 @@
                 <DockPanel DockPanel.Dock="Bottom" Background="{x:Null}" >
 
                     <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
-                        <Label Content="Hello World!  Dawn Test すべての力の源よ New File..." FontWeight="Bold" />
-                        <!--Project Resources-->
+                        <Label Content="Project Resources" FontWeight="Bold" />
                         <Label Name="LabelForMissingProjectResources" Content="Some last known locations seem to be wrong!" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="22" Padding="5,0,5,2" Margin="10,0,0,0" />
                     </DockPanel>
                     <!--Note: Only local files/folders appear here, never child ones, because the user doesn't need to actually set them (thats the point of child items).-->
@@ -186,16 +185,16 @@
                 </DockPanel>
             </Border>
 
-            <Border DockPanel.Dock="Top" Margin="0,0,0,10">
+            <!--<Border DockPanel.Dock="Top" Margin="0,0,0,10">
                 <DockPanel>
                     <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
-                        <Label Content="Hello World!  Dawn Test すべての力の源よ New File..." FontWeight="Bold" HorizontalAlignment="Center" DockPanel.Dock="Top" />
+                        <Label Content="Hello World!  Text Test すべての力の源よ New File..." FontWeight="Bold" HorizontalAlignment="Center" DockPanel.Dock="Top" />
 
                     </DockPanel>
-                    <Label Content="Hello World!  Dawn Test すべての力の源よ New File..." DockPanel.Dock="Top"/>
-                    <Label Content="Hello World!  Dawn Test すべての力の源よ New File...&#xD;&#xA;Hello World!  Dawn Test すべての力の源よ New File...&#xD;&#xA;Hello World!  Dawn Test すべての力の源よ New File..." DockPanel.Dock="Top"/>
+                    <Label Content="Hello World!  Text Test すべての力の源よ New File..." DockPanel.Dock="Top"/>
+                    <Label Content="Hello World!  Text Test すべての力の源よ New File...&#xD;&#xA;Hello World!  Text Test すべての力の源よ New File...&#xD;&#xA;Hello World!  Text Test すべての力の源よ New File..." DockPanel.Dock="Top"/>
                 </DockPanel>
-            </Border>
+            </Border>-->
 
             <Border DockPanel.Dock="Top">
                 <DockPanel>
@@ -204,7 +203,7 @@
 
                     </DockPanel>
                     <ScrollViewer Background="Transparent" VerticalScrollBarVisibility="Auto">
-                        <TextBox x:Name="TextBoxWorkshopReadMe"  TextWrapping="Wrap" Text="Welcome to the first public release of my attempt at the worlds best game modding tool. &#xD;&#xA; &#xD;&#xA;This program makes it extremely easy to automatically generate fully functional game editors! It also provides quick and easy access to major romhacking tools.&#xD;&#xA;&#xD;&#xA;Save often in case of crashes or bugs and report any you come across :(&#xD;&#xA;&#xD;&#xA;PS: Many things in the program have right click options.&#xD;&#xA; &#xD;&#xA;Want to help development? reach out to me on discord! (Link in the top right)  Made in C# / WPF / .Net 8 &#xD;&#xA;Lets lower the complexity of game modding and simplify it so everyone can create mods! " Margin="10,5,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False" Width="580" Height="480"   />
+                        <TextBox x:Name="TextBoxWorkshopReadMe"  TextWrapping="Wrap" Text="Welcome to the first public release of my attempt at the worlds best game modding tool. &#xA; &#xA;This program makes it extremely easy to automatically generate fully functional game editors! It also provides quick and easy access to major romhacking tools.&#xA;&#xA;Save often in case of crashes or bugs and report any you come across :(&#xA;&#xA;PS: Many things in the program have right click options.&#xA; &#xA;Want to help development? reach out to me on discord! (Link in the top right)  Made in C# / WPF / .Net 9&#xD;&#xA; &#xA;Lets make game modding simple, easy, and fun! :)" Margin="10,5,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False" Width="580" Height="480"   />
 
                     </ScrollViewer>
                 </DockPanel>

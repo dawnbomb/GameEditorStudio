@@ -15,9 +15,10 @@ namespace GameEditorStudio
     internal class MakeButton
     {
 
-        public async Task CreateButton(Workshop TheWorkshop, WorkshopData Database, Editor EditorClass) //This is the editor button at the top
-        {
 
+
+        public async Task CreateButton(Workshop TheWorkshop, WorkshopData WorkshopData, Editor EditorClass) //This is the editor button at the top
+        {            
 
             EditorClass.EditorImage = new();
 
@@ -36,7 +37,7 @@ namespace GameEditorStudio
 
             //}
 
-
+            
 
 
             DockPanel EditorDock = new();
@@ -46,6 +47,13 @@ namespace GameEditorStudio
             EditorClass.EditorBarDockPanel = EditorDock;
             EditorDock.AllowDrop = true;
 
+            DockPanel EditorDock2 = new();
+            Border EditorBorder = new();
+            EditorClass.EditorBorder = EditorBorder;
+
+
+
+
             EditorDock.MouseMove += (sender, e) =>
             {
 
@@ -53,18 +61,15 @@ namespace GameEditorStudio
                 {
                     var theDockPanel = (DockPanel)sender;
 
-                    if (Keyboard.IsKeyUp(Key.LeftShift)) // Single Entry capture
-                    {
-                        var currentPosition = e.GetPosition(theDockPanel);
-                        var minimumDistance = (SystemParameters.MinimumHorizontalDragDistance + SystemParameters.MinimumVerticalDragDistance) / 2;
+                    var currentPosition = e.GetPosition(theDockPanel);
+                    var minimumDistance = (SystemParameters.MinimumHorizontalDragDistance + SystemParameters.MinimumVerticalDragDistance) / 2;
 
-                        if (Math.Sqrt(Math.Pow(currentPosition.X, 2) + Math.Pow(currentPosition.Y, 2)) >= minimumDistance)
-                        {
-                            var data = new DataObject("MoveEditor", theDockPanel);
-                            DragDrop.DoDragDrop(theDockPanel, data, DragDropEffects.Move);
-                        }
-                        theDockPanel.ReleaseMouseCapture();
+                    if (Math.Sqrt(Math.Pow(currentPosition.X, 2) + Math.Pow(currentPosition.Y, 2)) >= minimumDistance)
+                    {
+                        var data = new DataObject("MoveEditor", theDockPanel);
+                        DragDrop.DoDragDrop(theDockPanel, data, DragDropEffects.Move);
                     }
+                    theDockPanel.ReleaseMouseCapture();
 
                 }
             };
@@ -73,17 +78,33 @@ namespace GameEditorStudio
             EditorDock.Drop += (sender, e) =>
             {
 
-                if (e.Data.GetDataPresent("MoveEditor") && Keyboard.IsKeyUp(Key.LeftShift)) //Single Entry Drop
+                if (e.Data.GetDataPresent("MoveEditor")) //Single Entry Drop
                 {
                     DockPanel DropInput = (DockPanel)e.Data.GetData("MoveEditor");
 
-                    if (DropInput != EditorDock)
+                    if (DropInput == EditorDock)
                     {
-                        TheWorkshop.EditorBar.Children.Remove(DropInput);
-                        int GoTo = (TheWorkshop.EditorBar.Children.IndexOf(EditorDock)) + 1;
-                        TheWorkshop.EditorBar.Children.Insert(GoTo, DropInput);
-
+                        return;
                     }
+
+                    TheWorkshop.EditorBar.Children.Remove(DropInput);
+                    int GoTo = (TheWorkshop.EditorBar.Children.IndexOf(EditorDock)) + 1;
+                    TheWorkshop.EditorBar.Children.Insert(GoTo, DropInput);
+
+                    //if (TheWorkshop.EditorBar.Children.IndexOf(DropInput) < TheWorkshop.EditorBar.Children.IndexOf(EditorDock) )
+                    //{
+                    //    TheWorkshop.EditorBar.Children.Remove(DropInput);
+                    //    int GoTo = (TheWorkshop.EditorBar.Children.IndexOf(EditorDock)) + 1;
+                    //    TheWorkshop.EditorBar.Children.Insert(GoTo, DropInput);
+                    //}
+                    //else if (TheWorkshop.EditorBar.Children.IndexOf(DropInput) > TheWorkshop.EditorBar.Children.IndexOf(EditorDock))
+                    //{
+                    //    TheWorkshop.EditorBar.Children.Remove(DropInput);
+                    //    int GoTo = (TheWorkshop.EditorBar.Children.IndexOf(EditorDock));
+                    //    TheWorkshop.EditorBar.Children.Insert(GoTo, DropInput);
+                    //}
+
+
                 }
             };
 
@@ -91,6 +112,7 @@ namespace GameEditorStudio
 
 
             Label TheEditorNameLabel = new();
+            EditorClass.EditorLabel = TheEditorNameLabel;
             TheEditorNameLabel.VerticalAlignment = VerticalAlignment.Bottom;
             TheEditorNameLabel.HorizontalAlignment = HorizontalAlignment.Center;
             TheEditorNameLabel.Content = EditorClass.EditorName;
@@ -106,9 +128,24 @@ namespace GameEditorStudio
 
                 if (TheEditorClass == null)
                 {
-
                     return;
                 }
+
+                {   //Set tab colors.                    
+                    foreach (Editor editor in WorkshopData.GameEditors.Values)
+                    {
+                        editor.EditorDock2.Background = (Brush)(new BrushConverter().ConvertFrom("#191919"));
+                        editor.EditorLabel.ClearValue(Control.ForegroundProperty);
+                        //editor.EditorBorder.ClearValue(Control.BorderBrushProperty);
+                        //editor.EditorBorder.Style = (Style)Application.Current.Resources["EditorButtonBorder"];
+                        //editor.EditorBorder.BorderBrush = (Brush)(new BrushConverter().ConvertFrom("#0a0a0a"));
+
+                    }     
+                    EditorDock2.Background = (Brush)(new BrushConverter().ConvertFrom("#2c2c2c"));
+                    TheEditorNameLabel.Foreground = (Brush)(new BrushConverter().ConvertFrom("#ffffff"));
+                    //EditorBorder.BorderBrush = (Brush)(new BrushConverter().ConvertFrom("#808080"));
+                }
+                
 
                 TheWorkshop.HIDEALL();
                 TheEditorClass.EditorBackPanel.Visibility = Visibility.Visible;
@@ -249,9 +286,7 @@ namespace GameEditorStudio
                 
                 TheWorkshop.EditorClass = TheEditorClass; //this used to be EditorClass = TheEditorClass; and i changed it because i might have meant this, but also maybe not and i made a new bug?
 
-
-                //if (TheWorkshop.EditorClass.SWData != null) //null check is for text editors
-                //{  }
+                
                 
 
             }
@@ -266,7 +301,7 @@ namespace GameEditorStudio
 
             void MenuItem1_Click(object sender, RoutedEventArgs e)
             {
-                foreach (KeyValuePair<string, Editor> editor in Database.GameEditors)
+                foreach (KeyValuePair<string, Editor> editor in WorkshopData.GameEditors)
                 {
                     if (editor.Value == EditorClass)
                     {
@@ -280,7 +315,7 @@ namespace GameEditorStudio
 
                                 //EditorsTree.Items.Remove(editor.Value.EditorTreeViewitem); //editor.Key
 
-                                Database.GameEditors.Remove(editor.Key);
+                                WorkshopData.GameEditors.Remove(editor.Key);
                                 TheWorkshop.MidGrid.Children.Remove(editor.Value.EditorBackPanel);
                                 LibraryMan.GotoGeneralHide(TheWorkshop);
                                 //also hide the details panel for entrys / column / row etc?
@@ -399,10 +434,10 @@ namespace GameEditorStudio
             DockPanel.SetDock(EditorDock, Dock.Left);
             TheWorkshop.EditorBar.Children.Add(EditorDock);
 
-            Border EditorBorder = new();
+            
             EditorBorder.BorderThickness = new Thickness(2);
             EditorDock.Children.Add(EditorBorder);
-            DockPanel EditorDock2 = new();
+            
             EditorBorder.Child = EditorDock2;
             EditorDock2.Background = (Brush)(new BrushConverter().ConvertFrom("#191919"));
 

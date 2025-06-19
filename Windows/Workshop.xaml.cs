@@ -1459,6 +1459,8 @@ namespace GameEditorStudio
 
         public void LabelWidth(Column ColumnClass)
         {
+            
+
             double maxWidth = 0;
             var EntryList = ColumnClass.EntryList;
 
@@ -2246,9 +2248,9 @@ namespace GameEditorStudio
         public void UpdateSymbology(Entry EntryClass)
         {
             EntryClass.Symbology.Content = "";
-            EntryClass.Symbology.Width = 30;
+            EntryClass.Symbology.Width = 48;
             EntryClass.Symbology.Foreground = Brushes.White;
-            EntryClass.Symbology.FontSize = 16;
+            EntryClass.Symbology.FontSize = 20;
             //TheWorkshop.PropertiesEntry1Byte.Text = EditorClass.SWData.FileDataTable.FileBytes[EditorClass.SWData.DataTableStart + (EditorClass.SWData.TableRowIndex * EntryClass.RowSize) + EntryClass.RowOffset].ToString("D");
 
             {
@@ -2361,7 +2363,7 @@ namespace GameEditorStudio
                 ToolTipService.SetInitialShowDelay(EntryClass.Symbology, 100);
                 ToolTipService.SetBetweenShowDelay(EntryClass.Symbology, 100);
                                 
-                EntryClass.Symbology.Margin = new Thickness(-2, 0, -7, 0);
+                EntryClass.Symbology.Margin = new Thickness(-3, 0, -7, 0);
 
                 bool IsMostlyX = AllValues.GroupBy(x => x).Any(g => (double)g.Count() / AllValues.Count >= 0.8);
                 bool IsHalfX = AllValues.GroupBy(x => x).Any(g => (double)g.Count() / AllValues.Count >= 0.5);
@@ -2588,7 +2590,77 @@ namespace GameEditorStudio
             //if (TheWorkshop.IsPreviewMode == true) { IconButton.IsEnabled = false; }
         }
 
-        
+        private void Bitflag1NameTextboxTextChanged(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                EntryClass.EntryTypeBitFlag.BitFlag1Name = PropertiesEntryBitFlag1Name.Text;
+                UpdateEntryName(EntryClass);
+            }
+        }
+
+        private void Bitflag2NameTextboxTextChanged(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                EntryClass.EntryTypeBitFlag.BitFlag2Name = PropertiesEntryBitFlag1Name.Text;
+                UpdateEntryName(EntryClass);
+            }
+        }
+
+        private void Bitflag3NameTextboxTextChanged(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                EntryClass.EntryTypeBitFlag.BitFlag3Name = PropertiesEntryBitFlag1Name.Text;
+                UpdateEntryName(EntryClass);
+            }
+        }
+
+        private void Bitflag4NameTextboxTextChanged(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                EntryClass.EntryTypeBitFlag.BitFlag4Name = PropertiesEntryBitFlag1Name.Text;
+                UpdateEntryName(EntryClass);
+            }
+        }
+
+        private void Bitflag5NameTextboxTextChanged(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                EntryClass.EntryTypeBitFlag.BitFlag5Name = PropertiesEntryBitFlag1Name.Text;
+                UpdateEntryName(EntryClass);
+            }
+        }
+
+        private void Bitflag6NameTextboxTextChanged(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                EntryClass.EntryTypeBitFlag.BitFlag6Name = PropertiesEntryBitFlag1Name.Text;
+                UpdateEntryName(EntryClass);
+            }
+        }
+
+        private void Bitflag7NameTextboxTextChanged(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                EntryClass.EntryTypeBitFlag.BitFlag7Name = PropertiesEntryBitFlag1Name.Text;
+                UpdateEntryName(EntryClass);
+            }
+        }
+
+        private void Bitflag8NameTextboxTextChanged(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                EntryClass.EntryTypeBitFlag.BitFlag8Name = PropertiesEntryBitFlag1Name.Text;
+                UpdateEntryName(EntryClass);
+            }
+        }
     }
 
     public class NumberCount

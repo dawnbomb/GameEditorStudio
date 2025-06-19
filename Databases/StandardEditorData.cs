@@ -10,6 +10,8 @@ namespace GameEditorStudio
 {
     public class StandardEditorData //In some places i call this SWData
     {
+        public Editor TheEditor { get; set; }
+
         public string TableKey { get; set; } = "";
         public GameFile FileDataTable { get; set; } //Just a shortcut to the file, to cleanup code, and possibly processing time? IDK im to dumb to get what causes lag.
         public GameFile FileNameTable { get; set; } //XML? The file that contains the ItemNames for this editors Collection Tree.
