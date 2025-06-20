@@ -204,7 +204,7 @@ namespace GameEditorStudio
             GridSplitter GridSplitter = new GridSplitter
             {
                 Style = (Style)Application.Current.FindResource("SplitterVertical"),
-                //Width = 8,
+                Width = 10,
                 //HorizontalAlignment = HorizontalAlignment.Stretch,
                 //Background = (SolidColorBrush)Application.Current.Resources["NewColorThing"], // Assuming NewColorThing is a SolidColorBrush
                 //BorderThickness = new Thickness(1, 0, 2, 0),
@@ -218,17 +218,20 @@ namespace GameEditorStudio
             DockPanel RightDock = new();
             //RightDock.Background = Brushes.Yellow; /////////////////////////////////////COLOR/////////////////////////////////////
             //RightDock.Background = Brushes.Black;
-            RightDock.Style = (Style)Application.Current.Resources["BorderDock"];
+            //RightDock.Style = (Style)Application.Current.Resources["BorderDock"]; 
+            RightDock.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#333333"));
             Grid.SetColumn(RightDock, 2);
             mainGrid.Children.Add(RightDock);
 
-            Border EditorBorder = new();
+            
+
+            ContentControl EditorBorder = new();
             DockPanel.SetDock(EditorBorder, Dock.Top);
             //EditorBorder.BorderBrush = Brushes.LightBlue;
 
 
             DockPanel EditorPanel = new();
-            EditorBorder.Child = EditorPanel;
+            EditorBorder.Content = EditorPanel;
 
             {
                 //Note when i removed this, at the time a editors category made space above it, and not it doesn't, so i'd maybe wanna rework the margins if i re-add this ever. 
@@ -266,16 +269,16 @@ namespace GameEditorStudio
 
 
             {
-                Border DescriptionsBorder = new();
+                ContentControl DescriptionsBorder = new();
                 DockPanel.SetDock(DescriptionsBorder, Dock.Bottom);
                 RightDock.Children.Add(DescriptionsBorder);
-                DescriptionsBorder.Margin = new Thickness(0, 4, 0, 0);
+                DescriptionsBorder.Margin = new Thickness(0, 12, 0, 0);
 
 
                 DockPanel DescriptionsPanel = new();
                 DockPanel.SetDock(DescriptionsPanel, Dock.Bottom);
                 //DescriptionsPanel.VerticalAlignment = VerticalAlignment.Top;
-                DescriptionsBorder.Child = DescriptionsPanel;
+                DescriptionsBorder.Content = DescriptionsPanel;
                 //DescriptionsPanel.Height = 198;
 
 
@@ -319,9 +322,11 @@ namespace GameEditorStudio
 
 
 
-            
-            //ScrollViewer.Background = Brushes.Red;  ////////////////////////////////////////////////////////////COLOR////////////////////////////////////
-            //ScrollViewer.Background = Brushes.Black;
+
+
+            //I cant find where the fuck the scrollviewer is being created, so i'll just do this here... 
+            //ScrollViewer.BorderThickness = new Thickness(0);
+
             DockPanel.SetDock(ScrollViewer, Dock.Top);
             EditorPanel.Children.Add(ScrollViewer);
             ScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;

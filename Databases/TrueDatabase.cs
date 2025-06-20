@@ -96,9 +96,8 @@ namespace GameEditorStudio
         public Image EditorImage { get; set; } //fsdfs
         public Label EditorNameLabel { get; set; }
         public DockPanel EditorBarDockPanel { get; set; }
-        public DockPanel EditorDock2 { get; set; }
         public Label EditorLabel { get; set; } //The border around the editor button, used to make it look nice.
-        public Border EditorBorder { get; set; } //The border around the editor button, used to make it look nice.
+        public Button EditorButton { get; set; } //The button tab that opens the editor.
 
 
 

@@ -625,7 +625,7 @@ namespace GameEditorStudio
 
             Button CheckBox = new Button();
             CheckBox.MinWidth = 30;
-            CheckBox.Height = 24;
+            CheckBox.Height = 28;
             CheckBox.Margin = new Thickness(0, 0, 3, 0); // Left Top Right Bottom 
             CheckBox.HorizontalAlignment = HorizontalAlignment.Right;
             EntryClass.EntryDockPanel.Children.Add(CheckBox);
@@ -642,6 +642,7 @@ namespace GameEditorStudio
                     CheckBox.Content = EntryClass.EntryTypeCheckBox.FalseText;
                     EntryClass.EntryByteDecimal = EntryClass.EntryTypeCheckBox.FalseValue.ToString();
                     SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    
                 }
                 else if (EntryClass.EntryByteDecimal == EntryClass.EntryTypeCheckBox.FalseValue.ToString())
                 {

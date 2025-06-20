@@ -300,7 +300,14 @@ namespace GameEditorStudio
             FileManager.RefreshFileTree();
 
             HIDEALL();
-            DockPanelHome.Visibility= Visibility.Visible;
+            DockPanelHome.Visibility = Visibility.Visible;
+
+            foreach (Editor editor in MyDatabase.GameEditors.Values)
+            {
+                editor.EditorButton.Style = (Style)Application.Current.FindResource("ButtonEditorTab");
+
+            }
+            ButtonHome.Style = (Style)Application.Current.FindResource("ButtonCurrentEditorTab");
 
         }
 

@@ -306,7 +306,7 @@ namespace GameEditorStudio
             UserControlEditorCreator EditorMaker = new UserControlEditorCreator();
             Grid.SetRow(EditorMaker, 2);
             Grid.SetColumn(EditorMaker, 1);
-            Grid.SetRowSpan(EditorMaker, 2);
+            Grid.SetRowSpan(EditorMaker, 3);
             Grid.SetColumnSpan(EditorMaker, 2);
             WorkshopData.Workshop.GridBack.Children.Add(EditorMaker);
 

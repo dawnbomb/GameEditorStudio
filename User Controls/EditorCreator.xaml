@@ -42,22 +42,28 @@
                                                 </DockPanel>
                                             </Border>
                                             <local:UserControlEditorIcons x:Name="MenusForToolsAndEvents" Margin="592,10,10,0" Height="531" VerticalAlignment="Top"  />-->
-
-                                            <Label Content="Editor types" FontSize="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,215,0,0"/>
                                             <Label x:Name="LabelErrorNotice" Content="" HorizontalAlignment="Left" Margin="203,233,0,0" VerticalAlignment="Top"  Foreground="Red" />
+                                            <Label Content="TIP: If this game needs to repack files (like when romhacking) then when you have time you should probably  &#xA;learn about the eventing system and setup automatic file repacking." HorizontalAlignment="Left" Margin="3,573,0,0" VerticalAlignment="Top"/>
 
-                                            <Button Content="Standard Editor" HorizontalAlignment="Left" Margin="13,276,0,0" VerticalAlignment="Top" Height="73" Width="238" Click="GoToStandardWidth"/>
-                                            <Label Content="Create an editor for standard game data. &#xA;(Character Editor, Weapon Editor, Armors, &#xD;&#xA;Accessorys, Spells, items, Enemys, Shops, Etc)." HorizontalAlignment="Left" Margin="254,276,0,0" VerticalAlignment="Top"/>
-                                            <Button Content="Text Editor" HorizontalAlignment="Left" Margin="13,359,0,0" VerticalAlignment="Top" Height="72" Width="238" Click="GoToTextEditor"/>
-                                            <Button Content="Trigger Event" HorizontalAlignment="Left" Margin="13,520,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
-                                            <Label Content="TIP: If this game needs to repack files (like when romhacking), &#xD;&#xA;learn about eventing and setup file auto-repacking." HorizontalAlignment="Left" Margin="13,595,0,0" VerticalAlignment="Top"/>
-                                            <Label Content="This editor lets you group .txt, xml, etc files.&#xD;&#xA;Kinda like how Notepad++ or obsidian does. &#xA;Best for code scripts like Enemy AI or Events.  " HorizontalAlignment="Left" Margin="259,360,0,0" VerticalAlignment="Top"/>
-                                            <Label Content="Looks like an editor, but triggers an event.&#xA;Set it to open third party editors! :D &#xD;&#xA;(Graphics editor, Music, 3D Maps, etc)  " HorizontalAlignment="Left" Margin="255,520,0,0" VerticalAlignment="Top"/>
-                                            <Button Content="Text Table Editor" HorizontalAlignment="Left" Margin="13,441,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
-                                            <Label Content="Will be for multi-line text tables.  Note: &#xA;Editors already edit Names &amp; Descriptions. &#xA;For translations (Cutscene, Dialogue, etc).  " HorizontalAlignment="Left" Margin="255,442,0,0" VerticalAlignment="Top"/>
-                                            
-                                            <Button Content="XML Editor" HorizontalAlignment="Left" Margin="561,563,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
-                                            <Button Content="JSON Editor" HorizontalAlignment="Left" Margin="818,563,0,0" VerticalAlignment="Top" Height="71" Width="219" Background="#FF3E0101"/>
+                                            <Border Margin="13,151,168,68">
+                                                <ScrollViewer >
+                                                    <Grid>
+                                                        <Label Content="Editor types" FontSize="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,15,0,0"/>
+                                                        <Button Content="Standard Editor" HorizontalAlignment="Left" Margin="5,80,0,0" VerticalAlignment="Top" Height="73" Width="238" Click="GoToStandardWidth"/>
+                                                        <Label Content="Create an editor for standard game data. &#xA;(Character Editor, Weapon Editor, Armors, &#xA;Accessorys, Spells, items, Enemys, Shops, Etc)." HorizontalAlignment="Left" Margin="244,74,0,0" VerticalAlignment="Top"/>
+                                                        <Button Content="Text Editor" HorizontalAlignment="Left" Margin="5,171,0,0" VerticalAlignment="Top" Height="72" Width="238" Click="GoToTextEditor"/>
+                                                        <Label Content="This editor lets you group .txt, xml, etc files.&#xA;Kinda like how Notepad++ or obsidian does. &#xA;Best for code scripts like Enemy AI or Events.  " HorizontalAlignment="Left" Margin="249,166,0,0" VerticalAlignment="Top"/>
+                                                        <Button Content="Text Table Editor" HorizontalAlignment="Left" Margin="7,262,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
+                                                        <Label Content="Will be for multi-line text tables.  Note: &#xA;Editors already edit Names &amp; Descriptions. &#xA;For translations (Cutscene, Dialogue, etc).  " HorizontalAlignment="Left" Margin="249,257,0,0" VerticalAlignment="Top"/>
+                                                        <Button Content="Trigger Event" HorizontalAlignment="Left" Margin="7,354,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
+                                                        <Label Content="It will look like an editor, but triggers an event.&#xA;Set it to open third party editors! :D &#xA;(Graphics editor, Music, 3D Maps, etc)  " HorizontalAlignment="Left" Margin="249,346,0,0" VerticalAlignment="Top"/>
+                                                        <Button Content="XML Editor" HorizontalAlignment="Left" Margin="10,440,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
+                                                        <Button Content="JSON Editor" HorizontalAlignment="Left" Margin="10,523,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
+
+                                                    </Grid>
+                                                </ScrollViewer>
+                                            </Border>
+
 
 
 
@@ -131,7 +137,7 @@
                                                 <Image HorizontalAlignment="Left" Height="126" Margin="259,156,0,0" VerticalAlignment="Top" Width="549" Source="/User Controls/Tutorial New Workshop Get Base Address Part 2.png"/>
                                             </Grid>
                                         </ScrollViewer>
-                                        
+
 
                                     </DockPanel>
                                 </Border>
@@ -148,9 +154,24 @@
                                             <Label Content="Final Review" FontWeight="Bold"/>
                                         </DockPanel>
                                         <Grid>
-                                            <Button x:Name="CreateNewEditor" Content="Create New Editor! :D" HorizontalAlignment="Left" Margin="355,284,0,0" VerticalAlignment="Top" Height="39" Width="265" Click="ButtonCreateStandardWidthEditor"/>
-                                            <Label Content="In the future this you will be able to review everything here, but i didn't care enough so &#xD;&#xA;It will be added later.&#xA;&#xA;Once you click create new editor, you won't be able to go back anymore,&#xA;but you can still change most details even after creation, &#xD;&#xA;or delete and remake it. (right click an editor and select and delete).&#xA;&#xA;In future versions of the program, i hope to add support for changing from manual item list&#xA;to an item list from file even after an editor is created, among other things." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                                            <Button Content="Back" HorizontalAlignment="Left" Margin="47,284,0,0" VerticalAlignment="Top" Height="39" Width="179" Click="ButtonBackToNameList"/>
+                                            <Button x:Name="CreateNewEditor" Content="Create New Editor! :D" HorizontalAlignment="Left" Margin="492,576,0,0" VerticalAlignment="Top" Height="40" Width="264" Click="ButtonCreateStandardWidthEditor"/>
+                                            <Button Content="Back" HorizontalAlignment="Left" Margin="194,576,0,0" VerticalAlignment="Top" Height="40" Width="180" Click="ButtonBackToNameList"/>
+                                            
+                                            <Border Margin="68,44,100,134">
+                                                <DockPanel Background="Transparent" LastChildFill="True" >
+                                                    <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
+                                                        <Label Content="Quick tutorial for new people :3" FontWeight="Bold"/>
+                                                    </DockPanel>
+
+                                                    <ScrollViewer>
+                                                        <Label Content="- When your editor is first made, every byte will by in a giant vertical list of cube&#xA;looking things that we call &quot;Entrys&quot;. Each entry represents some data, and it will&#xD;&#xA;be on you to name them (such as Max HP, Str, EXP, Damage type, weapon type, etc).&#xD;&#xA;To name an entry, click it, then type a name on the right panel, and press ENTER.&#xD;&#xA;&#xD;&#xA;- In general, most textboxes require you to press enter to make the change actually&#xD;&#xA;happen. The only exception is the value of an entry, and when using a text editor.&#xD;&#xA;Make sure you remember this and drill it into your brain!  &#xA; &#xA;- You can move entrys around to organize them, by clicking and dragging them. &#xD;&#xA;There is no visual for this yet, but when you release the mouse it will move.&#xD;&#xA;If you drop an entry over another entry, it will move to appear under it. &#xD;&#xA;If you drop an entry in the empty space to the right, the entry will move &#xD;&#xA;into a new column. You can also right click an entry and tell it to make a new&#xD;&#xA;column between two existing ones. &#xD;&#xA;&#xD;&#xA;- You can also move entrys in bulk. To more multiple entrys at once, first&#xD;&#xA;select an entry. Then hold left shift, and click drag from another entry in the&#xD;&#xA;samn column. It won't look like your even selecting more then 1 entry, but&#xD;&#xA;when you drop them somewhere, all the entrys between the one you first selected, &#xD;&#xA;and the one you grabbed last, will all move. I know i really need to make this&#xD;&#xA;give more visual feedback, but i swear programming visuals is SO VERY NOT&#xD;&#xA;MY THING, like it's seriously hard. Just know you *can* bulk move entrys.  &#xA;&#xA;- On the left side of an editor is the list of whatever the editor is for.&#xD;&#xA;In this program, every &quot;thing&quot; in that list is called an &quot;item&quot;.&#xD;&#xA;So for a weapons editor, all the weapons are called &quot;items&quot;. &#xD;&#xA;for an enemy editor, all the enemys are called &quot;items&quot;, etc. &#xD;&#xA;Basically, an &quot;Item&quot; is one instance of anything in a list. &#xD;&#xA;&#xD;&#xA;- Just like with entrys, you can click &amp; drag items in the list to reorder them&#xD;&#xA;(and again, there is no visual yet). Releasing the mouse over another item moves&#xA;your selected item under it. You can also right click an item in the list and create&#xA;a folder. This is great to categorize items, like &quot;Swords&quot;, &quot;Magic Classes&quot;, or&#xA;&quot;Enemys who first appear in the first dungeon&quot;. Note that when a editor saves &#xD;&#xA;any changes back to the game files, the items are saved in their origonal order.&#xD;&#xA;That is to say, when you reorder items with this program, it does not actually&#xD;&#xA;change the order in the game files. This bypasses games having things sorted&#xD;&#xA;in an unreasonable order, but it also means you simply can't change their ingame order.&#xD;&#xA;  &#xD;&#xA;&#xD;&#xA;- You can also give items a note, at the bottom left of an editor. &#xD;&#xA;Notes do not save to game files, but are displayed in the editor next to an item's&#xA;name. They are useful for example, if two weapons have the same name, then &#xD;&#xA;you can note them as &quot;Fake Ultima Blade&quot; and &quot;Real Ultima Blade&quot; or something.  &#xA;&#xA;- Finally, whenever you make a new editor like this, the &quot;Symbology&quot; system&#xD;&#xA;is automatically toggled on. You can toggle it on/off using the magnifying glass&#xD;&#xA;icon on the hotbar at the top of an editor. When symbology is ON, symbols with&#xD;&#xA;diffrent colors will appear on the left side of every entry. They try to give&#xD;&#xA;useful hints for what each entry (aka byte) could represent. For example, &#xD;&#xA;if an entry is only ever the values 0 or 1 across the entire editor (aka data table)&#xD;&#xA;then a symbol for a golden checkmark appears, indicating it's probably a &#xD;&#xA;checkbox type (aka a flag), such as a &quot;Is Female&quot; or &quot;Can Equip Bows&quot; flags.&#xD;&#xA;You can mouseover a symbol and it will give you a tooltip explaining what it means. &#xD;&#xA;&#xD;&#xA;- If you have any questions about the program, you can join my discord and ask&#xD;&#xA;away. In the future, i will try and make a &quot;wiki&quot; feature, that teaches reverse&#xD;&#xA;engineering and how to guess what each entry represents. &#xD;&#xA;&#xD;&#xA;Anyway, GOODLUCK! :D - HAVE FUN MAKING YOUR EDITOR!!!&#xD;&#xA;  " HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+
+                                                    </ScrollViewer>
+
+
+                                                </DockPanel>
+                                                
+                                            </Border>
                                         </Grid>
 
                                     </DockPanel>
