@@ -638,14 +638,14 @@ namespace GameEditorStudio
                 Button OpenButton = new();
                 TopPanel.Children.Add(OpenButton);
                 DockPanel.SetDock(OpenButton, Dock.Right);
-                OpenButton.Height = 25;
+                OpenButton.Height = 30;
                 OpenButton.Content = " Open ";
 
                 Button BrowseButton = new();
                 TopPanel.Children.Add(BrowseButton);
                 DockPanel.SetDock(BrowseButton, Dock.Right);
-                BrowseButton.Width = 70;
-                BrowseButton.Height = 25;
+                BrowseButton.Width = 100;
+                BrowseButton.Height = 30;
                 BrowseButton.Margin = new Thickness(0,0,4,0);
                 BrowseButton.Content = "Browse...";
 
@@ -699,7 +699,7 @@ namespace GameEditorStudio
                 MissingLabel.Foreground = (SolidColorBrush)(new BrushConverter().ConvertFrom("#FFFF1800"));
                 MissingLabel.Padding = new Thickness(3,1,3,3);
                 MissingLabel.BorderThickness = new Thickness(0);
-                MissingLabel.Height = 23;
+                MissingLabel.Height = 25;
                 MissingLabel.Margin = new Thickness(10, 0, 0, 0);
                 MissingLabel.Visibility = Visibility.Collapsed;
                 DockPanel.SetDock(Textbox, Dock.Left);

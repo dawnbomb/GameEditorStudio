@@ -19,25 +19,25 @@
     </Style>
 
     <Style x:Key="SplitterHorizontal" TargetType="GridSplitter">
-        <Setter Property="Background" Value="{DynamicResource ApplicationBorder}"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Height" Value="4"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource ApplicationBorder}"/>
+                <Setter Property="Background" Value="Transparent"/>
             </Trigger>
         </Style.Triggers>
     </Style>
 
     <Style x:Key="SplitterVertical" TargetType="GridSplitter">
-        <Setter Property="Background" Value="{DynamicResource ApplicationBorder}"/>
+        <Setter Property="Background" Value="Transparent"/> <!--Value="{DynamicResource ApplicationBorder}"-->
         <Setter Property="Width" Value="4"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Stretch"/>
         <Style.Triggers>            
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource ApplicationBorder}"/>
+                <Setter Property="Background" Value="Transparent"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -122,26 +122,86 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Grid SnapsToDevicePixels="True">
+                    <Grid SnapsToDevicePixels="True" Background="Transparent">
+                        <Border x:Name="MainBackground"  Background="{TemplateBinding Background}" BorderThickness="0"/>
+                        <Border BorderThickness="0,0,0,2"  BorderBrush="#242424"  Margin="0"/>
+                        <Border BorderThickness="2"  BorderBrush="#171717" Margin="0,0,0,2"/> 
+                        <Border x:Name="InnerBorder" BorderThickness="2"  BorderBrush="#4d4d4d"  Margin="2,2,2,4"/>
+                        <ContentPresenter HorizontalAlignment="Center"  VerticalAlignment="Center"  RecognizesAccessKey="True" Margin="0,0,0,2"/>
+                    </Grid>
 
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="MainBackground" Property="Background" Value="#4d4d4d"/>
+                            <Setter TargetName="InnerBorder" Property="BorderBrush" Value="#2d2d2d"/>
+                        </Trigger>
+
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="MainBackground" Property="Background" Value="#2d2d2d"/>
+                            <Setter TargetName="InnerBorder" Property="BorderBrush" Value="#2d2d2d"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Button" x:Key="ButtonCurrentEditorTab">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="FontFamily" Value="Dawns 10px ArkPixel"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Padding" Value="2,0"/>
+        <Setter Property="Background" Value="#333333"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid SnapsToDevicePixels="True" Margin="0,0,0,0" Background="Transparent">
                         <!-- Background Layer -->
-                        <Border x:Name="MainBackground"
-                        Background="{TemplateBinding Background}"/>
+                        <Border x:Name="MainBackground" Background="{TemplateBinding Background}" BorderThickness="0" Margin="0,0,0,0"/>
+                        <Border x:Name="OuterBorder2" BorderThickness="2,2,2,0"   BorderBrush="#575757"  Margin="0,0,0,0"/>
+                        <Border x:Name="OuterBorder" BorderThickness="2,2,2,0"   BorderBrush="#000000"  Margin="0,0,0,2"/>
+                        <Border x:Name="InnerBorder" BorderThickness="2,2,2,0" BorderBrush="#575757"  Margin="2,2,2,0"/>
+                        <ContentPresenter HorizontalAlignment="Center"   VerticalAlignment="Center"  RecognizesAccessKey="True" Margin="0,0,0,0"/>
+                    </Grid>
 
-                        <!-- Outer Border -->
-                        <Border BorderThickness="2"
-                        BorderBrush="#171717"/> 
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="MainBackground" Property="Background" Value="#4d4d4d"/>
+                            <Setter TargetName="InnerBorder" Property="BorderBrush" Value="#2d2d2d"/>
+                        </Trigger>
 
-                        <!-- Inner Border -->
-                        <Border x:Name="InnerBorder" BorderThickness="2"
-                        BorderBrush="#4d4d4d"
-                        Margin="2"/>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="MainBackground" Property="Background" Value="#2d2d2d"/>
+                            <Setter TargetName="InnerBorder" Property="BorderBrush" Value="#2d2d2d"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
-                        
-                        <!-- Content -->
-                        <ContentPresenter HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  RecognizesAccessKey="True"/>
+    
+
+    <Style TargetType="Button" x:Key="ButtonEditorTab">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="FontFamily" Value="Dawns 10px ArkPixel"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Foreground" Value="#4F4F4F"/>
+        <Setter Property="Padding" Value="2,0"/>
+        <Setter Property="Background" Value="#202020"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid SnapsToDevicePixels="True" Margin="0,0,0,0" Background="Transparent">
+                        <!-- Background Layer -->
+                        <Border x:Name="MainBackground" Background="{TemplateBinding Background}" BorderThickness="0" Margin="0,0,0,0"/>
+                        <Border x:Name="OuterBorder2" BorderThickness="2,2,2,2"   BorderBrush="#575757"  Margin="0,0,0,0"/>
+                        <Border x:Name="OuterBorder" BorderThickness="2,2,2,2"   BorderBrush="#000000"  Margin="0,0,0,2"/>
+                        <Border x:Name="InnerBorder" BorderThickness="2,2,2,0" BorderBrush="#474747"  Margin="2,2,2,4"/>
+                        <ContentPresenter HorizontalAlignment="Center"   VerticalAlignment="Center"  RecognizesAccessKey="True" Margin="0,0,0,0"/>
                     </Grid>
 
                     <ControlTemplate.Triggers>
@@ -235,6 +295,29 @@
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ResourceKey= PanelBorder}"/>
+    </Style>
+
+    <Style TargetType="{x:Type ContentControl}" >
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContentControl">
+                    <!-- Outer Border -->
+                    <DockPanel Background="Transparent">
+                        <Border BorderThickness="0,2,0,0" BorderBrush="#2B2B2B" Background="Transparent" Margin="2,0,2,0" DockPanel.Dock="Top">
+                            <!-- Inner Border -->                            
+                        </Border>
+                        <Border BorderThickness="2,0,2,2" BorderBrush="#575757" Background="{TemplateBinding Background}"  DockPanel.Dock="Top">
+                            <Border>
+                                <ContentPresenter />
+                            </Border>                            
+                        </Border>
+                    </DockPanel>
+                    
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style x:Key="EditorButtonBorder" TargetType="{x:Type Border}" >
@@ -340,7 +423,7 @@
     </Style>
 
     <Style TargetType="{x:Type DockPanel}" x:Key="RowStyle">
-        <Setter Property="Background" Value="{StaticResource ResourceKey=DarkMode_Middle}"/>
+        <Setter Property="Background" Value="#1d1d1d"/> <!--Value="{StaticResource ResourceKey=DarkMode_Middle}"-->
     </Style>
 
 

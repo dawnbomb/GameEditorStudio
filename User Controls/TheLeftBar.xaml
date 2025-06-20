@@ -15,7 +15,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0">
+        <ContentControl Grid.Row="0">
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
                     <Label Content="Items" FontWeight="Bold"/>
@@ -23,15 +23,15 @@
                 </DockPanel>
                 <TreeView Name="ItemsTree"  SelectedItemChanged="ItemsTreeSelectedItemChanged" />
             </DockPanel>
-        </Border>
+        </ContentControl>
 
-        <GridSplitter Style="{DynamicResource SplitterHorizontal}" Grid.Row="1"   />
+        <GridSplitter Style="{DynamicResource SplitterHorizontal}" Grid.Row="1" Height="14"   />
 
-        <Border Grid.Row="2">
+        <ContentControl Grid.Row="2" >
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
                     <Label Content="Item Info" FontWeight="Bold"/>
-                    
+
                     <Label Content="Chars: XX / YY" Name="LabelCharacterCount" FontWeight="Bold" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
                 </DockPanel>
                 <Grid Margin="3">
@@ -51,9 +51,10 @@
                     <TextBox x:Name="ItemNoteTextbox" Grid.Row="1" Grid.Column="1" Margin="3" KeyDown="ItemNoteboxKeyDown" ToolTip="An item note is displayed next to the item in the items list.&#xD;&#xA;It does not get saved to the game files.&#xD;&#xA;Item note data is a part of the editor, not a project. " />
 
                     <TextBox x:Name="ItemNotepadTextbox" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" TextChanged="NotepadTextChanged" ToolTip="An item notepad is a longform note for the item.&#xD;&#xA;Unlike a note, it doesn't display next to the item, and only appears in this textbox.&#xD;&#xA;It is still very useful for keeping track of detailed information.&#xD;&#xA;Item notepad data is a part of the editor, not a project." />
-                </Grid>                
+                </Grid>
             </DockPanel>
-        </Border>
+        </ContentControl>
+        
 
         <!--<GridSplitter x:Name="TranslationSplitter" Style="{DynamicResource SplitterHorizontal}" Grid.Row="3"   />-->
 

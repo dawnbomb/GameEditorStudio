@@ -39,74 +39,71 @@ namespace GameEditorStudio
 
             
 
+                        
 
-            DockPanel EditorDock = new();
-            EditorDock.Tag = EditorClass;
-            EditorDock.Margin = new Thickness(0, 0, 5, 0);
-            EditorDock.Background = (Brush)(new BrushConverter().ConvertFrom("#191919"));
-            EditorClass.EditorBarDockPanel = EditorDock;
-            EditorDock.AllowDrop = true;
+            Button EditorTabButton = new();
+            EditorClass.EditorButton = EditorTabButton;
+            EditorTabButton.Margin = new Thickness(0, 0, 4, 0);
+            EditorTabButton.AllowDrop = true;
+            EditorTabButton.Tag = EditorClass;
+            DockPanel.SetDock(EditorTabButton, Dock.Left);
+            TheWorkshop.EditorBar.Children.Add(EditorTabButton);
 
-            DockPanel EditorDock2 = new();
-            Border EditorBorder = new();
-            EditorClass.EditorBorder = EditorBorder;
-
-
-
-
-            EditorDock.MouseMove += (sender, e) =>
+            Point _dragStart;     
+            EditorTabButton.PreviewMouseLeftButtonDown += (sender, e) =>  // Capture the drag start position early
             {
-
+                _dragStart = e.GetPosition(null);
+            };
+            
+            EditorTabButton.PreviewMouseMove += (sender, e) =>  // Detect drag on PreviewMouseMove, not MouseMove
+            {
                 if (e.LeftButton == MouseButtonState.Pressed)
                 {
-                    var theDockPanel = (DockPanel)sender;
+                    Point current = e.GetPosition(null);
+                    Vector delta = current - _dragStart;
 
-                    var currentPosition = e.GetPosition(theDockPanel);
-                    var minimumDistance = (SystemParameters.MinimumHorizontalDragDistance + SystemParameters.MinimumVerticalDragDistance) / 2;
-
-                    if (Math.Sqrt(Math.Pow(currentPosition.X, 2) + Math.Pow(currentPosition.Y, 2)) >= minimumDistance)
+                    if (Math.Abs(delta.X) > SystemParameters.MinimumHorizontalDragDistance ||
+                        Math.Abs(delta.Y) > SystemParameters.MinimumVerticalDragDistance)
                     {
-                        var data = new DataObject("MoveEditor", theDockPanel);
-                        DragDrop.DoDragDrop(theDockPanel, data, DragDropEffects.Move);
+                        var data = new DataObject("MoveEditor", EditorTabButton);
+                        DragDrop.DoDragDrop(EditorTabButton, data, DragDropEffects.Move);
                     }
-                    theDockPanel.ReleaseMouseCapture();
-
                 }
             };
 
-
-            EditorDock.Drop += (sender, e) =>
+            EditorTabButton.Drop += (sender, e) =>
             {
-
-                if (e.Data.GetDataPresent("MoveEditor")) //Single Entry Drop
+                if (e.Data.GetDataPresent("MoveEditor"))
                 {
-                    DockPanel DropInput = (DockPanel)e.Data.GetData("MoveEditor");
+                    Button DropInput = (Button)e.Data.GetData("MoveEditor");
+                    Button target = (Button)sender;
 
-                    if (DropInput == EditorDock)
-                    {
-                        return;
+                    if (DropInput == target) return;
+
+                    var panel = TheWorkshop.EditorBar;
+                    panel.Children.Remove(DropInput);
+                    int index = panel.Children.IndexOf(target) + 1;
+                    panel.Children.Insert(index, DropInput);
+
+                    {   //When i gave editor buttons a new look, somehow i broke this and i have no idea how. I just asked GPT to gimme something that works. I can remake this for readability later. T.T
+                        var editors = WorkshopData.GameEditors;
+                        var entries = editors.ToList();
+                        string draggedKey = entries.First(kv => kv.Value == (Editor)DropInput.Tag).Key;
+                        string targetKey = entries.First(kv => kv.Value == (Editor)target.Tag).Key;
+                        var draggedEntry = entries.First(kv => kv.Key == draggedKey);
+                        entries.Remove(draggedEntry);
+                        int targetIndex = entries.FindIndex(kv => kv.Key == targetKey);
+                        entries.Insert(targetIndex + 1, draggedEntry);
+                        editors.Clear();
+                        foreach (var kv in entries)
+                        {
+                            editors.Add(kv.Key, kv.Value);
+                        }
                     }
-
-                    TheWorkshop.EditorBar.Children.Remove(DropInput);
-                    int GoTo = (TheWorkshop.EditorBar.Children.IndexOf(EditorDock)) + 1;
-                    TheWorkshop.EditorBar.Children.Insert(GoTo, DropInput);
-
-                    //if (TheWorkshop.EditorBar.Children.IndexOf(DropInput) < TheWorkshop.EditorBar.Children.IndexOf(EditorDock) )
-                    //{
-                    //    TheWorkshop.EditorBar.Children.Remove(DropInput);
-                    //    int GoTo = (TheWorkshop.EditorBar.Children.IndexOf(EditorDock)) + 1;
-                    //    TheWorkshop.EditorBar.Children.Insert(GoTo, DropInput);
-                    //}
-                    //else if (TheWorkshop.EditorBar.Children.IndexOf(DropInput) > TheWorkshop.EditorBar.Children.IndexOf(EditorDock))
-                    //{
-                    //    TheWorkshop.EditorBar.Children.Remove(DropInput);
-                    //    int GoTo = (TheWorkshop.EditorBar.Children.IndexOf(EditorDock));
-                    //    TheWorkshop.EditorBar.Children.Insert(GoTo, DropInput);
-                    //}
-
-
+                    
                 }
             };
+                        
 
 
 
@@ -115,14 +112,11 @@ namespace GameEditorStudio
             EditorClass.EditorLabel = TheEditorNameLabel;
             TheEditorNameLabel.VerticalAlignment = VerticalAlignment.Bottom;
             TheEditorNameLabel.HorizontalAlignment = HorizontalAlignment.Center;
-            TheEditorNameLabel.Content = EditorClass.EditorName;
+            TheEditorNameLabel.Content = " " + EditorClass.EditorName + " ";
             EditorClass.EditorNameLabel = TheEditorNameLabel;
-            
 
 
-
-            EditorDock.MouseLeftButtonDown += ClickEditor;
-            void ClickEditor(object sender, MouseButtonEventArgs e)
+            EditorTabButton.Click += (sender, e) =>
             {
                 Editor TheEditorClass = EditorClass;
 
@@ -134,18 +128,14 @@ namespace GameEditorStudio
                 {   //Set tab colors.                    
                     foreach (Editor editor in WorkshopData.GameEditors.Values)
                     {
-                        editor.EditorDock2.Background = (Brush)(new BrushConverter().ConvertFrom("#191919"));
-                        editor.EditorLabel.ClearValue(Control.ForegroundProperty);
-                        //editor.EditorBorder.ClearValue(Control.BorderBrushProperty);
-                        //editor.EditorBorder.Style = (Style)Application.Current.Resources["EditorButtonBorder"];
-                        //editor.EditorBorder.BorderBrush = (Brush)(new BrushConverter().ConvertFrom("#0a0a0a"));
+                        editor.EditorButton.Style = (Style)Application.Current.FindResource("ButtonEditorTab");
 
-                    }     
-                    EditorDock2.Background = (Brush)(new BrushConverter().ConvertFrom("#2c2c2c"));
-                    TheEditorNameLabel.Foreground = (Brush)(new BrushConverter().ConvertFrom("#ffffff"));
-                    //EditorBorder.BorderBrush = (Brush)(new BrushConverter().ConvertFrom("#808080"));
+                    }
+                    TheWorkshop.ButtonHome.Style = (Style)Application.Current.FindResource("ButtonEditorTab");
+                    EditorTabButton.Style = (Style)Application.Current.FindResource("ButtonCurrentEditorTab");
+
                 }
-                
+
 
                 TheWorkshop.HIDEALL();
                 TheEditorClass.EditorBackPanel.Visibility = Visibility.Visible;
@@ -154,13 +144,13 @@ namespace GameEditorStudio
 
                 TheWorkshop.PropertiesTextboxEditorName.Text = TheEditorNameLabel.Content.ToString();
 
-                if (EditorClass.EditorType == "DataTable") 
+                if (EditorClass.EditorType == "DataTable")
                 {
                     if (TheWorkshop.IsPreviewMode == false)
                     {
                         TheWorkshop.DataTableFileBox.Text = TheEditorClass.StandardEditorData.FileDataTable.FileName;
                     }
-                    else 
+                    else
                     {
                         TheWorkshop.DataTableFileBox.Text = "PREVIEW MODE";
                     }
@@ -173,7 +163,7 @@ namespace GameEditorStudio
                     TheWorkshop.PropertiesEditorNameTableRowSize.Text = TheEditorClass.StandardEditorData.NameTableRowSize.ToString();
                     TheWorkshop.PropertiesEditorNameCount.Text = (TheEditorClass.StandardEditorData.NameTableItemCount - 1).ToString();
 
-                    if (EditorClass.StandardEditorData.NameTableLinkType == StandardEditorData.NameTableLinkTypes.DataFile) 
+                    if (EditorClass.StandardEditorData.NameTableLinkType == StandardEditorData.NameTableLinkTypes.DataFile)
                     {
                         TheWorkshop.LabelCharacterSet.Visibility = Visibility.Visible;
                         TheWorkshop.PropertiesEditorNameTableCharacterSetDropdown.Visibility = Visibility.Visible;
@@ -213,7 +203,7 @@ namespace GameEditorStudio
                         TheWorkshop.LabelStart.Visibility = Visibility.Collapsed;
                         TheWorkshop.PropertiesEditorNameTableStartByte.Visibility = Visibility.Collapsed;
 
-                        
+
                     }
 
                     foreach (var item in TheWorkshop.PropertiesEditorNameTableCharacterSetDropdown.Items)
@@ -226,7 +216,7 @@ namespace GameEditorStudio
                         }
                     }
 
-                    if (TheWorkshop.IsPreviewMode == false) 
+                    if (TheWorkshop.IsPreviewMode == false)
                     {
                         if (TheWorkshop.ProjectDataItem.ProjectInputDirectory != "")
                         {
@@ -246,17 +236,17 @@ namespace GameEditorStudio
                             TheWorkshop.EditorOutputLocationTextbox.Text = "You didn't set a project output folder, or it nolonger exists. :(";
                         }
                     }
-                    else 
+                    else
                     {
                         TheWorkshop.PropertiesEditorReadGameDataFrom.Text = "Your in preview mode!";
                         TheWorkshop.EditorOutputLocationTextbox.Text = "Your in preview mode!";
                     }
 
-                    
 
 
 
-                    if (EditorClass.StandardEditorData.FileNameTable != null) 
+
+                    if (EditorClass.StandardEditorData.FileNameTable != null)
                     {
                         TheWorkshop.PropertiesEditorNameTableTextSize.IsEnabled = true;
                         TheWorkshop.PropertiesEditorNameTableStartByte.IsEnabled = true;
@@ -266,7 +256,7 @@ namespace GameEditorStudio
                         TheWorkshop.NameTableFileBox.Text = TheEditorClass.StandardEditorData.FileNameTable.FileName;
 
                     }
-                    else 
+                    else
                     {
                         TheWorkshop.PropertiesEditorNameTableTextSize.IsEnabled = false;
                         TheWorkshop.PropertiesEditorNameTableStartByte.IsEnabled = false;
@@ -276,23 +266,23 @@ namespace GameEditorStudio
                     }
 
                     TheWorkshop.EntryNoteTextbox.Text = TheEditorClass.StandardEditorData.SelectedEntry.Notepad;
-                                        
-                    
-                    
+
+
+
                     //var UC = TheEditorClass.SWData.EditorLeftDockPanel.UserControl as TheLeftBar;
                     //UC.LabelCharsMax.Content = TheEditorClass.SWData.NameTableTextSize.ToString();
                 }
-                
-                
+
+
                 TheWorkshop.EditorClass = TheEditorClass; //this used to be EditorClass = TheEditorClass; and i changed it because i might have meant this, but also maybe not and i made a new bug?
 
-                
-                
 
-            }
+
+
+            };
 
             ContextMenu contextMenu = new ContextMenu();
-            EditorDock.ContextMenu = contextMenu;
+            EditorTabButton.ContextMenu = contextMenu;
 
             MenuItem menuItem1 = new MenuItem();
             menuItem1.Header = "Delete Editor";
@@ -420,9 +410,20 @@ namespace GameEditorStudio
 
 
             }
-            
 
-            
+
+
+
+
+
+
+            EditorTabButton.Content = TheEditorNameLabel;
+            //DockPanel.SetDock(TheEditorNameLabel, Dock.Bottom);
+            //EditorDock2.Children.Add(TheEditorNameLabel);
+
+
+
+
 
 
             //DockPanel.SetDock(EditorBorder, Dock.Left);
@@ -431,24 +432,26 @@ namespace GameEditorStudio
 
 
 
-            DockPanel.SetDock(EditorDock, Dock.Left);
-            TheWorkshop.EditorBar.Children.Add(EditorDock);
 
-            
-            EditorBorder.BorderThickness = new Thickness(2);
-            EditorDock.Children.Add(EditorBorder);
-            
-            EditorBorder.Child = EditorDock2;
-            EditorDock2.Background = (Brush)(new BrushConverter().ConvertFrom("#191919"));
 
-            DockPanel.SetDock(TheEditorNameLabel, Dock.Bottom);
-            EditorDock2.Children.Add(TheEditorNameLabel);
-            DockPanel.SetDock(EditorClass.EditorImage, Dock.Top);
-            EditorDock2.Children.Add(EditorClass.EditorImage);
+            //DockPanel.SetDock(EditorDock, Dock.Left);
+            //TheWorkshop.EditorBar.Children.Add(EditorDock);
 
-            EditorClass.EditorDock2 = EditorDock2;
 
-            EditorBorder.Style = (Style)Application.Current.Resources["EditorButtonBorder"];
+            ////EditorBorder.BorderThickness = new Thickness(2);
+            ////EditorDock.Children.Add(EditorBorder);
+
+            ////EditorBorder.Child = EditorDock2;
+            ////EditorDock2.Background = (Brush)(new BrushConverter().ConvertFrom("#191919"));
+
+            //DockPanel.SetDock(TheEditorNameLabel, Dock.Bottom);
+            //EditorDock2.Children.Add(TheEditorNameLabel);
+            //DockPanel.SetDock(EditorClass.EditorImage, Dock.Top);
+            //EditorDock2.Children.Add(EditorClass.EditorImage);
+
+            //EditorClass.EditorDock2 = EditorDock2;
+
+            //EditorBorder.Style = (Style)Application.Current.Resources["EditorButtonBorder"];
 
             //TheEditorNameLabel.Visibility = Visibility.Collapsed;
 

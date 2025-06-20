@@ -12,18 +12,18 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="200"/>
         </Grid.RowDefinitions>
-        <Border Grid.Row="0">
+        <ContentControl Grid.Row="0">
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
                     <Label Name="ItemsLabel" Content="Workshop" FontWeight="Bold"/>
-                    <Button Name="AddFileButton" Content="Add File" DockPanel.Dock="Right" Click="ButtonAddFileToWorkshop" Width="100" HorizontalAlignment="Right" Margin="3" Height="30"/>                   
+                    <Button Name="AddFileButton" Content="Add File" DockPanel.Dock="Right" Click="ButtonAddFileToWorkshop" Width="100" HorizontalAlignment="Right" Margin="3" Height="30"/>
 
                 </DockPanel>
                 <TreeView x:Name="TreeGameFiles" SelectedItemChanged="SelectedTreeItemChanged" />
             </DockPanel>
-        </Border>
+        </ContentControl>
         <GridSplitter Style="{DynamicResource SplitterHorizontal}" Grid.Row="1"   />
-        <Border Grid.Row="2">
+        <ContentControl Grid.Row="2">
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
                     <Label Content="File" FontWeight="Bold"/>
@@ -50,6 +50,6 @@
                     <TextBox x:Name="FileNotepadTextbox" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" TextChanged="FileNotepadTextChanged" />
                 </Grid>
             </DockPanel>
-        </Border>
+        </ContentControl>
     </Grid>
 </UserControl>

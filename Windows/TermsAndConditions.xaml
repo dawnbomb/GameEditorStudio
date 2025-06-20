@@ -24,7 +24,7 @@
 
             </DockPanel>
         </Border>
-        <Label Content="PS: If Romhacking.net or some game banana mod won't let you put&#xD;&#xA;your mod there, reach out to me and i'll host it for you. &#xD;&#xA;(Unless it's a cheat mod for a competative game :p )" HorizontalAlignment="Left" Margin="15,854,0,0" VerticalAlignment="Top"/>
+        <Label Content="PS: If Romhacking.net or some game banana mod won't let you put&#xD;&#xA;your mod there, reach out to me and i'll host it for you. &#xD;&#xA;(Unless it's a cheat mod for a competative game :p )" HorizontalAlignment="Left" Margin="15,850,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>
