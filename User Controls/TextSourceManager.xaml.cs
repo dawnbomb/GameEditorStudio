@@ -44,7 +44,7 @@ namespace GameEditorStudio
 
             TextFileNameIDLabel.Visibility = Visibility.Collapsed;
             TextFileFileNameIDTextBox.Visibility = Visibility.Collapsed;
-            TextFileNameIDHelpText.Visibility = Visibility.Collapsed;
+            TextLinkNameIDHelpText.Visibility = Visibility.Collapsed;
 
             #if DEBUG
             #else
@@ -68,7 +68,7 @@ namespace GameEditorStudio
 
                 NameIDLabel.Visibility = Visibility.Collapsed;
                 FileNameIDTextBox.Visibility = Visibility.Collapsed;
-                NameIDHelpText.Visibility = Visibility.Collapsed;
+                DataLinkFirstNameIDHelpPanel.Visibility = Visibility.Collapsed;
 
                 foreach (ComboBoxItem CItem in ComboBoxListType.Items) 
                 {
@@ -139,12 +139,12 @@ namespace GameEditorStudio
 
             TextLastLineNameLabel.Visibility = Visibility.Collapsed;
             TextLastLineTextBox.Visibility = Visibility.Collapsed;
-            TextLastLineHelpText.Visibility = Visibility.Collapsed;
+            TextBoxLastLineHelpText.Visibility = Visibility.Collapsed;
             ButtonSetLastLine.Visibility = Visibility.Collapsed;
 
             LabelNameCount.Visibility = Visibility.Collapsed;
             FileNameCountTextBox.Visibility = Visibility.Collapsed;
-            NameCountHelpText.Visibility = Visibility.Collapsed;
+            DataLinkNameCountHelpPanel.Visibility = Visibility.Collapsed;
 
             ComboBoxListType.Items.RemoveAt(3); //Remove from Nothing
             ComboBoxListType.Items.RemoveAt(2); //Remove from Editor
@@ -212,14 +212,15 @@ namespace GameEditorStudio
             MenuMode = true;
             NameIDLabel.Visibility = Visibility.Visible;
             FileNameIDTextBox.Visibility = Visibility.Visible;
-            NameIDHelpText.Visibility = Visibility.Visible;
+            EditLinkFirstNameIDHelpText.Visibility = Visibility.Visible;
+
             LabelNameCount.Visibility = Visibility.Visible;
             FileNameCountTextBox.Visibility = Visibility.Visible;
-            NameCountHelpText.Visibility = Visibility.Visible;
+            DataLinkNameCountHelpPanel.Visibility = Visibility.Visible;
 
             TextFileNameIDLabel.Visibility = Visibility.Visible;
             TextFileFileNameIDTextBox.Visibility = Visibility.Visible;
-            TextFileNameIDHelpText.Visibility = Visibility.Visible;
+            TextLinkNameIDHelpText.Visibility = Visibility.Visible;
 
 
 

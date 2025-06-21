@@ -15,14 +15,17 @@
             </Grid.ColumnDefinitions>
             <local:FileManager x:Name="TextFileManager"  Grid.Column="0"    />
 
-            <GridSplitter Style="{DynamicResource SplitterVertical}" Grid.Column="1" Background="Transparent"  />
+            <GridSplitter Style="{DynamicResource SplitterVertical}" Grid.Column="1" Width="12" Background="Transparent"  />
 
-            <ScrollViewer Grid.Column="2" Background="Transparent">
-                <DockPanel Background="Transparent" >
-                    <TextBox Name="TheLineBox" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" DockPanel.Dock="Left" IsReadOnly="True" MinWidth="30"/>
-                    <TextBox Name="TheTextBox" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden" DockPanel.Dock="Left" TextChanged="TextBoxTextChanged"  AcceptsReturn="True"/>
-                </DockPanel>
-            </ScrollViewer>
+            <ContentControl Grid.Column="2">
+                <ScrollViewer  Background="Transparent" BorderThickness="0">
+                    <DockPanel Background="Transparent" >
+                        <TextBox Name="TheLineBox" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" DockPanel.Dock="Left" IsReadOnly="True" MinWidth="30" BorderThickness="0,0,2,0"/>
+                        <TextBox Name="TheTextBox" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden" DockPanel.Dock="Left" TextChanged="TextBoxTextChanged"  AcceptsReturn="True" BorderThickness="0"/>
+                    </DockPanel>
+                </ScrollViewer>
+            </ContentControl>
+            
 
         </Grid>
     </DockPanel>

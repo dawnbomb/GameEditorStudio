@@ -2,8 +2,28 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:properties="clr-namespace:GameEditorStudio.Properties">
 
+    
+    <!--
+    IMPORTANT NOTE:
+    I use TextFormattingMode and TextRenderingMode all over, due to a crazy WPF rendering issue. 
+    The combination of subpixel anti-aliasing, floating-point layout rounding, and DirectWrite font rasterization 
+    is causing my fucking pixel font to render wrong in a very weird way! 
+    basically, at just the right window / font size, due to sub pixel nonsense, the text is rendering, instead of
+    appearing with a dark blue afterimage to the left and red afterimage to the right like all normal text, 
+    instead at just the right subpixel size, it renders with a light blue left afterimage, and yellow right afterimage,
+    making the text appear extremely fucked up. 
+    
+    SO, DON'T REMOVE THESE, AND ADD THEM TO ANYTHING TEXT BASED IN THE ENTIRE PROGRAM!!!
+    -->
+
+
+
+
+
     <!--Application-->
     <Style TargetType="{x:Type Label}">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <!--<Setter Property="FontSize" Value="16" />-->
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontFamily" Value="Dawns 10px ArkPixel" />
@@ -44,6 +64,8 @@
 
 
     <Style TargetType="ToolTip">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="HasDropShadow" Value="False"/>
         <Setter Property="Background" Value="#FF1E1E1E"/>
@@ -112,6 +134,8 @@
     </Style>-->
 
     <Style TargetType="Button">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="FontFamily" Value="Dawns 10px ArkPixel"/>
@@ -147,6 +171,8 @@
     </Style>
 
     <Style TargetType="Button" x:Key="ButtonCurrentEditorTab">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="FontFamily" Value="Dawns 10px ArkPixel"/>
@@ -185,6 +211,8 @@
     
 
     <Style TargetType="Button" x:Key="ButtonEditorTab">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="FontFamily" Value="Dawns 10px ArkPixel"/>
@@ -222,6 +250,8 @@
 
 
     <Style TargetType="Button" x:Key="ButtonError">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="FontFamily" Value="Dawns 10px ArkPixel"/>

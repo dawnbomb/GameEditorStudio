@@ -5,52 +5,57 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameEditorStudio"
         mc:Ignorable="d"
-        Title="Tool Manager" Height="840" Width="800">
+        Title="Tool Manager" Height="600" Width="1000">
     <DockPanel Background="#FF373738" >
         <DockPanel Name="MainDockPanel" LastChildFill="True" Margin="10,0,10,0" Background="{x:Null}" >
-            <Label DockPanel.Dock="Top" Content="Tip: Tools in CrystalEditor/Tools will be used, even if their in subfoldes, or folders or renamed!"  VerticalAlignment="Top" Foreground="#FFB1CC78"/>
+            <Label DockPanel.Dock="Top" Content="Tip: If you put any of your tools inside the CrystalEditor/Tools folder, they are automatically used. &#xD;&#xA;Even if they are inside folders, subfoldes, and even if the folders are renamed!"  VerticalAlignment="Top" Foreground="#FFB1CC78"/>
             
-            <DockPanel LastChildFill="False" Background="#FF191919" Height="120"  Margin="0,10,0,10" DockPanel.Dock="Bottom">
-                <TextBox Name="ToolNameBox" Margin="8,2,0,0" Text="Tool Name" Height="20" FontSize="14" BorderBrush="{x:Null}" DockPanel.Dock="Top" Background="{x:Null}" FontWeight="Bold"/>
-                <Rectangle Stroke="#FFE0E0E0" Margin="8,4,8,2" DockPanel.Dock="Top"/>
-                <TextBox Name="ToolDescriptionBox" TextWrapping="Wrap" Margin="8,0,5,0" Text="Tool Description" Height="90" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="White" DockPanel.Dock="Top"/>
-
-            </DockPanel>
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            <DockPanel MinHeight="150"  DockPanel.Dock="Top" Margin="0,10,0,15"  >
+            <ContentControl  Height="130"  Margin="0,10,0,10" DockPanel.Dock="Bottom">
+                <DockPanel LastChildFill="False" Background="#FF191919">
+                    <TextBox Name="ToolNameBox" Margin="8,2,0,0" Text="Tool Name" Height="25" FontSize="20" BorderBrush="{x:Null}" DockPanel.Dock="Top" Background="{x:Null}" FontWeight="Bold"/>
+                    <Rectangle Stroke="#FFE0E0E0" Margin="8,6,8,2" DockPanel.Dock="Top"/>
+                    <TextBox Name="ToolDescriptionBox" TextWrapping="Wrap" Margin="8,0,5,0" Text="Tool Description" Height="90" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="White" DockPanel.Dock="Top"/>
+                </DockPanel>
                 
-                <ScrollViewer Width="105" DockPanel.Dock="Left" VerticalScrollBarVisibility="Auto" >
-                    <DockPanel >
-                        <Label Content="Tools" DockPanel.Dock="Top" HorizontalContentAlignment="Center" FontSize="20" Margin="0,-5,0,-5" FontWeight="Bold" FontFamily="Arial Black"/>
-                        <DockPanel DockPanel.Dock="Top">
-                            <TreeView x:Name="TreeViewTools" SelectedItemChanged="TreeSelectionChanged"/>
+
+            </ContentControl>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            <ContentControl MinHeight="150"  DockPanel.Dock="Top" Margin="0,10,0,15"  >
+
+                <DockPanel>
+                    <ScrollViewer Width="115" DockPanel.Dock="Left" VerticalScrollBarVisibility="Auto" >
+                        <DockPanel >
+                            <Label Content="Tools" DockPanel.Dock="Top" HorizontalContentAlignment="Center" FontSize="20" Margin="0,-5,0,-5" FontWeight="Bold" FontFamily="Arial Black"/>
+                            <DockPanel DockPanel.Dock="Top">
+                                <TreeView x:Name="TreeViewTools" SelectedItemChanged="TreeSelectionChanged"/>
+                            </DockPanel>
+                            <Label Content="Common&#xD;&#xA;  Events" DockPanel.Dock="Top" HorizontalContentAlignment="Center" FontSize="20" Margin="0,15,0,-5" FontWeight="Bold" FontFamily="Arial Black"/>
+                            <DockPanel DockPanel.Dock="Top">
+                                <TreeView x:Name="TreeViewCommonEvents" SelectedItemChanged="TreeSelectionChanged"/>
+                            </DockPanel>
                         </DockPanel>
-                        <Label Content="Common&#xD;&#xA;  Events" DockPanel.Dock="Top" HorizontalContentAlignment="Center" FontSize="16" Margin="0,15,0,-5" FontWeight="Bold" FontFamily="Arial Black"/>
-                        <DockPanel DockPanel.Dock="Top">
-                            <TreeView x:Name="TreeViewCommonEvents" SelectedItemChanged="TreeSelectionChanged"/>
-                        </DockPanel>
-                    </DockPanel>
-                </ScrollViewer>
-                <StackPanel Orientation="Horizontal">
-                    <Grid Width="3" Background="Black" />
-                </StackPanel>
-                 <ScrollViewer Name="TheScrollViewer" DockPanel.Dock="Right" Background="#FF020925" VerticalScrollBarVisibility="Auto">
-                    <DockPanel x:Name="TheScrollPanel" Background="#FF20202B" LastChildFill="False"/>
-                </ScrollViewer>
-            </DockPanel>
+                    </ScrollViewer>
+                    <StackPanel Orientation="Horizontal">
+                        <Grid Width="3" Background="Black" />
+                    </StackPanel>
+                    <ScrollViewer Name="TheScrollViewer" DockPanel.Dock="Right" Background="#FF020925" VerticalScrollBarVisibility="Auto">
+                        <DockPanel x:Name="TheScrollPanel" Background="#FF20202B" LastChildFill="False"/>
+                    </ScrollViewer>
+                </DockPanel>                
+            </ContentControl>
             
             
             

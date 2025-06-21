@@ -22,7 +22,7 @@
                 <TreeView x:Name="TreeGameFiles" SelectedItemChanged="SelectedTreeItemChanged" />
             </DockPanel>
         </ContentControl>
-        <GridSplitter Style="{DynamicResource SplitterHorizontal}" Grid.Row="1"   />
+        <GridSplitter Style="{DynamicResource SplitterHorizontal}" Height="12" Grid.Row="1"   />
         <ContentControl Grid.Row="2">
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">

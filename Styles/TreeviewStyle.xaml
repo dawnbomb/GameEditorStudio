@@ -6,6 +6,8 @@
 
 
     <Style x:Key="{x:Type TreeView}" TargetType="TreeView">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="Background" Value="{DynamicResource ResourceKey=ListBack}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ResourceKey=ListBorder}"/>
         <Setter Property="FontSize" Value="20" />
@@ -87,6 +89,8 @@
 
 
     <Style TargetType="{x:Type TreeViewItem}">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="Foreground" Value="{DynamicResource ResourceKey=ListText}"/>
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="2" />

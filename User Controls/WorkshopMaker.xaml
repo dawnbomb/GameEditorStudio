@@ -15,7 +15,7 @@
             </DockPanel>
         </Border>
 
-        <DockPanel DockPanel.Dock="Top" Margin="10,47,0,0" Height="68" VerticalAlignment="Top"  Width="250" HorizontalAlignment="Left" >
+        <DockPanel DockPanel.Dock="Top" Margin="10,47,0,0" Height="70" VerticalAlignment="Top"  Width="250" HorizontalAlignment="Left" >
             <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                 <Label Content="Workshop Name" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
             </DockPanel>
@@ -28,7 +28,7 @@
             </DockPanel>
         </DockPanel>
 
-        <DockPanel DockPanel.Dock="Top" Margin="10,120,0,0" Height="70" VerticalAlignment="Top" Width="250" HorizontalAlignment="Left"  >
+        <DockPanel DockPanel.Dock="Top" Margin="10,120,0,0" Height="72" VerticalAlignment="Top" Width="250" HorizontalAlignment="Left"  >
             <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                 <Label Content="Input Folder" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
                 <Button x:Name="ButtonSetWorkshopInputFolder" Content="Set Folder" Height="30"  Width="120" Click="ButtonSetWorkshopInputFolder_Click" Padding="0,1,1,0" DockPanel.Dock="Right" />
@@ -57,12 +57,12 @@
                         </DockPanel>
                     </DockPanel>
                 </Border>
-                <DockPanel Margin="5,5,5,5" DockPanel.Dock="Top">
-                    <Label Content="A workshop is a location that holds game editors of different types. &#xA;Editors are ONLY ALLOWED to use files INSIDE the workshop's input folder&#xD;&#xA;(and any subfolders). TIP: Make the the input folder be a BACKUP of &#xD;&#xA;your game / rom folder. &#xA;&#xA;Now, sometimes games will have file unpacking and repacking problems. Worse case, after using a &#xA;workshop's editors, you need to repack some files, then move them, then repack the game / rom. &#xA;If you have advanced problems like that, i created the &quot;Eventing&quot; system to solve them! &#xA;&#xA;Events can do file unpacking/repacking, moving them, launching third party programs, etc. &#xA;Below you can define any files/folders (event resources) to use. These can be outside the input folder..&#xA;&#xA;Events run commands in sequence, here is a 5-command example event i personally use.  &#xA;1: save all files, 2: Repack specific files, 3: Move only some files to folder X,  4: Repack rom at folder X, &#xA;5: Run file Y (Emulator) with file Z (the game rom)! BOOM, a 1-click event that even launches the game!   " HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Top"  />
+                <ScrollViewer DockPanel.Dock="Top">
+                    <TextBox TextWrapping="Wrap" Text="A workshop is a location that holds game editors of different types. &#xA;Editors are ONLY ALLOWED to use files INSIDE the workshop's input folder (and any subfolders). TIP: Make the the input folder be a BACKUP of your game / rom folder. &#xA;&#xA;Now, sometimes games will have file unpacking and repacking problems. Worse case, after using a workshop's editors, you need to repack some files, then move them, then repack the game / rom. If you have advanced problems like that, i created the &quot;Eventing&quot; system to solve them! &#xA;&#xA;Events can do file unpacking/repacking, moving them, launching third party programs, etc. Below you can define any files/folders (event resources) to use. These can be outside the input folder..&#xA;&#xA;Events run commands in sequence, here is a 5-command example event i personally use. &#xD;&#xA;- 1: save all files&#xD;&#xA;- 2: Repack specific files&#xD;&#xA;- 3: Move only some files to folder X&#xD;&#xA;- 4: Repack rom at folder X&#xD;&#xA;- 5: Run file Y (Emulator) with file Z (the game rom)! &#xD;&#xA;BOOM, a 1-click event that even launches the game!   " Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
 
 
 
-                </DockPanel>
+                </ScrollViewer>
 
             </DockPanel>
         </Border>
@@ -79,7 +79,7 @@
                             I dont want to allow uses to swap a resources type!
                             If a event says use resource X, and it swaps from a file to a folder, i can see lots of problems, crashes, etc.
                             Like trying to run a folder as a file for a emulator, because the resource was previously a file, and some users already setup that files location, before the updated workshop changed the resource type.-->
-                            <Button Content="New Local File" Click="NewEventResourceLocalFile" Width="160" Height="30"/>
+                            <Button Content="New Local File" Click="NewEventResourceLocalFile" Width="155" Height="31" />
                             <Button Content="New Local Folder" Click="NewEventResourceLocalFolder" Width="185" Height="30"/>
                             <Button Content="New Relative File" Click="NewEventResourceRelativeFile" Width="190" Height="30"/>
                             <Button Content="New Relative Folder" Click="NewEventResourceRelativeFolder" Width="210" Height="30" Style="{DynamicResource ButtonError}"/>

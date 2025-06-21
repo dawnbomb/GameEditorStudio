@@ -18,6 +18,8 @@
 
     <Style TargetType="CheckBox">
         <!--<Setter Property="Background" Value="Red"/>-->
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="Foreground" Value="{DynamicResource ResourceKey= CheckboxText}"/>
         <Setter Property="Template">
             <Setter.Value>

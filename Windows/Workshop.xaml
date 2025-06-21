@@ -513,7 +513,7 @@
                                                         <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
                                                             <Label Content="Entry Notepad" FontWeight="Bold"/>
                                                         </DockPanel>
-                                                        <TextBox x:Name="EntryNoteTextbox" Margin="10" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextChanged="EntryNoteTextboxTextChanged"/>
+                                                        <TextBox MinHeight="100" x:Name="EntryNoteTextbox" Margin="10" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextChanged="EntryNoteTextboxTextChanged"/>
                                                     </DockPanel>
                                                 </Border>
 
@@ -531,7 +531,7 @@
                         </Border>
 
                     </TabItem>
-                    <TabItem Header="Notepad">
+                    <TabItem Header="Documents">
                         <DockPanel   LastChildFill="True" >
 
                             <local:DocumentsUserControl></local:DocumentsUserControl>

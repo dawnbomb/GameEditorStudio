@@ -8,6 +8,8 @@
 
 
     <Style TargetType="{x:Type TabControl}" >
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="FontSize" Value="20"/>
         <Setter Property="FontFamily" Value="Dawns 10px ArkPixel" />
         <Setter Property="Padding" Value="0"/>
@@ -23,6 +25,8 @@
 
 
     <Style TargetType="{x:Type TabItem}">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="Padding" Value="5,2,5,2"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="Background" Value="Transparent"/>
