@@ -5,26 +5,35 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameEditorStudio"
         mc:Ignorable="d"
-        Title="Terms And Conditions" Height="970" Width="880">
-    <Grid>
-        <Label Content="WELCOME TO GAME EDITOR STUDIO! :D" HorizontalAlignment="Center" Margin="0,4,0,0" VerticalAlignment="Top" FontSize="24" Foreground="#FF47FF2D"/>
-        <Label Content="Hey gamers! :3 This program is my life's work, my masterpiece, filling my &#xA;deep wish for simplified game modding. I've devoted countless hours of my life, &#xD;&#xA;heart, and soul into this. So before you start, i have some things to say. &#xA;&#xA;UNACCETPABLY to many times, i see people make editors and refuse to share them,&#xA;tell others what parts of a game they are &quot;ALLOWED&quot; to mod (especially DLC), &#xA;and act to claim modding spaces and police them with aggression. &gt;:(&#xA;&#xA;If your using this, we are ALL modders, we ALL, NECESSARILY, make editors, &#xA;mods, and otherwise, WITHOUT asking for permission. Don't let people or communities&#xA;pressure you out of modding games! Our releases make the world a more fun place!&#xA;THAT MATTERS A LOT! It's why this is worth dedicating my life to. &#xA; &#xA;AND SO, to fight back in the small way i can, i'm adding a terms and conditions here. " HorizontalAlignment="Left" Margin="15,45,0,0" VerticalAlignment="Top"/>
+        Title="Terms And Conditions" Height="940" Width="880">
+    <Grid Background="#FF1F1F1F">
+        <Label Content="WELCOME TO GAME EDITOR STUDIO! :D" HorizontalAlignment="Center"  Margin="0,4,0,0" VerticalAlignment="Top" FontSize="30" >
+            <Label.Foreground>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFF56511"/>
+                    <GradientStop Color="#FFE41111" Offset="0.947"/>
+                    <GradientStop Color="#FE890E04" Offset="0.417"/>
+                    <GradientStop Color="#FE910606" Offset="0.573"/>
+                </LinearGradientBrush>
+            </Label.Foreground>
+        </Label>
+        <Label Content="Hey gamers! :3 This program is my life's work, my masterpiece, filling my &#xA;deep wish for simplified game modding. I've devoted countless hours of my life, &#xD;&#xA;heart, and soul into this. So before you start, i have some things to say. &#xA;&#xA;UNACCETPABLY to many times, i see people make editors and refuse to share them,&#xA;tell others what parts of a game they are &quot;ALLOWED&quot; to mod (especially DLC), &#xA;and act to claim modding spaces and police them with aggression. &gt;:(&#xA;&#xA;If your using this, we are ALL modders, we ALL, NECESSARILY, make editors, &#xA;mods, and otherwise, WITHOUT asking for permission. Don't let people or communities&#xA;pressure you out of modding games! Our releases make the world a more fun place!&#xA;THAT MATTERS A LOT! It's why this is worth dedicating my life to. &#xA; &#xA;AND SO, to fight back in the small way i can, i'm adding a terms and conditions here. " HorizontalAlignment="Left" Margin="26,45,0,0" VerticalAlignment="Top"/>
 
 
 
-        <Border Margin="15,402,0,0" Height="439" VerticalAlignment="Top" HorizontalAlignment="Left" Width="824">
+        <Border Margin="0,396,0,0" Height="420" VerticalAlignment="Top" HorizontalAlignment="Center" Width="829" BorderBrush="Black" >
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
                     <Label Content="TERMS AND CONDITIONS  (That you may actually care about)" FontWeight="Bold"/>
                 </DockPanel>
                 <Grid>
                     <Label Content="You acknowledge and agree to ALL of the following:.&#xA;- ANYONE can make changes to ANYTHING you make with this program. &#xA;- ANYONE can redistribute any versions of anything made using this, modified or not. &#xA;- Workshops &amp; Editors may be added to a master list that anyone can download from.&#xD;&#xA;- You can still credit yourself.&#xA;- Any later changes will keep the obvious spirit of this agreement. &#xA;&#xD;&#xA;And to be really, REALLY clear... &#xA;- If you leak it on accident, it still counts. &#xA;- If someone else leaks it without permission, it still counts. &#xA;- If you sell it and people share it without your permission, it still counts.&#xA;- If something insane happens, it still counts.&#xA;&#xA;This program is intended to make editors and mods everyone can use. Don't be selfish. " HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                    <Button Content="I AGREE TO THE TERMS AND CONDITIONS." HorizontalAlignment="Left" Margin="149,355,0,0" VerticalAlignment="Top" Height="33" Width="468" Click="ButtonIAgreeToToS"/>
+                    <Button Content="I AGREE TO THE TERMS AND CONDITIONS." HorizontalAlignment="Left" Margin="151,346,0,0" VerticalAlignment="Top" Height="33" Width="468" Click="ButtonIAgreeToToS"/>
                 </Grid>
 
             </DockPanel>
         </Border>
-        <Label Content="PS: If Romhacking.net or some game banana mod won't let you put&#xD;&#xA;your mod there, reach out to me and i'll host it for you. &#xD;&#xA;(Unless it's a cheat mod for a competative game :p )" HorizontalAlignment="Left" Margin="15,850,0,0" VerticalAlignment="Top"/>
+        <Label Content="PS: If Romhacking.net or some game banana mod won't let you put&#xD;&#xA;your mod there, reach out to me and i'll host it for you. &#xD;&#xA;(Unless it's a cheat mod for a competative game :p )" HorizontalAlignment="Left" Margin="114,816,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

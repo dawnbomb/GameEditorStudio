@@ -14,16 +14,16 @@
                     <DockPanel>
                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" LastChildFill="False" >
                             <Label Content="Tools" FontWeight="Bold" Margin="5,0,0,0"  />
-                            <Button Content="New" Width="50"  Margin="10,4,0,4" Click="ButtonNewTool"/>
-                            <Button Content="Delete" Width="60"  Margin="10,4,0,4" Click="ButtonDeleteTool"/>
-                            <Button Content="Save All To File" Width="150" DockPanel.Dock="Right" Margin="10,4,10,4" Click="ButtonSaveAllClick"/>
-                            <Button Content="Save Tool" Width="100" DockPanel.Dock="Right" Margin="10,4,10,4" Click="ButtonSaveToolClick"/>
+                            <Button Content="New" Width="55"  Margin="10,2,0,2" Click="ButtonNewTool"/>
+                            <Button Content="Delete" Width="80"  Margin="10,2,0,2" Click="ButtonDeleteTool"/>
+                            <Button Content="Save All To File" Width="180" DockPanel.Dock="Right" Margin="10,2,10,2" Click="ButtonSaveAllClick"/>
+                            <Button Content="Save Tool" Width="110" DockPanel.Dock="Right" Margin="10,2,10,2" Click="ButtonSaveToolClick"/>
 
                             <DockPanel Background="Transparent" Margin="50,0,0,0">
-                                <Button Content="Move up" DockPanel.Dock="Left"    Width="90" Click="ButtonMoveToolUp" Margin="10,4,10,4" />
-                                <Button Content="Move Down" DockPanel.Dock="Right"  HorizontalAlignment="Right"   Width="100" Click="ButtonMoveToolDown" Margin="0,4,10,4" />
+                                <Button Content="Move up" DockPanel.Dock="Left"    Width="100" Click="ButtonMoveToolUp" Margin="10,2,6,2" />
+                                <Button Content="Move Down" DockPanel.Dock="Right"  HorizontalAlignment="Right"   Width="115" Click="ButtonMoveToolDown" Margin="0,2,10,2" />
                             </DockPanel>
-                            
+
                         </DockPanel>
                         <Grid>
                             <TreeView x:Name="ToolsTree" SelectedItemChanged="ToolsTreeSelectedItemChanged" HorizontalAlignment="Left" Width="248"/>
@@ -32,19 +32,19 @@
                             <Label Content="Description" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="257,46,0,0"/>
                             <TextBox Name="ToolDescriptionTextbox" VerticalAlignment="Top" Margin="257,82,10,0" Height="88" Text="- - -" />
                             <Label Content="Tool .exe Name" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="257,175,0,0"/>
-                            <TextBox Name="ToolExeTextbox" VerticalAlignment="Top" Margin="381,178,10,0" Text="- - -" />
+                            <TextBox Name="ToolExeTextbox" VerticalAlignment="Top" Margin="412,178,10,0" Text="- - -" />
                             <Label Content="Download Link" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="256,232,0,0"/>
                             <TextBox Name="ToolDownloadLink" VerticalAlignment="Top" Margin="257,269,10,0" Text="- - -" />
                             <Label Content="Category" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="378,48,0,0"/>
-                            <ComboBox Name="ToolTabCombobox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="131" Margin="457,51,0,0">
+                            <ComboBox Name="ToolTabCombobox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="131" Margin="475,51,0,0">
                                 <ComboBoxItem Content="Tools"/>
                                 <ComboBoxItem Content="Hex Editors"/>
                                 <ComboBoxItem Content="Patchers"/>
                             </ComboBox>
                             <Label Content="Notepad" HorizontalAlignment="Left" Margin="257,297,0,0" VerticalAlignment="Top"/>
                             <TextBox Name="ToolNotepadTextbox" Margin="257,328,7,10" TextWrapping="Wrap" Text="TextBox"/>
-                            <Label Content="Key"  HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="530,14,0,0"/>
-                            <TextBox x:Name="ToolKeyTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="268" Margin="570,18,0,0" Text="- - -"  IsEnabled="False"/>
+                            <Label Content="Key"  HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="528,10,0,0"/>
+                            <TextBox x:Name="ToolKeyTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="268" Margin="570,15,0,0" Text="- - -"  IsEnabled="False"/>
 
                         </Grid>
                     </DockPanel>
@@ -55,34 +55,34 @@
                     <DockPanel>
                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" LastChildFill="False" >
                             <Label Content="Commands" FontWeight="Bold" Margin="5,0,0,0"  />
-                            <Button Content="New" Width="50"  Margin="10,4,0,4" Click="ButtonNewCommand"/>
-                            <Button Content="Delete" Width="60"  Margin="10,4,0,4" Click="ButtonDeleteCommand"/>
-                            <Button Content="Save All To File" Width="150" DockPanel.Dock="Right" Margin="10,4,10,4" Click="ButtonSaveAllClick"/>
-                            <Button Content="Save Command" Width="130" DockPanel.Dock="Right" Margin="10,4,10,4" Click="ButtonSaveCommandClick"/>
+                            <Button Content="New" Width="55"  Margin="10,2,0,2" Click="ButtonNewCommand"/>
+                            <Button Content="Delete" Width="70"  Margin="10,2,0,2" Click="ButtonDeleteCommand"/>
+                            <Button Content="Save All To File" Width="170" DockPanel.Dock="Right" Margin="5,2,5,2" Click="ButtonSaveAllClick"/>
+                            <Button Content="Save Command" Width="140" DockPanel.Dock="Right" Margin="10,2,5,2" Click="ButtonSaveCommandClick"/>
 
-                            <DockPanel Background="Transparent" Margin="50,0,0,0">
-                                <Button Content="Move up" DockPanel.Dock="Left"    Width="90" Click="ButtonMoveCommandUp" Margin="10,4,10,4" />
-                                <Button Content="Move Down" DockPanel.Dock="Right"  HorizontalAlignment="Right"   Width="100" Click="ButtonMoveCommandDown" Margin="0,4,10,4" />
+                            <DockPanel Background="Transparent" Margin="30,0,0,0">
+                                <Button Content="Move up" DockPanel.Dock="Left"    Width="100" Click="ButtonMoveCommandUp" Margin="0,2,10,2" />
+                                <Button Content="Move Down" DockPanel.Dock="Right"  HorizontalAlignment="Right"   Width="110" Click="ButtonMoveCommandDown" Margin="0,2,0,2" />
                             </DockPanel>
                         </DockPanel>
                         <Grid>
                             <TreeView x:Name="CommandsTree" SelectedItemChanged="CommandsTreeSelectedItemChanged" HorizontalAlignment="Left" Width="248"/>
                             <Label Content="Method Name" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="258,168,0,0"/>
-                            <TextBox Name="CommandMethodNameTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="195" Margin="376,175,0,0" Text="- - -" />
+                            <TextBox Name="CommandMethodNameTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="215" Margin="386,174,0,0" Text="- - -" />
                             <Label Content="Name" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="263,6,0,0"/>
-                            <TextBox x:Name="CommandNameTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="182" Margin="323,10,0,0" Text="- - -" />
+                            <TextBox x:Name="CommandNameTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="197" Margin="323,10,0,0" Text="- - -" />
                             <Label Content="Description" HorizontalAlignment="Left" Margin="263,39,0,0" VerticalAlignment="Top"/>
                             <TextBox x:Name="CommandDescriptionTextbox" Margin="263,75,10,0" TextWrapping="Wrap" Text="- - -" VerticalAlignment="Top" Height="87"/>
-                            <Label Content="Category" HorizontalAlignment="Left" Margin="372,40,0,0" VerticalAlignment="Top"/>
-                            <ComboBox Name="CommandTabCombobox" HorizontalAlignment="Left" Margin="452,45,0,0" Text="TextBox" VerticalAlignment="Top" Width="120">
+                            <Label Content="Category" HorizontalAlignment="Left" Margin="386,39,0,0" VerticalAlignment="Top"/>
+                            <ComboBox Name="CommandTabCombobox" HorizontalAlignment="Left" Margin="481,43,0,0" Text="TextBox" VerticalAlignment="Top" Width="131">
                                 <ComboBoxItem Content="Basic"/>
                                 <ComboBoxItem Content="Programs"/>
                                 <ComboBoxItem Content="NDS"/>
                                 <ComboBoxItem Content="Misc"/>
                                 <ComboBoxItem Content="Expiramental"/>
                             </ComboBox>
-                            <Label Content="Group" HorizontalAlignment="Left" Margin="592,41,0,0" VerticalAlignment="Top"/>
-                            <ComboBox Name="CommandSubCombobox" HorizontalAlignment="Left" Margin="652,45,0,0" Text="TextBox" VerticalAlignment="Top" Width="130">
+                            <Label Content="Group" HorizontalAlignment="Left" Margin="625,38,0,0" VerticalAlignment="Top"/>
+                            <ComboBox Name="CommandSubCombobox" HorizontalAlignment="Left" Margin="687,42,0,0" Text="TextBox" VerticalAlignment="Top" Width="138">
                                 <ComboBoxItem Content="Basic"/>
                                 <ComboBoxItem Content="Open Tool"/>
                                 <ComboBoxItem Content="Emulator"/>
@@ -90,8 +90,8 @@
                             </ComboBox>
                             <Label Content="Notepad" HorizontalAlignment="Left" Margin="258,352,0,0" VerticalAlignment="Top"/>
                             <TextBox Name="CommandNotepadTextbox" Margin="263,388,10,10" TextWrapping="Wrap" Text="- - -"/>
-                            <Label Content="Key" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="571,167,0,0"/>
-                            <TextBox x:Name="CommandNewKeyTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="230" Margin="608,171,0,0" Text="- - -" IsEnabled="False" />
+                            <Label Content="Key" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="606,169,0,0"/>
+                            <TextBox x:Name="CommandNewKeyTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="190" Margin="655,175,0,0" Text="- - -" IsEnabled="False" />
 
                             <Border DockPanel.Dock="Top" Margin="263,203,0,0" HorizontalAlignment="Left" Width="287" Height="149" VerticalAlignment="Top">
                                 <DockPanel>
@@ -121,7 +121,7 @@
                             <Border DockPanel.Dock="Top" Margin="558,236,0,0" HorizontalAlignment="Left" Width="280" Height="147" VerticalAlignment="Top">
                                 <DockPanel>
                                     <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" LastChildFill="False" >
-                                        <Label Content="Workshop Event Resources" FontWeight="Bold" Margin="5,0,0,0"  />
+                                        <Label Content="Workshop Resources" FontWeight="Bold" Margin="5,0,0,0"  />
                                         <Button Content=" New " Width="55"  Margin="5,4,5,4" DockPanel.Dock="Right" Click="CommandButtonNewResource"/>
                                     </DockPanel>
                                     <ScrollViewer>
@@ -151,29 +151,29 @@
                 <Border DockPanel.Dock="Top">
                     <DockPanel>
                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" LastChildFill="False" >
-                            <Label Content="Common Events" FontWeight="Bold" Margin="5,0,0,0"  />
-                            <Button Content="New" Width="50"  Margin="10,4,0,4" Click="ButtonNewCommonEvent"/>
-                            <Button Content="Delete" Width="60"  Margin="10,4,0,4" Click="ButtonDeleteCommonEvent"/>
-                            <Button Content="Save All To File" Width="150" DockPanel.Dock="Right" Margin="10,4,10,4" Click="ButtonSaveAllClick"/>
-                            <Button Content="Save Common" Width="120" DockPanel.Dock="Right" Margin="10,4,10,4" Click="ButtonSaveCommonEventClick"/>
+                            <Label Content="Commons" FontWeight="Bold" Margin="5,0,0,0"  />
+                            <Button Content="New" Width="55"  Margin="10,2,0,2" Click="ButtonNewCommonEvent"/>
+                            <Button Content="Delete" Width="70"  Margin="10,2,0,2" Click="ButtonDeleteCommonEvent"/>
+                            <Button Content="Save All To File" Width="170" DockPanel.Dock="Right" Margin="5,2,5,2" Click="ButtonSaveAllClick"/>
+                            <Button Content="Save Common" Width="130" DockPanel.Dock="Right" Margin="5,2,5,2" Click="ButtonSaveCommonEventClick"/>
 
-                            <DockPanel Background="Transparent" Margin="40,0,0,0">
-                                <Button Content="Move up" DockPanel.Dock="Left"    Width="90" Click="ButtonMoveCommonUp" Margin="10,4,10,4" />
-                                <Button Content="Move Down" DockPanel.Dock="Right"  HorizontalAlignment="Right"   Width="100" Click="ButtonMoveCommonDown" Margin="0,4,10,4" />
+                            <DockPanel Background="Transparent" Margin="30,0,0,0">
+                                <Button Content="Move up" DockPanel.Dock="Left"    Width="100" Click="ButtonMoveCommonUp" Margin="0,2,6,2" />
+                                <Button Content="Move Down" DockPanel.Dock="Right"  HorizontalAlignment="Right"   Width="120" Click="ButtonMoveCommonDown" Margin="0,2,0,2" />
                             </DockPanel>
                         </DockPanel>
                         <Grid>
                             <TreeView x:Name="CommonEventsTree" SelectedItemChanged="CommonEventsTreeSelectedItemChanged" HorizontalAlignment="Left" Width="248"/>
 
-                            <Label Content="Name" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="262,10,0,0"/>
-                            <TextBox Name="CommonEventNameTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="195" Margin="329,14,0,0" Text="- - -" />
+                            <Label Content="Name" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="262,7,0,0"/>
+                            <TextBox Name="CommonEventNameTextbox" HorizontalAlignment="Center" VerticalAlignment="Top" Width="194" Margin="0,11,0,0" Text="- - -" />
                             <Label Content="Description" HorizontalAlignment="Left" Margin="261,40,0,0" VerticalAlignment="Top"/>
                             <TextBox Name="CommonEventDescriptionTextbox" Margin="261,76,10,0" TextWrapping="Wrap" Text="- - -" VerticalAlignment="Top" Height="81"/>
 
-                            <Label Content="Key" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="540,10,0,0"/>
-                            <TextBox Name="CommonEventNewKeyTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="258" Margin="580,14,0,0" Text="- - -" IsEnabled="False"/>
-                            <Label Content="Category" HorizontalAlignment="Left" Margin="371,42,0,0" VerticalAlignment="Top"/>
-                            <ComboBox Name="CommonEventTabCombobox" HorizontalAlignment="Left" Margin="450,48,0,0"  Text="TextBox" VerticalAlignment="Top" Width="120">
+                            <Label Content="Key" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="536,6,0,0"/>
+                            <TextBox Name="CommonEventNewKeyTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="258" Margin="581,11,0,0" Text="- - -" IsEnabled="False"/>
+                            <Label Content="Category" HorizontalAlignment="Left" Margin="396,40,0,0" VerticalAlignment="Top"/>
+                            <ComboBox Name="CommonEventTabCombobox" HorizontalAlignment="Left" Margin="491,45,0,0"  Text="TextBox" VerticalAlignment="Top" Width="133">
                                 <ComboBoxItem Content="Basic"/>
                                 <ComboBoxItem Content="Command"/>
                                 <ComboBoxItem Content="NDS"/>
@@ -181,7 +181,7 @@
                             <Label Content="Notepad" HorizontalAlignment="Left" Margin="261,343,0,0" VerticalAlignment="Top"/>
                             <TextBox Name="CommonEventNotepadTextbox" Margin="262,379,10,10" TextWrapping="Wrap" Text="- - -"/>
 
-                            <Border DockPanel.Dock="Top" Margin="262,170,0,0" Height="173" VerticalAlignment="Top" HorizontalAlignment="Left" Width="348">
+                            <Border DockPanel.Dock="Top" Margin="262,170,0,0" Height="173" VerticalAlignment="Top" HorizontalAlignment="Left" Width="413">
                                 <DockPanel>
                                     <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" LastChildFill="False" >
                                         <Label Content="Commands (Without resources)" FontWeight="Bold" Margin="5,0,0,0"  />

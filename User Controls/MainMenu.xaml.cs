@@ -448,6 +448,8 @@ namespace GameEditorStudio
         private void OpenToolsWindow(object sender, RoutedEventArgs e)
         {
             ToolsMenu GeneralToolSetup = new(this, WorkshopName);
+            GeneralToolSetup.Owner = System.Windows.Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
+            GeneralToolSetup.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             GeneralToolSetup.Show();
         }
 

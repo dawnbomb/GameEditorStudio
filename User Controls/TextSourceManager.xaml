@@ -5,11 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameEditorStudio"
              mc:Ignorable="d" 
-             d:DesignHeight="2700" d:DesignWidth="1100">
+             d:DesignHeight="3700" d:DesignWidth="1100">
     <Border >
         <DockPanel LastChildFill="True">
             <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}" LastChildFill="False">
-                <Label Content="Text Table Source Manager" FontWeight="Bold"/>
+                <Label Content="Text Table Source Manager" FontWeight="Bold" DockPanel.Dock="Left" />
                 <Button Name="ButtonSaveAndExit" Content="  Save and Exit  " DockPanel.Dock="Right" Margin="4" Click="SaveAndExit" />
                 <Button x:Name="ButtonExitWithoutSaving" Content=" Exit without saving " DockPanel.Dock="Right" Margin="4" Click="ExitWithoutSaving"  />
 
@@ -36,7 +36,7 @@
                             <Grid x:Name="GridListFromTable" Background="#FF635521" >
                                 <local:FileManager x:Name="DataFileManager" HorizontalAlignment="Left" Width="278"  />
 
-                                <Border Margin="285,9,0,0" HorizontalAlignment="Left" Width="293" Height="213" VerticalAlignment="Top">
+                                <Border Margin="285,8,0,0" HorizontalAlignment="Left" Width="293" Height="215" VerticalAlignment="Top">
                                     <DockPanel>
                                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                             <Label Content="Info" FontWeight="Bold" />
@@ -45,18 +45,18 @@
                                         <Grid>
                                             <Label Content="Start Byte" HorizontalAlignment="Left" Margin="10,88,0,0" VerticalAlignment="Top"/>
                                             <TextBox x:Name="FileStartTextBox" HorizontalAlignment="Left" Margin="158,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged" ToolTip="This is asking, What is the Base Address of the Table, and it want's it in decimal (Not hex). "/>
-                                            <Label Content="Row Size" HorizontalAlignment="Left" Margin="10,32,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="FileFullRowSizeTextBox" HorizontalAlignment="Left" Margin="158,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
-                                            <Label Content="Text Size" HorizontalAlignment="Left" Margin="10,60,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="FileTextSizeTextBox" HorizontalAlignment="Left" Margin="158,64,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
+                                            <Label Content="Row Size" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top"/>
+                                            <TextBox x:Name="FileFullRowSizeTextBox" HorizontalAlignment="Left" Margin="158,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
+                                            <Label Content="Text Size" HorizontalAlignment="Left" Margin="10,59,0,0" VerticalAlignment="Top"/>
+                                            <TextBox x:Name="FileTextSizeTextBox" HorizontalAlignment="Left" Margin="158,63,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
                                             <Label Content="Character Set" HorizontalAlignment="Left" Margin="10,1,0,0" VerticalAlignment="Top"/>
                                             <ComboBox x:Name="CharacterSetComboBox" HorizontalAlignment="Left" Margin="158,4,0,0" VerticalAlignment="Top" Width="120" DropDownClosed="DataFileCharacterSetDropdownClosed">
                                                 <ComboBoxItem Content="ASCII+ANSI" x:Name="AsciiItem"/>
                                                 <ComboBoxItem Content="Shift-JIS" x:Name="ShiftJISItem" IsSelected="True"/>
                                             </ComboBox>
-                                            <Label x:Name="NameIDLabel" Content="First Name ID" HorizontalAlignment="Left" Margin="10,145,0,0" VerticalAlignment="Top"/>
+                                            <Label x:Name="NameIDLabel" Content="First Name ID" HorizontalAlignment="Left" Margin="10,147,0,0" VerticalAlignment="Top"/>
                                             <TextBox x:Name="FileNameIDTextBox" HorizontalAlignment="Left" Margin="158,150,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
-                                            <Label x:Name="LabelNameCount" Content="Name Count" HorizontalAlignment="Left" Margin="10,116,0,0" VerticalAlignment="Top"/>
+                                            <Label x:Name="LabelNameCount" Content="Name Count" HorizontalAlignment="Left" Margin="10,117,0,0" VerticalAlignment="Top"/>
                                             <TextBox x:Name="FileNameCountTextBox" HorizontalAlignment="Left" Margin="158,121,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
 
                                         </Grid>
@@ -81,57 +81,15 @@
                                         </DockPanel>
                                         <ScrollViewer >
                                             <DockPanel>
-                                                <Grid DockPanel.Dock="Top"  >
-                                                    <Label Content="HEY NERDS: This program uses DECIMAL VALUES ONLY (Standard 0123456789 numbers)&#xA;It NEVER asks for hex values! (0123456789ABCDEF).  (I want it simple for normal people!) &#xA;All textboxes reject letter inputs, and you can use the hex calculator in the top bar to convert." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Background="#FF310000" Foreground="#FFFF6E89" FontWeight="Bold"/>
-                                                    <Label Content="Linking to a DataFile lets you try and pull a list of names from a name table." HorizontalAlignment="Left" Margin="10,84,0,0" VerticalAlignment="Top"/>
+                                                <DockPanel DockPanel.Dock="Top"  >
+                                                    <TextBox TextWrapping="Wrap" Text="HEY NERDS: This program uses DECIMAL VALUES ONLY (Standard 0123456789 numbers). It NEVER asks for hex values! (0123456789ABCDEF)  (I want it simple for normal people!). All textboxes reject letter inputs, and you can use the hex calculator in the top bar to convert." Margin="10,10,10,10" Focusable="False" Background="#FF310000" Foreground="#FFFF6E89" FontWeight="Bold" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
 
-                                                </Grid>
-                                                <Grid DockPanel.Dock="Top" >
-                                                    <Rectangle Height="2" Margin="10,8,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
-                                                        <Rectangle.RenderTransform>
-                                                            <TransformGroup>
-                                                                <ScaleTransform ScaleY="-1"/>
-                                                                <SkewTransform/>
-                                                                <RotateTransform/>
-                                                                <TranslateTransform/>
-                                                            </TransformGroup>
-                                                        </Rectangle.RenderTransform>
-                                                    </Rectangle>
-                                                    <Label Content="Character Set: Also sometimes called Font/Text Encoding, this is asking what language the text is in.&#xD;&#xA;English is Ascii+Ansi, and Japanese is Shift-JIS.&#xA;TIP: Not all japanese games use Shift-JIS. &#xD;&#xA;Also if you want support for a specific language encoding, ask me on discord. :&gt;" HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top"/>
-                                                </Grid>
+                                                    <TextBox TextWrapping="Wrap" Text="Linking to a DataFile lets you try and pull a list of names from a name table." Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
 
-                                                <Grid DockPanel.Dock="Top" >
-                                                    <Rectangle Height="2" Margin="10,8,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
-                                                        <Rectangle.RenderTransform>
-                                                            <TransformGroup>
-                                                                <ScaleTransform ScaleY="-1"/>
-                                                                <SkewTransform/>
-                                                                <RotateTransform/>
-                                                                <TranslateTransform/>
-                                                            </TransformGroup>
-                                                        </Rectangle.RenderTransform>
-                                                    </Rectangle>
-                                                    <Label Content="Row Size: How many bytes are in every 1 FULL row? (Including non-text)&#xD;&#xA;&#xA;In 010 Hex Editor, i strongly recommend going to Tools -&gt; Options, the Toolbars tab, and adding &#xA;from the actions list -&gt; View, the Fixed 20 Bytes, Auto Width and Custom Width to a new toolbar.&#xA;Anyway with Auto Width enabled, drag the window size (Width) around until the text table lines up&#xA;(Kinda like below, where text always starts on the same column). Then select 1 full row. &#xA;At the bottom, the &quot;Sel: X&quot; value is the table width aka Row Size. So in the example it's 176.&#xA;PS: Set the Custom width in 010 editor to the Row Size, and move your window size back to normal. &#xA;Note: If you don't have 010 editor, you can get the &quot;Move the window untill you see the text line up&quot;&#xA;experience in HxD Hex editor, using the &quot;&lt;-&gt;&quot; symbol at the top." HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top"/>
-                                                    <Image HorizontalAlignment="Left" Height="424" Margin="10,239,0,0" VerticalAlignment="Top" Width="736" Source="/User Controls/Text Row 010.png" Stretch="None"/>
-                                                </Grid>
-                                                <Grid DockPanel.Dock="Top" >
-                                                    <Rectangle Height="2" Margin="10,8,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
-                                                        <Rectangle.RenderTransform>
-                                                            <TransformGroup>
-                                                                <ScaleTransform ScaleY="-1"/>
-                                                                <SkewTransform/>
-                                                                <RotateTransform/>
-                                                                <TranslateTransform/>
-                                                            </TransformGroup>
-                                                        </Rectangle.RenderTransform>
-                                                    </Rectangle>
-                                                    <Label Content="Text Size: Inside a row, how many bytes are for text? Also known as the Character Limit.&#xA;&#xA;In this example, the text were trying to get is annoyingly part of a file holding more then 1 text table.&#xD;&#xA;Sometimes this happens. Select the area the text is covering, and then the&#xD;&#xA;value is again in Sel: X at the bottom right, so here it's 31. &#xD;&#xA;Usually text ends with a wall of 00 bytes, you want to stop 1 before the last 00 like in the example.&#xD;&#xA;Most of the time a name table is by itself in a file, i used this example on purpose as a reminder that&#xD;&#xA;sometimes the table holding text, is also holding other data. Don't forget to keep an eye out! " HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                                                    <Image HorizontalAlignment="Left" Height="108" Margin="10,203,0,0" VerticalAlignment="Top" Width="690" Source="/User Controls/Text Size 010.png" Stretch="None"/>
-                                                </Grid>
-                                                <Grid DockPanel.Dock="Top" >
 
-                                                    <Label Content="Start Byte: The base address of this table. (In Decimal)&#xD;&#xA;&#xD;&#xA;Just select the first letter of the first word of the text table. &#xD;&#xA;This time the value is called &quot;Start: x&quot; but is still at the bottom right. &#xD;&#xA;Normally that part of the ui shows &quot;Pos: X&quot; but when you select a byte like this, it becomes Start X" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                                                    <Rectangle Height="2" Margin="10,8,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
+                                                </DockPanel>
+                                                <DockPanel DockPanel.Dock="Top" >
+                                                    <Rectangle Height="2" Margin="10,8,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" DockPanel.Dock="Top">
                                                         <Rectangle.RenderTransform>
                                                             <TransformGroup>
                                                                 <ScaleTransform ScaleY="-1"/>
@@ -141,36 +99,87 @@
                                                             </TransformGroup>
                                                         </Rectangle.RenderTransform>
                                                     </Rectangle>
-                                                    <Image HorizontalAlignment="Left" Height="297" Margin="13,131,0,0" VerticalAlignment="Top" Width="712" Source="/User Controls/Start Address 010.png" Stretch="None"/>
-                                                </Grid>
+                                                    <TextBox TextWrapping="Wrap" Text="Character Set: &#xD;&#xA;Also sometimes called Font/Text Encoding, this is asking what language the text is in. English is Ascii+Ansi, and Japanese is Shift-JIS.&#xA;TIP: Not all japanese games use Shift-JIS. &#xA;If you need support for a specific language, ask me on discord. :&gt;" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
 
-                                                <Grid DockPanel.Dock="Top">
-                                                    <Rectangle Height="2" Margin="10,8,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
-                                                        <Rectangle.RenderTransform>
-                                                            <TransformGroup>
-                                                                <ScaleTransform ScaleY="-1"/>
-                                                                <SkewTransform/>
-                                                                <RotateTransform/>
-                                                                <TranslateTransform/>
-                                                            </TransformGroup>
-                                                        </Rectangle.RenderTransform>
-                                                    </Rectangle>
-                                                    <Label x:Name="NameCountHelpText" Content="Name Count: How many rows of names are there?&#xD;&#xA;&#xD;&#xA;I'm not aware of anyway to make 010 display how many rows your selecting, but...&#xD;&#xA;You can go to View -&gt; Address -&gt; Display Format -&gt; Decimal, &#xD;&#xA;and the numbers of the far left become row ID numbers. Then just uh, do some basic math?&#xD;&#xA;If you get this wrong, you can change this even after the editor is created, so don't worry.&#xD;&#xA;(Just make sure not to forget to actually do that!)" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                                                </Grid>
-                                                <Grid DockPanel.Dock="Top">
-                                                    <Rectangle Height="2" Margin="10,8,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
-                                                        <Rectangle.RenderTransform>
-                                                            <TransformGroup>
-                                                                <ScaleTransform ScaleY="-1"/>
-                                                                <SkewTransform/>
-                                                                <RotateTransform/>
-                                                                <TranslateTransform/>
-                                                            </TransformGroup>
-                                                        </Rectangle.RenderTransform>
-                                                    </Rectangle>
-                                                    <Label x:Name="NameIDHelpText" Content="First Name ID: For this menu, what number value is the first option.&#xD;&#xA;&#xA;I know your probably thinking something like &quot;What kind of question is that???&quot;.&#xD;&#xA;So, games sometimes don't have the first item in a list be the 0th or 1st like it would logically be. &#xA;USUALLY it's ID# 0 or 1, but SOMETIMES a game is designed weird and it's a much bigger number.&#xD;&#xA;For example, the first spell in the game (say Fireball) is #10 instead of #1.&#xD;&#xA;This happens sometimes when some basic actions like Attack, Defend, Run, etc, are secretly coded as &quot;skills&quot;.&#xD;&#xA;Or when the game is secretly treating the weapons, armor, and accessory lists, as one &quot;Equips&quot; list,&#xD;&#xA;so the first armor could be ID#172 because the first 171 armors are actually all the weapons. &#xD;&#xA;&#xD;&#xA;Anyway this often requires some trial and error.&#xA;If you make a mistake you can always fix it later. :)" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                                                </DockPanel>
 
-                                                </Grid>
+                                                <DockPanel DockPanel.Dock="Top" >
+                                                    <Rectangle Height="2" Margin="10,8,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" DockPanel.Dock="Top">
+                                                        <Rectangle.RenderTransform>
+                                                            <TransformGroup>
+                                                                <ScaleTransform ScaleY="-1"/>
+                                                                <SkewTransform/>
+                                                                <RotateTransform/>
+                                                                <TranslateTransform/>
+                                                            </TransformGroup>
+                                                        </Rectangle.RenderTransform>
+                                                    </Rectangle>
+                                                    <TextBox TextWrapping="Wrap" Text="Row Size: &#xD;&#xA;How many bytes are in every 1 FULL row? (Including non-text)&#xA;&#xA;In 010 Hex Editor, i strongly recommend going to Tools -&gt; Options, the Toolbars tab, and adding from the actions list -&gt; View, the Fixed 20 Bytes, Auto Width and Custom Width to a new toolbar. Anyway with Auto Width enabled, drag the window size (Width) around until the text table lines up (Kinda like below, where text always starts on the same column). Then select 1 full row. At the bottom, the &quot;Sel: X&quot; value is the table width aka Row Size. So in the example it's 176. &#xD;&#xA;&#xA;TIP: You can set the Custom width in 010 editor to the Row Size, and then move your window size back to normal.&#xD;&#xA; &#xA;Note: If you don't have 010 editor, you can get the &quot;Move the window untill you see the text line up&quot; experience in HxD Hex editor, using the &quot;&lt;-&gt;&quot; symbol at the top." Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
+
+                                                    
+                                                    <Image  Margin="10,10,0,0" Source="/User Controls/Text Row 010.png" Stretch="None" DockPanel.Dock="Top"/>
+                                                </DockPanel>
+                                                <DockPanel DockPanel.Dock="Top" >
+                                                    <Rectangle Height="2" Margin="10,8,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" DockPanel.Dock="Top">
+                                                        <Rectangle.RenderTransform>
+                                                            <TransformGroup>
+                                                                <ScaleTransform ScaleY="-1"/>
+                                                                <SkewTransform/>
+                                                                <RotateTransform/>
+                                                                <TranslateTransform/>
+                                                            </TransformGroup>
+                                                        </Rectangle.RenderTransform>
+                                                    </Rectangle>
+                                                    <TextBox TextWrapping="Wrap" Text="Text Size: &#xD;&#xA;Inside a row, how many bytes are for text? Also known as the Character Limit.&#xA;&#xA;In this example, the text were trying to get is annoyingly part of a file holding more then 1 text table. Sometimes this happens. Select the area the text is covering, and then the value is again in Sel: X at the bottom right, so here it's 31. Usually text ends with a wall of 00 bytes, you want to stop 1 before the last 00 like in the example. Most of the time a name table is by itself in a file, i used this example on purpose as a reminder that sometimes the table holding text, is also holding other data. Don't forget to keep an eye out!" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
+
+                                                    <Image Margin="10"  Source="/User Controls/Text Size 010.png" Stretch="None"/>
+                                                </DockPanel>
+                                                <DockPanel DockPanel.Dock="Top" >
+                                                    
+                                                    <Rectangle Height="2" Margin="10,8,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" DockPanel.Dock="Top">
+                                                        <Rectangle.RenderTransform>
+                                                            <TransformGroup>
+                                                                <ScaleTransform ScaleY="-1"/>
+                                                                <SkewTransform/>
+                                                                <RotateTransform/>
+                                                                <TranslateTransform/>
+                                                            </TransformGroup>
+                                                        </Rectangle.RenderTransform>
+                                                    </Rectangle>
+                                                    <TextBox TextWrapping="Wrap" Text="Start Byte: &#xD;&#xA;The base address of this table. (In Decimal)&#xA;&#xA;Just select the first letter of the first word of the text table. This time the value is called &quot;Start: x&quot; but is still at the bottom right. Normally that part of the UI shows &quot;Pos: X&quot; but when you select a byte like this, it becomes Start X" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
+
+                                                    <Image Margin="10"  Source="/User Controls/Start Address 010.png" Stretch="None"/>
+                                                </DockPanel>
+
+                                                <DockPanel Name="DataLinkNameCountHelpPanel" DockPanel.Dock="Top">
+                                                    <Rectangle Height="2" Margin="10,8,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" DockPanel.Dock="Top">
+                                                        <Rectangle.RenderTransform>
+                                                            <TransformGroup>
+                                                                <ScaleTransform ScaleY="-1"/>
+                                                                <SkewTransform/>
+                                                                <RotateTransform/>
+                                                                <TranslateTransform/>
+                                                            </TransformGroup>
+                                                        </Rectangle.RenderTransform>
+                                                    </Rectangle>
+                                                    <TextBox TextWrapping="Wrap" Text="Name Count: &#xD;&#xA;How many rows of names are there?&#xA;&#xA;I'm not aware of anyway to make 010 display how many rows your selecting, but... You can go to View -&gt; Address -&gt; Display Format -&gt; Decimal, &#xA;and the numbers of the far left become row ID numbers. Then just uh, do some basic math? If you get this wrong, you can change this even after the editor is created, so don't worry. (Just make sure not to forget to actually do that!)" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
+
+                                                </DockPanel>
+                                                <DockPanel Name="DataLinkFirstNameIDHelpPanel" DockPanel.Dock="Top">
+                                                    <Rectangle Height="2" Margin="10,8,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" DockPanel.Dock="Top">
+                                                        <Rectangle.RenderTransform>
+                                                            <TransformGroup>
+                                                                <ScaleTransform ScaleY="-1"/>
+                                                                <SkewTransform/>
+                                                                <RotateTransform/>
+                                                                <TranslateTransform/>
+                                                            </TransformGroup>
+                                                        </Rectangle.RenderTransform>
+                                                    </Rectangle>
+                                                    <TextBox TextWrapping="Wrap" Text="First Name ID: &#xD;&#xA;For this menu, what number value is the first option.&#xA;&#xA;I know your probably thinking something like &quot;What kind of question is that???&quot;. SO, EXPLANATION TIME. Games sometimes don't have the first item in a list be the 0th or 1st like it would logically be. USUALLY it's ID# 0 or 1, but SOMETIMES a game is designed weird and it's a much bigger number. For example, the first spell in the game (say Fireball) is #10 instead of #1. This happens sometimes when some basic actions like Attack, Defend, Run, etc, are secretly coded as &quot;skills&quot;. Or when the game is secretly treating the weapons, armor, and accessory lists, as one &quot;Equips&quot; list, so the first armor could be ID#172 because the first 171 armors are actually all the weapons. &#xA;&#xA;Anyway this often requires some trial and error.&#xA;If you make a mistake you can always fix it later. :)" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
+
+
+                                                </DockPanel>
                                             </DockPanel>
 
 
@@ -223,15 +232,16 @@
                                             <Label Content="Link to TextFile Tutorial." FontWeight="Bold" />
                                         </DockPanel>
                                         <ScrollViewer >
-                                            <Grid>
-                                                <Label Content="Linking to a Text File lets you get a list of names from a standard text file. (.txt) &#xA;later i'll update this to let you read multiple lines at a time (for item descriptions)" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                                                <Label Content="For now i'm being lazy, but after release i should totally add an example image of a text file &#xD;&#xA;of names being used to help users understand this. :3" HorizontalAlignment="Left" Margin="12,295,0,0" VerticalAlignment="Top" Background="#FF1C1C3C"/>
-                                                <Label Content="First Line: This is the Line# you want to start reading text from." HorizontalAlignment="Left" Margin="10,79,0,0" VerticalAlignment="Top"/>
-                                                <Label x:Name="TextLastLineHelpText" Content="Last Line: This is the Line# you want to stop reading text from." HorizontalAlignment="Left" Margin="12,115,0,0" VerticalAlignment="Top"/>
-                                                <Label x:Name="TextFileNameIDHelpText" Content="The Starting ID# is the number value the First Line stands for when selected.&#xA;Very rarely, games will start a skill or enemy list at like, enemy #40.&#xA;Outside of edge cases, this is usually 0, or sometimes 1. &#xA;I strongly recommend playing around with it to get a better understanding." HorizontalAlignment="Left" Margin="10,165,0,0" VerticalAlignment="Top"/>
+                                            <DockPanel LastChildFill="False">
+                                                <TextBox TextWrapping="Wrap" Text="Linking to a Text File lets you get a list of names from a standard text file (.txt). later i'll update this to let you read multiple lines at a time (for item descriptions)" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
+
+                                                <TextBox TextWrapping="Wrap" Text="First Line: &#xD;&#xA;This is the Line# you want to start reading text from." Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
+                                                <TextBox Name="TextBoxLastLineHelpText" TextWrapping="Wrap" Text="Last Line: &#xD;&#xA;This is the Line# you want to stop reading text from." Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
+                                                <TextBox Name="TextLinkNameIDHelpText" TextWrapping="Wrap" Text="The Starting ID#: &#xD;&#xA;This is the number value the First Line stands for when selected. Very rarely, games will start a skill or enemy list at like, enemy #40. Outside of edge cases, this is usually 0, or sometimes 1. I strongly recommend playing around with it to get a better understanding." Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
+                                                <TextBox TextWrapping="Wrap" Text="For now i'm being lazy, but after release i should totally add an example image of a text file of names being used to help users understand this. :3" Margin="10,10,10,10" Padding="5" Focusable="False" Background="#FF171840" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
 
 
-                                            </Grid>
+                                            </DockPanel>
 
                                         </ScrollViewer>
                                     </DockPanel>
@@ -259,7 +269,7 @@
                                         </DockPanel>
                                         <Grid>
                                             <Label x:Name="EditorNameIDLabel" Content="First Name ID" HorizontalAlignment="Left" Margin="7,7,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="EditorFileNameIDTextBox" HorizontalAlignment="Left" Margin="143,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="110" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="EditorFirstNameIDTextboxTextChanged"/>
+                                            <TextBox x:Name="EditorFileNameIDTextBox" HorizontalAlignment="Left" Margin="150,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="103" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="EditorFirstNameIDTextboxTextChanged"/>
                                         </Grid>
                                     </DockPanel>
                                 </Border>
@@ -267,7 +277,7 @@
                                 <Border Margin="634,10,10,0" Height="250" VerticalAlignment="Top">
                                     <DockPanel>
                                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
-                                            <Label Content="Name List Preview  (Any changes are not saved)" FontWeight="Bold" />
+                                            <Label Content="Name List Preview  (changes are not saved)" FontWeight="Bold" />
                                         </DockPanel>
                                         <ScrollViewer >
                                             <TextBox Name="EditorNamesPreviewTextbox" TextWrapping="Wrap" Text="(First select a editor...) "  />
@@ -280,14 +290,13 @@
                                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                             <Label Content="Link to Editor Tutorial." FontWeight="Bold" />
                                         </DockPanel>
-                                        <ScrollViewer >
-                                            <Grid>
-                                                <Label Content="This one is really simple. It lets you use a list of names from an already existing editor.&#xA;This is best used when creating a dropdown menu for an entry, to &quot;Select&quot; something.&#xD;&#xA;For example, A game where the enemys have a weapon slot, or where classes have a spell list.&#xA;" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                                                <Label x:Name="EditorNameIDHelpText" Content="First Name ID#: &#xD;&#xA;This is asking what number value is the first name in the list.&#xA;Sometimes a game won't have it be 0 or 1 like it is in the editor.&#xA;This USUALLY requires trial and error until you guess the correct number, &#xD;&#xA;so unless you get lucky and the expected value is 0, expect this to take awhile. ^^;&#xD;&#xA;&#xD;&#xA;Note to self: Create some really good example tutorial for this later..." HorizontalAlignment="Left" Margin="10,110,0,0" VerticalAlignment="Top"/>
+                                        <ScrollViewer Background="Transparent" VerticalScrollBarVisibility="Auto">
+                                            <DockPanel>
+                                                <TextBox TextWrapping="Wrap" Text="This one is really simple. It lets you use a list of names from an already existing editor. This is best used when creating a dropdown menu for an entry, to &quot;Select&quot; something. For example, A game where the enemys have a weapon slot, or where classes have a spell list. " Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"  />
+                                                <TextBox x:Name="EditLinkFirstNameIDHelpText" TextWrapping="Wrap" Text="First Name ID#:&#xD;&#xA;This is asking what number value is the first name in the list. Sometimes a game won't have it be 0 or 1 like it is in the editor. This USUALLY requires trial and error until you guess the correct number, so unless you  get lucky and the expected value is 0, expect this to take awhile. ^^; &#xD;&#xA;&#xD;&#xA;Note to self: Create a really good example tutorial for this later...&#xA;" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
 
-
-                                            </Grid>
-
+                                            </DockPanel>
+                                            
                                         </ScrollViewer>
                                     </DockPanel>
                                 </Border>
@@ -318,14 +327,14 @@
 
                                 <Grid Margin="350,0,0,0" Background="#FF330F4E">
 
-                                    <Border Margin="10,10,0,0" HorizontalAlignment="Left" Width="373" Height="173" VerticalAlignment="Top">
+                                    <Border Margin="10,10,0,0" HorizontalAlignment="Left" Width="393" Height="183" VerticalAlignment="Top">
                                         <DockPanel>
                                             <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                                 <Label Content="Info" FontWeight="Bold" />
                                             </DockPanel>
                                             <Grid>
-                                                <Button Content=" Set all empty lines to ??? " HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top" Background="#FF440000"/>
-                                                <Button Content=" Set all lines to empty" HorizontalAlignment="Left" Margin="10,98,0,0" VerticalAlignment="Top" Background="#FF440000"/>
+                                                <Button Content=" Set all empty lines to ??? " HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top" Background="#FF440000" Height="32" Width="296"/>
+                                                <Button Content=" Set all lines to empty" HorizontalAlignment="Left" Margin="10,103,0,0" VerticalAlignment="Top" Background="#FF440000" Height="32" Width="246"/>
                                                 <Label Content="When linking to nothing, you simply&#xD;&#xA;write your own name list on the left." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0"/>
 
                                             </Grid>
@@ -337,16 +346,10 @@
                                             <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                                 <Label Content="Link to Nothing Tutorial." FontWeight="Bold" />
                                             </DockPanel>
-                                            <ScrollViewer >
-                                                <Grid>
+                                            <ScrollViewer Background="Transparent" VerticalScrollBarVisibility="Auto">
+                                                <TextBox TextWrapping="Wrap" Text="This lets you create your own list of names, instead of getting them from a file.  &#xA;&#xA;This bypasses needing a name list, and is useful when a game doesn't explicitly name something (A game where status effects have no names, or where damage types have no names, etc)&#xA;&#xA;However, if you use this for the names of standard data (Weapons, spells, enemys, etc) then users won't be able to rename them and have it reflect back ingame.&#xA;&#xA;You should probably only use this for menu entrys, or when your particularly desperate. &#xA;&#xA;Although if you ARE desperate to just get an editor kind of working but you can't find where the weapon names are, you can do this temporarily, and then just replace it later with the proper names file once found. &#xA;&#xA;If this is for standard editor names and it's an editor for totally unknown data, just make a bunch of blank lines. " Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"    />
 
-
-                                                    <Label Content="This lets you create your own list of names, instead of getting them from a file.  &#xD;&#xA;&#xA;This bypasses needing a name list, and is useful when a game &#xA;doesn't explicitly name something (A game where status effects &#xA;have no names, or where damage types have no names, etc)&#xA;&#xA;However, if you use this for the names of standard data&#xA;(Weapons, spells, enemys, etc) then users won't be&#xA;able to rename them and have it reflect back ingame.&#xA;&#xA;You should probably only use this for menu entrys, &#xD;&#xA;or when your particularly desperate. &#xA;&#xA;Although if you ARE desperate to just get an editor kind of working &#xA;but you can't find where the weapon names are, you can do this &#xA;temporarily, and then just replace it later with the proper names file once found. &#xA;&#xA;If this is for standard editor names and it's an editor for totally &#xA;unknown data, just make a bunch of blank lines. " HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0"/>
-
-
-                                                </Grid>
-
-                                            </ScrollViewer>
+                                            </ScrollViewer>                                           
                                         </DockPanel>
                                     </Border>
 

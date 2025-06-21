@@ -468,7 +468,7 @@ namespace GameEditorStudio
             {
                 // Set the position of the new window to the position of the current window
                 TheWorkshop.Left = currentWindow.Left;
-                TheWorkshop.Top = currentWindow.Top;
+                TheWorkshop.Top = currentWindow.Top + 30;
             }
 
             TheWorkshop.Show();

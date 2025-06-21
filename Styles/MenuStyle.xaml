@@ -6,6 +6,8 @@
 
     
     <Style  TargetType="{x:Type Menu}">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Background" Value="{DynamicResource ResourceKey= MenuBack}" />
@@ -24,6 +26,8 @@
     </Style>
 
     <Style TargetType="{x:Type ContextMenu}">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="Background" Value="{DynamicResource ResourceKey= MenuBack}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ResourceKey= MenuMouseoverBorder}" />
         <Setter Property="BorderThickness" Value="1" />
@@ -37,6 +41,8 @@
     
         <!-- Define the Style for MenuItem -->
     <Style  TargetType="MenuItem">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="FontSize" Value="20"/>
         <Setter Property="FontFamily" Value="Dawns 10px ArkPixel" />
         <Setter Property="Foreground"  Value="{DynamicResource ResourceKey= MenuText}" />

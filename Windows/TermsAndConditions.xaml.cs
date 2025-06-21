@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,6 +34,11 @@ namespace GameEditorStudio
 
 
             Dispatcher.InvokeAsync(async () => await GithubUpdater.CheckForUpdatesAsync());
+
+            this.Topmost = true;    // Temporarily set topmost to ensure visibility
+            this.Activate();        // Try to bring to foreground
+            this.Focus();           // Set keyboard focus
+            this.Topmost = false;   // Reset topmost if undesired permanently
         }
 
         private void ButtonIAgreeToToS(object sender, RoutedEventArgs e)

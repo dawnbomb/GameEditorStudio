@@ -30,7 +30,7 @@
         <ContentControl Grid.Row="2" >
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
-                    <Label Content="Item Info" FontWeight="Bold"/>
+                    <Label Content="Info" FontWeight="Bold"/>
 
                     <Label Content="Chars: XX / YY" Name="LabelCharacterCount" FontWeight="Bold" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
                 </DockPanel>

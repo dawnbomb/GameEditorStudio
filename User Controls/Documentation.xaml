@@ -17,7 +17,7 @@
         <Border >
             <DockPanel>
                 <DockPanel MinHeight="25" DockPanel.Dock="Top"  LastChildFill="True" Style="{DynamicResource HeaderDock}">
-                    <Label Content="Notes" FontWeight="Bold"/>
+                    <Label Content="Your Documents" FontWeight="Bold"/>
                 </DockPanel>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -26,11 +26,11 @@
                     </Grid.ColumnDefinitions>
 
                     <DockPanel Grid.Column="0" Margin="5">
-                        <Button Content="New Workshop Document"  Click="ButtonNewWorkshopDocument" DockPanel.Dock="Top"/>
+                        <Button Content="New Workshop Doc"  Click="ButtonNewWorkshopDocument" DockPanel.Dock="Top"  Height="30" ToolTip="Workshop documents are text files that when you share the workshop, &#xD;&#xA;other people can access them. Basically, these will be public text files. &#xD;&#xA;Any info you would post on forumns, online documents, etc, should be made into a workshop document."/>
                         <TreeView x:Name="WorkshopDocumentsTreeView" PreviewMouseMove="DocumentTreePreviewMouseMove"   DockPanel.Dock="Top" />
                     </DockPanel>
                     <DockPanel Margin="5" Grid.Column="1">
-                        <Button Content="New Project Document"  Click="ButtonNewProjectDocument"  DockPanel.Dock="Top"/>
+                        <Button Content="New Project Doc"  Click="ButtonNewProjectDocument"  DockPanel.Dock="Top"  Height="30" ToolTip="Project documents are text files that only you can access. &#xD;&#xA;They are per project, so if you start a new project for the same game, the list will be empty. &#xD;&#xA;This is useful to write down your thoughts and plans for what you want to make. &#xD;&#xA;Anything that is more objective (Such as details on the game) should instead be a workshop document."/>
                         <TreeView x:Name="ProjectDocumentsTreeView" PreviewMouseMove="DocumentTreePreviewMouseMove"  DockPanel.Dock="Top" />
                     </DockPanel>
                     
@@ -46,10 +46,13 @@
         <Border  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
             <DockPanel>
                 <DockPanel MinHeight="25" DockPanel.Dock="Top" LastChildFill="True" Style="{DynamicResource HeaderDock}">
-                    <Label Content="Notepad" FontWeight="Bold"/>
-                    <TextBox x:Name="DocumentNameBox" Text="Document Name" Margin="4" Width="200" HorizontalAlignment="Right" KeyDown="DocumentNameBox_KeyDown" DockPanel.Dock="Right"   />
-                </DockPanel>               
-                <TextBox x:Name="DocumentTextBox" TextWrapping="Wrap" Text="No note selected."  AcceptsReturn="True" DockPanel.Dock="Top" Margin="5" />
+                    <Label Content="Document" FontWeight="Bold"/>
+                    <TextBox x:Name="DocumentNameBox" Text="Document Name" Margin="4" Width="200" HorizontalAlignment="Right" KeyDown="DocumentNameBox_KeyDown" DockPanel.Dock="Right" ToolTip="You have to press enter to actually change the document name. &#xD;&#xA;Document names are the file name when saved to your PC, so dont give them the same name, and don't use special characters like \ / @ - % etc. "  />
+                </DockPanel>
+                <ScrollViewer Margin="5">
+                    <TextBox x:Name="DocumentTextBox" TextWrapping="Wrap" Text="No note selected."  AcceptsReturn="True" DockPanel.Dock="Top"  />
+                </ScrollViewer>
+                
                 <!--Margin="10,10,10,10"-->
             </DockPanel>
         </Border>

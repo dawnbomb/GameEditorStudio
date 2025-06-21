@@ -146,7 +146,7 @@ namespace GameEditorStudio
                 DockPanel MainPanel = new DockPanel();
                 DockPanel.SetDock(MainPanel, Dock.Top);
                 MainPanel.Margin = new Thickness(10, 8, 10, 0);
-                MainPanel.Height = 26;
+                MainPanel.Height = 34;
                 MainPanel.MouseEnter += (sender, e) => ToolPanel_MouseEnter(sender, e, ThisTool);
 
                 // Find corresponding TreeViewItem by Tab value and add MainPanel to its DockPanel
@@ -170,8 +170,8 @@ namespace GameEditorStudio
             Label nameLabel = new Label
             {
                 Content = tool.DisplayName,
-                Width = 170,
-                FontSize = 14,
+                Width = 240,
+                FontSize = 20,
                 Margin = new Thickness(0, 0, 0, 0)
             };
             toolPanel.Children.Add(nameLabel);
@@ -180,8 +180,8 @@ namespace GameEditorStudio
             Button openButton = new Button
             {
                 Content = "Open...",
-                Width = 60,
-                FontSize = 14,
+                Width = 82,
+                FontSize = 20,
                 HorizontalContentAlignment = HorizontalAlignment.Center
             };
             openButton.Click += (sender, e) => OpenToolFolder(sender, e, tool);
@@ -194,8 +194,8 @@ namespace GameEditorStudio
                 Button downloadButton = new Button
                 {
                     Content = "Download",
-                    Width = 80,
-                    FontSize = 14,
+                    Width = 102,
+                    FontSize = 20,
                     HorizontalContentAlignment = HorizontalAlignment.Center
                 };
                 downloadButton.Click += (sender, e) => Process.Start(new ProcessStartInfo(tool.DownloadLink) { UseShellExecute = true });
@@ -207,8 +207,8 @@ namespace GameEditorStudio
             Button browseButton = new Button
             {
                 Content = "Browse...",
-                Width = 70,
-                FontSize = 14
+                Width = 98,
+                FontSize = 20
             };
             browseButton.Click += (sender, e) => SaveToolsXML(sender, e, tool);
             toolPanel.Children.Add(browseButton);
@@ -218,7 +218,7 @@ namespace GameEditorStudio
             {
                 MinWidth = 50,
                 Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF191919")),
-                FontSize = 14,
+                FontSize = 20,
                 VerticalContentAlignment = VerticalAlignment.Center
             };
             Binding locationBinding = new Binding("Location")
@@ -244,7 +244,7 @@ namespace GameEditorStudio
             {
                 DockPanel commandPanel = new DockPanel();
                 commandPanel.Margin = new Thickness(10, 8, 10, 0);
-                commandPanel.Height = 28;
+                commandPanel.Height = 32;
                 DockPanel.SetDock(commandPanel, Dock.Top);
                 commandPanel.MouseEnter += (sender, e) => EventPanel_MouseEnter(sender, e, commonEvent);
 
@@ -259,7 +259,7 @@ namespace GameEditorStudio
                 Label commandLabel = new Label
                 {
                     Content = commonEvent.DisplayName,
-                    FontSize = 14,
+                    FontSize = 20,
                     Width = 200
                 };
                 commandPanel.Children.Add(commandLabel);

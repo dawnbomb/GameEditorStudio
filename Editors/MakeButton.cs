@@ -112,8 +112,9 @@ namespace GameEditorStudio
             EditorClass.EditorLabel = TheEditorNameLabel;
             TheEditorNameLabel.VerticalAlignment = VerticalAlignment.Bottom;
             TheEditorNameLabel.HorizontalAlignment = HorizontalAlignment.Center;
-            TheEditorNameLabel.Content = " " + EditorClass.EditorName + " ";
+            TheEditorNameLabel.Content = EditorClass.EditorName;
             EditorClass.EditorNameLabel = TheEditorNameLabel;
+            TheEditorNameLabel.Margin = new Thickness(3, 0, 3, 0);
 
 
             EditorTabButton.Click += (sender, e) =>

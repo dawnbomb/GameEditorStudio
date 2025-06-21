@@ -3,6 +3,8 @@
                     xmlns:properties="clr-namespace:GameEditorStudio.Properties">
 
     <Style x:Key="DarkModeWindowStyle" TargetType="{x:Type Window}">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="WindowChrome.WindowChrome">
             <Setter.Value>
                 <WindowChrome CaptionHeight="30"
