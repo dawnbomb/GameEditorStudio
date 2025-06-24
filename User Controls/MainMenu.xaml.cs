@@ -57,8 +57,12 @@ namespace GameEditorStudio
 
 
             this.Loaded += new RoutedEventHandler(LoadEvent); //This is the event that's called when the window is loaded. Here, It's required to set the parent window, and also to set the WorkshopName.
-            
 
+            #if DEBUG
+            
+            #else
+            ExtrasMenu.Visibility = Visibility.Collapsed; //Show the extra menu in debug mode.
+            #endif
         }
 
         public void LoadEvent(object sender, RoutedEventArgs e)
@@ -119,7 +123,7 @@ namespace GameEditorStudio
             List<WorkshopResource> EventResources2 = new();
             EventResources = EventResources2;
 
-            using (FileStream TargetXML = new FileStream(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Library.xml", FileMode.Open, FileAccess.Read))
+            using (FileStream TargetXML = new FileStream(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Workshop.xml", FileMode.Open, FileAccess.Read))
             {
                 XElement libraryxml = XElement.Load(TargetXML);
 
@@ -859,19 +863,19 @@ namespace GameEditorStudio
 
         private void OpenSettingsWindow(object sender, RoutedEventArgs e)
         {
-            #if DEBUG
+#if DEBUG
             UserSettings UserSettings = new();
             UserSettings.Show();                                    
-            #endif
+#endif
 
         }
 
         private void OpenDevWindow(object sender, RoutedEventArgs e)
         {
-            #if DEBUG
+#if DEBUG
             DevTools Window = new();
             Window.Show();                                            
-            #endif
+#endif
 
         }
 
@@ -884,11 +888,11 @@ namespace GameEditorStudio
 
         private void OpenHexTest(object sender, RoutedEventArgs e)
         {
-            #if DEBUG
+#if DEBUG
             HexTest HexTest = new HexTest();
             HexTest.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             HexTest.Show();
-            #endif
+#endif
         }
 
 

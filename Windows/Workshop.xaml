@@ -48,8 +48,8 @@
 
 
         <Grid DockPanel.Dock="Top"   Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" Margin="0,0,0,0"  Style="{DynamicResource BorderGrid}" >
-            
-            
+
+
             <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5" Margin="0,0,0,0" BorderThickness="0,2,0,0"  Grid.RowSpan="1" VerticalAlignment="Bottom" >
                 <Border BorderThickness="0,2,0,0" BorderBrush="#FF575757">
 
@@ -67,7 +67,7 @@
             </DockPanel>
         </Grid>
 
-        
+
 
         <DockPanel   Grid.Row="3" Grid.Column="0" Grid.RowSpan="1"  Grid.ColumnSpan="5"  DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}" LastChildFill="False" Background="#333333" >
 
@@ -492,17 +492,17 @@
                                                             <Label Content="2L" HorizontalAlignment="Left" Margin="4,55,0,0" VerticalAlignment="Top"/>
                                                             <Label Content="4B" HorizontalAlignment="Left" Margin="4,141,0,0" VerticalAlignment="Top"/>
                                                             <Label Content="4L" HorizontalAlignment="Left" Margin="4,84,0,0" VerticalAlignment="Top"/>
-                                                            <TextBox x:Name="PropertiesEntry1Byte" HorizontalAlignment="Left" Margin="40,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
-                                                            <TextBox x:Name="PropertiesEntry2ByteB" HorizontalAlignment="Left" Margin="40,117,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
-                                                            <TextBox x:Name="PropertiesEntry2ByteL" HorizontalAlignment="Left" Margin="40,58,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
-                                                            <TextBox x:Name="PropertiesEntry4ByteB" HorizontalAlignment="Left" Margin="40,146,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
-                                                            <TextBox x:Name="PropertiesEntry4ByteL" HorizontalAlignment="Left" Margin="40,88,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
-                                                            <TextBox x:Name="PropertiesEntryHex1Byte" HorizontalAlignment="Left" Margin="153,29,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                            <TextBox x:Name="PropertiesEntryHex2ByteB" HorizontalAlignment="Left" Margin="153,117,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                            <TextBox x:Name="PropertiesEntryHex2ByteL" HorizontalAlignment="Left" Margin="153,58,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                            <TextBox x:Name="PropertiesEntryHex4ByteB" HorizontalAlignment="Left" Margin="153,146,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                            <TextBox x:Name="PropertiesEntryHex4ByteL" HorizontalAlignment="Left" Margin="153,88,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100"/>
-                                                            <Label Content="Lil Endian 00 right &#xA;Ex: 1400  2B00&#xA;Big Endian 00 left&#xA;Ex: 0014  002B&#xD;&#xA;&#xA;Most consoles use&#xD;&#xA;big" Margin="254,0,0,0" Height="176" VerticalAlignment="Center" HorizontalAlignment="Left" Width="193"/>
+                                                            <TextBox x:Name="PropertiesEntry1Byte" HorizontalAlignment="Left" Margin="34,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
+                                                            <TextBox x:Name="PropertiesEntry2ByteB" HorizontalAlignment="Left" Margin="34,117,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
+                                                            <TextBox x:Name="PropertiesEntry2ByteL" HorizontalAlignment="Left" Margin="34,58,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
+                                                            <TextBox x:Name="PropertiesEntry4ByteB" HorizontalAlignment="Left" Margin="34,146,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
+                                                            <TextBox x:Name="PropertiesEntry4ByteL" HorizontalAlignment="Left" Margin="34,88,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
+                                                            <TextBox x:Name="PropertiesEntryHex1Byte" HorizontalAlignment="Left" Margin="149,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="96"/>
+                                                            <TextBox x:Name="PropertiesEntryHex2ByteB" HorizontalAlignment="Left" Margin="149,117,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="96"/>
+                                                            <TextBox x:Name="PropertiesEntryHex2ByteL" HorizontalAlignment="Left" Margin="149,58,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="96"/>
+                                                            <TextBox x:Name="PropertiesEntryHex4ByteB" HorizontalAlignment="Left" Margin="149,146,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="96"/>
+                                                            <TextBox x:Name="PropertiesEntryHex4ByteL" HorizontalAlignment="Left" Margin="149,88,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="96"/>
+                                                            <Label Content="Lil Endian 00 right &#xA;Ex: 1400  2B00&#xA;Big Endian 00 left&#xA;Ex: 0014  002B&#xD;&#xA;&#xA;Most consoles use&#xD;&#xA;big" Margin="243,0,0,0" Height="176" VerticalAlignment="Center" HorizontalAlignment="Left" Width="193"/>
 
                                                         </Grid>
                                                     </DockPanel>
@@ -632,7 +632,7 @@
                     </TabItem>
                 </TabControl>
             </ContentControl>
-            
+
             <!--<GridSplitter Style="{DynamicResource SplitterHorizontal}" Grid.Row="1"   />-->
 
 

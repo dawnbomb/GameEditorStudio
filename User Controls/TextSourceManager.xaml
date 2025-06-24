@@ -57,7 +57,7 @@
                                             <Label x:Name="NameIDLabel" Content="First Name ID" HorizontalAlignment="Left" Margin="10,147,0,0" VerticalAlignment="Top"/>
                                             <TextBox x:Name="FileNameIDTextBox" HorizontalAlignment="Left" Margin="158,150,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
                                             <Label x:Name="LabelNameCount" Content="Name Count" HorizontalAlignment="Left" Margin="10,117,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="FileNameCountTextBox" HorizontalAlignment="Left" Margin="158,121,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged"/>
+                                            <TextBox x:Name="FileNameCountTextBox" HorizontalAlignment="Left" Margin="158,121,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="DataFileTextboxesTextChanged" ToolTip="This is how many lines / names there are. If you want to stop with line 10, put 10. IE, do not bump it to 11 because of line 0."/>
 
                                         </Grid>
                                     </DockPanel>

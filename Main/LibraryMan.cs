@@ -1,5 +1,4 @@
-﻿using Ookii.Dialogs.Wpf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Ookii.Dialogs.Wpf;
+using Windows.UI.Notifications;
 
 namespace GameEditorStudio
 {
@@ -483,6 +484,64 @@ namespace GameEditorStudio
         }
 
 
+        public static void Notification(string Title, string Text) 
+        {
+            Notification Notification = new("", Title, Text);
+            bool? result = Notification.ShowDialog();
+            if (result == true) // User clicked OK
+            {
+                
+            }
+            else // User closed the window or cancelled
+            {
+                
+            }
+        }
+
+        public static void NotificationPositive(string Title, string Text)
+        {
+            Notification Notification = new("✔",Title, Text);
+            bool? result = Notification.ShowDialog();
+            if (result == true) // User clicked OK
+            {
+
+            }
+            else // User closed the window or cancelled
+            {
+
+            }
+
+        }
+
+        public static void NotificationNegative(string Title, string Text)
+        {
+            Notification Notification = new("X", Title, Text);
+            bool? result = Notification.ShowDialog();
+            if (result == true) // User clicked OK
+            {
+
+            }
+            else // User closed the window or cancelled
+            {
+
+            }
+        }
+
+        public static void NotificationGenericError()
+        {
+            Notification Notification = new("X", "An error occured.", "Please report it :(");
+            bool? result = Notification.ShowDialog();
+            if (result == true) // User clicked OK
+            {
+
+            }
+            else // User closed the window or cancelled
+            {
+
+            }
+        }
+
+        
 
 
     }

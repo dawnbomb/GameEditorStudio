@@ -355,12 +355,7 @@ namespace GameEditorStudio
             }
             catch
             {
-                string Error = "An error occured." +
-                    "\n" +
-                    "\nPlease report it :(";
-                Notification f2 = new(Error);
-                f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                f2.ShowDialog();
+                LibraryMan.NotificationGenericError();
                 return;
             }
         }

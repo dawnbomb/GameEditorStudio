@@ -283,8 +283,9 @@ namespace GameEditorStudio
                 {
                     if (gamefile.Key == Testa)
                     {
-                        Notification Notification = new("That file is already associated with this workshop. Sometimes games have diffrent folders with identical file names inside them, causing those files to be hard to work with. " +
-                            "To deal with this problem, Crystal Editor allows users to assign a file a Nickname. Files with nicknames are shown as if their Nickname IS their filename. " +
+                        LibraryMan.Notification("Notice: File already in workshop",
+                            "FYI: Yes i'm aware that sometimes games will have diffrent folders with identical file names inside them, causing those files to be hard to work with. " +
+                            "To deal with this problem, Game Editor Studio allows users to give a Nickname. Files with nicknames are shown as if their Nickname IS their filename. " +
                             "To better understand what just happened involving the file you tried adding to the workshop, here is the workshops information on that file. " +
                             "\n" +
                             "\nRealname: " + gamefile.Value.FileName +
@@ -292,7 +293,8 @@ namespace GameEditorStudio
                             "\nFilepath: " + gamefile.Value.FileLocation +
                             "\n" +
                             "\n*The file path is relative, based on the input directory of this project and is not an absolute location on your computer. " +
-                            "You can access the input directory from Shortcuts -> open input directory.");
+                            "You can access the input directory from Shortcuts -> open input directory."
+                            );
                                                
                         return;
                     }
@@ -311,14 +313,17 @@ namespace GameEditorStudio
                 }
                 catch 
                 {
-                    Notification Notification = new("The workshop couldn't find the file you selected." +
-                        "\n" +
-                        "\nPossible causes..." +
+                    LibraryMan.Notification("Notice: File not found?",
+                        "For some reason the workshop couldn't find the file you selected." +
+                        "\n\n" +
+                        "Possible causes..." +
                         "\n1: You tried adding a file outside the workshops input folder." +
                         "\n2: You selected the wrong input folder when first setting up your project." +
                         "\n3: Whoever created the workshop picked a bad workshops input folder to begin with." +
-                        "\n" +
-                        "\nNote: You can access the input folder from Shortcuts -> open input folder.");                    
+                        "\n\n" +
+                        "Note: You can access the input folder from Shortcuts -> open input folder."
+                        );
+                                   
                 }
 
                 TheWorkshop.FileManager.RefreshFileTree();

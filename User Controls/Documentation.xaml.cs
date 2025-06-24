@@ -338,29 +338,25 @@ namespace GameEditorStudio
             {
                 LibraryMan.NukeDirectory(LibraryMan.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\DOCocumentationFolderTest");
 
-
-                string Error = "Error: WORKSHOP Documentation not saved." +
-                    "\n" +
-                    "\nAn error occured during the \"Saving Documentation\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +
-                    "\n" +
-                    "\nAs you were probably saving more then only your documentation, you'll be happy to hear that each part of saving is handled seperately. " +
+                LibraryMan.NotificationNegative("Error: WORKSHOP Documentation not saved.",
+                    "An error occured during the \"Saving Documentation\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +
+                    "\n\n" +
+                    "As you were probably saving more then only your documentation, you'll be happy to hear that each part of saving is handled seperately. " +
                     "This means there is NO CHANCE that any other parts of the saving operation are affected, such as when also saving editors or saving workshop files. " +
-                    "\n" +
-                    "\nDocumentats are saved using the names you give them to actual folders. " +
+                    "\n\n" +
+                    "Documentats are saved using the names you give them to actual folders. " +
                     "This can cause problems as each operating system has a diffrent list of symbols it doesn't allow folder names to use. " +
                     "For safety, we first simulate what would happen IF it actually saved anything, " +
                     "by creating a temporary dummy folder and saving everything to that temporary folder. " +
                     "This way there is no chance your actual document folder will get corrupted or result in any other serious error. :)" +
-                    "\n" +
-                    "\nAs your seeing this error, it means your operating system doesn't like atleast one of the symbols you tried using in a documents name. " +
+                    "\n\n" +
+                    "As your seeing this error, it means your operating system doesn't like atleast one of the symbols you tried using in a documents name. " +
                     "Try to avoid symbols like @, #, $, %, &, *, \\, /, :, ;, etc. Also most operating systems DO allow spaces in folder names, so the problem isn't that. " +
-                    "\n" +
-                    "\nTry changing the names of any documents you think might have caused the error, and then try saving your documents again. " +
-                    "\n" +
-                    "\nYes, the problem is the document NAMES, not the text inside them.";
-                Notification f2 = new(Error);
-                f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                f2.ShowDialog();
+                    "\n\n" +
+                    "Try changing the names of any documents you think might have caused the error, and then try saving your documents again. " +
+                    "\n\n" +
+                    "Yes, the problem is the document NAMES, not the text inside them."
+                    );
             }
         }
         public void SaveAllDocumentsProject() 
@@ -402,29 +398,26 @@ namespace GameEditorStudio
             {
                 LibraryMan.NukeDirectory(LibraryMan.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave");
 
-
-                string Error = "Error: PROJECT Documentation not saved." +
-                    "\n" +
-                    "\nAn error occured during the \"Saving Documentation\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +
-                    "\n" +
-                    "\nAs you were probably saving more then only your documentation, you'll be happy to hear that each part of saving is handled seperately. " +
+                LibraryMan.NotificationNegative("Error: PROJECT Documentation not saved.",
+                    "An error occured during the \"Saving Documentation\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +
+                    "\n\n" +
+                    "As you were probably saving more then only your documentation, you'll be happy to hear that each part of saving is handled seperately. " +
                     "This means there is NO CHANCE that any other parts of the saving operation are affected, such as when also saving editors or saving workshop files. " +
-                    "\n" +
-                    "\nDocumentats are saved using the names you give them to actual folders. " +
+                    "\n\n" +
+                    "Documentats are saved using the names you give them to actual folders. " +
                     "This can cause problems as each operating system has a diffrent list of symbols it doesn't allow folder names to use. " +
                     "For safety, we first simulate what would happen IF it actually saved anything, " +
                     "by creating a temporary dummy folder and saving everything to that temporary folder. " +
                     "This way there is no chance your actual document folder will get corrupted or result in any other serious error. :)" +
-                    "\n" +
-                    "\nAs your seeing this error, it means your operating system doesn't like atleast one of the symbols you tried using in a documents name. " +
+                    "\n\n" +
+                    "As your seeing this error, it means your operating system doesn't like atleast one of the symbols you tried using in a documents name. " +
                     "Try to avoid symbols like @, #, $, %, &, *, \\, /, :, ;, etc. Also most operating systems DO allow spaces in folder names, so the problem isn't that. " +
-                    "\n" +
-                    "\nTry changing the names of any documents you think might have caused the error, and then try saving your documents again. " +
-                    "\n" +
-                    "\nYes, the problem is the document NAMES, not the text inside them.";
-                Notification f2 = new(Error);
-                f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                f2.ShowDialog();
+                    "\n\n" +
+                    "Try changing the names of any documents you think might have caused the error, and then try saving your documents again. " +
+                    "\n\n" +
+                    "Yes, the problem is the document NAMES, not the text inside them."
+                    );
+                
             }
         }
 

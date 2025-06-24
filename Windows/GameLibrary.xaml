@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameEditorStudio"
         mc:Ignorable="d"
-        Title="Crystal Editor    Version: XXX" Height="950" Width="1300"
+        Title="Crystal Editor    Version: XXX" Height="950" Width="1402"
         
         xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
     <Window.Resources>
@@ -22,7 +22,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="14*"/>
-            <ColumnDefinition Width="350*"/>
+            <ColumnDefinition Width="452*"/>
             <ColumnDefinition Width="14*"/>
             <ColumnDefinition Width="650*"/>
             <ColumnDefinition Width="14*"/>
@@ -53,7 +53,7 @@
                 <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,0,0,0">
                     <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
                         <Label Content="Project Info" FontWeight="Bold" />
-                        <Button DockPanel.Dock="Right" Content="Launch"  Height="30" MinWidth="80" Margin="0,2,10,2" Click="ButtonLaunchWorkshop_Click" Width="100"   />
+                        <Button DockPanel.Dock="Right" Content="Launch"  Height="30" MinWidth="80" Margin="0,3,10,2" Click="ButtonLaunchWorkshop_Click" Width="100"   />
                     </DockPanel>
 
                     <DockPanel DockPanel.Dock="Top" Background="{x:Null}" >
@@ -110,7 +110,7 @@
                 <DockPanel>
                     <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
                         <Label Content="Projects" FontWeight="Bold" />
-                        <Button DockPanel.Dock="Right" Content="New"  Height="30" MinWidth="50" Margin="0,2,10,2" Click="CreateNewProject" Width="60"   />
+                        <Button DockPanel.Dock="Right" Content="New"  Height="30" MinWidth="50" Margin="0,3,10,2" Click="CreateNewProject" Width="60"   />
                     </DockPanel>
                     <DataGrid  HeadersVisibility="None" x:Name="ProjectsSelector" AutoGenerateColumns="False" DockPanel.Dock="Right" VerticalAlignment="Stretch" IsReadOnly="True" SelectionChanged="ProjectSelected" FontSize="15"  >
                         <DataGrid.Columns >

@@ -6,9 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using static Microsoft.IO.RecyclableMemoryStreamManager;
 using System.Xml;
 using Windows.Security.Authentication.Web.Core;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using static Microsoft.IO.RecyclableMemoryStreamManager;
 
 namespace GameEditorStudio
 {
@@ -614,28 +615,24 @@ namespace GameEditorStudio
             catch
             {
 
-
-
-                string Error = "Error: Editors not saved." +
-                    "\n" +
-                    "\nAn error occured during the \"Saving Editors\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +
-                    "\n" +
-                    "\nAs you were probably saving more then only your editors, you'll be happy to hear that each part of saving is handled seperately. " +
-                    "This means there is NO CHANCE that any other parts of the saving operation are affected, such as when also saving documents or game giles. " +
-                    "\n" +
-                    "\nAnyway as for editors, To help users know which documents are which on their computer, we save editors using the names you give them to actual folders. " +
+                LibraryMan.NotificationNegative("Error: Editors not saved.",
+                    "An error occured during the \"Saving Editors\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +
+                    "\n\n" +
+                    "As you were probably saving more then just your editors, you'll be happy to hear that each part of saving is handled seperately. This means there is NO CHANCE that any other parts of the saving operation are affected, such as when also saving documents or game giles. " +
+                    "\n\n" +
+                    "Anyway as for editors, To help users know which documents are which on their computer, we save editors using the names you give them to actual folders. " +
                     "Each operating system has a diffrent list of symbols it doesn't allow folder names to use. " +
                     "To deal with this problem the program first runs a simulation of what would happen IF it actually saved anything, " +
                     "by creating a temporary dummy folder and saving everything to that temporary folder. " +
                     "This way there is no chance your actual editors folder will get corrupted or result in any other serious error. :)" +
-                    "\n" +
-                    "\nAs your seeing this error, it means your operating system doesn't like atleast one of the symbols you tried using in a editor's name. " +
+                    "\n\n" +
+                    "As your seeing this error, it means your operating system doesn't like atleast one of the symbols you tried using in a editor's name. " +
                     "Try to avoid symbols like @, #, $, %, &, *, \\, /, :, ;, etc. Also most operating systems DO allow spaces in folder names, so the problem isn't that. " +
-                    "\n" +
-                    "\nTry changing the names of any editors you think might have caused the error, and then try saving your editors again. ";
-                Notification f2 = new(Error);
-                f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                f2.ShowDialog();
+                    "\n\n" +
+                    "Try changing the names of any editors you think might have caused the error, and then try saving your editors again. "
+                    );
+
+                
             }
 
 
@@ -795,15 +792,13 @@ namespace GameEditorStudio
                 }
                 catch
                 {
-                    string Error = "Error: Events failed to save properly." +
-                        "\nDon't worry, your events SHOULD be fine, as they simulate saving before actually saving (so most save crashes dont affect actual data)" +
-                        "\nI need to write the rest of this error message later." +
-                        "\n" +
-                        "\nPS: The program won't crash from this, but it also won't save events even if you try again." +
-                        "\nSave whatever else you did, and restart the program.";
-                    Notification f2 = new(Error);
-                    f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                    //f2.ShowDialog();
+                    LibraryMan.NotificationNegative("Error: Events failed to save properly.",
+                        "Don't worry, your events SHOULD be fine, as they simulate saving before actually saving (so most save crashes dont affect actual data)" +
+                        "\n\n" +
+                        "I need to write the rest of this error message later." +
+                        "\n\n" +
+                        "PS: The program won't crash from this, but it also won't save events even if you try again. You should probably save whatever else you did, and restart the program."
+                        );                    
                     Failed = true;
                     return;
                     

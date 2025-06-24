@@ -36,11 +36,11 @@ namespace GameEditorStudio
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("We can't find where your projects input folder is! :(" +
-                        "\n" +
-                        "\n(This is actually a pretty serious error, so you should probably look into fixing it." +
-                        "\n" +
-                        "\nIf your looking at the workshop in preview mode, you will always get this error and can ignore it.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    LibraryMan.NotificationNegative("Error: Project Input Folder not found.",
+                        "This is actually a pretty serious error, so you should probably look into fixing it." 
+                        );
+                    //Note that if your looking at the workshop in preview mode, you will always get this error and can ignore it.
+                    //^ I removed that line because really, it should be my job to make sure thats not even possible to begin with. 
 
                 }
             }
@@ -77,11 +77,11 @@ namespace GameEditorStudio
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("Your projects output folder doesn't seem to exist! :(" +
-                        "\n" +
-                        "\nIf you didn't set one up, saving default to your input folder instead." +
-                        "\n" +
-                        "\nIf your looking at the workshop in preview mode, you will always get this error and can ignore it.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    LibraryMan.NotificationNegative("Error: Project Output Folder not found.",
+                        "Your projects output folder doesn't seem to exist! :(" +
+                        "\n\n" +
+                        "If you didn't set one up, saving is SUPPOSED to default to your input folder instead."
+                        );
                 }
             }
             catch
@@ -157,14 +157,7 @@ namespace GameEditorStudio
             }
             catch
             {
-                //PropertiesEditorNameTableRowSize.Text = EditorClass.NameTableRowSize.ToString();
-                string Error = "An error occured." +
-                    "\n" +
-                    "\nPlease report it :(";
-                Notification f2 = new(Error);
-                f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                f2.ShowDialog();
-                return;
+                LibraryMan.NotificationGenericError();             
             }
 
         }
@@ -191,14 +184,7 @@ namespace GameEditorStudio
             }
             catch
             {
-                //PropertiesEditorNameTableRowSize.Text = EditorClass.NameTableRowSize.ToString();
-                string Error = "An error occured." +
-                    "\n" +
-                    "\nPlease report it :(";
-                Notification f2 = new(Error);
-                f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                f2.ShowDialog();
-                return;
+                LibraryMan.NotificationGenericError();
             }
 
         }

@@ -94,6 +94,7 @@ namespace GameEditorStudio
             #else
             //ExePath = basepath; //for published versions of the program to the public.
             LibraryMan.ApplicationLocation = basepath;
+            //LibraryMan.ApplicationLocation = Path.GetFullPath(Path.Combine(basepath, @"..\..\..\..\Release"));
             #endif
 
             ImportFromGoogle TableImport = new(); //Must happen before Setup Commands, because commands use tools.
@@ -256,7 +257,7 @@ namespace GameEditorStudio
                 WorkshopName = selectedTreeItem.Header.ToString();
             }
 
-            using (FileStream TargetXML = new FileStream(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Library.xml", FileMode.Open, FileAccess.Read))
+            using (FileStream TargetXML = new FileStream(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Workshop.xml", FileMode.Open, FileAccess.Read))
             {
                 XElement xml = XElement.Load(TargetXML);                
                 
@@ -395,7 +396,7 @@ namespace GameEditorStudio
         {
             WorkshopEventResources.Clear();
 
-            using (FileStream TargetXML = new FileStream(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Library.xml", FileMode.Open, FileAccess.Read))
+            using (FileStream TargetXML = new FileStream(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Workshop.xml", FileMode.Open, FileAccess.Read))
             {
                 XElement libraryxml = XElement.Load(TargetXML);
 
@@ -443,16 +444,16 @@ namespace GameEditorStudio
 
             if (!Directory.Exists(UserProject.ProjectInputDirectory)) 
             {
-                Notification Notification = new("It seems the input directory for this project ... doesn't exist?" +
-                        "\n" +
-                        "\n");                
+                LibraryMan.Notification("Huh?",
+                    "It seems the input folder for this project ... doesn't exist?"
+                    );   
                 return;
             }
             if (!Directory.Exists(UserProject.ProjectOutputDirectory))
             {
-                Notification Notification = new("It seems the output directory for this project ... doesn't exist?" +
-                        "\n" +
-                        "\n");
+                LibraryMan.Notification("Huh?",
+                    "It seems the output folder for this project ... doesn't exist?"
+                    );
                 return;
             }
 
@@ -568,6 +569,7 @@ namespace GameEditorStudio
                 ProjectNameTextbox.Text = "";
                 TextBoxInputDirectory.Text = "";
                 TextBoxOutputDirectory.Text = "";
+                GenerateProjectEventResourceUI(null);
                 return;
             }
 
@@ -601,8 +603,13 @@ namespace GameEditorStudio
         public void GenerateProjectEventResourceUI(ProjectDataItem UserProject) 
         {
             LabelForMissingProjectResources.Visibility = Visibility.Collapsed;
-
             ProjectEventResourcesPanel.Children.Clear();
+
+            if (UserProject == null) 
+            {
+                return;
+            }
+
             foreach (WorkshopResource WorkshopEventResource in WorkshopEventResources)
             {
                 if (WorkshopEventResource.ResourceType == "RelativeFile" || WorkshopEventResource.ResourceType == "RelativeFolder") //TYPE IF
@@ -957,10 +964,10 @@ namespace GameEditorStudio
                 //if (System.IO.File.ReadAllText(ExePath + "\\Workshops\\" + WorkshopName + "\\" +  WorkshopInputDirectory) == Path.GetFileName(FolderSelect.SelectedPath))
                 if (WorkshopInputDirectory == Path.GetFileName(FolderSelect.SelectedPath))
                 {
-                    MessageBox.Show("You have selected the correct folder." +
-                        "\nThis is based on the name of the folder you selected vs the intended folder name this workshop is looking for. " +
-                        "\nThe only way this is wrong is if you selected another folder with the exact same name, from the wrong location.", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
-
+                    LibraryMan.NotificationPositive("You selected the correct folder!",
+                        "The folder name you selected is the same as the one this workshop is looking for. " +
+                        "This can only be wrong if you selected a folder with the exact same name, but a diffrent location."
+                    );
 
                     ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
                     UserProject.ProjectInputDirectory = FolderSelect.SelectedPath;
@@ -972,16 +979,12 @@ namespace GameEditorStudio
                 }
                 else
                 {
-                    MessageBox.Show("You did NOT select the correct folder!" +
-                        "\n...or atleast the name of the folder you selected is not the same as the intended folder name." +
-                        "\n" +
-                        "\nTo prevent user error, the program won't let you select any folder, except the EXACT folder name the workshop creator is asking for." +
-                        //"\nIn most cases, this is an error, so you should probably re-select the folder. If you want, you can still choose to save anyway." +
-                        //"\n" +
-                        //"\nIf the folder structure is the exact same as the intended one, it will load just fine. " +
-                        //"If even a single file fails to load properly, a notice will popup when trying to launch and let you know why it failed before closing as a safety measure. " +
-                        //"So if you want to try using the folder you selected anyway, feel free to give it a try :)" +
-                        "\n", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LibraryMan.NotificationNegative("Error: Wrong folder selected!",
+                        "This workshop is looking for you to select a folder named \"" + WorkshopInputDirectory + "\"." +
+                        "\n\n" +
+                        "If your confused, check the README, or see if there are any helpful discords.");
+
+
                 }
 
 
