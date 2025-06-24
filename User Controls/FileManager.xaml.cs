@@ -1,14 +1,15 @@
-﻿using Ookii.Dialogs.Wpf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Formats.Asn1;
 using System.IO;
 using System.Linq;
+using System.Printing;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -16,17 +17,19 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Ookii.Dialogs.Wpf;
+//using static System.Net.WebRequestMethods;
 using static System.Windows.Forms.LinkLabel;
-
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Path = System.IO.Path;
+using System.Windows.Forms; //Im actually using this for the file picker because VistaOpenFileDialog refuses to respect setting an initil directory.
 
 namespace GameEditorStudio
 {
     /// <summary>
     /// Interaction logic for FileManager.xaml
     /// </summary>
-    public partial class FileManager : UserControl
+    public partial class FileManager : System.Windows.Controls.UserControl
     {
         Workshop TheWorkshop { get; set; }
         public bool IsTextEditor = false;
@@ -269,16 +272,40 @@ namespace GameEditorStudio
 
         private void ButtonAddFileToWorkshop(object sender, RoutedEventArgs e)
         {
-            if (TheWorkshop.MyDatabase == null) { return; }
 
-            VistaOpenFileDialog openFileDialog = new VistaOpenFileDialog();
-            openFileDialog.InitialDirectory = TheWorkshop.ProjectDataItem.ProjectInputDirectory;
+            //{   //Smart seleting the folder to start in.
+            //    string inputPath = TextBoxInputDirectory.Text + "\\";
+            //    DirectoryInfo? current = new DirectoryInfo(inputPath);
+            //    while (current != null && !current.Exists)
+            //    {
+            //        current = current.Parent;
+            //    }
+            //    if (current != null)
+            //    {
+            //        FolderSelect.SelectedPath = current.FullName + "\\";
+            //    }
+            //}
             //openFileDialog.Filter = "All files (*.*)|*.*";
             //openFileDialog.RestoreDirectory = true;
 
-            if (openFileDialog.ShowDialog() == true)
+
+            if (TheWorkshop.MyDatabase == null) { return; }
+
+            //VistaOpenFileDialog
+            OpenFileDialog openFileDialog = new();
+            string inputDir = TheWorkshop.ProjectDataItem.ProjectInputDirectory;
+            if (Directory.Exists(inputDir))
             {
-                string Testa = openFileDialog.FileName.Substring(TheWorkshop.ProjectDataItem.ProjectInputDirectory.Length).TrimStart('\\');
+                openFileDialog.InitialDirectory = inputDir;
+            }
+
+            //if (openFileDialog.ShowDialog() == true)
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                //string Testa = openFileDialog.FileName.Substring(TheWorkshop.ProjectDataItem.ProjectInputDirectory.Length).TrimStart('\\');
+                string fullPath = openFileDialog.FileName;
+                string inputDir2 = TheWorkshop.ProjectDataItem.ProjectInputDirectory;
+                string Testa = fullPath.Substring(inputDir2.Length).TrimStart('\\');
                 foreach (KeyValuePair<string, GameFile> gamefile in TheWorkshop.MyDatabase.GameFiles)
                 {
                     if (gamefile.Key == Testa)

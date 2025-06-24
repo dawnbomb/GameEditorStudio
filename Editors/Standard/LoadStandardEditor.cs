@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
@@ -159,8 +160,7 @@ namespace GameEditorStudio
             EditorMaker.GenerateNormalEditor(TheWorkshop, Database, EditorClass); //Create a editor with this information.
             //This is not inside any loop, so it really just makes an editor.
 
-            
-
+            EditorClass.EditorButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 
         }
 

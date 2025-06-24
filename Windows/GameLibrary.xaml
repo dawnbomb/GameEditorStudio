@@ -62,7 +62,7 @@
                             <Label Content="Project Name" DockPanel.Dock="Top" Margin="-3,0,0,0"  />
                             <Border CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
                                 <!--Background="White"-->
-                                <TextBox x:Name="ProjectNameTextbox" DockPanel.Dock="Top" Margin="0,0,0,0" Text="New Project" KeyDown="ChangeProjectName" Padding="4"  BorderThickness="0"     />
+                                <TextBox x:Name="ProjectNameTextbox" DockPanel.Dock="Top" Margin="0,0,0,0" Text="" KeyDown="ChangeProjectName" Padding="4"  BorderThickness="0"     />
                             </Border>
 
                         </DockPanel>

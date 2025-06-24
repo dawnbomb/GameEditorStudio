@@ -116,7 +116,7 @@
                                                     </Rectangle>
                                                     <TextBox TextWrapping="Wrap" Text="Row Size: &#xD;&#xA;How many bytes are in every 1 FULL row? (Including non-text)&#xA;&#xA;In 010 Hex Editor, i strongly recommend going to Tools -&gt; Options, the Toolbars tab, and adding from the actions list -&gt; View, the Fixed 20 Bytes, Auto Width and Custom Width to a new toolbar. Anyway with Auto Width enabled, drag the window size (Width) around until the text table lines up (Kinda like below, where text always starts on the same column). Then select 1 full row. At the bottom, the &quot;Sel: X&quot; value is the table width aka Row Size. So in the example it's 176. &#xD;&#xA;&#xA;TIP: You can set the Custom width in 010 editor to the Row Size, and then move your window size back to normal.&#xD;&#xA; &#xA;Note: If you don't have 010 editor, you can get the &quot;Move the window untill you see the text line up&quot; experience in HxD Hex editor, using the &quot;&lt;-&gt;&quot; symbol at the top." Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
 
-                                                    
+
                                                     <Image  Margin="10,10,0,0" Source="/User Controls/Text Row 010.png" Stretch="None" DockPanel.Dock="Top"/>
                                                 </DockPanel>
                                                 <DockPanel DockPanel.Dock="Top" >
@@ -135,7 +135,7 @@
                                                     <Image Margin="10"  Source="/User Controls/Text Size 010.png" Stretch="None"/>
                                                 </DockPanel>
                                                 <DockPanel DockPanel.Dock="Top" >
-                                                    
+
                                                     <Rectangle Height="2" Margin="10,8,10,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" DockPanel.Dock="Top">
                                                         <Rectangle.RenderTransform>
                                                             <TransformGroup>
@@ -296,7 +296,7 @@
                                                 <TextBox x:Name="EditLinkFirstNameIDHelpText" TextWrapping="Wrap" Text="First Name ID#:&#xD;&#xA;This is asking what number value is the first name in the list. Sometimes a game won't have it be 0 or 1 like it is in the editor. This USUALLY requires trial and error until you guess the correct number, so unless you  get lucky and the expected value is 0, expect this to take awhile. ^^; &#xD;&#xA;&#xD;&#xA;Note to self: Create a really good example tutorial for this later...&#xA;" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
 
                                             </DockPanel>
-                                            
+
                                         </ScrollViewer>
                                     </DockPanel>
                                 </Border>
@@ -305,21 +305,21 @@
                         </TabItem>
                         <TabItem Header="Link to Nothing" Name="Tab1" Tag="Nothing">
                             <Grid>
-                                <Border HorizontalAlignment="Left" Width="345">
+                                <Border HorizontalAlignment="Left" Width="350">
                                     <DockPanel>
                                         <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}" LastChildFill="False" >
                                             <Label Content="Custom Name List" FontWeight="Bold"/>
                                         </DockPanel>
 
-                                        <ScrollViewer x:Name="MenuPanelEdit" HorizontalAlignment="Left" Width="369">
-                                            <Grid>
+                                        <ScrollViewer x:Name="MenuPanelEdit" >
+                                            <DockPanel>
 
 
-                                                <TextBox x:Name="ItemsNumBox" HorizontalAlignment="Left" Margin="4,0,0,0" TextWrapping="Wrap" Text="0&#xA;1&#xA;2&#xA;3&#xA;4&#xA;5&#xA;6&#xA;7&#xD;&#xA;Etc.." VerticalAlignment="Top" Width="50" IsEnabled="False" FontSize="15" />
-                                                <TextBox x:Name="ItemsEditBox"  HorizontalAlignment="Left" Margin="55,0,0,0" AcceptsReturn="True" Text="Iron Sword&#xD;&#xA;Potion&#xD;&#xA;Fireball" VerticalAlignment="Top" Width="297" FontSize="15"/>
+                                                <TextBox x:Name="ItemsNumBox" MinWidth="30"  TextWrapping="Wrap" Text="0&#xA;1&#xA;2&#xA;3&#xA;4&#xA;5&#xA;6&#xA;7&#xA;8&#xA;9&#xA;10&#xA;11&#xA;12&#xA;13&#xA;14&#xA;15&#xA;16&#xA;17&#xA;18&#xA;19&#xA;20&#xA;21&#xA;22"  DockPanel.Dock="Left"  IsEnabled="False" FontSize="20" />
+                                                <TextBox x:Name="ItemsEditBox"  AcceptsReturn="True" Text="Iron Sword&#xD;&#xA;Potion&#xD;&#xA;Fireball"  DockPanel.Dock="Left" FontSize="20" TextChanged="NothingNameListTextboxTextChanged"/>
 
 
-                                            </Grid>
+                                            </DockPanel>
                                         </ScrollViewer>
                                     </DockPanel>
 
@@ -349,7 +349,7 @@
                                             <ScrollViewer Background="Transparent" VerticalScrollBarVisibility="Auto">
                                                 <TextBox TextWrapping="Wrap" Text="This lets you create your own list of names, instead of getting them from a file.  &#xA;&#xA;This bypasses needing a name list, and is useful when a game doesn't explicitly name something (A game where status effects have no names, or where damage types have no names, etc)&#xA;&#xA;However, if you use this for the names of standard data (Weapons, spells, enemys, etc) then users won't be able to rename them and have it reflect back ingame.&#xA;&#xA;You should probably only use this for menu entrys, or when your particularly desperate. &#xA;&#xA;Although if you ARE desperate to just get an editor kind of working but you can't find where the weapon names are, you can do this temporarily, and then just replace it later with the proper names file once found. &#xA;&#xA;If this is for standard editor names and it's an editor for totally unknown data, just make a bunch of blank lines. " Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"    />
 
-                                            </ScrollViewer>                                           
+                                            </ScrollViewer>
                                         </DockPanel>
                                     </Border>
 

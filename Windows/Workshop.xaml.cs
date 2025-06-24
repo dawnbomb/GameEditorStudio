@@ -1,6 +1,4 @@
-﻿using GameEditorStudio.Loading;
-using Ookii.Dialogs.Wpf;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -34,9 +32,12 @@ using System.Xaml;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using GameEditorStudio.Loading;
+using Microsoft.Windows.Themes;
+using Ookii.Dialogs.Wpf;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static GameEditorStudio.Entry;
 using static OfficeOpenXml.ExcelErrorValue;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameEditorStudio
 {
@@ -177,25 +178,22 @@ namespace GameEditorStudio
             }
 
             
-
-            HIDEALL();
-
-
-            
-
-                        
-
-            //Loads EventsXML now?
-
             GC.RefreshMemoryLimit();//I have no idea if this is useful. Its a new .net8 feature i read that changes the memory limit (automatically) to be bigger if needed.
             //I know this program lags when loading a menu or editor sometimes, so maybe this will help? 
-
 
 
             { //Run the click home event so it always opens to the home page.
                 //FileManager.RefreshFileTree(); //commented out because it causes a crash for some reason
                 HIDEALL();
                 DockPanelHome.Visibility = Visibility.Visible;
+                foreach (Editor editor in MyDatabase.GameEditors.Values)
+                {
+                    editor.EditorButton.Style = (Style)Application.Current.FindResource("ButtonEditorTab");
+
+                }
+                ButtonHome.Style = (Style)Application.Current.FindResource("ButtonCurrentEditorTab");
+                //ButtonHome_Click(ButtonHome, new RoutedEventArgs()); 
+
             }
 
             if (IsPreviewMode == true) 

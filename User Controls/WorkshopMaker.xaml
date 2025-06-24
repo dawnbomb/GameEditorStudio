@@ -15,7 +15,7 @@
             </DockPanel>
         </Border>
 
-        <DockPanel DockPanel.Dock="Top" Margin="10,47,0,0" Height="70" VerticalAlignment="Top"  Width="250" HorizontalAlignment="Left" >
+        <DockPanel DockPanel.Dock="Top" Margin="10,47,0,0" Height="70" VerticalAlignment="Top"  Width="283" HorizontalAlignment="Left" >
             <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                 <Label Content="Workshop Name" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
             </DockPanel>
@@ -28,7 +28,7 @@
             </DockPanel>
         </DockPanel>
 
-        <DockPanel DockPanel.Dock="Top" Margin="10,120,0,0" Height="72" VerticalAlignment="Top" Width="250" HorizontalAlignment="Left"  >
+        <DockPanel DockPanel.Dock="Top" Margin="10,120,0,0" Height="72" VerticalAlignment="Top" Width="283" HorizontalAlignment="Left"  >
             <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                 <Label Content="Input Folder" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
                 <Button x:Name="ButtonSetWorkshopInputFolder" Content="Set Folder" Height="30"  Width="120" Click="ButtonSetWorkshopInputFolder_Click" Padding="0,1,1,0" DockPanel.Dock="Right" />
@@ -43,12 +43,16 @@
 
             </DockPanel>
         </DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="10,200,0,0"  VerticalAlignment="Top" Width="283" HorizontalAlignment="Left">
+            <CheckBox Name="WorkshopCheckboxSameFolderName"/>
+            <Label Content="Require projects to have &#xD;&#xA;the exact same folder name"/>
+        </DockPanel>
 
 
 
-        <Button x:Name="ButtonCreateNewWorkshop" Content="Create New Workshop" HorizontalAlignment="Left" Margin="6,204,0,0" VerticalAlignment="Top" Height="33" Width="254" Click="ButtonCreateNewWorkshop_Click" />
+        <Button x:Name="ButtonCreateNewWorkshop" Content="Create New Workshop" HorizontalAlignment="Left" Margin="10,263,0,0" VerticalAlignment="Top" Height="33" Width="283" Click="ButtonCreateNewWorkshop_Click" />
 
-        <Border Margin="265,38,10,0" Height="379" VerticalAlignment="Top" >
+        <Border Margin="298,38,10,0" Height="379" VerticalAlignment="Top" >
             <DockPanel  Background="#FF3C3C3C">
                 <Border  Height="36" DockPanel.Dock="Top" BorderThickness="0,0,0,1">
                     <DockPanel >

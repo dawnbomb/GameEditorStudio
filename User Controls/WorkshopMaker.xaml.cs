@@ -57,6 +57,7 @@ namespace GameEditorStudio
             {
                 ButtonCreateNewWorkshop.Content = "Create Workshop";
                 WorkshopTextboxExampleInputFolder.Text = "";
+                WorkshopCheckboxSameFolderName.IsChecked = true;
             }
 
             if (TheMode == "Edit") 
@@ -64,6 +65,8 @@ namespace GameEditorStudio
                 ButtonCreateNewWorkshop.Content = "Save Workshop";
                 TextBoxGameName.Text = Library.WorkshopName;                                                               
                 WorkshopTextboxExampleInputFolder.Text = Library.WorkshopInputDirectory; //System.IO.File.ReadAllText(ExePath + "\\Workshops\\" + WorkshopName + "\\Input Directory.txt");
+                WorkshopCheckboxSameFolderName.IsChecked = Library.WorkshopProjectsRequireSameFolderName;
+
 
                 ResourcePanel.Children.Clear();
                 foreach (WorkshopResource EventResource in Library.WorkshopEventResources) 
@@ -80,7 +83,7 @@ namespace GameEditorStudio
         {
             VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog(); //This starts folder selection using Ookii.Dialogs.WPF NuGet Package
             FolderSelect.Description = "Select the root / base folder. This folder should contain all game files. For example, a rom's unpacked folder, or game install folder."; //This sets a description to help remind the user what their looking for.
-            FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.        
+            FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.  
             if ((bool)FolderSelect.ShowDialog(Library)) //This triggers the folder selection screen, and if the user does not cancel out...
             {
                 WorkshopTextboxExampleInputFolder.Text = Path.GetFileName(FolderSelect.SelectedPath);
@@ -93,6 +96,14 @@ namespace GameEditorStudio
             {
                 if (TextBoxGameName.Text != null && TextBoxGameName.Text != "" && WorkshopTextboxExampleInputFolder.Text != null && WorkshopTextboxExampleInputFolder.Text != "")
                 {
+                    
+                    {
+                        //Set selected workshop to none, because otherwise, if the last selected workshop has workshop resources, the new one inherits them. X.X
+                        //Its easy to miss this bug because selecting a workshop doesn't make workshop resources appear, only selecting a project does,
+                        //and because new workshops have no projects, this doesn't show up visually. 
+                        TreeViewItem theitem = Library.LibraryTreeOfWorkshops.SelectedItem as TreeViewItem; //This sets the selected workshop to none, so the new workshop doesn't inherit the last selected workshop's resources.
+                        theitem.IsSelected = false;
+                    }
 
                     Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text);
                     Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents");
@@ -137,7 +148,9 @@ namespace GameEditorStudio
                 }
                 else
                 {
-                    MessageBox.Show("Either you did not name the game, \nor you forgot to give it a Input Directory.", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LibraryMan.NotificationNegative("Error: Workshop creation failed.",
+                        "Either you did not name the game / workshop, or you forgot to give it an Input Folder." 
+                    );
                 }
 
             }
@@ -180,7 +193,9 @@ namespace GameEditorStudio
                 }
                 else
                 {
-                    MessageBox.Show("Either you are trying to save the game without a name, \nor you somehow deleted the Input Directory.", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LibraryMan.NotificationNegative("Error: Workshop saving failed.",
+                        "Either you are trying to save the game without a name, or you somehow deleted the Input Directory."
+                    );
                 }
 
             }
@@ -225,6 +240,7 @@ namespace GameEditorStudio
                         writer.WriteElementString("VersionDate", LibraryMan.VersionDate);
                         writer.WriteElementString("WorkshopName", TextBoxGameName.Text); //Note: This is for reference only, so i can tell what workshop a file is for when it's open in notepad. This isn't actually used anywhere. 
                         writer.WriteElementString("InputLocation", WorkshopTextboxExampleInputFolder.Text);
+                        writer.WriteElementString("ProjectsRequireSameInputFolderName", WorkshopCheckboxSameFolderName.IsChecked == true ? "true" : "false");
 
                         writer.WriteStartElement("ResourceList");
                         foreach (WorkshopResource WorkshopEventResource in Library.WorkshopEventResources)
