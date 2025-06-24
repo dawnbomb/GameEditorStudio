@@ -20,19 +20,29 @@ namespace GameEditorStudio
     /// </summary>
     public partial class Notification : Window
     {
-        public Notification(string Error)
+        public Notification(string Icon, string Title, string MainText)
         {
             InitializeComponent();
 
-            MessageBox.Text = Error;
+            SymbolLabel.Content = Icon;
+            if (Icon == "✔") { SymbolLabel.Foreground = Brushes.Green; }
+            if (Icon == "X") { SymbolLabel.Foreground = Brushes.Red; }
+            if (Icon == "X")  
+            {
+                System.Media.SystemSounds.Hand.Play();
+                //var player = new System.Media.SoundPlayer("Resources/ErrorSound.wav");
+                //player.Play();
+            }
+            TitleLabel.Content = Title;
+            MessageBox.Text = MainText;
 
             this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-            this.ShowDialog();
         }
         
 
         private void ButtonOK_Click(object sender, RoutedEventArgs e)
         {
+            this.DialogResult = true;
             this.Close();
         }
 
@@ -41,20 +51,20 @@ namespace GameEditorStudio
        
         /////////////////////////// EXAMPLE /////////////////////////////////////
        
-        public void Example()
-        {
-            Notification Notification = new("This is an example error message." +
-                        "\n" +
-                        "\nList of possible causes..." +
-                        "\n1: You." +
-                        "\n2: Me." +
-                        "\n3: Society." +
-                        "\n" +
-                        "\nNote: :D");
-                        //Environment.FailFast(null); //Kills program instantly. 
-            return;
+        //public void Example()
+        //{
+        //    Notification Notification = new("This is an example error message." +
+        //                "\n" +
+        //                "\nList of possible causes..." +
+        //                "\n1: You." +
+        //                "\n2: Me." +
+        //                "\n3: Society." +
+        //                "\n" +
+        //                "\nNote: :D");
+        //                //Environment.FailFast(null); //Kills program instantly. 
+        //    return;
             
-        }
+        //}
 
     }
 }

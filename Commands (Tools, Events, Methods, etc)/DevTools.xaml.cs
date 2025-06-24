@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xml;
+using static System.Net.WebRequestMethods;
 using static Microsoft.IO.RecyclableMemoryStreamManager;
 
 
@@ -559,11 +561,12 @@ namespace GameEditorStudio
 
             void FailedSave(string SomeText) 
             {
-                Notification Notification = new(SomeText + "  failed to save properly." +
-                        "\nI will now crash." +
-                        "\n" +
-                        "\nPS: I set it up to first attempt to save to a folder named Lab to prevent data corruption," +
-                        "\nso everything should be fine. :D");
+                LibraryMan.NotificationNegative("Error: Failed to save properly.",
+                    "I will now crash." +
+                    "\n\n" +
+                    "PS: I set it up to first attempt to save to a folder named Lab to prevent data corruption, so everything should be fine. :D"
+                    );
+
                 Environment.FailFast(null); //Kills program instantly. 
                 return;
             }

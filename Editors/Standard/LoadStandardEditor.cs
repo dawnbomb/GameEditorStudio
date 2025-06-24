@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
@@ -59,7 +60,7 @@ namespace GameEditorStudio
                 EditorClass.StandardEditorData.NameTableStart = int.Parse(Maker.TextSourceManager.FileStartTextBox.Text);
                 EditorClass.StandardEditorData.NameTableTextSize = int.Parse(Maker.TextSourceManager.FileTextSizeTextBox.Text);
                 EditorClass.StandardEditorData.NameTableRowSize = int.Parse(Maker.TextSourceManager.FileFullRowSizeTextBox.Text);
-                EditorClass.StandardEditorData.NameTableItemCount = int.Parse(Maker.TextSourceManager.FileNameCountTextBox.Text);
+                EditorClass.StandardEditorData.NameTableItemCount = int.Parse(Maker.TextSourceManager.FileNameCountTextBox.Text) + 1; //The +1 is to account for line 0
 
 
                 for (int i = 0; i < EditorClass.StandardEditorData.NameTableItemCount; i++)
@@ -101,9 +102,9 @@ namespace GameEditorStudio
             {
                 EditorClass.StandardEditorData.NameTableLinkType = StandardEditorData.NameTableLinkTypes.Editor;
 
-                Notification Notification = new("I didn't actually make any code for Editor text from editor." +
-                    "\n Make some in LoadSWEditor.cs" +
-                    "\nNow we crash :>");
+                LibraryMan.NotificationNegative("Error: How did you even trigger this?",
+                    "I didn't actually make any code for getting Editor text from another editor. Huh. Also now your gonna crash, and you should definatly report this!!! "
+                    );
                 Environment.FailFast(null); //Kills program instantly. 
 
             }
@@ -159,8 +160,7 @@ namespace GameEditorStudio
             EditorMaker.GenerateNormalEditor(TheWorkshop, Database, EditorClass); //Create a editor with this information.
             //This is not inside any loop, so it really just makes an editor.
 
-            
-
+            EditorClass.EditorButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 
         }
 
@@ -484,13 +484,16 @@ namespace GameEditorStudio
                                         string thisEntryName = EntryClass.Name;
                                         string thisEntryID = EntryClass.RowOffset.ToString();
 
-                                        Notification Notification = new("Editor \"" + theEditorName + "\" is missing, and editor \"" + thisEditorName + "\" uses it" +
-                                            "\n" + thisEditorName + " will load anyway, but it's entry \"" + thisEntryName + "\" (Entry ID: " + thisEntryID + ") won't display text properly." +
-                                            "\nInstead of completly not working, that entry (should) use red ERROR text in place of the text it's support to have." +
-                                            "\nThe editor will otherwise function perfectly normally, and you can save data just fine. " +
-                                            "\n" + 
-                                            "\nYou can fix this IF you know what your doing by changing that entrys linked text data." +
-                                            "\n(PS: It's probably a menu type entry)");
+                                        LibraryMan.NotificationNegative("Error: Editor \"" + theEditorName + "\" is missing!",
+                                            "Editor \"" + thisEditorName + "\" uses it, but it's... missing? " +
+                                            "\n\n" +
+                                            "Anyway, " + thisEditorName + " will load anyway, but it's entry \"" + thisEntryName + "\" (Entry ID: " + thisEntryID + ") won't display text properly. " +
+                                            "The editor will otherwise function perfectly normally, and you can save data just fine. " +
+                                            "\n\n" +
+                                            "You can fix this IF you know what your doing by changing that entrys linked text data. (It's probably a menu type entry), "
+
+                                            );
+                                        
                                     }
 
                                     //if (EntryClass.EntryTypeMenu.LinkedEditor == null)

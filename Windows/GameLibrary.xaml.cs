@@ -1,6 +1,4 @@
-﻿using Microsoft.Win32;
-using Ookii.Dialogs.Wpf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,8 +11,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.AccessControl;
-
-
 //using System.Reflection.Emit;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -24,12 +20,15 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 //using System.Windows.Forms;
+//using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Linq;
+using Microsoft.Win32;
+using Ookii.Dialogs.Wpf;
 using Windows.System.Preview;
 using static Microsoft.IO.RecyclableMemoryStreamManager;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -65,6 +64,7 @@ namespace GameEditorStudio
 
         public string WorkshopName { get; set; } //The name of the workshop (IE name of whats selected in Game Library)
         public string WorkshopInputDirectory { get; set; } //The intended InputDirectory (Folder name) for modding this game. This helps make sure end users aren't guessing what the correct one is.
+        public bool WorkshopProjectsRequireSameFolderName { get; set; } = true; //If true, the project input folder must be the same name as the project. If false, it can be anything.
         public List<WorkshopResource> WorkshopEventResources { get; set; } = new(); 
 
 
@@ -94,6 +94,7 @@ namespace GameEditorStudio
             #else
             //ExePath = basepath; //for published versions of the program to the public.
             LibraryMan.ApplicationLocation = basepath;
+            //LibraryMan.ApplicationLocation = Path.GetFullPath(Path.Combine(basepath, @"..\..\..\..\Release"));
             #endif
 
             ImportFromGoogle TableImport = new(); //Must happen before Setup Commands, because commands use tools.
@@ -244,7 +245,16 @@ namespace GameEditorStudio
 
         private void LibraryTreeOfWorkshops_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            
+            EditorsTree.Items.Clear();
+            LibraryDocumentsTree.Items.Clear();
+            WorkshopEventResources.Clear();
+            MainMenu.Events.Clear();
+            Projects.Clear();
+            MainMenu.WorkshopName = "";
+            ProjectNameTextbox.Text = "";
+            TextBoxInputDirectory.Text = "You must select something to launch the workshop.";
+            TextBoxOutputDirectory.Text = "If not set, defaults to the Input Directory.";
+
             if (LibraryTreeOfWorkshops.SelectedItem == null)
             {
                 return;
@@ -256,18 +266,20 @@ namespace GameEditorStudio
                 WorkshopName = selectedTreeItem.Header.ToString();
             }
 
-            using (FileStream TargetXML = new FileStream(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Library.xml", FileMode.Open, FileAccess.Read))
+            using (FileStream TargetXML = new FileStream(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Workshop.xml", FileMode.Open, FileAccess.Read))
             {
                 XElement xml = XElement.Load(TargetXML);                
                 
-                WorkshopInputDirectory = xml.Element("InputLocation")?.Value;               
+                WorkshopInputDirectory = xml.Element("InputLocation")?.Value;
+                WorkshopProjectsRequireSameFolderName = bool.TryParse(xml.Element("ProjectsRequireSameInputFolderName")?.Value, out bool result) && result;
 
-            };
+            }
+            ;
 
             { //Documents and Editors
 
                 //WorkshopInfoDocuments.Content = "Documents: " + Convert.ToString(System.IO.Directory.GetDirectories(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Documentation", "*", SearchOption.TopDirectoryOnly).Count());
-                LibraryDocumentsTree.Items.Clear();
+                
                 string documentationPath = Path.Combine(LibraryMan.ApplicationLocation, "Workshops", WorkshopName, "Documents");
                 string[] folderPaths = Directory.GetDirectories(documentationPath);
                 foreach (string folderPath in folderPaths)
@@ -285,7 +297,7 @@ namespace GameEditorStudio
                 }
 
 
-                EditorsTree.Items.Clear();
+                
                 string WorkshopEditorsFolder = LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Editors\\";
                 string[] EditorFoldersList = Directory.GetDirectories(WorkshopEditorsFolder);
 
@@ -302,12 +314,9 @@ namespace GameEditorStudio
 
             
             LoadEventResources();
-            MainMenu.WorkshopName = WorkshopName;
-            MainMenu.Events.Clear();
+            MainMenu.WorkshopName = WorkshopName;            
             MainMenu.LoadEventsFromXML();
-            TextBoxInputDirectory.Text = "You must select something to launch the workshop.";
-            TextBoxOutputDirectory.Text = "If not set, defaults to the Input Directory.";
-            Projects.Clear();
+            
             
 
             string ProjectsFolder = @LibraryMan.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\"; //"\\LibraryBannerArt.png";   
@@ -392,10 +401,9 @@ namespace GameEditorStudio
         }
 
         public void LoadEventResources() 
-        {
-            WorkshopEventResources.Clear();
+        {            
 
-            using (FileStream TargetXML = new FileStream(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Library.xml", FileMode.Open, FileAccess.Read))
+            using (FileStream TargetXML = new FileStream(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Workshop.xml", FileMode.Open, FileAccess.Read))
             {
                 XElement libraryxml = XElement.Load(TargetXML);
 
@@ -443,16 +451,16 @@ namespace GameEditorStudio
 
             if (!Directory.Exists(UserProject.ProjectInputDirectory)) 
             {
-                Notification Notification = new("It seems the input directory for this project ... doesn't exist?" +
-                        "\n" +
-                        "\n");                
+                LibraryMan.Notification("Huh?",
+                    "It seems the input folder for this project ... doesn't exist?"
+                    );   
                 return;
             }
             if (!Directory.Exists(UserProject.ProjectOutputDirectory))
             {
-                Notification Notification = new("It seems the output directory for this project ... doesn't exist?" +
-                        "\n" +
-                        "\n");
+                LibraryMan.Notification("Huh?",
+                    "It seems the output folder for this project ... doesn't exist?"
+                    );
                 return;
             }
 
@@ -526,7 +534,7 @@ namespace GameEditorStudio
             Grid.SetRow(TheUserControl, 2);
             Grid.SetColumn(TheUserControl, 1);
             Grid.SetRowSpan(TheUserControl, 3);
-            Grid.SetColumnSpan(TheUserControl, 3);
+            Grid.SetColumnSpan(TheUserControl, 5);
             LibraryGrid.Children.Add(TheUserControl);
         }
 
@@ -541,7 +549,7 @@ namespace GameEditorStudio
             Grid.SetRow(TheUserControl, 2);
             Grid.SetColumn(TheUserControl, 1);
             Grid.SetRowSpan(TheUserControl, 3);
-            Grid.SetColumnSpan(TheUserControl, 3);
+            Grid.SetColumnSpan(TheUserControl, 5);
             LibraryGrid.Children.Add(TheUserControl);
         }
 
@@ -568,6 +576,7 @@ namespace GameEditorStudio
                 ProjectNameTextbox.Text = "";
                 TextBoxInputDirectory.Text = "";
                 TextBoxOutputDirectory.Text = "";
+                GenerateProjectEventResourceUI(null);
                 return;
             }
 
@@ -601,8 +610,13 @@ namespace GameEditorStudio
         public void GenerateProjectEventResourceUI(ProjectDataItem UserProject) 
         {
             LabelForMissingProjectResources.Visibility = Visibility.Collapsed;
-
             ProjectEventResourcesPanel.Children.Clear();
+
+            if (UserProject == null) 
+            {
+                return;
+            }
+
             foreach (WorkshopResource WorkshopEventResource in WorkshopEventResources)
             {
                 if (WorkshopEventResource.ResourceType == "RelativeFile" || WorkshopEventResource.ResourceType == "RelativeFolder") //TYPE IF
@@ -948,19 +962,34 @@ namespace GameEditorStudio
                 return;
             }
 
-            VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog(); //This starts folder selection using Ookii.Dialogs.WPF NuGet Package
+            VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog();//This starts folder selection using Ookii.Dialogs.WPF NuGet Package
             FolderSelect.Description = "Please select the folder named " + WorkshopInputDirectory; //This sets a description to help remind the user what their looking for.
-            FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.        
+            FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.
+            {   //Smart seleting the folder to start in.
+                string inputPath = TextBoxInputDirectory.Text + "\\";
+                DirectoryInfo? current = new DirectoryInfo(inputPath);
+                while (current != null && !current.Exists)
+                {
+                    current = current.Parent;
+                }
+                if (current != null)
+                {
+                    FolderSelect.SelectedPath = current.FullName + "\\";
+                }
+            }
+            
             if ((bool)FolderSelect.ShowDialog(this)) //This triggers the folder selection screen, and if the user does not cancel out...
             {
 
                 //if (System.IO.File.ReadAllText(ExePath + "\\Workshops\\" + WorkshopName + "\\" +  WorkshopInputDirectory) == Path.GetFileName(FolderSelect.SelectedPath))
-                if (WorkshopInputDirectory == Path.GetFileName(FolderSelect.SelectedPath))
+                if (WorkshopProjectsRequireSameFolderName == false)
                 {
-                    MessageBox.Show("You have selected the correct folder." +
-                        "\nThis is based on the name of the folder you selected vs the intended folder name this workshop is looking for. " +
-                        "\nThe only way this is wrong is if you selected another folder with the exact same name, from the wrong location.", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
-
+                    LibraryMan.NotificationPositive("You MAYBE selected the correct folder?",
+                        "This workshop doesn't require a specific folder name to be selected. " +
+                        "This is usually set when the input folder is one that users commonly want to be able to rename. " +
+                        "\n\n" +
+                        "If your not sure, I STRONGLY recommend checking the readme, as well as asking around. Well, i mean, you'll know if something is wrong if you launch your project and get a ton of errors. >_>;"
+                    );
 
                     ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
                     UserProject.ProjectInputDirectory = FolderSelect.SelectedPath;
@@ -968,21 +997,33 @@ namespace GameEditorStudio
 
                     UpdateProjectXML(UserProject);//ProjectName, Input, Output
 
-                    
+                }
+                else if (WorkshopInputDirectory == Path.GetFileName(FolderSelect.SelectedPath) && WorkshopProjectsRequireSameFolderName == true)
+                {
+                    LibraryMan.NotificationPositive("You selected the correct folder!",
+                        "The folder name you selected is the same as the one this workshop is looking for. " +
+                        "This can only be wrong if you selected a folder with the exact same name, but a diffrent location."
+                    );
+
+                    ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
+                    UserProject.ProjectInputDirectory = FolderSelect.SelectedPath;
+                    TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
+
+                    UpdateProjectXML(UserProject);//ProjectName, Input, Output
+
+
                 }
                 else
                 {
-                    MessageBox.Show("You did NOT select the correct folder!" +
-                        "\n...or atleast the name of the folder you selected is not the same as the intended folder name." +
-                        "\n" +
-                        "\nTo prevent user error, the program won't let you select any folder, except the EXACT folder name the workshop creator is asking for." +
-                        //"\nIn most cases, this is an error, so you should probably re-select the folder. If you want, you can still choose to save anyway." +
-                        //"\n" +
-                        //"\nIf the folder structure is the exact same as the intended one, it will load just fine. " +
-                        //"If even a single file fails to load properly, a notice will popup when trying to launch and let you know why it failed before closing as a safety measure. " +
-                        //"So if you want to try using the folder you selected anyway, feel free to give it a try :)" +
-                        "\n", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LibraryMan.NotificationNegative("Error: Wrong folder selected!",
+                        "This workshop is looking for you to select a folder named \"" + WorkshopInputDirectory + "\"." +
+                        "\n\n" +
+                        "If your confused, check the README, or see if there are any helpful discords.");
+
+
                 }
+
+
 
 
             }
@@ -999,6 +1040,18 @@ namespace GameEditorStudio
             VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog(); //This starts folder selection using Ookii.Dialogs.WPF NuGet Package
             FolderSelect.Description = "Please select where files will save to."; //This sets a description to help remind the user what their looking for.
             FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.        
+            {   //Smart seleting the folder to start in.
+                string outputPath = TextBoxOutputDirectory.Text + "\\";
+                DirectoryInfo? current = new DirectoryInfo(outputPath);
+                while (current != null && !current.Exists)
+                {
+                    current = current.Parent;
+                }
+                if (current != null)
+                {
+                    FolderSelect.SelectedPath = current.FullName + "\\";
+                }
+            }            
             if ((bool)FolderSelect.ShowDialog(this)) //This triggers the folder selection screen, and if the user does not cancel out...
             {
                 ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
@@ -1007,7 +1060,7 @@ namespace GameEditorStudio
 
                 UpdateProjectXML(UserProject);//ProjectName, Input, Output                
 
-                
+
             }
 
 

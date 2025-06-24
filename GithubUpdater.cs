@@ -67,11 +67,14 @@ namespace GameEditorStudio
             }
             catch (Exception ex)
             {
-                Notification Notification = new("The update checker has failed." +
-                        "\nIDK why this happened but the project is definatly not dead." +
-                        "\nD:" +
-                        "\n");
-                //Environment.FailFast(null); //Kills program instantly. 
+                LibraryMan.NotificationNegative("Error: Update Checker has failed.",
+                    "IDK why this happened but Game Editor Studio is definatly not dead. You should manually check for updates." +
+                    "\n\n" +
+                    "PS: I have seen that sometimes the update checker fails even when the server it's connecting to IS online, " +
+                    "theres obviously some bug in my code i don't understanding. " +
+                    "My update checker *Mostly* works. So don't panic if you get this randomly, but if you keep getting it, yeah, probably check for an update yourself? >_>; (Sorry~)"
+
+                    );                
                 return;
             }
         }

@@ -1,6 +1,4 @@
-﻿using GameEditorStudio.Loading;
-using Ookii.Dialogs.Wpf;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -34,9 +32,12 @@ using System.Xaml;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using GameEditorStudio.Loading;
+using Microsoft.Windows.Themes;
+using Ookii.Dialogs.Wpf;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static GameEditorStudio.Entry;
 using static OfficeOpenXml.ExcelErrorValue;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameEditorStudio
 {
@@ -177,25 +178,22 @@ namespace GameEditorStudio
             }
 
             
-
-            HIDEALL();
-
-
-            
-
-                        
-
-            //Loads EventsXML now?
-
             GC.RefreshMemoryLimit();//I have no idea if this is useful. Its a new .net8 feature i read that changes the memory limit (automatically) to be bigger if needed.
             //I know this program lags when loading a menu or editor sometimes, so maybe this will help? 
-
 
 
             { //Run the click home event so it always opens to the home page.
                 //FileManager.RefreshFileTree(); //commented out because it causes a crash for some reason
                 HIDEALL();
                 DockPanelHome.Visibility = Visibility.Visible;
+                foreach (Editor editor in MyDatabase.GameEditors.Values)
+                {
+                    editor.EditorButton.Style = (Style)Application.Current.FindResource("ButtonEditorTab");
+
+                }
+                ButtonHome.Style = (Style)Application.Current.FindResource("ButtonCurrentEditorTab");
+                //ButtonHome_Click(ButtonHome, new RoutedEventArgs()); 
+
             }
 
             if (IsPreviewMode == true) 
@@ -797,14 +795,15 @@ namespace GameEditorStudio
                 {
 
                     PropertiesEditorNameTableStartByte.Text = EditorClass.StandardEditorData.NameTableStart.ToString();
-                    string Error = "You just attempted to make the Name Table's Starting Byte be less then 0. I'm not sure why you tried to do this, but it is not allowed. " +
-                        "\n" +
-                        "\nIf this was not a mistake and there is a reason i don't understand why this would ever be desired, you can tell me on discord and i'll consider not explicitly preventing this behavior." +
-                        "\n" +
-                        "\nThe textbox has been reset to it's previous value. ";
-                    Notification f2 = new(Error);
-                    f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                    f2.ShowDialog();
+                    LibraryMan.NotificationNegative("Error: Start byte cannot be less then 0",
+                        "I'm not sure why you tried to do this, but it's obviously not allowed. " +
+                        "\n\n" +
+                        "If this was not a mistake and there is a reason i don't understand why this would ever be desired, " +
+                        "you can tell me on discord and i'll consider not explicitly preventing this behavior." +
+                        "\n\n" +
+                        "The textbox has been reset to it's previous value. "
+                        );
+                    
                     return;
                 }
 
@@ -862,15 +861,12 @@ namespace GameEditorStudio
                 {
 
                     PropertiesEditorNameTableTextSize.Text = EditorClass.StandardEditorData.NameTableTextSize.ToString();
-                    string Error = "You just attempted to make the Name Table Text Size be less then 0." +
-                        "\n" +
-                        "\nThis value is how many letters / characters are being read from a file." +
-                        "\nHopefully it is obvious why this number cannot be less then 0." +
-                        "\n" +
-                        "\nThe textbox has been reset to it's previous value. ";
-                    Notification f2 = new(Error);
-                    f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                    f2.ShowDialog();
+                    LibraryMan.NotificationNegative("Error: Name Table Text Size cannot be less then 0",
+                        "This value is how many letters / characters are being read from a file. " +
+                        "Hopefully it is obvious why this number cannot be less then 0." +
+                        "\n\n" +
+                        "The textbox has been reset to it's previous value. "
+                        );                    
                     return;
                 }
 
@@ -900,20 +896,17 @@ namespace GameEditorStudio
                 {
 
                     PropertiesEditorNameTableRowSize.Text = EditorClass.StandardEditorData.NameTableRowSize.ToString();
-                    string Error = "You just attempted to make the Name Table Row Size be less then 0." +
-                        "\n" +
-                        "\nIf you got confused, the Row Size is how many bytes are in 1 FULL Row of a table, not just how many bytes of text your dealing with." +
-                        "\n" +
-                        "\nFow example..." +
+                    LibraryMan.NotificationNegative("Error: Name Row Size cannot be less then 0.",
+                        "If you got confused, the Row Size is how many bytes are in 1 FULL Row of a table, not just how many bytes of text your dealing with." +
+                        "\n\n" +
+                        "Fow example..." +
                         "\n01 02 03 04 05 00 00 00" +
                         "\n01 02 03 04 05 00 00 00" +
-                        "\nThe Row Size here is 8, but the text size is 5." +
-                        "\n(Actually text size is probably 7, The max text size + a 00 byte)" +
-                        "\n" +
-                        "\nThe textbox has been reset to it's previous value. ";
-                    Notification f2 = new(Error);
-                    f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                    f2.ShowDialog();
+                        "\n\n" +
+                        "The Row Size here is 8, but the text size is 5. (Well actually text size is probably 7, The max text size + a 00 byte)" +
+                        "\n\n" +
+                        "The textbox has been reset to it's previous value. "
+                        );
                     return;
                 }
 
@@ -950,19 +943,19 @@ namespace GameEditorStudio
             catch
             {
                 //Note: Compare each against their source in EntryClass to see if they even match and callout the actual problem.
-
-                Notification Notification = new("Error!" +
-                    "\nThis checks if the data table has any actual data located at byte (Data Table Start Byte + (NameCount * RowSize))" +
-                    "\nIt seems like thats beyond the end of the data table file (data that doesn't exist)." +
-                    "\nThis data is used to fill out entrys, so it's important that it actually exists :P" +
-                    "\n" +
-                    "\nList of possible causes..." +
+                LibraryMan.NotificationNegative("Error!",
+                    "This checks if the data table has any actual data located at byte (Data Table Start Byte + (NameCount * RowSize)). " +
+                    "It seems like thats beyond the end of the data table file (data that doesn't exist). " +
+                    "This data is used to fill out entrys, so it's important that it actually exists :P" +
+                    "\n\n" +
+                    "List of possible causes..." +
                     "\n1: You were editing the start byte and set it starting way to far into the file." +
                     "\n2: You were editing row size and set it way to large" +
                     "\n3: You were editing Name Count and set more names then the data table actually has." +
                     "\n4: You were editing some combination of the three and put in the wrong numbers." +
-                    "\n" +                    
-                    "\nNote: Your change was stopped / reverted. Also this is not a problem with the program, it's a safeguard. ");
+                    "\n\n" +
+                    "Note: Your change was stopped / reverted. Also this is not a problem with the program, it's a safeguard. "
+                    );
 
                 PropertiesEditorTableStart.Text = EditorClass.StandardEditorData.DataTableStart.ToString();
                 PropertiesEditorTableWidth.Text = EditorClass.StandardEditorData.DataTableRowSize.ToString();
@@ -993,10 +986,11 @@ namespace GameEditorStudio
                 int Diffrence = NewNameCount - OldNameCount;
                 if (NewNameCount < 1)
                 {
-
-                    Notification Notification = new("As a precautionary measure against any accidents, attempting to delete ALL items is not allowed." +
-                    "\n" +
-                    "\nThe textbox has been reset to it's previous value. ");
+                    LibraryMan.Notification("Notice: Lol no.",
+                    "As a precautionary measure against any accidents, attempting to delete ALL items is not allowed." +
+                    "\n\n" +
+                    "The textbox has been reset to it's previous value. "
+                    );                    
 
                     PropertiesEditorNameCount.Text = OldNameCount.ToString();
                     return;
@@ -1617,18 +1611,18 @@ namespace GameEditorStudio
                                     if (entry.Bytes == 2)
                                     {
                                         PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                        string Error = "You cannot merge an entry, with an entry that is already merged with something else. " +
+                                        LibraryMan.NotificationNegative("Error: Entry not merged.",
+                                            "You cannot merge an entry, with an entry that is already merged with something else. " +
                                             "\n\n" +
-                                            "If your confused, entrys merge with those next in offset decimal order, not those that are just under them in the UI. ";
-                                        Notification f2 = new(Error);
-                                        f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                                        f2.ShowDialog();
+                                            "If your confused, entrys merge with those next in offset decimal order, not those that are just under them in the UI. "
+                                            );
                                         return;
                                     }
                                     if (entry.IsEntryHidden == true || entry.IsTextInUse == true)
                                     {
                                         PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                        string Error = "You cannot merge an entry, with an entry that is disabled. " +
+                                        LibraryMan.NotificationNegative("Error: Entry not merged.",
+                                            "You cannot merge an entry, with an entry that is disabled. " +
                                             "\n\n" +
                                             "Disabled entrys have a red color tint and users can't edit them. " +
                                             "Entrys can be disabled for a few reasons. One, they are disabled automatically if they are text used in the editor. " +
@@ -1636,10 +1630,8 @@ namespace GameEditorStudio
                                             "is if editing that information causes the game to crash. " +
                                             "\n\n" +
                                             "You can manually un-disable the entry, but entrys related to text will automatically re-disable themself when the editor loads back up, " +
-                                            "even if you save them as non-disabled.";
-                                        Notification f2 = new(Error);
-                                        f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                                        f2.ShowDialog();
+                                            "even if you save them as non-disabled."
+                                            );
                                         return;
                                     }
                                 }
@@ -1662,19 +1654,19 @@ namespace GameEditorStudio
                                     if (entry.Bytes == 2 || entry.Bytes == 4)
                                     {
                                         PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                        string Error = "You cannot merge an entry, with an entry that is already merged with something else. " +
+                                        LibraryMan.NotificationNegative("Error: Entry not merged.",
+                                           "You cannot merge an entry, with an entry that is already merged with something else. " +
                                            "\n\n" +
                                            "Atleast one of the 4 bytes / entrys you were attempting to merge with, is already merged. " +
-                                           "If your confused, entrys merge with those next in offset decimal order, not those that are just under them in the UI. ";
-                                        Notification f2 = new(Error);
-                                        f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                                        f2.ShowDialog();
+                                           "If your confused, entrys merge with those next in offset decimal order, not those that are just under them in the UI. "
+                                            );
                                         return;
                                     }
                                     if (entry.IsEntryHidden == true || entry.IsTextInUse == true)
                                     {
                                         PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                        string Error = "You cannot merge an entry, with an entry that is disabled. " +
+                                        LibraryMan.NotificationNegative("Error: Entry not merged.",
+                                            "You cannot merge an entry, with an entry that is disabled. " +
                                             "\n\n" +
                                             "atleast one of the 4 entrys you were trying to merge, is disabled." +
                                             "\n\n" +
@@ -1684,10 +1676,8 @@ namespace GameEditorStudio
                                             "is if editing that information causes the game to crash. " +
                                             "\n\n" +
                                             "You can manually un-disable the entry, but entrys related to text will automatically re-disable themself when the editor loads back up, " +
-                                            "even if you save them as non-disabled.";
-                                        Notification f2 = new(Error);
-                                        f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                                        f2.ShowDialog();
+                                            "even if you save them as non-disabled."
+                                            );
                                         return;
                                     }
                                 }
@@ -2000,14 +1990,13 @@ namespace GameEditorStudio
             }
             catch 
             {
-                string Error = "An error happened during the first step of auto-mod. " +
-                    "\nIn this step, it simply tries to count how many items it's going to mod." +
-                    "\nThis error can probably only appear if the editor is not getting it's item names from an actual game file." +
-                    "\n" +
-                    "\nAnyway, Auto-mod will now cancel. Nothing has been changed.";
-                Notification f2 = new(Error);
-                f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                f2.ShowDialog();
+                LibraryMan.NotificationNegative("Error: ",
+                    "An error happened during the first step of auto-mod. " +
+                    "In this step, it simply tries to count how many items it's going to mod. " +
+                    "This error can probably only appear if the editor is not getting it's item names from an actual game file. " +
+                    "\n\n" +
+                    "Anyway, Auto-mod will now cancel. Nothing has been changed."
+                    );
                 return;
             }
             
@@ -2137,7 +2126,8 @@ namespace GameEditorStudio
                 }
                 catch 
                 {
-                    string Error = "An error happened during the actual modifying of data in memory." +
+                    LibraryMan.NotificationNegative("Error: ???",
+                        "An error happened during the actual modifying of data in memory." +
                         "\nThis means some of the items have been changed, and others have not." +
                         "\nNothing has been saved to actual files on the computer, so don't worry." +
                         "\n" +
@@ -2145,11 +2135,8 @@ namespace GameEditorStudio
                         "\n" +
                         "\nI chose not to automatically force crash the program, to give you a chance to save some non-game file related things first. " +
                         "before you close everything, in the workshop menu you may save your documents, common events, and editors, but absolutely do not save your game files. " +
-                        "If you do, you will save them with only some items being changed, but not all of them." +
-                        "\n";
-                    Notification f2 = new(Error);
-                    f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                    f2.ShowDialog();
+                        "If you do, you will save them with only some items being changed, but not all of them." 
+                    );
                     return;
                 }
 
@@ -2313,13 +2300,13 @@ namespace GameEditorStudio
                     } 
                     catch 
                     {
-                        Notification Notification = new("Symbology caused a crash." +
-                            "\n" +
-                            "\nList of possible causes..." +
+                        LibraryMan.Notification("Error: Symbology caused a crash.",
+                            "List of possible causes..." +
                             "\n1: Creating a new editor where the list of names is more then the actual data." +
                             "\n2: ?????." +
                             "\n" +
-                            "\nNote: Please report this.");
+                            "\nNote: Please report this."
+                            );
                         Environment.FailFast(null); //Kills program instantly. 
                         return;
                     }
