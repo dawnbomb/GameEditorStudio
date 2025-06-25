@@ -590,11 +590,11 @@ namespace GameEditorStudio
 
             if (TextBoxInputDirectory.Text == "") 
             {
-                TextBoxInputDirectory.Text = "You must select something to launch a project. Your told if its correct or not.";
+                TextBoxInputDirectory.Text = "Where new projects read files from. :)";
             }
             if (TextBoxOutputDirectory.Text == "") 
             {
-                TextBoxOutputDirectory.Text = "If not set, defaults to the Input Directory";
+                TextBoxOutputDirectory.Text = "Where files will be saved to. :)";
             }
 
             

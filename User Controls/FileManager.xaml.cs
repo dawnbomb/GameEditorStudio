@@ -98,6 +98,7 @@ namespace GameEditorStudio
                     TreeViewItem TreeViewItem = new TreeViewItem();
 
                     TreeViewItem.Tag = GameFile;
+                    TreeViewItem.ToolTip = GameFile.FileNotepad; 
                     TreeGameFiles.Items.Add(TreeViewItem);
 
                     FileItemNameBuilder(TreeViewItem);
@@ -379,6 +380,7 @@ namespace GameEditorStudio
             if (treeViewItem == null) { return; }
             GameFile GameFile = treeViewItem.Tag as GameFile;
             GameFile.FileNotepad = FileNotepadTextbox.Text;
+            treeViewItem.ToolTip = GameFile.FileNotepad; // Update the tooltip to show the notepad text
         }
 
         public void SelectItem(Entry Entry) //Sometimes i can't select a item cause this didn't load yet, so this event makes sure it can.
