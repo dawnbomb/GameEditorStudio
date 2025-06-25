@@ -234,6 +234,16 @@ namespace GameEditorStudio
 
             }
 
+            if (Properties.Settings.Default.ShowEntryAddress == true)
+            {
+                EntryHiddenToggle.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FC1E40"));
+            }
+            else 
+            {
+                EntryHiddenToggle.Foreground = Brushes.Gray;
+            }
+                
+
         }
 
 
@@ -336,6 +346,19 @@ namespace GameEditorStudio
                 Properties.Settings.Default.ShowSymbology = true;
             }
             Properties.Settings.Default.Save();
+
+            {   //This is the Entry ID toggle. I'm merging it into the symbology toggle because it makes sense to have them together.
+                if (Properties.Settings.Default.ShowEntryAddress == true)
+                {
+                    Properties.Settings.Default.ShowEntryAddress = false;
+                }
+                else if (Properties.Settings.Default.ShowEntryAddress == false)
+                {
+                    Properties.Settings.Default.ShowEntryAddress = true;                    
+                }
+                Properties.Settings.Default.Save();
+            }
+            
             UpdateEntryDecorations();
         }
 
@@ -384,14 +407,17 @@ namespace GameEditorStudio
         }
 
         private void ToggleHiddenEntrys(object sender, RoutedEventArgs e)
-        {
+        {            
+
             if (Properties.Settings.Default.ShowHiddenEntrys == true)
             {
                 Properties.Settings.Default.ShowHiddenEntrys = false;
+                EntryHiddenToggle.Foreground = Brushes.Gray;
             }
             else if (Properties.Settings.Default.ShowHiddenEntrys == false)
             {
                 Properties.Settings.Default.ShowHiddenEntrys = true;
+                EntryHiddenToggle.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FC1E40"));
             }
             Properties.Settings.Default.Save();
             UpdateEntryDecorations();
@@ -1412,8 +1438,9 @@ namespace GameEditorStudio
                 TheColumn.ColumnRow.CategoryDockPanel.Children.Remove(TheColumn.ColumnGrid);
                 TheColumn.ColumnRow.ColumnList.Remove(TheColumn);
 
-                LibraryMan.GotoGeneralEditor(this);
+                //LibraryMan.GotoGeneralEditor(this);
                 
+
             }
 
 
@@ -2326,31 +2353,13 @@ namespace GameEditorStudio
                         ValueA = value;
                     }
 
-                    
-                    if (value != "0")
-                    {
-                        IsAlwaysZero = false;
-                    }
-                    if (value == "0")
-                    {
-                        IsNeverZero = false;
-                    }
-                    if (value != ValueA && value != ValueB)
-                    {
-                        IsCheckboxLike = false;
-                    }
-                    if (value != "1")
-                    {
-                        IsAlwaysOne = false;
-                    }
-                    if (ValueX != value)
-                    {
-                        IsAlwaysValueX = false;
-                    }
-                    if ((value != "0" && value != "1"))
-                    {
-                        IsCheckbox = false;
-                    }
+
+                    IsAlwaysZero = AllValues.All(x => x == 0);
+                    IsNeverZero = !AllValues.Contains(0);
+                    IsCheckboxLike = AllValues.Distinct().Count() <= 2;
+                    IsAlwaysOne = AllValues.All(v => v == 1);
+                    IsAlwaysValueX = int.TryParse(ValueX, out int parsedX) && AllValues.All(v => v == parsedX);
+                    IsCheckbox = AllValues.All(v => v == 0 || v == 1);
 
                 }
 
@@ -2428,7 +2437,7 @@ namespace GameEditorStudio
                 {                    
                     EntryClass.Symbology.Foreground = Brushes.Red;
                     EntryClass.Symbology.Content = "!!!";
-                    EntryClass.Symbology.ToolTip = "This entry is probably not a checkbox, it has more then 2 possible values.";
+                    EntryClass.Symbology.ToolTip = "This entry is probably not a checkbox, it has more then 2 possible values.   ValueA: " + ValueA + " ValueB: " + ValueB + " ValueX: " + ValueX;
                 }
                 else if (B1NoValuesAre128to199 == true && B1_4PercentAbove128 == true && B1_4PercentBelow127 == true && EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox) //Is Probably Negative
                 {
@@ -2597,7 +2606,7 @@ namespace GameEditorStudio
         {
             if (e.Key == Key.Enter)
             {
-                EntryClass.EntryTypeBitFlag.BitFlag2Name = PropertiesEntryBitFlag1Name.Text;
+                EntryClass.EntryTypeBitFlag.BitFlag2Name = PropertiesEntryBitFlag2Name.Text;
                 UpdateEntryName(EntryClass);
             }
         }
@@ -2606,7 +2615,7 @@ namespace GameEditorStudio
         {
             if (e.Key == Key.Enter)
             {
-                EntryClass.EntryTypeBitFlag.BitFlag3Name = PropertiesEntryBitFlag1Name.Text;
+                EntryClass.EntryTypeBitFlag.BitFlag3Name = PropertiesEntryBitFlag3Name.Text;
                 UpdateEntryName(EntryClass);
             }
         }
@@ -2615,7 +2624,7 @@ namespace GameEditorStudio
         {
             if (e.Key == Key.Enter)
             {
-                EntryClass.EntryTypeBitFlag.BitFlag4Name = PropertiesEntryBitFlag1Name.Text;
+                EntryClass.EntryTypeBitFlag.BitFlag4Name = PropertiesEntryBitFlag4Name.Text;
                 UpdateEntryName(EntryClass);
             }
         }
@@ -2624,7 +2633,7 @@ namespace GameEditorStudio
         {
             if (e.Key == Key.Enter)
             {
-                EntryClass.EntryTypeBitFlag.BitFlag5Name = PropertiesEntryBitFlag1Name.Text;
+                EntryClass.EntryTypeBitFlag.BitFlag5Name = PropertiesEntryBitFlag5Name.Text;
                 UpdateEntryName(EntryClass);
             }
         }
@@ -2633,7 +2642,7 @@ namespace GameEditorStudio
         {
             if (e.Key == Key.Enter)
             {
-                EntryClass.EntryTypeBitFlag.BitFlag6Name = PropertiesEntryBitFlag1Name.Text;
+                EntryClass.EntryTypeBitFlag.BitFlag6Name = PropertiesEntryBitFlag6Name.Text;
                 UpdateEntryName(EntryClass);
             }
         }
@@ -2642,7 +2651,7 @@ namespace GameEditorStudio
         {
             if (e.Key == Key.Enter)
             {
-                EntryClass.EntryTypeBitFlag.BitFlag7Name = PropertiesEntryBitFlag1Name.Text;
+                EntryClass.EntryTypeBitFlag.BitFlag7Name = PropertiesEntryBitFlag7Name.Text;
                 UpdateEntryName(EntryClass);
             }
         }
@@ -2651,7 +2660,7 @@ namespace GameEditorStudio
         {
             if (e.Key == Key.Enter)
             {
-                EntryClass.EntryTypeBitFlag.BitFlag8Name = PropertiesEntryBitFlag1Name.Text;
+                EntryClass.EntryTypeBitFlag.BitFlag8Name = PropertiesEntryBitFlag8Name.Text;
                 UpdateEntryName(EntryClass);
             }
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace GameEditorStudio
 {
@@ -16,18 +17,22 @@ namespace GameEditorStudio
                 return;
             }
 
+            int i = 0;
+
             foreach (Entry EntryToMove in EntrysListToMove) 
             {
                 EntryToMove.EntryColumn.ColumnGrid.Children.Remove(EntryToMove.EntryBorder);
                 EntryToMove.EntryColumn.EntryList.Remove(EntryToMove);
 
-                int ToIndex = EntryToMoveUnder.EntryColumn.EntryList.IndexOf(EntryToMoveUnder);
+                int ToIndex = EntryToMoveUnder.EntryColumn.EntryList.IndexOf(EntryToMoveUnder) + i; // the i fixes a bug where entry list drops in reverse order. 
 
                 EntryToMoveUnder.EntryColumn.ColumnGrid.Children.Insert(ToIndex + 2, EntryToMove.EntryBorder);
                 EntryToMoveUnder.EntryColumn.EntryList.Insert(ToIndex + 1, EntryToMove);
 
                 EntryToMove.EntryColumn = EntryToMoveUnder.EntryColumn; //DO NOT REFER TO COLUMN CLASS DIRECTLY, I HAVE NO IDEA WHY.                    
                 EntryToMove.EntryRow = EntryToMoveUnder.EntryRow;
+
+                i++;
             }
 
 
@@ -49,6 +54,38 @@ namespace GameEditorStudio
             }
 
             DeleteEmptyColumnsAndMakeNewOnes(Column.ColumnRow.SWData);
+        }
+
+        public void EntryActivate(Workshop TheWorkshop, Entry EntryClass) 
+        {
+            Editor EditorClass = EntryClass.EntryEditor;
+
+            EntryManager EntryData = new();
+            EntryData.EntryBecomeActive(EntryClass);
+            EntryData.UpdateEntryProperties(TheWorkshop, EditorClass);
+
+            //EditorClass.SWData.EditorTopBar.EntryNoteBox.Text = EntryClass.EntryTooltip;
+            TheWorkshop.EntryNoteTextbox.Text = EntryClass.Notepad;
+
+
+            if (TheWorkshop.ListTab.IsSelected == true) //Band-aid code fix to make the workshops "list" tab stop being selected when you select an entry, but this should really be inside the EntryBecomeActive function...
+            {
+                foreach (TabItem tabItem in TheWorkshop.MainTabControl.Items)
+                {
+
+                    if (tabItem.Header != null && tabItem.Header.ToString() == TheWorkshop.PreviousTabName)
+                    {
+                        tabItem.IsSelected = true;
+                        break;
+                    }
+                }
+            }
+
+            if (TheWorkshop.TheCrossReference != null) 
+            {
+                TheWorkshop.TheCrossReference.FillLearnBox(EditorClass, EntryClass);
+            }
+            
         }
 
         public void DeleteEmptyColumnsAndMakeNewOnes(StandardEditorData StandardEditorData)

@@ -146,6 +146,9 @@ namespace GameEditorStudio
             FileNameCountTextBox.Visibility = Visibility.Collapsed;
             DataLinkNameCountHelpPanel.Visibility = Visibility.Collapsed;
 
+            NameIDLabel.Visibility = Visibility.Collapsed;
+            FileNameIDTextBox.Visibility = Visibility.Collapsed;
+
             ComboBoxListType.Items.RemoveAt(3); //Remove from Nothing
             ComboBoxListType.Items.RemoveAt(2); //Remove from Editor
             //NOTE: IF I EVER ALLOW EDITORS TO GET NAMES FROM ANOTHER EDITOR, ENTRY MENUS LINKING TO EDITORS WILL BREAK. 
@@ -646,7 +649,7 @@ namespace GameEditorStudio
             try
             {
                 AFirstNameID = Int32.Parse(FileNameIDTextBox.Text);
-                ANameCount = Int32.Parse(FileNameCountTextBox.Text);
+                ANameCount = Int32.Parse(FileNameCountTextBox.Text); // - 1
                 AStartByte = Int32.Parse(FileStartTextBox.Text);
                 ARowSize = Int32.Parse(FileFullRowSizeTextBox.Text);
                 ATextSize = Int32.Parse(FileTextSizeTextBox.Text);
@@ -675,7 +678,7 @@ namespace GameEditorStudio
                         bytes[RowIndex] = TheFile.FileBytes[AStartByte + (i * ARowSize) + RowIndex];
                     }
 
-                    DataFileNamesPreviewTextbox.Text = DataFileNamesPreviewTextbox.Text + (i + AFirstNameID) + ": " + encoding.GetString(bytes) + "\n";
+                    DataFileNamesPreviewTextbox.Text = DataFileNamesPreviewTextbox.Text + (i + AFirstNameID) + ": " + encoding.GetString(bytes) + "\n"; // + 1
 
                 }
             }
@@ -766,14 +769,60 @@ namespace GameEditorStudio
 
         private void NothingNameListTextboxTextChanged(object sender, TextChangedEventArgs e)
         {
+            
             ItemsNumBox.Clear();
             string[] lines = ItemsEditBox.Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
             for (int i = 0; i < lines.Length; i++)
             {
-                ItemsNumBox.AppendText((i + 1).ToString() + Environment.NewLine);
+                ItemsNumBox.AppendText((i).ToString() + Environment.NewLine);
             }
 
         }
+
+
+        private void NothingItemsEditBoxPreviewKeyDown(object sender, KeyEventArgs e) //more GPT code to stop the user from axidentally deleting lines in the Nothing Name Textbox.
+        {
+            var tb = (TextBox)sender;
+            int lineCountBefore = tb.Text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None).Length;
+
+            string newText = tb.Text;
+            int caret = tb.CaretIndex;
+            int selStart = tb.SelectionStart;
+            int selLength = tb.SelectionLength;
+
+            if (e.Key == Key.Back)
+            {
+                if (selLength > 0)
+                {
+                    newText = newText.Remove(selStart, selLength);
+                }
+                else if (caret > 0)
+                {
+                    newText = newText.Remove(caret - 1, 1);
+                }
+            }
+            else if (e.Key == Key.Delete)
+            {
+                if (selLength > 0)
+                {
+                    newText = newText.Remove(selStart, selLength);
+                }
+                else if (caret < newText.Length)
+                {
+                    newText = newText.Remove(caret, 1);
+                }
+            }
+            else return; // Let other keys through
+
+            int lineCountAfter = newText.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None).Length;
+
+
+            if (lineCountAfter != lineCountBefore)
+            {                
+                e.Handled = true; // Block if line count decreased
+            }
+        }
+
     }
 }

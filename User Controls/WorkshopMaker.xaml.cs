@@ -102,7 +102,8 @@ namespace GameEditorStudio
                         //Its easy to miss this bug because selecting a workshop doesn't make workshop resources appear, only selecting a project does,
                         //and because new workshops have no projects, this doesn't show up visually. 
                         TreeViewItem theitem = Library.LibraryTreeOfWorkshops.SelectedItem as TreeViewItem; //This sets the selected workshop to none, so the new workshop doesn't inherit the last selected workshop's resources.
-                        theitem.IsSelected = false;
+                        if (theitem != null) { theitem.IsSelected = false; }
+                        
                     }
 
                     Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text);
@@ -116,17 +117,16 @@ namespace GameEditorStudio
 
                     Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\READ ME");
                     System.IO.File.WriteAllText(LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\READ ME\\Text.txt", "" +
-                        "When inside the workshop, please fill out the READ ME document with useful information." +
-                        "This document is special, and is shown to users in the game library." +
-                        "Idealy, the READ ME explains how to extract the game files, what tools are needed, and how to setup a project for that game." +
-                        "\n" +
-                        "\nIt may also be a good idea to include a Workshop Version Number so users can know if their version of a workshop is outdated." +
-                        "Other good ideas include patch / update notes for the workshop, links to discords, forumns, wikis, and any other relevant information about a game." +
-                        "\n" +
-                        "\nPS: READ ME does not need to include information on how a workshop is used, if you want that, make it a seperate document." +
-                        "\nThat way users who are still setting up a project and don't have the workshop open yet won't be overwhelmed with explanatory text." +
-                        "\n" +
-                        "\nInfo on platform (PC, Switch, PS2, etc), Region (USA, JP, EU, etc), Version (patch v1.1, expansion name, etc), Emulator (MelonDS, Azahar, etc), Etc. ");
+                        "The READ ME is always the first loaded document, so fill it out with useful info! " +
+                        "Here are some examples :3" +
+                        "\n- How to extract the game files (If required)." +
+                        "\n- What tools are needed (If any). " +
+                        "\n- What folder is the input folder, and where it's located." +
+                        "\n- What game platform? (PC, Switch, PS2, etc)" +
+                        "\n- What game region? (USA, JP, EU, etc)" +
+                        "\n- What game patch number? (patch v1.1, expansion name, etc)" +
+                        "\n- What discord communities, forumns, wikis, exist?" +
+                        "");
 
 
                     var parentContainer = this.Parent as Grid;

@@ -47,7 +47,10 @@
                     <Label Content="File Note" Grid.Row="1" Grid.Column="0"/>
                     <TextBox x:Name="FileNoteBox" Grid.Row="1" Grid.Column="1" Margin="3" TextChanged="FileNoteBoxTextChanged"  />
 
-                    <TextBox x:Name="FileNotepadTextbox" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" TextChanged="FileNotepadTextChanged" />
+                    <ScrollViewer Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" VerticalScrollBarVisibility="Auto">
+                        <TextBox x:Name="FileNotepadTextbox" TextWrapping="Wrap"  TextChanged="FileNotepadTextChanged" />
+                    </ScrollViewer>
+                    
                 </Grid>
             </DockPanel>
         </ContentControl>

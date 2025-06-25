@@ -1709,8 +1709,8 @@ namespace GameEditorStudio
             TheWorkshop.ColumnClass = EntryClass.EntryColumn;
             TheWorkshop.EntryClass = EntryClass;
 
+            TheWorkshop.PropertiesEntryHexAddressTextbox.Text = (EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("X2");
 
-            
 
 
 

@@ -77,10 +77,10 @@
                 <Button Content="アA" Width="45" DockPanel.Dock="Left" x:Name="TranslationToggle" Style="{DynamicResource ButtonError}"  Click="ToggleTranslationPanel" Margin="2,0,2,0" ToolTip="Toggles the translation panel.&#xD;&#xA;This is an upcoming feature, and will be useful for people making english patches."/>
 
                 <Button Content=" 🔍 " DockPanel.Dock="Left" x:Name="EntryAddressButton2"  Click="ToggleEntrySynbology" Margin="2,0,2,0" ToolTip="Toggles Symbology. &#xD;&#xA;Symbology tries to tell you information useful for discovering what an entry byte actually does. &#xD;&#xA;You can mouseover an entry symbol to learn more detailed information." Width="42"/>
-                <Button Content=" E-ID " DockPanel.Dock="Left" x:Name="EntryAddressButton"  Click="EntryAddressToggle" Margin="2,0,2,0" ToolTip="Toggles the display of Entry ID numbers. &#xD;&#xA;The number represents what byte # the entry is, for the row it's in.&#xD;&#xA;For nerds, this is a Byte's Offset Value. " Width="58"/>
+                <Button Content=" E-ID " Visibility="Collapsed" DockPanel.Dock="Left" x:Name="EntryAddressButton"  Click="EntryAddressToggle" Margin="2,0,2,0" ToolTip="Toggles the display of Entry ID numbers. &#xD;&#xA;The number represents what byte # the entry is, for the row it's in.&#xD;&#xA;For nerds, this is a Byte's Offset Value. " Width="58"/>
                 <Button DockPanel.Dock="Left" x:Name="EntryAddressTypeButton" Content="DEC" Width="50" Click="EntryAddressType" Margin="2,0,2,0" ToolTip="Changes the Entry ID number between displaying... &#xD;&#xA;in Decimal (Numbers 0~9) &#xD;&#xA;and Hex (Numbers 00~FF). "/>
-                <TextBox DockPanel.Dock="Left" x:Name="EntryAddressOffsetTextbox" Text="0" Width="35" Margin="2,1,2,1" KeyDown="EntryOffsetTextboxKeyDown" ToolTip="This textbox makes each entry ID appear as if it was +/- X number. Such as -3 or +5. &#xD;&#xA;This is useful for debugging, and not much else. " />
-                <Button Content="👁" DockPanel.Dock="Left" x:Name="EntryHiddenToggle"   Click="ToggleHiddenEntrys" Margin="2,0,2,0" ToolTip="Toggles the visibility of hidden entrys. &#xD;&#xA;When visable, a hidden entry will appear red. &#xD;&#xA;Note that any entrys that represent text are forced to hidden when the workshop opens, even if you set them not to be." Width="38"/>
+                <TextBox DockPanel.Dock="Left" x:Name="EntryAddressOffsetTextbox" Text="0" Width="35" Margin="2,1,2,1" KeyDown="EntryOffsetTextboxKeyDown" ToolTip="This textbox value (after pressing enter) will make each entry-ID APPEAR as if it's offset ID was +/- X number. Such as -3 or +5. &#xD;&#xA;It does not actually change the offset of any entrys, only the appearence." />
+                <Button Content="👁"  DockPanel.Dock="Left" x:Name="EntryHiddenToggle"   Click="ToggleHiddenEntrys" Margin="2,0,2,0" ToolTip="Toggles the visibility of hidden entrys. &#xD;&#xA;When visable, a hidden entry will appear red. &#xD;&#xA;Note that any entrys that represent text are forced to hidden when the workshop opens, even if you set them not to be." Width="38"/>
 
 
 
@@ -349,6 +349,7 @@
                                                                 <RowDefinition Height="Auto"/>
                                                                 <RowDefinition Height="Auto"/>
                                                                 <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="Auto"/>
 
                                                             </Grid.RowDefinitions>
 
@@ -392,6 +393,9 @@
                                                             <Label Content="Entry Type" Grid.Row="5" Grid.Column="1" Margin="0"/>
                                                             <ComboBox x:Name="PropertiesEntryType" Grid.Row="5" Grid.Column="2" Margin="3"  DropDownClosed="PropertiesEntryType_DropDownClosed">
                                                             </ComboBox>
+
+                                                            <Label Content="Hex Address" Grid.Row="6" Grid.Column="1" Margin="0"/>
+                                                            <TextBox x:Name="PropertiesEntryHexAddressTextbox" Grid.Row="6" Grid.Column="2" Margin="3" TextWrapping="Wrap" IsEnabled="False"/>
 
                                                         </Grid>
                                                     </DockPanel>

@@ -104,6 +104,7 @@
             </DockPanel>-->
 
         </DockPanel>
+        <Label Content="The workshop name becomes a&#xD;&#xA;folder name, so don't use any&#xD;&#xA;special symbols or program&#xD;&#xA;will crash. @#$%:^?/\!~&quot;etc" HorizontalAlignment="Left" Margin="10,312,0,0" VerticalAlignment="Top" Background="#FF190A09" Foreground="#FFFF2121"/>
 
 
     </Grid>

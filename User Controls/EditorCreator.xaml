@@ -29,9 +29,9 @@
                                             <Label Content="Editor Info" FontWeight="Bold"/>
                                         </DockPanel>
                                         <Grid>
-                                            <Label Content="Editor Name:" FontSize="22" HorizontalAlignment="Left" Margin="10,13,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="TextboxEditorName" HorizontalAlignment="Left" Margin="151,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160" FontSize="20" TextChanged="EditorNameTextboxTextChanged"/>
-                                            <Label Content="Name should be plural &amp; without the word &quot;editor&quot;. (Enemys, Weapons, Items). &#xA;If your guessing, add a ? Mark. (Spells?, Classes?, Arts?) &#xA;If you don't know at all what the data is, name it something like Unknown or ???." HorizontalAlignment="Left" Margin="10,49,0,0" VerticalAlignment="Top"/>
+                                            <Label Content="Editor Name:" FontSize="20" HorizontalAlignment="Left" Margin="10,13,0,0" VerticalAlignment="Top"/>
+                                            <TextBox x:Name="TextboxEditorName" HorizontalAlignment="Left" Margin="139,17,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160" FontSize="20" TextChanged="EditorNameTextboxTextChanged"/>
+                                            <Label Content="Name should be plural &amp; without the word &quot;editor&quot;. (Enemys, Weapons, Items, Skills). &#xA;If your guessing / unsure what the data is even for, add a ? Mark. (Spells?, Classes?, Arts?) &#xA;If you don't know at all what the data is, name it something like Unknown or ???." HorizontalAlignment="Left" Margin="10,49,0,0" VerticalAlignment="Top"/>
 
                                             <!--<Label Content="Editor Icon:"  FontSize="32" HorizontalAlignment="Left" Margin="191,125,0,0" VerticalAlignment="Top"/>
                                             <Label Content="( Yes selecting an icon&#xD;&#xA;is mandatory :P )" HorizontalAlignment="Left" Margin="191,169,0,0" VerticalAlignment="Top"/>
@@ -45,7 +45,7 @@
                                             <Label x:Name="LabelErrorNotice" Content="" HorizontalAlignment="Left" Margin="203,233,0,0" VerticalAlignment="Top"  Foreground="Red" />
                                             <Label Content="TIP: If this game needs to repack files (like when romhacking) &#xD;&#xA;then when you have time you should probably learn about the&#xD;&#xA;eventing system and setup automatic file repacking." HorizontalAlignment="Left" Margin="13,538,0,0" VerticalAlignment="Top"/>
 
-                                            <Border Margin="13,151,168,103">
+                                            <Border Margin="13,170,168,103">
                                                 <ScrollViewer >
                                                     <Grid>
                                                         <Label Content="Editor types" FontSize="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,15,0,0"/>
@@ -63,6 +63,7 @@
                                                     </Grid>
                                                 </ScrollViewer>
                                             </Border>
+                                            <Label Content="The editor name becomes a folder name, so don't use special symbols or saving will crash. @#$%:^?/\!~&quot;etc" HorizontalAlignment="Left" Margin="13,131,0,0" VerticalAlignment="Top" Background="#FF150D0D" Foreground="#FFFF2424"/>
 
 
 

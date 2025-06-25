@@ -468,7 +468,7 @@ namespace GameEditorStudio
             RowPanel.Style = (Style)Application.Current.Resources["RowStyle"];
             DockPanel.SetDock(RowPanel, Dock.Top);
             RowPanel.VerticalAlignment = VerticalAlignment.Stretch; //Top Bottom
-            RowPanel.HorizontalAlignment = HorizontalAlignment.Stretch; //Left Right
+            RowPanel.HorizontalAlignment = HorizontalAlignment.Stretch; //Left Right            
 
             //RowPanel.Margin = new Thickness(18, 10, 18, 10); // Left Top Right Bottom 
 
@@ -639,7 +639,7 @@ namespace GameEditorStudio
             //ColumnGrid.HorizontalAlignment = HorizontalAlignment.Left; //Left Right
             DockPanel.SetDock(ColumnGrid, Dock.Left);
             ColumnGrid.Margin = new Thickness(0, 5, 0, 1); // Left Top Right Bottom 
-
+            ColumnGrid.MinHeight = 50; //Minimum height of a column, so it doesn't shrink too small when there are no entrys in it.
 
 
 
@@ -862,17 +862,21 @@ namespace GameEditorStudio
             //This makes an entry drop down at the bottom of a column. 
             void DropEntryOnColumnBody(object sender, DragEventArgs e)
             {
+                StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
+
                 if (e.Data.GetDataPresent("EntryMoveList"))
                 {
 
                     List<Entry> EntryMoveList = (List<Entry>)e.Data.GetData("EntryMoveList");
 
-                    StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
+                    
                     standardEditorMethods.MoveEntrysToColumn(EntryMoveList, ColumnClass);
                 }
 
                 e.Handled = true; // 🛑 Prevent the entry's parent from stealing the drop.
 
+                
+                standardEditorMethods.EntryActivate(TheWorkshop, TheWorkshop.EntryClass); //this prevents a crash when immedietly merging the moved entry into a 2 byte.
             }
 
         }
@@ -938,28 +942,7 @@ namespace GameEditorStudio
                 
             //}
 
-
-            MenuItem EntryToNewRightColumn = new MenuItem();
-            EntryToNewRightColumn.Header = "  Move into New Column  (Right)  ";
-            contextMenu.Items.Add(EntryToNewRightColumn);
-            EntryToNewRightColumn.Click += new RoutedEventHandler(NewColumnRight);
-            void NewColumnRight(object sender, RoutedEventArgs e)
-            {
-                // Call the DeleteColumn method here
-                TheWorkshop.CreateNewColumnRight(EntryClass.EntryColumn);
-
-                //For some reason, refering to Column is problematic, but EntryClass.EntryColumn works fine.
-                //Im guessing it's because "ColumnClass" thats referenced HERE in code, isn't the same as EntryClass.EntryColumn...
-
-                List<Entry> ListOfEntrys = new();
-                ListOfEntrys.Add(EntryClass);
-
-                int index = EntryClass.EntryColumn.ColumnRow.ColumnList.IndexOf(EntryClass.EntryColumn);
-                Column toColumn = EntryClass.EntryColumn.ColumnRow.ColumnList[index + 1];
-
-                StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
-                standardEditorMethods.MoveEntrysToColumn(ListOfEntrys, toColumn);
-            }
+                      
 
 
             MenuItem EntryToNewLeftColumn = new MenuItem();
@@ -985,7 +968,29 @@ namespace GameEditorStudio
             }
 
 
-            
+
+            MenuItem EntryToNewRightColumn = new MenuItem();
+            EntryToNewRightColumn.Header = "  Move into New Column  (Right)  ";
+            contextMenu.Items.Add(EntryToNewRightColumn);
+            EntryToNewRightColumn.Click += new RoutedEventHandler(NewColumnRight);
+            void NewColumnRight(object sender, RoutedEventArgs e)
+            {
+                // Call the DeleteColumn method here
+                TheWorkshop.CreateNewColumnRight(EntryClass.EntryColumn);
+
+                //For some reason, refering to Column is problematic, but EntryClass.EntryColumn works fine.
+                //Im guessing it's because "ColumnClass" thats referenced HERE in code, isn't the same as EntryClass.EntryColumn...
+
+                List<Entry> ListOfEntrys = new();
+                ListOfEntrys.Add(EntryClass);
+
+                int index = EntryClass.EntryColumn.ColumnRow.ColumnList.IndexOf(EntryClass.EntryColumn);
+                Column toColumn = EntryClass.EntryColumn.ColumnRow.ColumnList[index + 1];
+
+                StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
+                standardEditorMethods.MoveEntrysToColumn(ListOfEntrys, toColumn);
+            }
+
 
 
 
@@ -996,33 +1001,15 @@ namespace GameEditorStudio
             {
                 if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
                 {
-                    // Your code here
+                    
                 }
                 else
                 {                    
-                    EntryManager EntryData = new();
-                    EntryData.EntryBecomeActive(EntryClass);
-                    EntryData.UpdateEntryProperties(TheWorkshop, EditorClass);
-
-                    //EditorClass.SWData.EditorTopBar.EntryNoteBox.Text = EntryClass.EntryTooltip;
-                    TheWorkshop.EntryNoteTextbox.Text = EntryClass.Notepad;
-
-
-                    if (TheWorkshop.ListTab.IsSelected == true) //Band-aid code fix to make the workshops "list" tab stop being selected when you select an entry, but this should really be inside the EntryBecomeActive function...
-                    {
-                        foreach (TabItem tabItem in TheWorkshop.MainTabControl.Items)
-                        {
-
-                            if (tabItem.Header != null && tabItem.Header.ToString() == TheWorkshop.PreviousTabName)
-                            {
-                                tabItem.IsSelected = true;
-                                break;
-                            }
-                        }
-                    }
+                    StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
+                    standardEditorMethods.EntryActivate(TheWorkshop, EntryClass);
                 }
 
-                TheWorkshop.TheCrossReference.FillLearnBox(EditorClass, EntryClass);
+                
 
 
             }
@@ -1132,6 +1119,7 @@ namespace GameEditorStudio
             
             void EntryDrop(object sender, DragEventArgs e)
             {
+                
 
                 if (e.Data.GetDataPresent("EntryMoveList") ) //Entry Drop
                 {
@@ -1140,11 +1128,13 @@ namespace GameEditorStudio
                     StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
                     standardEditorMethods.MoveEntrysToEntry(EntryMoveList, EntryClass);
 
-
                 }
 
 
                 e.Handled = true; // 🛑 Prevent the entry's parent from stealing the drop.
+
+
+                
 
             }
             
