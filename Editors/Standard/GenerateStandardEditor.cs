@@ -141,12 +141,7 @@ namespace GameEditorStudio
                 CreateCategory(EditorClass.StandardEditorData, CatClass, TheWorkshop, Database, -1);
 
                 foreach (Column ColumnClass in CatClass.ColumnList/*.ToList()*/)
-                {
-                    //if (ColumnClass.EntryList == null || ColumnClass.EntryList.Count == 0) //Delete column if it's empty. 
-                    //{
-                    //    CatClass.ColumnList.Remove(ColumnClass); 
-                    //    continue; 
-                    //}
+                {                   
 
                     CreateColumn(CatClass, ColumnClass, TheWorkshop, Database, -1);
 
@@ -622,7 +617,10 @@ namespace GameEditorStudio
 
         }
 
-
+        public void CreateGroup() 
+        {
+        
+        }
 
         public void CreateColumn(Category RowClass, Column ColumnClass, Workshop TheWorkshop, WorkshopData Database, int Index)
         {
@@ -897,6 +895,7 @@ namespace GameEditorStudio
             Border.CornerRadius = new CornerRadius(3);
             DockPanel.SetDock(Border, Dock.Top);
             Border.Margin = new Thickness(4, 0, 5, 3);// Left Top Right Bottom 
+            Border.MinHeight = 38; //Height of a entry, so it doesn't shrink too small when there are no entrys in it.
 
             if (Properties.Settings.Default.ShowHiddenEntrys == false && (EntryClass.IsEntryHidden == true || EntryClass.IsTextInUse == true))
             {
@@ -989,6 +988,17 @@ namespace GameEditorStudio
 
                 StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
                 standardEditorMethods.MoveEntrysToColumn(ListOfEntrys, toColumn);
+            }
+
+            MenuItem EntryCreateNewGroup = new MenuItem();
+            EntryCreateNewGroup.Header = "  Create new group  ";
+            contextMenu.Items.Add(EntryCreateNewGroup);
+            EntryCreateNewGroup.Click += new RoutedEventHandler(NewColumnGroup);
+            void NewColumnGroup(object sender, RoutedEventArgs e)
+            {
+                StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
+                standardEditorMethods.CreateNewGroup(EntryClass);
+                
             }
 
 

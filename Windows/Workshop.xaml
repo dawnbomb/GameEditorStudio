@@ -405,7 +405,7 @@
                                                 <Border DockPanel.Dock="Top">
                                                     <TabControl Name="EntryElementProperties" DockPanel.Dock="Top">
                                                         <TabItem Header="NumberBox" Name="EntryTab1">
-                                                            <DockPanel Height="149">
+                                                            <DockPanel >
                                                                 <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                                                     <Label Content="Numberbox Properties" FontWeight="Bold" />
                                                                 </DockPanel>
@@ -416,7 +416,7 @@
                                                                             <ScaleTransform ScaleX="2" ScaleY="2" />
                                                                         </CheckBox.LayoutTransform>
                                                                     </CheckBox>
-                                                                    <Label Content="(This is what lets a game use negative&#xD;&#xA;numbers, but the details are complicated.&#xD;&#xA;Mouse hover the checkbox for a long tooltip)" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top"/>
+                                                                    <Label Content="(This is complicated, hover for tooltip)" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top"/>
                                                                 </Grid>
                                                             </DockPanel>
                                                         </TabItem>
@@ -427,10 +427,10 @@
                                                                 </DockPanel>
                                                                 <Grid>
                                                                     <Label Content="Checked Value" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="9,8,0,0"/>
-                                                                    <TextBox x:Name="PropertiesEntryCheckText" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100" Margin="186,10,0,0" IsEnabled="False"/>
+                                                                    <TextBox x:Name="PropertiesEntryCheckText" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100" Margin="172,10,0,0" IsEnabled="False"/>
                                                                     <Label Content="Unchecked Value" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top"/>
-                                                                    <TextBox x:Name="PropertiesEntryUncheckText" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100" Margin="186,41,0,0" IsEnabled="False"/>
-                                                                    <Label Content="I'll add this post-release, &#xD;&#xA;For now values are always 1 &amp; 0 ^^;" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top"/>
+                                                                    <TextBox x:Name="PropertiesEntryUncheckText" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100" Margin="172,41,0,0" IsEnabled="False"/>
+                                                                    <Label Content="Adding later, &#xA;for now its &#xD;&#xA;always 1 &amp; 0" HorizontalAlignment="Left" Margin="278,-8,0,0" VerticalAlignment="Top"/>
 
                                                                 </Grid>
                                                             </DockPanel>
@@ -438,7 +438,7 @@
                                                         <TabItem Header="BitFlag" Name="EntryTab3">
                                                             <DockPanel>
                                                                 <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
-                                                                    <Label Content="Bitflag Properties     (Names / Checked / Unchecked)" FontWeight="Bold" />
+                                                                    <Label Content="Bitflag Properties (Names)" FontWeight="Bold" />
                                                                 </DockPanel>
                                                                 <Grid Margin="0,3,0,7">
 
@@ -460,18 +460,16 @@
                                                                     <Label Content="Menu Properties" FontWeight="Bold" />
                                                                 </DockPanel>
                                                                 <Grid >
-                                                                    <Label Content="Menu Type" HorizontalAlignment="Left" Margin="15,9,0,0" VerticalAlignment="Top"/>
-                                                                    <ComboBox x:Name="DropdownMenuType" HorizontalAlignment="Left" Margin="189,10,0,0" VerticalAlignment="Top"  DropDownClosed="PropertiesMenuType_DropDownClosed" Width="128">
+                                                                    <Label Content="Menu Type" HorizontalAlignment="Left" Margin="9,1,0,0" VerticalAlignment="Top"/>
+                                                                    <ComboBox x:Name="DropdownMenuType" HorizontalAlignment="Left" Margin="135,6,0,0" VerticalAlignment="Top"  DropDownClosed="PropertiesMenuType_DropDownClosed" Width="128">
                                                                         <ComboBoxItem Content="Dropdown" Name="MenuTypeItemDropdown"/>
                                                                         <ComboBoxItem Content="List" IsSelected="True" Name="MenuTypeItemList"/>
                                                                     </ComboBox>
-                                                                    <Label Content="Linked to:" HorizontalAlignment="Left" Margin="15,37,0,0" VerticalAlignment="Top" />
-                                                                    <Label Content="Nothing" HorizontalAlignment="Left" Margin="186,35,0,0" VerticalAlignment="Top" />
 
-                                                                    <Button Name="ButtonMenuManager" Content="Menu Manager" HorizontalAlignment="Left" Margin="15,69,0,0" VerticalAlignment="Top" Click="DoThing2" Width="150" Height="30" />
+                                                                    <Button Name="ButtonMenuManager" Content="Menu Manager" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Click="DoThing2" Width="253" Height="30" />
 
 
-                                                                    <Label Content="In the future, Editor linking will &#xD;&#xA;also support name notes. :D" HorizontalAlignment="Left" Margin="10,93,0,0" VerticalAlignment="Top"/>
+                                                                    <Label Content="Editor link will &#xA;later support &#xD;&#xA;name notes :D" HorizontalAlignment="Left" Margin="263,-6,0,0" VerticalAlignment="Top"/>
 
                                                                 </Grid>
                                                             </DockPanel>

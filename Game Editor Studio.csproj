@@ -10,6 +10,15 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Graphics\Game Editor Studio Icon.ico</ApplicationIcon>
     <StartupObject></StartupObject>
+	
+    <!-- Publish settings -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>false</PublishTrimmed> <!-- Leave off unless you're sure -->
+    <SelfContained>true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier> <!-- Or win-x86 if needed -->
+	<DebugType>none</DebugType>
+	<DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>

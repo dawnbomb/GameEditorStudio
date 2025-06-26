@@ -783,45 +783,45 @@ namespace GameEditorStudio
 
         private void NothingItemsEditBoxPreviewKeyDown(object sender, KeyEventArgs e) //more GPT code to stop the user from axidentally deleting lines in the Nothing Name Textbox.
         {
-            var tb = (TextBox)sender;
-            int lineCountBefore = tb.Text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None).Length;
+            //var tb = (TextBox)sender;
+            //int lineCountBefore = tb.Text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None).Length;
 
-            string newText = tb.Text;
-            int caret = tb.CaretIndex;
-            int selStart = tb.SelectionStart;
-            int selLength = tb.SelectionLength;
+            //string newText = tb.Text;
+            //int caret = tb.CaretIndex;
+            //int selStart = tb.SelectionStart;
+            //int selLength = tb.SelectionLength;
 
-            if (e.Key == Key.Back)
-            {
-                if (selLength > 0)
-                {
-                    newText = newText.Remove(selStart, selLength);
-                }
-                else if (caret > 0)
-                {
-                    newText = newText.Remove(caret - 1, 1);
-                }
-            }
-            else if (e.Key == Key.Delete)
-            {
-                if (selLength > 0)
-                {
-                    newText = newText.Remove(selStart, selLength);
-                }
-                else if (caret < newText.Length)
-                {
-                    newText = newText.Remove(caret, 1);
-                }
-            }
-            else return; // Let other keys through
+            //if (e.Key == Key.Back)
+            //{
+            //    if (selLength > 0)
+            //    {
+            //        newText = newText.Remove(selStart, selLength);
+            //    }
+            //    else if (caret > 0)
+            //    {
+            //        newText = newText.Remove(caret - 1, 1);
+            //    }
+            //}
+            //else if (e.Key == Key.Delete)
+            //{
+            //    if (selLength > 0)
+            //    {
+            //        newText = newText.Remove(selStart, selLength);
+            //    }
+            //    else if (caret < newText.Length)
+            //    {
+            //        newText = newText.Remove(caret, 1);
+            //    }
+            //}
+            //else return; // Let other keys through
 
-            int lineCountAfter = newText.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None).Length;
+            //int lineCountAfter = newText.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None).Length;
 
 
-            if (lineCountAfter != lineCountBefore)
-            {                
-                e.Handled = true; // Block if line count decreased
-            }
+            //if (lineCountAfter != lineCountBefore)
+            //{                
+            //    e.Handled = true; // Block if line count decreased
+            //}
         }
 
     }

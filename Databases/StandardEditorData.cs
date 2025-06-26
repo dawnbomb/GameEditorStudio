@@ -5,6 +5,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace GameEditorStudio
 {
@@ -52,6 +53,7 @@ namespace GameEditorStudio
         // They are not saved to XML or reloaded 
 
         public Entry SelectedEntry { get; set; } //The entry the user is currently selecting. In DEV mode, This entry is highlighted.
+        public List<Entry>? EntryList { get; set; } = new(); //A master list to make it easy to make changes to all of them at once.
         public int TableRowIndex { get; set; } //Not XML, used to save data when changing items in a collection. It's equal to an ItemInfo's Index.        
         public DockPanel MainDockPanel { get; set; } //The right side's panel inside a scroll viewer.
     }
@@ -132,16 +134,22 @@ namespace GameEditorStudio
         public string ColumnName { get; set; } = "New Column"; //XML The name of a column.
         public DockPanel? ColumnGrid { get; set; }
         public List<Entry>? EntryList { get; set; } = new();
+
+        public List<CItem>? MasterList { get; set; } = new();
         public Label ColumnLabel { get; set; }
         public Category ColumnRow { get; set; }
+
+        //public List<T> Stuff { get; set; } = new(); //This is a list of stuff that the column holds. It can be used to hold any type of object, but is currently only used to hold Entry objects.
 
         public string Key { get; set; } = LibraryMan.GenerateKey(); //Unused, Only exists incase of future features. 
     }
 
-    public class Group //A way to group entries together, like a folder.
+    public abstract class CItem { }
+
+    public class Group : CItem //A way to group entries together, like a folder.
     {
         public string GroupName { get; set; } = "New Group"; //XML The name of a column.
-        public DockPanel? GroupGrid { get; set; }
+        public DockPanel? GroupPanel { get; set; }
         public List<Entry>? EntryList { get; set; } = new();
         public Label GroupLabel { get; set; }
         public Column GroupColumn { get; set; }
@@ -149,7 +157,7 @@ namespace GameEditorStudio
     }
     
 
-    public class Entry
+    public class Entry : CItem
     {
         public string Name { get; set; } = "";  //XML //The Name / Label an entry Gets. Later, it will default to "???"  
         public string Notepad { get; set; } = ""; //XML

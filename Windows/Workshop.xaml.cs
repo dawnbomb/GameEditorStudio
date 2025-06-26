@@ -2560,12 +2560,12 @@ namespace GameEditorStudio
 
         private void OpenWorkshopInputButton(object sender, RoutedEventArgs e)
         {            
-            LibraryMan.OpenFolder(this.ProjectDataItem.ProjectInputDirectory);
+            LibraryMan.OpenFileFolder(PropertiesEditorReadGameDataFrom.Text);
         }
 
         private void OpenWorkshopOutputButton(object sender, RoutedEventArgs e)
         {            
-            LibraryMan.OpenFolder(this.ProjectDataItem.ProjectOutputDirectory);
+            LibraryMan.OpenFileFolder(EditorOutputLocationTextbox.Text);
         }
 
         private void OpenIconManager(object sender, RoutedEventArgs e)

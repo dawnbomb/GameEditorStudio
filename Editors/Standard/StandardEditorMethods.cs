@@ -3,13 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace GameEditorStudio
 {
     internal class StandardEditorMethods
     {
-                
+
+        public void CreateNewGroup(Entry EntryClass) 
+        {
+            Column EntryColumn = EntryClass.EntryColumn;
+
+
+        }
+
         public void MoveEntrysToEntry(List<Entry> EntrysListToMove, Entry EntryToMoveUnder)
         {
             if (EntrysListToMove.Contains(EntryToMoveUnder)) 
@@ -18,6 +26,8 @@ namespace GameEditorStudio
             }
 
             int i = 0;
+            Column BeforeColumn = EntrysListToMove[0].EntryColumn; //Save the column before we change it, so we can delete it later if needed.
+            Column AfterColumn = EntryToMoveUnder.EntryColumn; //Save the column after we change it, so we can delete it later if needed.
 
             foreach (Entry EntryToMove in EntrysListToMove) 
             {
@@ -37,10 +47,16 @@ namespace GameEditorStudio
 
 
             DeleteEmptyColumnsAndMakeNewOnes(EntryToMoveUnder.EntryEditor.StandardEditorData);
+            LabelWidth(BeforeColumn);
+            LabelWidth(AfterColumn);
+
         }
 
         public void MoveEntrysToColumn(List<Entry> EntrysListToMove, Column Column) 
         {
+            Column BeforeColumn = EntrysListToMove[0].EntryColumn; //Save the column before we change it, so we can delete it later if needed.
+            Column AfterColumn = Column; //Save the column after we change it, so we can delete it later if needed.
+
             foreach (Entry EntryToMove in EntrysListToMove)
             {
                 EntryToMove.EntryColumn.ColumnGrid.Children.Remove(EntryToMove.EntryBorder);
@@ -54,6 +70,8 @@ namespace GameEditorStudio
             }
 
             DeleteEmptyColumnsAndMakeNewOnes(Column.ColumnRow.SWData);
+            LabelWidth(BeforeColumn);
+            LabelWidth(AfterColumn);
         }
 
         public void EntryActivate(Workshop TheWorkshop, Entry EntryClass) 
@@ -115,7 +133,34 @@ namespace GameEditorStudio
         }
 
 
-        
+        public void LabelWidth(Column ColumnClass)
+        {
+
+
+            double maxWidth = 0;
+            var EntryList = ColumnClass.EntryList;
+
+            // Measure the desired width of each label without restrictions
+            foreach (Entry entry in EntryList)
+            {
+                entry.EntryLabel.MinWidth = 0;
+                entry.EntryLabel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                double labelWidth = entry.EntryLabel.DesiredSize.Width;
+                if (labelWidth > maxWidth)
+                {
+                    maxWidth = labelWidth;
+                }
+            }
+
+            // Set the MinWidth of each label to the widest value
+            foreach (Entry entry in EntryList)
+            {
+                entry.EntryLabel.MinWidth = maxWidth;
+            }
+        }
+
+
+
 
 
     }
