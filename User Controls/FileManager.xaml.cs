@@ -398,5 +398,18 @@ namespace GameEditorStudio
             }
             
         }
+
+        private void FileLocationTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            FileLocationTextbox.ToolTip = "" +
+                "Location: " +
+                "\n" + FileLocationTextbox.Text +
+                "\n\n" +
+                "From Project Input: " +
+                "\n" + TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\"+ FileLocationTextbox.Text  +
+                "\n\n" +
+                "From Project Output: " +
+                "\n" + TheWorkshop.ProjectDataItem.ProjectOutputDirectory + "\\"+ FileLocationTextbox.Text; // Update the tooltip to show the file location text
+        }
     }
 }

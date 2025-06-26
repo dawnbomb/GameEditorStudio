@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -502,6 +503,7 @@ namespace GameEditorStudio
 
         private async void ItemsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) //When the selected item is changed, we save the current item entry info, and load the new items info.
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
             //I disable selection effects sometimes when modifying items in the collection while it is open.
             if (TheWorkshop.TreeViewSelectionEnabled)
             {
@@ -578,6 +580,9 @@ namespace GameEditorStudio
 
 
             } //End of If selection is enabled.
+
+            stopwatch.Stop();
+            Debug.WriteLine($"[Timer] Item Select took {stopwatch.ElapsedMilliseconds} ms");
         }
 
 

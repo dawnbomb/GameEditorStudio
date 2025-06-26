@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using System.Security.AccessControl;
 //using System.Reflection.Emit;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -52,12 +53,23 @@ namespace GameEditorStudio
 
     //disabled a method in setup text editor
 
-
+    //OLD PUBLISH METHOD
     //1 open command prompt
-    //2 navigate to the .csproj file folder   M:    cd X
+    //2 navigate to the .csproj file folder  FOR EXAMPLE:  cd D:\Crystal Studio
     //3 copy paste this and hit enter
-    //dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true    
+    //dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true 
 
+    //NEW ONE
+    //now i have, in Game Editor Studio.csproj, if you open it in notepad, there are these lines that publish in mostly one file. From there, just take the exe and ignore the rest. No more command prompt, hell yes!
+    //<!-- Publish settings -->
+    //<PublishSingleFile>true</PublishSingleFile>
+    //<PublishTrimmed>false</PublishTrimmed> <!-- Leave off unless you're sure -->
+    //<SelfContained>true</SelfContained>
+    //<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    //<RuntimeIdentifier>win-x64</RuntimeIdentifier> <!-- Or win-x86 if needed -->
+    //<DebugType>none</DebugType>
+    //<DebugSymbols>false</DebugSymbols>
+    //These last two debug lines, remove the Game Editor Studio.pdb from publishing, which is a debugging file. Hopefully unnecessary for release versions.
 
     public partial class GameLibrary : Window
     {        
@@ -90,12 +102,16 @@ namespace GameEditorStudio
 
             #if DEBUG //The App Location is the folder location of the executable. It's used by other parts of the program to find files.
             //I don't understand (and don't feel like spending the time) setting it up so release is the same as debug mode, so this is a temporary lazy fix.
-            LibraryMan.ApplicationLocation = Path.GetFullPath(Path.Combine(basepath, @"..\..\..\..\Release"));
+            LibraryMan.ApplicationLocation = Path.GetFullPath(Path.Combine(basepath, @"..\..\..\..\..\Release"));
             #else
             //ExePath = basepath; //for published versions of the program to the public.
             LibraryMan.ApplicationLocation = basepath;
             //LibraryMan.ApplicationLocation = Path.GetFullPath(Path.Combine(basepath, @"..\..\..\..\Release"));
+
+            //LibraryMan.ApplicationLocation = "D:\\Game Editor Studio\\Release";            
             #endif
+
+            //string test = LibraryMan.ApplicationLocation;
 
             ImportFromGoogle TableImport = new(); //Must happen before Setup Commands, because commands use tools.
             TableImport.ImportTableFromGoogle(this);   //Imports tools, commands, and common events.

@@ -252,7 +252,7 @@
                         <TabItem Header="Link to Editor" Name="Tab3" Tag="Editor">
                             <!--List to Editor-->
                             <Grid x:Name="GridListFromEditor" Background="#FF22561B" >
-                                <Border Margin="0,0,753,0">
+                                <Border HorizontalAlignment="Left" Width="343">
                                     <DockPanel>
                                         <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}" LastChildFill="False" >
                                             <Label Content="Editors" FontWeight="Bold"/>
@@ -316,7 +316,7 @@
 
 
                                                 <TextBox x:Name="ItemsNumBox" MinWidth="30"  TextWrapping="Wrap" Text="0&#xA;1&#xA;2&#xA;3&#xA;4&#xA;5&#xA;6&#xA;7&#xA;8&#xA;9&#xA;10&#xA;11&#xA;12&#xA;13&#xA;14&#xA;15&#xA;16&#xA;17&#xA;18&#xA;19&#xA;20&#xA;21&#xA;22"  DockPanel.Dock="Left"  IsEnabled="False" FontSize="20" />
-                                                <TextBox x:Name="ItemsEditBox"  AcceptsReturn="False" Text="Iron Sword&#xD;&#xA;Potion&#xD;&#xA;Fireball"  DockPanel.Dock="Left" FontSize="20" TextChanged="NothingNameListTextboxTextChanged" PreviewKeyDown="NothingItemsEditBoxPreviewKeyDown"/>
+                                                <TextBox x:Name="ItemsEditBox"  AcceptsReturn="True" Text="Iron Sword&#xD;&#xA;Potion&#xD;&#xA;Fireball"  DockPanel.Dock="Left" FontSize="20" TextChanged="NothingNameListTextboxTextChanged" PreviewKeyDown="NothingItemsEditBoxPreviewKeyDown"/>
 
 
                                             </DockPanel>

@@ -32,7 +32,7 @@ namespace GameEditorStudio
             {
                 if (Directory.Exists(project.ProjectInputDirectory))
                 {
-                    System.Diagnostics.Process.Start("explorer.exe", project.ProjectInputDirectory);
+                    LibraryMan.OpenFolder(project.ProjectInputDirectory);
                 }
                 else
                 {
@@ -73,7 +73,7 @@ namespace GameEditorStudio
 
                 if (Directory.Exists(project.ProjectOutputDirectory))
                 {
-                    System.Diagnostics.Process.Start("explorer.exe", project.ProjectOutputDirectory);
+                    LibraryMan.OpenFolder(project.ProjectOutputDirectory);
                 }
                 else
                 {
@@ -114,7 +114,7 @@ namespace GameEditorStudio
 
                 if (Directory.Exists(folderPath))
                 {
-                    System.Diagnostics.Process.Start("explorer.exe", folderPath);
+                    LibraryMan.OpenFolder(folderPath);
                 }
                 else
                 {
@@ -144,15 +144,15 @@ namespace GameEditorStudio
                 // Open the folder in the file explorer
                 if (Directory.Exists(folderPath))
                 {
-                    System.Windows.MessageBox.Show("We can't find where your downloads folder is! :(" +
-                        "\n" +
-                        "\nIDK what would cause this error. Maybe your on a max or linux PC instead of windows?" +
-                        "\nIf anyone gets this error on windows, please report it.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    LibraryMan.OpenFolder(folderPath);
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("Crystal editor folder wasn't found. This should literally never happen, please report this :(" +
-                        "\n.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    LibraryMan.NotificationNegative("Error: Can't find downloads folder.",
+                        "We can't find where your downloads folder is! :( " +
+                        "IDK what would cause this error. Maybe your on mac or linux PC instead of windows? " +
+                        "If anyone gets this error on windows, please report it."
+                        );                    
                 }
             }
             catch
@@ -173,7 +173,7 @@ namespace GameEditorStudio
                 // Open the folder in the file explorer
                 if (Directory.Exists(folderPath))
                 {
-                    System.Diagnostics.Process.Start("explorer.exe", folderPath);
+                    LibraryMan.OpenFolder(folderPath);
                 }
                 else
                 {

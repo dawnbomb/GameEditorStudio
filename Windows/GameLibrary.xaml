@@ -127,6 +127,8 @@
                             <ContextMenu>
                                 <MenuItem Header="New Project" Click="CreateNewProject" />
                                 <MenuItem Header="Delete Project" Click="DeleteProject" />
+                                <MenuItem Header="Open Input Folder" Click="OpenInput" />
+                                <MenuItem Header="Open Output Folder" Click="OpenOutput" />
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                     </DataGrid>

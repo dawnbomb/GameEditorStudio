@@ -680,6 +680,7 @@ namespace GameEditorStudio
             int BitMinWidth = 33;
             var BitMargin = new Thickness(0, 0, 3, 0); // Left Top Right Bottom 
             var DockMargin = new Thickness(0, 3, 0, 3); // Left Top Right Bottom 
+
             ////////////////////////////////////////////////
             DockPanel BitFlag1 = new();
             DockPanel.SetDock(BitFlag1, Dock.Top);
