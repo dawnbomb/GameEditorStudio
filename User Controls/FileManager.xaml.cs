@@ -97,8 +97,8 @@ namespace GameEditorStudio
                 {
                     TreeViewItem TreeViewItem = new TreeViewItem();
 
-                    TreeViewItem.Tag = GameFile;
-                    TreeViewItem.ToolTip = GameFile.FileNotepad; 
+                    TreeViewItem.Tag = GameFile;                    
+                        
                     TreeGameFiles.Items.Add(TreeViewItem);
 
                     FileItemNameBuilder(TreeViewItem);
@@ -204,6 +204,19 @@ namespace GameEditorStudio
             TextBlockItem.Inlines.Add(FileNameText);
             TextBlockItem.Inlines.Add(FileNote);
             TreeViewItem.Header = TextBlockItem;
+
+
+            TreeViewItem.Tag = GameFile;
+            if (GameFile.FileNotepad == "")
+            {
+                TreeViewItem.ToolTip = null;
+                FileNameText.TextDecorations = null;
+            }
+            else
+            {
+                TreeViewItem.ToolTip = GameFile.FileNotepad;
+                FileNameText.TextDecorations = TextDecorations.Underline;
+            }
         }
 
         
@@ -380,7 +393,7 @@ namespace GameEditorStudio
             if (treeViewItem == null) { return; }
             GameFile GameFile = treeViewItem.Tag as GameFile;
             GameFile.FileNotepad = FileNotepadTextbox.Text;
-            treeViewItem.ToolTip = GameFile.FileNotepad; // Update the tooltip to show the notepad text
+            FileItemNameBuilder(treeViewItem);
         }
 
         public void SelectItem(Entry Entry) //Sometimes i can't select a item cause this didn't load yet, so this event makes sure it can.

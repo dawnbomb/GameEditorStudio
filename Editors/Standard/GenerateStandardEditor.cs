@@ -147,9 +147,9 @@ namespace GameEditorStudio
 
                     foreach (Entry EntryClass in ColumnClass.EntryList)
                     {
-                        CreateEntry(EditorClass, CatClass, ColumnClass, EntryClass, TheWorkshop, Database);
+                        CreateEntry(EditorClass, CatClass, ColumnClass, EntryClass, TheWorkshop, Database);                        
                     }
-                    TheWorkshop.LabelWidth(ColumnClass);
+                    StandardEditorMethods.LabelWidth(ColumnClass);
 
                 }
             }
@@ -160,7 +160,6 @@ namespace GameEditorStudio
             EManager.EntryBecomeActive(EditorClass.StandardEditorData.SelectedEntry);  //EditorClass.StandardEditorData.CategoryList[0].ColumnList[0].EntryList[0]
             EManager.UpdateEntryProperties(TheWorkshop, EditorClass);
 
-            StandardEditorMethods StandardEditorMethods = new();
             StandardEditorMethods.DeleteEmptyColumnsAndMakeNewOnes(EditorClass.StandardEditorData);
 
         }
@@ -463,11 +462,10 @@ namespace GameEditorStudio
             RowPanel.Style = (Style)Application.Current.Resources["RowStyle"];
             DockPanel.SetDock(RowPanel, Dock.Top);
             RowPanel.VerticalAlignment = VerticalAlignment.Stretch; //Top Bottom
-            RowPanel.HorizontalAlignment = HorizontalAlignment.Stretch; //Left Right            
+            RowPanel.HorizontalAlignment = HorizontalAlignment.Stretch; //Left Right    
 
             //RowPanel.Margin = new Thickness(18, 10, 18, 10); // Left Top Right Bottom 
-
-            //RowPanel.Margin = new Thickness(0, 5, 5, 0);
+            
             //if (Index == -1) { SWData.MainDockPanel.Children.Add(RowPanel); }
             //else { SWData.MainDockPanel.Children.Insert(Index, RowPanel); }
             CatBorder.Child = RowPanel;
@@ -636,7 +634,7 @@ namespace GameEditorStudio
             ColumnGrid.LastChildFill = false;
             //ColumnGrid.HorizontalAlignment = HorizontalAlignment.Left; //Left Right
             DockPanel.SetDock(ColumnGrid, Dock.Left);
-            ColumnGrid.Margin = new Thickness(0, 5, 0, 1); // Left Top Right Bottom 
+            ColumnGrid.Margin = new Thickness(2, 10, 0, 5); // Left Top Right Bottom  //(0, 5, 0, 1)
             ColumnGrid.MinHeight = 50; //Minimum height of a column, so it doesn't shrink too small when there are no entrys in it.
 
 
@@ -860,21 +858,20 @@ namespace GameEditorStudio
             //This makes an entry drop down at the bottom of a column. 
             void DropEntryOnColumnBody(object sender, DragEventArgs e)
             {
-                StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
 
                 if (e.Data.GetDataPresent("EntryMoveList"))
                 {
 
                     List<Entry> EntryMoveList = (List<Entry>)e.Data.GetData("EntryMoveList");
 
-                    
-                    standardEditorMethods.MoveEntrysToColumn(EntryMoveList, ColumnClass);
+
+                    StandardEditorMethods.MoveEntrysToColumn(EntryMoveList, ColumnClass);
                 }
 
                 e.Handled = true; // 🛑 Prevent the entry's parent from stealing the drop.
 
-                
-                standardEditorMethods.EntryActivate(TheWorkshop, TheWorkshop.EntryClass); //this prevents a crash when immedietly merging the moved entry into a 2 byte.
+
+                StandardEditorMethods.EntryActivate(TheWorkshop, TheWorkshop.EntryClass); //this prevents a crash when immedietly merging the moved entry into a 2 byte.
             }
 
         }
@@ -962,8 +959,7 @@ namespace GameEditorStudio
                 int index = EntryClass.EntryColumn.ColumnRow.ColumnList.IndexOf(EntryClass.EntryColumn);
                 Column toColumn = EntryClass.EntryColumn.ColumnRow.ColumnList[index - 1];
 
-                StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
-                standardEditorMethods.MoveEntrysToColumn(ListOfEntrys, toColumn);
+                StandardEditorMethods.MoveEntrysToColumn(ListOfEntrys, toColumn);
             }
 
 
@@ -986,8 +982,7 @@ namespace GameEditorStudio
                 int index = EntryClass.EntryColumn.ColumnRow.ColumnList.IndexOf(EntryClass.EntryColumn);
                 Column toColumn = EntryClass.EntryColumn.ColumnRow.ColumnList[index + 1];
 
-                StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
-                standardEditorMethods.MoveEntrysToColumn(ListOfEntrys, toColumn);
+                StandardEditorMethods.MoveEntrysToColumn(ListOfEntrys, toColumn);
             }
 
             MenuItem EntryCreateNewGroup = new MenuItem();
@@ -996,8 +991,7 @@ namespace GameEditorStudio
             EntryCreateNewGroup.Click += new RoutedEventHandler(NewColumnGroup);
             void NewColumnGroup(object sender, RoutedEventArgs e)
             {
-                StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
-                standardEditorMethods.CreateNewGroup(EntryClass);
+                StandardEditorMethods.CreateNewGroup(EntryClass);
                 
             }
 
@@ -1014,9 +1008,8 @@ namespace GameEditorStudio
                     
                 }
                 else
-                {                    
-                    StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
-                    standardEditorMethods.EntryActivate(TheWorkshop, EntryClass);
+                {      
+                    StandardEditorMethods.EntryActivate(TheWorkshop, EntryClass);
                 }
 
                 
@@ -1135,8 +1128,7 @@ namespace GameEditorStudio
                 {
                     List<Entry> EntryMoveList = (List<Entry>)e.Data.GetData("EntryMoveList");
 
-                    StandardEditorMethods standardEditorMethods = new StandardEditorMethods();
-                    standardEditorMethods.MoveEntrysToEntry(EntryMoveList, EntryClass);
+                    StandardEditorMethods.MoveEntrysToEntry(EntryMoveList, EntryClass);
 
                 }
 
@@ -1178,85 +1170,29 @@ namespace GameEditorStudio
             EntryDockPanel.Children.Add(PrefixEID);
             EntryClass.EntryPrefix = PrefixEID;
 
+            ///////////////////STARTING HERE IS STUFF FOR THE PAINFULLY OVER COMPLICATED SYSTEM WHERE AN ENTRY GETS UNDERLINED IF IT HAS A TOOLTIP.//////////////////////
+            Grid NewPanel = EntryClass.EntryLeftGrid;
+            NewPanel.Background = Brushes.Transparent;
+            EntryDockPanel.Children.Add(NewPanel);
+            NewPanel.Children.Add(EntryClass.EntryNameTextBlock);
+            NewPanel.Children.Add(EntryClass.UnderlineBorder);  
+            EntryClass.UnderlineBorder.BorderBrush = (Brush)new BrushConverter().ConvertFrom("#A0A0A0");
+            EntryClass.UnderlineBorder.Margin = new Thickness(4, 0, 0, 4); // Left Top Right Bottom
+            EntryClass.UnderlineBorder.HorizontalAlignment = HorizontalAlignment.Left;
+            EntryClass.EntryNameTextBlock.Inlines.Add(EntryClass.RunEntryName);
 
-            //add a option to properties where a entrys can have a Icon on the left side. for easy, universal, user styling / expression.
-            Label NameBox = new Label();
-            //NameBox.Background = Brushes.IndianRed;
-            //NameBox.Height = 30;
-            NameBox.MinWidth = 80;
-            NameBox.FontSize = 20;
-            NameBox.HorizontalAlignment = HorizontalAlignment.Left;
-            NameBox.VerticalContentAlignment = VerticalAlignment.Center;
-            EntryDockPanel.Children.Add(NameBox);
-            if (EntryClass.IsNameHidden == false) { NameBox.Visibility = Visibility.Visible; }
-            if (EntryClass.IsNameHidden == true) { NameBox.Visibility = Visibility.Collapsed; }
-            EntryClass.EntryLabel = NameBox;
-                        
+            TextBlock EntryTextBlock = EntryClass.EntryNameTextBlock;
+            EntryTextBlock.Margin = new Thickness(4, 0, 2, 0);
+            EntryTextBlock.FontSize = 20;
+            EntryTextBlock.HorizontalAlignment = HorizontalAlignment.Left;
+            EntryTextBlock.VerticalAlignment = VerticalAlignment.Center;
 
-            if (EntryClass.Name == "")
-            {
-                NameBox.Content = "??? " + EntryClass.RowOffset;
-            }
-            if (EntryClass.Name != "")
-            {
-                NameBox.Content = NameBox.Content = EntryClass.Name;// "Entry X";
-            }
+            ToolTipService.SetInitialShowDelay(EntryClass.EntryLeftGrid, 200); // 0.3 seconds popup
+            ToolTipService.SetBetweenShowDelay(EntryClass.EntryLeftGrid, 0); // 0.1 seconds switch
 
+            ////////////////END OF UNDERLINE SYSTEM//////////////////////
 
-
-
-
-
-
-
-            //This last code auto-sets entrys to hidden if the entry's byte is also apart of a text table.
-            //I may want to change this to happen if its ANY known text table.
-            if (EditorClass.StandardEditorData.FileNameTable != null) //Happens when a table uses a user name list instead of from a game file.
-            {
-                if (EditorClass.StandardEditorData.FileNameTable.FileLocation != null)
-                {
-                    if (EditorClass.StandardEditorData.FileNameTable.FileLocation == EditorClass.StandardEditorData.FileDataTable.FileLocation)
-                    {
-                        int Min = EditorClass.StandardEditorData.DataTableStart;
-                        int Max = Min + EditorClass.StandardEditorData.DataTableRowSize;
-                        if (EditorClass.StandardEditorData.NameTableStart >= Min && EditorClass.StandardEditorData.NameTableStart <= Max)
-                        {
-                            int NAMEMIN = EditorClass.StandardEditorData.NameTableStart - EditorClass.StandardEditorData.DataTableStart;
-                            int NAMEMAX = NAMEMIN + EditorClass.StandardEditorData.NameTableTextSize - 1;//the 1st byte is "0", so we need a -1 for proper counting.
-                            if (EntryClass.RowOffset >= NAMEMIN && EntryClass.RowOffset <= NAMEMAX)
-                            {                                
-                                EntryClass.IsTextInUse = true;
-                                EntryClass.EntryLabel.Content = "Name";
-                            }
-                        }
-                    }
-                }
-            }
-
-
-            if (TheWorkshop.IsPreviewMode == false)
-            {
-                foreach (DescriptionTable ExtraTable in EditorClass.StandardEditorData.DescriptionTableList)
-                {
-                    if (EditorClass.StandardEditorData.FileDataTable.FileLocation == ExtraTable.FileTextTable.FileLocation)
-                    {
-                        int Min = EditorClass.StandardEditorData.DataTableStart;
-                        int Max = Min + EditorClass.StandardEditorData.DataTableRowSize;
-                        if (ExtraTable.Start >= Min && ExtraTable.Start <= Max)
-                        {
-                            int EXTRAMIN = ExtraTable.Start - EditorClass.StandardEditorData.DataTableStart;
-                            int EXTRAMAX = EXTRAMIN + ExtraTable.TextSize - 1;//the 1st byte is "0", so we need a -1 for proper counting.
-                            if (EntryClass.RowOffset >= EXTRAMIN && EntryClass.RowOffset <= EXTRAMAX)
-                            {                                
-                                EntryClass.IsTextInUse = true;                                
-                                EntryClass.EntryLabel.Content = "Text";
-                            }
-                        }
-                    }
-                }
-            }
-            
-            
+            StandardEditorMethods.UpdateEntryName(EntryClass);
 
 
 

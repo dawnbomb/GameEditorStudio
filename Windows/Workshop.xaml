@@ -513,7 +513,7 @@
                                                 <Border  DockPanel.Dock="Top">
                                                     <DockPanel>
                                                         <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
-                                                            <Label Content="Entry Notepad" FontWeight="Bold"/>
+                                                            <Label Content="Entry Tooltip" FontWeight="Bold"/>
                                                         </DockPanel>
                                                         <TextBox MinHeight="100" x:Name="EntryNoteTextbox" Margin="10" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextChanged="EntryNoteTextboxTextChanged"/>
                                                     </DockPanel>
