@@ -53,7 +53,7 @@ namespace GameEditorStudio
         // They are not saved to XML or reloaded 
 
         public Entry SelectedEntry { get; set; } //The entry the user is currently selecting. In DEV mode, This entry is highlighted.
-        public List<Entry>? EntryList { get; set; } = new(); //A master list to make it easy to make changes to all of them at once.
+        public List<Entry>? MasterEntryList { get; set; } = new(); //A master list to make it easy to make changes to all of them at once.
         public int TableRowIndex { get; set; } //Not XML, used to save data when changing items in a collection. It's equal to an ItemInfo's Index.        
         public DockPanel MainDockPanel { get; set; } //The right side's panel inside a scroll viewer.
     }
@@ -192,7 +192,15 @@ namespace GameEditorStudio
         public DockPanel? EntryDockPanel { get; set; } //The entrys Grid, visable to the used, and contains lots of information.
         public Label Symbology { get; set; }
         public Label EntryPrefix { get; set; }   //Used to show the byte offset to a user. Useful when creating an editor, and you don't know what things do yet.
-        public Label? EntryLabel { get; set; } //The name of an entry, appears on it's grid.
+        //public Label? EntryLabel { get; set; } //The name of an entry, appears on it's grid.
+        
+        /////////////////////The label
+        public Grid EntryLeftGrid { get; set; } = new ();
+        public Border UnderlineBorder { get; set; } = new();
+        public TextBlock EntryNameTextBlock { get; set; } = new(); //The textblock that shows the entry's name.
+        public Run RunEntryName { get; set; } = new(); //The run that shows the entry's name. This is used to change the color of the text, and to make it bold.
+        
+
 
         public Editor EntryEditor { get; set; }
         public Category EntryRow { get; set; }

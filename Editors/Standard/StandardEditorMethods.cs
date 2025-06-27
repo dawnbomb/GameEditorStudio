@@ -1,24 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace GameEditorStudio
 {
-    internal class StandardEditorMethods
+    public static class StandardEditorMethods
     {
 
-        public void CreateNewGroup(Entry EntryClass) 
+        public static void CreateNewGroup(Entry EntryClass) 
         {
             Column EntryColumn = EntryClass.EntryColumn;
 
 
         }
 
-        public void MoveEntrysToEntry(List<Entry> EntrysListToMove, Entry EntryToMoveUnder)
+        public static void MoveEntrysToEntry(List<Entry> EntrysListToMove, Entry EntryToMoveUnder)
         {
             if (EntrysListToMove.Contains(EntryToMoveUnder)) 
             {
@@ -52,7 +55,7 @@ namespace GameEditorStudio
 
         }
 
-        public void MoveEntrysToColumn(List<Entry> EntrysListToMove, Column Column) 
+        public static void MoveEntrysToColumn(List<Entry> EntrysListToMove, Column Column) 
         {
             Column BeforeColumn = EntrysListToMove[0].EntryColumn; //Save the column before we change it, so we can delete it later if needed.
             Column AfterColumn = Column; //Save the column after we change it, so we can delete it later if needed.
@@ -74,7 +77,7 @@ namespace GameEditorStudio
             LabelWidth(AfterColumn);
         }
 
-        public void EntryActivate(Workshop TheWorkshop, Entry EntryClass) 
+        public static void EntryActivate(Workshop TheWorkshop, Entry EntryClass) 
         {
             Editor EditorClass = EntryClass.EntryEditor;
 
@@ -106,7 +109,129 @@ namespace GameEditorStudio
             
         }
 
-        public void DeleteEmptyColumnsAndMakeNewOnes(StandardEditorData StandardEditorData)
+        public static void UpdateEntryName(Entry EntryClass) 
+        {
+            //add a option to properties where a entrys can have a Icon on the left side. for easy, universal, user styling / expression.
+            TextBlock EntryTextBlock = EntryClass.EntryNameTextBlock;
+            
+
+            EntryClass.EntryNameTextBlock = EntryTextBlock;
+
+            Run MainName = EntryClass.RunEntryName;
+            //MainName.VerticalAlignment = VerticalAlignment.Center;
+
+            if (EntryClass.IsNameHidden == false) { EntryClass.EntryNameTextBlock.Visibility = Visibility.Visible; }
+            EntryClass.EntryNameTextBlock.Visibility = Visibility.Visible;
+
+            if (EntryClass.IsNameHidden == true) 
+            {
+                MainName.Text = "";
+                EntryClass.EntryNameTextBlock.Visibility = Visibility.Collapsed;
+            }
+            else if (EntryClass.Name == "")
+            {
+                MainName.Text = "??? " + EntryClass.RowOffset;
+            }
+            else if (EntryClass.Name != "")
+            {
+                MainName.Text = EntryClass.Name;
+            }
+
+            
+            if (EntryClass.Notepad == "")
+            {
+                EntryClass.EntryLeftGrid.ToolTip = null;
+                EntryClass.UnderlineBorder.BorderThickness = new Thickness(0, 0, 0, 0);
+                //MainName.TextDecorations = null;
+            }
+            else //The underline system.
+            {
+                EntryClass.EntryLeftGrid.ToolTip = EntryClass.Notepad;
+                EntryClass.UnderlineBorder.BorderThickness = new Thickness(0, 0, 0, 2);
+                EntryClass.UnderlineBorder.Width = EntryTextBlock.Width;
+                //MainName.TextDecorations = TextDecorations.Underline;
+
+                var typeface = new Typeface(
+                    MainName.FontFamily,
+                    MainName.FontStyle,
+                    MainName.FontWeight,
+                    MainName.FontStretch
+                );
+
+                var formattedText = new FormattedText(
+                    MainName.Text,
+                    CultureInfo.CurrentCulture,
+                    FlowDirection.LeftToRight,
+                    typeface,
+                    MainName.FontSize,
+                    Brushes.Black,
+                    new NumberSubstitution(),
+                    1
+                );
+
+                EntryClass.UnderlineBorder.Width = formattedText.Width;
+
+            }
+
+            //////////////This below part is for already used stuff.
+            Editor EditorClass = EntryClass.EntryEditor;
+            Workshop TheWorkshop = EditorClass.Workshop;
+
+
+            //This last code auto-sets entrys to hidden if the entry's byte is also apart of a text table.
+            //I may want to change this to happen if its ANY known text table.
+            if (EditorClass.StandardEditorData.FileNameTable != null) //Happens when a table uses a user name list instead of from a game file.
+            {
+                if (EditorClass.StandardEditorData.FileNameTable.FileLocation != null)
+                {
+                    if (EditorClass.StandardEditorData.FileNameTable.FileLocation == EditorClass.StandardEditorData.FileDataTable.FileLocation)
+                    {
+                        int Min = EditorClass.StandardEditorData.DataTableStart;
+                        int Max = Min + EditorClass.StandardEditorData.DataTableRowSize;
+                        if (EditorClass.StandardEditorData.NameTableStart >= Min && EditorClass.StandardEditorData.NameTableStart <= Max)
+                        {
+                            int NAMEMIN = EditorClass.StandardEditorData.NameTableStart - EditorClass.StandardEditorData.DataTableStart;
+                            int NAMEMAX = NAMEMIN + EditorClass.StandardEditorData.NameTableTextSize - 1;//the 1st byte is "0", so we need a -1 for proper counting.
+                            if (EntryClass.RowOffset >= NAMEMIN && EntryClass.RowOffset <= NAMEMAX)
+                            {
+                                EntryClass.IsTextInUse = true;
+                                MainName.Text = "Name";
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            if (TheWorkshop.IsPreviewMode == false)
+            {
+                foreach (DescriptionTable ExtraTable in EditorClass.StandardEditorData.DescriptionTableList)
+                {
+                    if (EditorClass.StandardEditorData.FileDataTable.FileLocation == ExtraTable.FileTextTable.FileLocation)
+                    {
+                        int Min = EditorClass.StandardEditorData.DataTableStart;
+                        int Max = Min + EditorClass.StandardEditorData.DataTableRowSize;
+                        if (ExtraTable.Start >= Min && ExtraTable.Start <= Max)
+                        {
+                            int EXTRAMIN = ExtraTable.Start - EditorClass.StandardEditorData.DataTableStart;
+                            int EXTRAMAX = EXTRAMIN + ExtraTable.TextSize - 1;//the 1st byte is "0", so we need a -1 for proper counting.
+                            if (EntryClass.RowOffset >= EXTRAMIN && EntryClass.RowOffset <= EXTRAMAX)
+                            {
+                                EntryClass.IsTextInUse = true;
+                                MainName.Text = "Text";
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            LabelWidth(EntryClass.EntryColumn);
+
+
+        }
+
+        public static void DeleteEmptyColumnsAndMakeNewOnes(StandardEditorData StandardEditorData)
         {
             foreach (Category CatClass in StandardEditorData.CategoryList.ToList()) //Delete any empty columns in each category.
             {
@@ -133,7 +258,7 @@ namespace GameEditorStudio
         }
 
 
-        public void LabelWidth(Column ColumnClass)
+        public static void LabelWidth(Column ColumnClass)
         {
 
 
@@ -143,9 +268,9 @@ namespace GameEditorStudio
             // Measure the desired width of each label without restrictions
             foreach (Entry entry in EntryList)
             {
-                entry.EntryLabel.MinWidth = 0;
-                entry.EntryLabel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                double labelWidth = entry.EntryLabel.DesiredSize.Width;
+                entry.EntryNameTextBlock.MinWidth = 0;
+                entry.EntryNameTextBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                double labelWidth = entry.EntryNameTextBlock.DesiredSize.Width;
                 if (labelWidth > maxWidth)
                 {
                     maxWidth = labelWidth;
@@ -155,7 +280,7 @@ namespace GameEditorStudio
             // Set the MinWidth of each label to the widest value
             foreach (Entry entry in EntryList)
             {
-                entry.EntryLabel.MinWidth = maxWidth;
+                entry.EntryNameTextBlock.MinWidth = maxWidth;
             }
         }
 

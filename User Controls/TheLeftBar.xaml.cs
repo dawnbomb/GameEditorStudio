@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -440,44 +441,40 @@ namespace GameEditorStudio
         private void UpdateItem() 
         {
             if (TheWorkshop.IsPreviewMode == true) { return; }
-
             TreeViewItem selectedItem = EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.SelectedItem as TreeViewItem;
-            if (selectedItem != null && selectedItem.Tag != null)
+            if (selectedItem == null && selectedItem.Tag == null) { return; }
+
+            ItemInfo ItemInfo = selectedItem.Tag as ItemInfo;
+
+            ItemInfo.ItemName = ItemNameTextbox.Text;
+            ItemInfo.ItemNote = ItemNoteTextbox.Text;
+            TheWorkshop.ItemNameBuilder(selectedItem);
+
+            if (EditorClass.StandardEditorData.NameTableLinkType != StandardEditorData.NameTableLinkTypes.Nothing)
             {
-                ItemInfo ItemInfo = selectedItem.Tag as ItemInfo;
-
-                ItemInfo.ItemName = ItemNameTextbox.Text;
-                ItemInfo.ItemNote = ItemNoteTextbox.Text;
-                TheWorkshop.ItemNameBuilder(selectedItem);
-
-                if (EditorClass.StandardEditorData.NameTableLinkType != StandardEditorData.NameTableLinkTypes.Nothing)
+                if (ItemInfo.IsFolder == false && EditorClass.StandardEditorData.FileNameTable.FileLocation != "" && EditorClass.StandardEditorData.FileNameTable.FileLocation != null) //The NameTableFilePath check prevents crashing when saving a note when the editor gets names from user instead of from file.
                 {
-                    if (ItemInfo.IsFolder == false && EditorClass.StandardEditorData.FileNameTable.FileLocation != "" && EditorClass.StandardEditorData.FileNameTable.FileLocation != null) //The NameTableFilePath check prevents crashing when saving a note when the editor gets names from user instead of from file.
-                    {
-                        CharacterSetManager CharacterSetManager = new();
-                        CharacterSetManager.Encode(TheWorkshop, EditorClass, "Item", ItemInfo);
-                    }
+                    CharacterSetManager CharacterSetManager = new();
+                    CharacterSetManager.Encode(TheWorkshop, EditorClass, "Item", ItemInfo);
                 }
+            }
 
-                foreach (var TheEditor in Database.GameEditors)  //This code chunk is my ultra lazy way to update every Dropdown & List across all editors the moment any item changes its name incase that data is used in them.
+            foreach (var TheEditor in Database.GameEditors)  //This code chunk is my ultra lazy way to update every Dropdown & List across all editors the moment any item changes its name incase that data is used in them.
+            {
+                foreach (var Cats in TheEditor.Value.StandardEditorData.CategoryList)
                 {
-                    foreach (var Cats in TheEditor.Value.StandardEditorData.CategoryList)
+                    foreach (var Grops in Cats.ColumnList)
                     {
-                        foreach (var Grops in Cats.ColumnList)
+                        foreach (var EndEntry in Grops.EntryList)
                         {
-                            foreach (var EndEntry in Grops.EntryList)
+                            if (EndEntry.NewSubType == EntrySubTypes.Menu)
                             {
-                                if (EndEntry.NewSubType == EntrySubTypes.Menu)
-                                {                                    
 
-                                    Database.EntryManager.EntryChange(Database, EntrySubTypes.Menu, TheWorkshop, EndEntry);
-                                }
+                                Database.EntryManager.EntryChange(Database, EntrySubTypes.Menu, TheWorkshop, EndEntry);
                             }
                         }
                     }
                 }
-
-
             }
 
 
@@ -490,13 +487,14 @@ namespace GameEditorStudio
             TreeViewItem selectedItem = EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.SelectedItem as TreeViewItem;
             if (selectedItem != null)
             {
-                selectedItem.ToolTip = ItemNotepadTextbox.Text;
+                //selectedItem.ToolTip = ItemNotepadTextbox.Text;
                 // Get the selected ItemInfo class
                 ItemInfo selectedInfo = selectedItem.Tag as ItemInfo;
                 if (selectedInfo != null)
                 {
                     // Update the Name property with the text from the TextBox
                     selectedInfo.ItemNotepad = ItemNotepadTextbox.Text;
+                    TheWorkshop.ItemNameBuilder(selectedItem);
                 }
             }
         }
@@ -509,75 +507,59 @@ namespace GameEditorStudio
             {
                 var selectedItem = e.NewValue as TreeViewItem;
                 ItemInfo data = selectedItem.Tag as ItemInfo;
-                EntryManager EManager = new();                
+                EntryManager EManager = new();
+
+                if (TheWorkshop.IsPreviewMode == false)
+                {
+                    EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNameTextBox.Text = data.ItemName.TrimEnd('\0');
+                    UpdateNameCharacterCount();
+                }
+
+                EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNoteTextbox.Text = data.ItemNote;
+                EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNotepadTextbox.Text = data.ItemNotepad;
+
+                if (EditorClass.StandardEditorData.DescriptionTableList.Count > 0)
+                {
+                    CharacterSetManager CharacterSetManager = new();
+                    CharacterSetManager.DecodeDescriptions(TheWorkshop, EditorClass);
+                }
 
                 if (selectedItem.Items.Count == 0) //This might cause bugs later with 0 child folders.
                 {
                     EditorClass.StandardEditorData.TableRowIndex = data.ItemIndex;
 
-                    foreach (var cat in EditorClass.StandardEditorData.CategoryList)
+                    for (int i = 0; i < EditorClass.StandardEditorData.MasterEntryList.Count; i++) //Changed from a foreach to a for loop, it reduced vesperia items load time from 6700ms to 6300ms. 
                     {
-                        foreach (var column in cat.ColumnList)
+                        Entry entry = EditorClass.StandardEditorData.MasterEntryList[i];
+
+                        if (entry.NewSubType == Entry.EntrySubTypes.NumberBox)
                         {
-                            foreach (var entry in column.EntryList)
-                            {
-                                if (entry.NewSubType == Entry.EntrySubTypes.NumberBox)
-                                {
-                                    entry.EntryTypeNumberBox.NumberBoxCanSave = false;
-                                }
+                            entry.EntryTypeNumberBox.NumberBoxCanSave = false;
+                        }
+                        
+                        EManager.LoadEntry(TheWorkshop, EditorClass, entry);
 
-                                //if (FirstTime == false)
-                                //{
-                                //    EManager.SaveEntry(EditorClass, entry);
+                        if (FirstTime == false)
+                        {
+                            //EManager.UpdateEntryProperties(TheWorkshop, EditorClass);
+                            EManager.UpdateEntryHexProperties(TheWorkshop, EditorClass);
+                        }
 
-                                //}
-                                EManager.LoadEntry(TheWorkshop, EditorClass, entry);
-                                if (FirstTime == false)
-                                {
-                                    EManager.UpdateEntryProperties(TheWorkshop, EditorClass);
-                                }
-
-                                if (entry.NewSubType == Entry.EntrySubTypes.NumberBox)
-                                {
-                                    entry.EntryTypeNumberBox.NumberBoxCanSave = true;
-                                }
-
-
-                            }
+                        if (entry.NewSubType == Entry.EntrySubTypes.NumberBox)
+                        {
+                            entry.EntryTypeNumberBox.NumberBoxCanSave = true;
                         }
                     }
+                    
 
                     //TheWorkshop.EntryProperties.Visibility = Visibility.Collapsed;
                     //TheWorkshop.ItemProperties.Visibility = Visibility.Visible;
                     FirstTime = false;
                 }
-
-                if (TheWorkshop.IsPreviewMode == false) 
-                { 
-                    EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNameTextBox.Text = data.ItemName.TrimEnd('\0');
-                    UpdateNameCharacterCount();                    
-                }
-
-                EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNoteTextbox.Text = data.ItemNote;
-
-                EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNotepadTextbox.Text = data.ItemNotepad;
-
-                if (EditorClass.StandardEditorData.DescriptionTableList.Count > 0)
-                {                   
-                    CharacterSetManager CharacterSetManager = new();
-                    CharacterSetManager.DecodeDescriptions(TheWorkshop, EditorClass);    
-                    
-                }
-
                 
                 //TranslationsPanel translationsPanel = this.TranslationsPanel;
                 //await translationsPanel.UpdateTranslationsPanel(data);
-
-                //foreach (ExtraTable ExtraTable in ) 
-                //{
-                //    //Decode, then fill textbox.
-                //}
-
+                                
 
             } //End of If selection is enabled.
 

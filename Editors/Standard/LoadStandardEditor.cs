@@ -144,7 +144,8 @@ namespace GameEditorStudio
 
                 Entry EntryClass = new();
                 ColumnClass.EntryList.Add(EntryClass);
-                
+                EditorClass.StandardEditorData.MasterEntryList.Add(EntryClass); 
+
                 EntryClass.DataTableRowSize = Int32.Parse(Maker.TextBoxDataTableRowSize.Text);
                 EntryClass.RowOffset = i;
                 EntryClass.TableKey = EditorClass.StandardEditorData.TableKey;
@@ -319,6 +320,7 @@ namespace GameEditorStudio
                     {
 
                         Entry EntryClass = new();
+                        EditorClass.StandardEditorData.MasterEntryList.Add(EntryClass);
 
                         EntryClass.Name = Xentry.Element("Name")?.Value;
                         EntryClass.Notepad = Xentry.Element("Notepad")?.Value;

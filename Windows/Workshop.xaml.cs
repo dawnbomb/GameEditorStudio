@@ -1184,43 +1184,51 @@ namespace GameEditorStudio
         {
             ItemInfo ItemInfo = TreeItem.Tag as ItemInfo;
             TextBlock TextBlockItem = new TextBlock();
-            Run run1 = new Run();
-            if (Properties.Settings.Default.ShowItemIndex == true)
+
+            if (ItemInfo.IsFolder == false)
             {
-                run1.Text = ItemInfo.ItemIndex + ": " + ItemInfo.ItemName + " ";
+                if (Properties.Settings.Default.ShowItemIndex == true)
+                {
+                    Run RunIndex = new Run();
+                    RunIndex.Text = ItemInfo.ItemIndex + ": ";
+                    TextBlockItem.Inlines.Add(RunIndex);
+                }                
+
+                
             }
-            else if (Properties.Settings.Default.ShowItemIndex == false)
-            {
-                run1.Text = ItemInfo.ItemName + " ";
-            }
+
             if (ItemInfo.IsFolder == true)
             {
-                Run runFolder = new Run();
-                runFolder.Foreground = Brushes.Yellow;
-                runFolder.Text = "📁 ";
-                run1.Text = ItemInfo.ItemName + " "; //We never show the index of a folder.
-                TextBlockItem.Inlines.Add(runFolder);
+                Run RunFolder = new Run();
+                RunFolder.Foreground = Brushes.Yellow;
+                RunFolder.Text = "📁 ";
+                TextBlockItem.Inlines.Add(RunFolder);
+
+                Run RunFolderCount = new Run();
+                RunFolderCount.Text = "(" + TreeItem.Items.Count.ToString() + ") ";
+                TextBlockItem.Inlines.Add(RunFolderCount);
             }
 
-            Run run2 = new Run();
-            string sdf = TreeItem.Items.Count.ToString();
-            run2.Text = "(" + sdf + ")";
+            Run RunMain = new Run();
+            RunMain.Text = ItemInfo.ItemName;
+            TextBlockItem.Inlines.Add(RunMain);
 
+            Run RunNote = new Run();
+            RunNote.Text = " " + ItemInfo.ItemNote;
+            RunNote.Foreground = Brushes.Orange; // Set the foreground to red   DeepSkyBlue
+            TextBlockItem.Inlines.Add(RunNote);
 
-            // Create the second part of the text
-            Run run3 = new Run();
-            run3.Text = ItemInfo.ItemNote;
-            run3.Foreground = Brushes.Orange; // Set the foreground to red   DeepSkyBlue
+            if (ItemInfo.ItemNotepad == "")
+            {
+                TreeItem.ToolTip = null;
+                RunMain.TextDecorations = null;
 
-            // Add the runs to the text block
-            TextBlockItem.Inlines.Add(run1);
-            if (ItemInfo.IsFolder == true) { TextBlockItem.Inlines.Add(run2); }
-            TextBlockItem.Inlines.Add(run3);
-
-
-            
-
-            if (ItemInfo.ItemNotepad != "") { TreeItem.ToolTip = ItemInfo.ItemNotepad; }
+            }
+            if (ItemInfo.ItemNotepad != "") 
+            { 
+                TreeItem.ToolTip = ItemInfo.ItemNotepad;
+                RunMain.TextDecorations = TextDecorations.Underline;
+            }
 
 
             TreeItem.Header = TextBlockItem;
@@ -1484,33 +1492,7 @@ namespace GameEditorStudio
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////ENTRY PROPERTIES//////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        public void LabelWidth(Column ColumnClass)
-        {
-            
-
-            double maxWidth = 0;
-            var EntryList = ColumnClass.EntryList;
-
-            // Measure the desired width of each label without restrictions
-            foreach (Entry entry in EntryList)
-            {
-                entry.EntryLabel.MinWidth = 0;
-                entry.EntryLabel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                double labelWidth = entry.EntryLabel.DesiredSize.Width;
-                if (labelWidth > maxWidth)
-                {
-                    maxWidth = labelWidth;
-                }
-            }
-
-            // Set the MinWidth of each label to the widest value
-            foreach (Entry entry in EntryList)
-            {
-                entry.EntryLabel.MinWidth = maxWidth;
-            }
-        }
-                
+  
 
         private void PropertiesEntryNameBox_KeyDown(object sender, KeyEventArgs e)
         {
@@ -1526,32 +1508,59 @@ namespace GameEditorStudio
 
         public void UpdateEntryName(Entry TheEntry) 
         {
-            if (EntryClass.Name == "")
-            {
-                EntryClass.EntryLabel.Content = "??? " + TheEntry.RowOffset;
-            }
-            if (EntryClass.Name != "") 
-            {
-                EntryClass.EntryLabel.Content = PropertiesNameBox.Text;
-            }
-            
+            //if (EntryClass.Name == "")
+            //{
+            //    EntryClass.EntryLabel.Content = "??? " + TheEntry.RowOffset;
+            //}
+            //if (EntryClass.Name != "") 
+            //{
+            //    EntryClass.EntryLabel.Content = PropertiesNameBox.Text;
+            //}
+
+            //if (ItemInfo.ItemNotepad == "")
+            //{
+            //    TreeItem.ToolTip = null;
+            //    run1.TextDecorations = null;
+
+            //}
+            //if (ItemInfo.ItemNotepad != "")
+            //{
+            //    TreeItem.ToolTip = ItemInfo.ItemNotepad;
+            //    run1.TextDecorations = TextDecorations.Underline;
+            //}
+
+            //if (EntryClass.Notepad == "")
+            //{
+            //    EntryClass.EntryLabel.ToolTip = null;
+            //}
+            //else //if (EntryClass.Name != "")
+            //{
+            //    EntryClass.EntryLabel.ToolTip = EntryClass.Notepad;
+            //    //EntryClass.EntryLabel.
+            //}
+
 
             MyDatabase.EntryManager.LoadEntry(this, EditorClass, EntryClass);
-            Dispatcher.InvokeAsync(() => LabelWidth(EntryClass.EntryColumn), System.Windows.Threading.DispatcherPriority.Loaded);
-            LabelWidth(EntryClass.EntryColumn);
+
+            StandardEditorMethods.UpdateEntryName(EntryClass);
+
+            Dispatcher.InvokeAsync(() => StandardEditorMethods.LabelWidth(EntryClass.EntryColumn), System.Windows.Threading.DispatcherPriority.Loaded);
+            StandardEditorMethods.LabelWidth(EntryClass.EntryColumn);
         }
         
 
         private void HideNameCheckboxChecked(object sender, RoutedEventArgs e)
         {
             EntryClass.IsNameHidden = true;
-            EntryClass.EntryLabel.Visibility = Visibility.Collapsed;
+            StandardEditorMethods.UpdateEntryName(EntryClass);
+            //EntryClass.EntryLabel.Visibility = Visibility.Collapsed;
         }
 
         private void HideNameCheckboxUnchecked(object sender, RoutedEventArgs e)
         {
             EntryClass.IsNameHidden = false;
-            EntryClass.EntryLabel.Visibility = Visibility.Visible;
+            StandardEditorMethods.UpdateEntryName(EntryClass);
+            //EntryClass.EntryLabel.Visibility = Visibility.Visible;
         }
 
         private void HideEntryCheckboxChecked(object sender, RoutedEventArgs e)
@@ -2250,6 +2259,7 @@ namespace GameEditorStudio
         {
             if (EditorClass == null) { return; }
             EditorClass.StandardEditorData.SelectedEntry.Notepad = EntryNoteTextbox.Text;
+            StandardEditorMethods.UpdateEntryName(EditorClass.StandardEditorData.SelectedEntry);
         }
 
         private void PropertiesMenuType_DropDownClosed(object sender, EventArgs e)

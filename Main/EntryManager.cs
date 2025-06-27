@@ -486,7 +486,7 @@ namespace GameEditorStudio
 
         public void CreateNumberBox(Workshop TheWorkshop, Entry EntryClass)
         {
-            if (EntryClass.IsNameHidden == false) { EntryClass.EntryLabel.Visibility = Visibility.Visible; }
+            //if (EntryClass.IsNameHidden == false) { EntryClass.EntryNameTextBlock.Visibility = Visibility.Visible; }
             // Default properties if new
             if (EntryClass.EntryTypeNumberBox == null)
             {
@@ -614,7 +614,7 @@ namespace GameEditorStudio
 
         public void CreateCheckBox(Workshop TheWorkshop, Entry EntryClass)
         {
-            if (EntryClass.IsNameHidden == false) { EntryClass.EntryLabel.Visibility = Visibility.Visible; }
+            //if (EntryClass.IsNameHidden == false) { EntryClass.EntryNameTextBlock.Visibility = Visibility.Visible; }
 
             //Default properties if new
             if (EntryClass.EntryTypeCheckBox == null)
@@ -666,7 +666,7 @@ namespace GameEditorStudio
 
         public void CreateBitFlag(Workshop TheWorkshop, Entry EntryClass)
         {
-            EntryClass.EntryLabel.Visibility = Visibility.Collapsed;
+            EntryClass.EntryNameTextBlock.Visibility = Visibility.Collapsed;
 
             if (EntryClass.EntryTypeBitFlag == null)
             {
@@ -1099,7 +1099,7 @@ namespace GameEditorStudio
 
         public void CreateMenu(Entry EntryClass, Workshop TheWorkshop)
         {
-            if (EntryClass.IsNameHidden == false) { EntryClass.EntryLabel.Visibility = Visibility.Visible; }
+            if (EntryClass.IsNameHidden == false) { EntryClass.EntryNameTextBlock.Visibility = Visibility.Visible; }
             //Default properties if new
             if (EntryClass.EntryTypeMenu == null)
             {
@@ -1695,20 +1695,116 @@ namespace GameEditorStudio
         }
 
 
-        public void UpdateEntryProperties(Workshop TheWorkshop ,Editor EditorClass) //very similuar, but also happens when treeview item selection changes.
+        public void UpdateEntryProperties(Workshop TheWorkshop ,Editor EditorClass) 
         {
+            //This used to happen on tree view selection change, but it caused a shit ton of lag. Now it doesn't. if my program starts lagging again, consider if this is responsible! >:(
+
             if (TheWorkshop.IsPreviewMode == true) { return; }
+            LibraryMan.GotoGeneralEntry(TheWorkshop);
 
             Entry EntryClass = EditorClass.StandardEditorData.SelectedEntry;
-
-            
-
-            LibraryMan.GotoGeneralEntry(TheWorkshop);
-            TheWorkshop.PropertiesNameBox.Text = EntryClass.Name;
+            //////////////////////////////////////Workship Update//////////////////////////////////////////
             TheWorkshop.EditorClass = EntryClass.EntryEditor;
             TheWorkshop.CategoryClass = EntryClass.EntryRow;
             TheWorkshop.ColumnClass = EntryClass.EntryColumn;
             TheWorkshop.EntryClass = EntryClass;
+
+            //////////////////////////////////////Right Bar Settings Update//////////////////////////////////////////
+            TheWorkshop.PropertiesNameBox.Text = EntryClass.Name;   
+            
+            if (EntryClass.IsNameHidden == true) 
+            {
+                TheWorkshop.HideNameCheckbox.IsChecked = true;
+            }
+            else 
+            {
+                TheWorkshop.HideNameCheckbox.IsChecked = false;
+            }
+
+            if (EntryClass.IsEntryHidden == true)
+            {
+                TheWorkshop.HideEntryCheckbox.IsChecked = true;
+            }
+            else
+            {
+                TheWorkshop.HideEntryCheckbox.IsChecked = false;
+            }            
+
+            string FindEntryType = EntryClass.NewSubType.ToString();  //Entry Type Dropdown Menu.
+            foreach (ComboBoxItem item in TheWorkshop.PropertiesEntryType.Items)
+            {
+                if (item.Content.ToString() == FindEntryType)
+                {
+                    TheWorkshop.PropertiesEntryType.SelectedItem = item;
+                    break;
+                }
+            }
+
+
+            string FindEntryByteSize = "Dummy"; //Entry Size Dropdown Menu.
+            if (EntryClass.Endianness == "1") { FindEntryByteSize = "1 Byte"; } 
+            else if (EntryClass.Endianness == "2L") { FindEntryByteSize = "2 Bytes Little Endian"; }
+            else if (EntryClass.Endianness == "4L") { FindEntryByteSize = "4 Bytes Little Endian"; }
+            else if (EntryClass.Endianness == "2B") { FindEntryByteSize = "2 Bytes Big Endian"; }
+            else if (EntryClass.Endianness == "4B") { FindEntryByteSize = "4 Bytes Big Endian"; }
+            foreach (ComboBoxItem item in TheWorkshop.PropertiesEntryByteSizeComboBox.Items)
+            {
+                if (item.Content.ToString() == FindEntryByteSize)
+                {
+                    TheWorkshop.PropertiesEntryByteSizeComboBox.SelectedItem = item;
+                    break;
+                }
+            }
+
+
+            //////////////////////////////////////Right Bar Submenu Settings Update//////////////////////////////////////////
+            if (EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox)
+            {                
+                if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Unsigned) { TheWorkshop.NumberboxSignCheckbox.IsChecked = false; }
+                if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Signed) { TheWorkshop.NumberboxSignCheckbox.IsChecked = true; }                
+            }
+
+            if (EntryClass.NewSubType == Entry.EntrySubTypes.CheckBox) 
+            {
+                TheWorkshop.PropertiesEntryCheckText.Text = EntryClass.EntryTypeCheckBox.TrueText;
+                TheWorkshop.PropertiesEntryUncheckText.Text = EntryClass.EntryTypeCheckBox.FalseText;
+            }
+
+            if (EntryClass.NewSubType == Entry.EntrySubTypes.BitFlag) 
+            {
+                TheWorkshop.PropertiesEntryBitFlag1Name.Text = EntryClass.EntryTypeBitFlag.BitFlag1Name;
+                TheWorkshop.PropertiesEntryBitFlag2Name.Text = EntryClass.EntryTypeBitFlag.BitFlag2Name;
+                TheWorkshop.PropertiesEntryBitFlag3Name.Text = EntryClass.EntryTypeBitFlag.BitFlag3Name;
+                TheWorkshop.PropertiesEntryBitFlag4Name.Text = EntryClass.EntryTypeBitFlag.BitFlag4Name; 
+                TheWorkshop.PropertiesEntryBitFlag5Name.Text = EntryClass.EntryTypeBitFlag.BitFlag5Name;
+                TheWorkshop.PropertiesEntryBitFlag6Name.Text = EntryClass.EntryTypeBitFlag.BitFlag6Name;
+                TheWorkshop.PropertiesEntryBitFlag7Name.Text = EntryClass.EntryTypeBitFlag.BitFlag7Name;
+                TheWorkshop.PropertiesEntryBitFlag8Name.Text = EntryClass.EntryTypeBitFlag.BitFlag8Name;
+            }
+
+
+            if (EntryClass.NewSubType == Entry.EntrySubTypes.Menu)
+            {
+                TheWorkshop.DropdownMenuType.IsEnabled = true;
+                if (EntryClass.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.Dropdown) { TheWorkshop.MenuTypeItemDropdown.IsSelected = true; }
+                else if (EntryClass.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List) { TheWorkshop.MenuTypeItemList.IsSelected = true; }
+            }
+            else //failsafe
+            { 
+                TheWorkshop.DropdownMenuType.IsEnabled = false; 
+            }
+
+            //////////////////////////////////////Right Bar Hex Data Update//////////////////////////////////////////
+            UpdateEntryHexProperties(TheWorkshop, EditorClass);
+
+            //////////////////////////////////////END//////////////////////////////////////////
+            TheWorkshop.UpdateSymbology(EntryClass);
+
+        } //End of UpdateEntryProperties Method
+
+        public void UpdateEntryHexProperties(Workshop TheWorkshop, Editor EditorClass) 
+        {
+            Entry EntryClass = EditorClass.StandardEditorData.SelectedEntry;
 
             TheWorkshop.PropertiesEntryHexAddressTextbox.Text = (EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("X2");
 
@@ -1716,13 +1812,14 @@ namespace GameEditorStudio
 
 
             /////////////////////Data Analyzer/////////////////////
-            TheWorkshop.PropertiesEntry1Byte.Text = EditorClass.StandardEditorData.FileDataTable.FileBytes[EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
+            //TheWorkshop.PropertiesEntry1Byte.Text = EditorClass.StandardEditorData.FileDataTable.FileBytes[EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
+            TheWorkshop.PropertiesEntry1Byte.Text = EntryClass.EntryByteDecimal;
             TheWorkshop.PropertiesEntryHex1Byte.Text = EditorClass.StandardEditorData.FileDataTable.FileBytes[EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("X2");
 
-            TheWorkshop.PropertiesEntry1Byte.Text = EntryClass.EntryByteDecimal;
 
 
-            try 
+
+            try
             {
                 TheWorkshop.PropertiesEntry2ByteB.Text = BitConverter.ToUInt16(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
                 TheWorkshop.PropertiesEntryHex2ByteB.Text = BitConverter.ToUInt16(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("X4");
@@ -1731,7 +1828,7 @@ namespace GameEditorStudio
                 ushort swappedValue2 = (ushort)IPAddress.HostToNetworkOrder((short)value2); // Swap the endianness
                 TheWorkshop.PropertiesEntry2ByteL.Text = swappedValue2.ToString("D"); // Convert the swapped value4 to a string using the desired format
                 TheWorkshop.PropertiesEntryHex2ByteL.Text = swappedValue2.ToString("X4"); // Convert the swapped value4 to a string using the desired format
-            } 
+            }
             catch
             {
                 TheWorkshop.PropertiesEntry2ByteB.Text = "END OF FILE";
@@ -1739,7 +1836,7 @@ namespace GameEditorStudio
                 TheWorkshop.PropertiesEntry2ByteL.Text = "END OF FILE";
                 TheWorkshop.PropertiesEntryHex2ByteL.Text = "END OF FILE";
             }
-            
+
             try
             {
                 TheWorkshop.PropertiesEntry4ByteB.Text = BitConverter.ToUInt32(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
@@ -1759,135 +1856,7 @@ namespace GameEditorStudio
                 TheWorkshop.PropertiesEntry4ByteL.Text = "END OF FILE";
                 TheWorkshop.PropertiesEntryHex4ByteL.Text = "END OF FILE";
             }
-
-
-
-            /////////////////////Checkboxes and Bitflags/////////////////////
-
-
-
-            //The Editor.SelectedEntry 
-
-
-
-
-
-
-
-            //////////////////////////////////////Entry Data / Various Dropdown Menus//////////////////////////////////////////
-
-
-            if (EntryClass.IsNameHidden == true) 
-            {
-                TheWorkshop.HideNameCheckbox.IsChecked = true;
-            }
-            else 
-            {
-                TheWorkshop.HideNameCheckbox.IsChecked = false;
-            }
-
-            if (EntryClass.IsEntryHidden == true)
-            {
-                TheWorkshop.HideEntryCheckbox.IsChecked = true;
-            }
-            else
-            {
-                TheWorkshop.HideEntryCheckbox.IsChecked = false;
-            }
-
-            //Entry.EntrySubTypes.NumberBox
-
-            string FindEntryType = EntryClass.NewSubType.ToString();  //Entry Type Dropdown Menu.
-            foreach (ComboBoxItem item in TheWorkshop.PropertiesEntryType.Items)
-            {
-                if (item.Content.ToString() == FindEntryType)
-                {
-                    TheWorkshop.PropertiesEntryType.SelectedItem = item;
-                    break;
-                }
-            }
-            //string FindEntryType = EntryClass.SubType;  //Entry Type Dropdown Menu.
-            //foreach (ComboBoxItem item in TheWorkshop.PropertiesEntryType.Items)
-            //{
-            //    if (item.Content.ToString() == FindEntryType)
-            //    {
-            //        TheWorkshop.PropertiesEntryType.SelectedItem = item;
-            //        break;
-            //    }
-            //}
-
-
-            string FindEntryByteSize = "Dummy"; //Entry Size Dropdown Menu.
-            if (EntryClass.Endianness == "1") { FindEntryByteSize = "1 Byte"; } 
-            else if (EntryClass.Endianness == "2L") { FindEntryByteSize = "2 Bytes Little Endian"; }
-            else if (EntryClass.Endianness == "4L") { FindEntryByteSize = "4 Bytes Little Endian"; }
-            else if (EntryClass.Endianness == "2B") { FindEntryByteSize = "2 Bytes Big Endian"; }
-            else if (EntryClass.Endianness == "4B") { FindEntryByteSize = "4 Bytes Big Endian"; }
-            foreach (ComboBoxItem item in TheWorkshop.PropertiesEntryByteSizeComboBox.Items)
-            {
-                if (item.Content.ToString() == FindEntryByteSize)
-                {
-                    TheWorkshop.PropertiesEntryByteSizeComboBox.SelectedItem = item;
-                    break;
-                }
-            }
-
-
-
-
-
-
-
-            //////////////////////////////////////Settings Per Entry Type//////////////////////////////////////////
-            TheWorkshop.DropdownMenuType.IsEnabled = false;  //failsafe
-
-
-            if (EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox)
-            {
-                
-                if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Unsigned) { TheWorkshop.NumberboxSignCheckbox.IsChecked = false; }
-                if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Signed) { TheWorkshop.NumberboxSignCheckbox.IsChecked = true; }
-                
-            }
-
-
-
-
-            if (EntryClass.NewSubType == Entry.EntrySubTypes.CheckBox) 
-            {
-                TheWorkshop.PropertiesEntryCheckText.Text = EntryClass.EntryTypeCheckBox.TrueText;
-                TheWorkshop.PropertiesEntryUncheckText.Text = EntryClass.EntryTypeCheckBox.FalseText;
-
-            }
-
-
-            if (EntryClass.NewSubType == Entry.EntrySubTypes.BitFlag) 
-            {
-                TheWorkshop.PropertiesEntryBitFlag1Name.Text = EntryClass.EntryTypeBitFlag.BitFlag1Name;
-                TheWorkshop.PropertiesEntryBitFlag2Name.Text = EntryClass.EntryTypeBitFlag.BitFlag2Name;
-                TheWorkshop.PropertiesEntryBitFlag3Name.Text = EntryClass.EntryTypeBitFlag.BitFlag3Name;
-                TheWorkshop.PropertiesEntryBitFlag4Name.Text = EntryClass.EntryTypeBitFlag.BitFlag4Name;               
-                
-                TheWorkshop.PropertiesEntryBitFlag5Name.Text = EntryClass.EntryTypeBitFlag.BitFlag5Name;
-                TheWorkshop.PropertiesEntryBitFlag6Name.Text = EntryClass.EntryTypeBitFlag.BitFlag6Name;
-                TheWorkshop.PropertiesEntryBitFlag7Name.Text = EntryClass.EntryTypeBitFlag.BitFlag7Name;
-                TheWorkshop.PropertiesEntryBitFlag8Name.Text = EntryClass.EntryTypeBitFlag.BitFlag8Name;
-            }
-
-
-            if (EntryClass.NewSubType == Entry.EntrySubTypes.Menu) 
-            {
-                TheWorkshop.DropdownMenuType.IsEnabled = true;
-                if (EntryClass.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.Dropdown) { TheWorkshop.MenuTypeItemDropdown.IsSelected = true; }
-                else if (EntryClass.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List) { TheWorkshop.MenuTypeItemList.IsSelected = true; }
-                
-                
-            }
-
-            TheWorkshop.UpdateSymbology(EntryClass);
-
-
-        } //End of UpdateEntryProperties Method
+        }
 
 
 
