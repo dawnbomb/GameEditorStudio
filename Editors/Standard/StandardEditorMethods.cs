@@ -22,7 +22,8 @@ namespace GameEditorStudio
             EntryColumn.ColumnPanel.Children.Remove(EntryClass.EntryBorder); //Remove the entry from the column, so we can add it to the group.
 
             Group NewGroup = new();
-            NewGroup.GroupColumn = EntryColumn; 
+            NewGroup.GroupColumn = EntryColumn;
+            EntryColumn.MasterList.Add(NewGroup); //Add the new group to the column's master list.
 
             Border GroupBorder = NewGroup.GroupBorder;
             GroupBorder.Margin = new Thickness(0, 0, 0, 0);
@@ -97,13 +98,13 @@ namespace GameEditorStudio
 
             foreach (Entry EntryToMove in EntrysListToMove) 
             {
-                if (EntryToMove.EntryGroup != null) //If the entry is in a group, remove it from the group.
+                if (EntryToMove.EntryGroup != null) //FROM GROUP.
                 {
                     EntryToMove.EntryGroup.GroupPanel.Children.Remove(EntryToMove.EntryBorder);
                     EntryToMove.EntryGroup.EntryList.Remove(EntryToMove);
                     EntryToMove.EntryGroup = null;
                 }
-                else if (EntryToMove.EntryGroup == null) //If the entry is not in a group, remove it from the column.
+                else if (EntryToMove.EntryGroup == null) //FROM COULMN.
                 {
                     EntryToMove.EntryColumn.ColumnPanel.Children.Remove(EntryToMove.EntryBorder);
                     EntryToMove.EntryColumn.EntryList.Remove(EntryToMove);
@@ -183,7 +184,9 @@ namespace GameEditorStudio
             {
                 if (EntryToMove.EntryGroup != null) 
                 {
-                
+                    EntryToMove.EntryGroup.GroupPanel.Children.Remove(EntryToMove.EntryBorder);
+                    EntryToMove.EntryGroup.EntryList.Remove(EntryToMove);
+                    EntryToMove.EntryGroup = null; 
                 }
 
                 EntryToMove.EntryColumn.ColumnPanel.Children.Remove(EntryToMove.EntryBorder);
@@ -357,10 +360,20 @@ namespace GameEditorStudio
 
         public static void DeleteEmptyColumnsAndMakeNewOnes(StandardEditorData StandardEditorData)
         {
+
+
             foreach (Category CatClass in StandardEditorData.CategoryList.ToList()) //Delete any empty columns in each category.
             {
                 foreach (Column ColumnClass in CatClass.ColumnList.ToList())
                 {
+                    foreach (Group GroupClass in ColumnClass.MasterList.ToList()) //Delete any empty groups in each column.
+                    {
+                        if (GroupClass.EntryList.Count == 0) //Delete group if it's empty. 
+                        {
+                            DeleteGroup(GroupClass);
+                        }
+                    }
+
                     if (ColumnClass.EntryList == null || ColumnClass.EntryList.Count == 0) //Delete column if it's empty. 
                     {
                         StandardEditorData.TheEditor.Workshop.ColumnDelete(ColumnClass);
@@ -379,6 +392,21 @@ namespace GameEditorStudio
                 }
 
             }
+        }
+
+        public static void DeleteGroup(Group Group) 
+        {
+            //if (Group.GroupColumn.MasterList.Contains(Group)) 
+            //{
+
+            //}
+            if (Group.EntryList.Count == 0)
+            {
+                Group.GroupColumn.ColumnPanel.Children.Remove(Group.GroupBorder);
+                Group.GroupColumn.MasterList.Remove(Group);
+            }
+            
+
         }
 
 
