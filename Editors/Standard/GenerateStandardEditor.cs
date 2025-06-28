@@ -45,6 +45,7 @@ namespace GameEditorStudio
         Point mouseDragStartPoint;
         Point scrollStartOffset;
 
+
         private void ScrollViewer_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Middle)
@@ -540,7 +541,7 @@ namespace GameEditorStudio
                 {
                     foreach (Column column in CatClass.ColumnList)
                     {
-                        column.ColumnGrid.Visibility = Visibility.Collapsed;
+                        column.ColumnPanel.Visibility = Visibility.Collapsed;
                     }
                     Button.Content = "Show Row";
                 }
@@ -549,7 +550,7 @@ namespace GameEditorStudio
                 {
                     foreach (Column column in CatClass.ColumnList)
                     {
-                        column.ColumnGrid.Visibility = Visibility.Visible;
+                        column.ColumnPanel.Visibility = Visibility.Visible;
                     }
                     Button.Content = "Hide Row";
                 }
@@ -614,11 +615,7 @@ namespace GameEditorStudio
             Header.ContextMenu = ContextMenu;
 
         }
-
-        public void CreateGroup() 
-        {
-        
-        }
+                
 
         public void CreateColumn(Category RowClass, Column ColumnClass, Workshop TheWorkshop, WorkshopData Database, int Index)
         {
@@ -626,7 +623,7 @@ namespace GameEditorStudio
 
             DockPanel ColumnGrid = new DockPanel();
             ColumnGrid.Style = (Style)Application.Current.Resources["ColumnStyle"];
-            ColumnGrid.MinWidth = 70;
+            ColumnGrid.MinWidth = 30;
             //ColumnGrid.Width = 400;
             //ColumnGrid.Height = 200;
             ColumnGrid.VerticalAlignment = VerticalAlignment.Top; //Top Bottom
@@ -644,8 +641,8 @@ namespace GameEditorStudio
             if (Index == -1) { RowClass.CategoryDockPanel.Children.Add(ColumnGrid); }
             else { ColumnClass.ColumnRow.CategoryDockPanel.Children.Insert(Index + 1, ColumnGrid); }
             //PageClass.Grid.Children.Add(ButtonAddRow);
-            ColumnClass.ColumnGrid = new();
-            ColumnClass.ColumnGrid = ColumnGrid;
+            ColumnClass.ColumnPanel = new();
+            ColumnClass.ColumnPanel = ColumnGrid;
 
 
             DockPanel Header = new(); //The top part of a column, where the label is, and you can right click this part, and only this part, for a context menu.
@@ -780,12 +777,12 @@ namespace GameEditorStudio
                     {
                         //Note to self: Add a check for if the Category the group is leaving, is now empty. If so, kill it.
 
-                        InputColumn.ColumnRow.CategoryDockPanel.Children.Remove(InputColumn.ColumnGrid);
+                        InputColumn.ColumnRow.CategoryDockPanel.Children.Remove(InputColumn.ColumnPanel);
                         int FromIndex = InputColumn.ColumnRow.ColumnList.IndexOf(InputColumn);
-                        int ToIndex = ColumnClass.ColumnRow.CategoryDockPanel.Children.IndexOf(ColumnClass.ColumnGrid);
+                        int ToIndex = ColumnClass.ColumnRow.CategoryDockPanel.Children.IndexOf(ColumnClass.ColumnPanel);
                         InputColumn.ColumnRow.ColumnList.RemoveAt(FromIndex);
 
-                        ColumnClass.ColumnRow.CategoryDockPanel.Children.Insert(ToIndex + 1, InputColumn.ColumnGrid);
+                        ColumnClass.ColumnRow.CategoryDockPanel.Children.Insert(ToIndex + 1, InputColumn.ColumnPanel);
                         ColumnClass.ColumnRow.ColumnList.Insert(ToIndex, InputColumn);
 
                         //InputColumn.ColumnRow = ColumnClass.ColumnRow; //DO NOT REFER TO COLUMN CLASS DIRECTLY, ALTHOUGH I DONT REMEMBER WHY.                    
@@ -816,7 +813,7 @@ namespace GameEditorStudio
                 {
                     Entry InputEntry = (Entry)e.Data.GetData("MoveEntryClass");
 
-                    InputEntry.EntryColumn.ColumnGrid.Children.Remove(InputEntry.EntryBorder);
+                    InputEntry.EntryColumn.ColumnPanel.Children.Remove(InputEntry.EntryBorder);
                     int FromIndex = InputEntry.EntryColumn.EntryList.IndexOf(InputEntry);
                     InputEntry.EntryColumn.EntryList.RemoveAt(FromIndex);
 
@@ -836,7 +833,7 @@ namespace GameEditorStudio
 
                         var InputEntry = TheWorkshop.EntryMoveList[i];
 
-                        InputEntry.EntryColumn.ColumnGrid.Children.Remove(InputEntry.EntryBorder);
+                        InputEntry.EntryColumn.ColumnPanel.Children.Remove(InputEntry.EntryBorder);
                         InputEntry.EntryColumn.EntryList.RemoveAt(InputEntry.EntryColumn.EntryList.IndexOf(InputEntry));
 
                         ColumnGrid.Children.Insert(1 + i, InputEntry.EntryBorder);
@@ -873,6 +870,11 @@ namespace GameEditorStudio
 
                 StandardEditorMethods.EntryActivate(TheWorkshop, TheWorkshop.EntryClass); //this prevents a crash when immedietly merging the moved entry into a 2 byte.
             }
+
+        }
+
+        public void CreateGroup()
+        {
 
         }
 
@@ -935,11 +937,19 @@ namespace GameEditorStudio
             //EntryToNewGroup.Click += new RoutedEventHandler(NewGroup);
             //void NewGroup(object sender, RoutedEventArgs e)
             //{
-                
+
             //}
 
-                      
 
+            MenuItem EntryCreateNewGroup = new MenuItem();
+            EntryCreateNewGroup.Header = "  Create new group  ";
+            contextMenu.Items.Add(EntryCreateNewGroup);
+            EntryCreateNewGroup.Click += new RoutedEventHandler(NewColumnGroup);
+            void NewColumnGroup(object sender, RoutedEventArgs e)
+            {
+                StandardEditorMethods.CreateNewGroup(EntryClass);
+
+            }
 
             MenuItem EntryToNewLeftColumn = new MenuItem();
             EntryToNewLeftColumn.Header = "  Move into New Column  (Left)  ";
@@ -985,17 +995,7 @@ namespace GameEditorStudio
                 StandardEditorMethods.MoveEntrysToColumn(ListOfEntrys, toColumn);
             }
 
-            MenuItem EntryCreateNewGroup = new MenuItem();
-            EntryCreateNewGroup.Header = "  Create new group  ";
-            contextMenu.Items.Add(EntryCreateNewGroup);
-            EntryCreateNewGroup.Click += new RoutedEventHandler(NewColumnGroup);
-            void NewColumnGroup(object sender, RoutedEventArgs e)
-            {
-                StandardEditorMethods.CreateNewGroup(EntryClass);
-                
-            }
-
-
+            
 
 
 
@@ -1010,6 +1010,7 @@ namespace GameEditorStudio
                 else
                 {      
                     StandardEditorMethods.EntryActivate(TheWorkshop, EntryClass);
+                    //e.Handled = true; // 🛑 Prevent the entry's parent from stealing the click event.
                 }
 
                 
@@ -1143,7 +1144,7 @@ namespace GameEditorStudio
 
 
 
-            ColumnClass.ColumnGrid.Children.Add(Border);
+            ColumnClass.ColumnPanel.Children.Add(Border);
             Border.Child = EntryDockPanel;
             EntryClass.EntryDockPanel = new();
             EntryClass.EntryDockPanel = EntryDockPanel;

@@ -43,7 +43,7 @@ namespace GameEditorStudio.Loading
                     FileInfo.FileName = FileX.Element("Name")?.Value;
                     FileInfo.FileLocation = FileX.Element("Location")?.Value;
                     FileInfo.FileNote = FileX.Element("Note")?.Value;
-                    FileInfo.FileNotepad = FileX.Element("Notepad")?.Value;
+                    FileInfo.FileWorkshopTooltip = FileX.Element("Tooltip")?.Value;
 
                     bool GameFileExists = false;
                     foreach (GameFile GameFile in Database.GameFiles.Values) 

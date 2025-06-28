@@ -259,7 +259,7 @@ namespace GameEditorStudio
                                                                         
                                     writer.WriteElementString("Index", data.ItemIndex.ToString());
                                     writer.WriteElementString("Note", data.ItemNote);
-                                    writer.WriteElementString("Notepad", data.ItemNotepad);
+                                    writer.WriteElementString("Tooltip", data.ItemWorkshopTooltip);
                                     writer.WriteElementString("Key", data.ItemKey);
 
                                     // Handle nested items or folders
@@ -305,7 +305,7 @@ namespace GameEditorStudio
                                         {
                                             writer.WriteStartElement("Entry");                                            
                                             writer.WriteElementString("Name", entry.Name);
-                                            writer.WriteElementString("Notepad", entry.Notepad);
+                                            writer.WriteElementString("Tooltip", entry.WorkshopTooltip);
                                             writer.WriteElementString("IsNameHidden", entry.IsNameHidden.ToString());
                                             writer.WriteElementString("IsEntryHidden", entry.IsEntryHidden.ToString());  
                                             writer.WriteElementString("RowOffset", entry.RowOffset.ToString());
@@ -566,7 +566,7 @@ namespace GameEditorStudio
                                 FileWriter.WriteElementString("Name", AGameFile.FileName);
                                 FileWriter.WriteElementString("Location", AGameFile.FileLocation);
                                 FileWriter.WriteElementString("Note", AGameFile.FileNote);
-                                FileWriter.WriteElementString("Notepad", AGameFile.FileNotepad);
+                                FileWriter.WriteElementString("Tooltip", AGameFile.FileWorkshopTooltip);
                                 FileWriter.WriteEndElement();
                             }
 

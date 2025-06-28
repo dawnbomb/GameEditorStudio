@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace GameEditorStudio
@@ -17,7 +18,69 @@ namespace GameEditorStudio
         public static void CreateNewGroup(Entry EntryClass) 
         {
             Column EntryColumn = EntryClass.EntryColumn;
+            int Index = EntryColumn.ColumnPanel.Children.IndexOf(EntryClass.EntryBorder);
+            EntryColumn.ColumnPanel.Children.Remove(EntryClass.EntryBorder); //Remove the entry from the column, so we can add it to the group.
 
+            Group NewGroup = new();
+            NewGroup.GroupColumn = EntryColumn; 
+
+            Border GroupBorder = NewGroup.GroupBorder;
+            GroupBorder.Margin = new Thickness(0, 0, 0, 0);
+            GroupBorder.Background = Brushes.DarkBlue;
+            DockPanel.SetDock(GroupBorder, Dock.Top);
+            
+
+            DockPanel GroupPanel = NewGroup.GroupPanel;
+            GroupBorder.Child = GroupPanel;
+            //GroupPanel.Background = Brushes.DarkBlue;
+            GroupPanel.Background = Brushes.Transparent; //This is so the group panel can be transparent, and the border can be seen.
+            //GroupPanel.Margin = EntryColumn.ColumnPanel.Margin;
+            //GroupPanel.Margin = new Thickness(2, 0, 0, 0);
+            //GroupPanel.Style = (Style)Application.Current.Resources["ColumnStyle"];
+            GroupPanel.LastChildFill = false;
+            DockPanel.SetDock(GroupPanel, Dock.Top);
+
+            Label GroupLabel = NewGroup.GroupLabel;
+            GroupPanel.Children.Add(GroupLabel);
+            GroupLabel.Content = NewGroup.GroupName;
+            GroupLabel.Margin = new Thickness(4, 0, 0, 0);
+            DockPanel.SetDock(GroupLabel, Dock.Top);
+            GroupLabel.MouseLeftButtonDown += Group_MouseLeftButtonDown;
+            void Group_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+            {
+                EntryClass.EntryEditor.Workshop.GroupClass = NewGroup; 
+                EntryClass.EntryEditor.Workshop.GeneralGroup.IsSelected = true;
+
+                e.Handled = true; // Prevents the event from bubbling up to the DockPanel, which would cause the entry to be selected instead of the group.
+                                
+            }
+
+
+            GroupPanel.Children.Add(EntryClass.EntryBorder); //Add the entry to the group.
+            EntryClass.EntryGroup = NewGroup; //Set the entry's group to the new group.
+            EntryClass.EntryGroup.EntryList.Add(EntryClass); //Add the entry to the group's entry list.
+
+
+
+            EntryColumn.ColumnPanel.Children.Insert(Index, GroupBorder);
+
+
+            GroupLabel.AllowDrop = true;
+            GroupLabel.Drop += GroupDrop;
+            void GroupDrop(object sender, DragEventArgs e)
+            {
+
+                if (e.Data.GetDataPresent("EntryMoveList")) //Entry Drop
+                {
+                    List<Entry> EntryMoveList = (List<Entry>)e.Data.GetData("EntryMoveList");
+
+                    MoveEntrysToGroup(EntryMoveList, NewGroup);
+
+                }
+
+                e.Handled = true; // 🛑 Prevent the entry's parent from stealing the drop.
+
+            }
 
         }
 
@@ -34,13 +97,34 @@ namespace GameEditorStudio
 
             foreach (Entry EntryToMove in EntrysListToMove) 
             {
-                EntryToMove.EntryColumn.ColumnGrid.Children.Remove(EntryToMove.EntryBorder);
-                EntryToMove.EntryColumn.EntryList.Remove(EntryToMove);
+                if (EntryToMove.EntryGroup != null) //If the entry is in a group, remove it from the group.
+                {
+                    EntryToMove.EntryGroup.GroupPanel.Children.Remove(EntryToMove.EntryBorder);
+                    EntryToMove.EntryGroup.EntryList.Remove(EntryToMove);
+                    EntryToMove.EntryGroup = null;
+                }
+                else if (EntryToMove.EntryGroup == null) //If the entry is not in a group, remove it from the column.
+                {
+                    EntryToMove.EntryColumn.ColumnPanel.Children.Remove(EntryToMove.EntryBorder);
+                    EntryToMove.EntryColumn.EntryList.Remove(EntryToMove);
+                }
 
-                int ToIndex = EntryToMoveUnder.EntryColumn.EntryList.IndexOf(EntryToMoveUnder) + i; // the i fixes a bug where entry list drops in reverse order. 
+                if (EntryToMoveUnder.EntryGroup != null) //TO GROUP.
+                {
+                    int ToIndex = EntryToMoveUnder.EntryGroup.EntryList.IndexOf(EntryToMoveUnder) + i; // the i fixes a bug where entry list drops in reverse order. 
 
-                EntryToMoveUnder.EntryColumn.ColumnGrid.Children.Insert(ToIndex + 2, EntryToMove.EntryBorder);
-                EntryToMoveUnder.EntryColumn.EntryList.Insert(ToIndex + 1, EntryToMove);
+                    EntryToMoveUnder.EntryGroup.GroupPanel.Children.Insert(ToIndex + 2, EntryToMove.EntryBorder);
+                    EntryToMoveUnder.EntryGroup.EntryList.Insert(ToIndex + 1, EntryToMove);
+
+                    EntryToMove.EntryGroup = EntryToMoveUnder.EntryGroup; 
+                }
+                else if (EntryToMoveUnder.EntryGroup == null) //TO COLUMN. 
+                {
+                    int ToIndex = EntryToMoveUnder.EntryColumn.EntryList.IndexOf(EntryToMoveUnder) + i; // the i fixes a bug where entry list drops in reverse order. 
+
+                    EntryToMoveUnder.EntryColumn.ColumnPanel.Children.Insert(ToIndex + 2, EntryToMove.EntryBorder);
+                    EntryToMoveUnder.EntryColumn.EntryList.Insert(ToIndex + 1, EntryToMove);
+                }                
 
                 EntryToMove.EntryColumn = EntryToMoveUnder.EntryColumn; //DO NOT REFER TO COLUMN CLASS DIRECTLY, I HAVE NO IDEA WHY.                    
                 EntryToMove.EntryRow = EntryToMoveUnder.EntryRow;
@@ -55,6 +139,41 @@ namespace GameEditorStudio
 
         }
 
+        public static void MoveEntrysToGroup(List<Entry> EntrysListToMove, Group Group) 
+        {
+            Column BeforeColumn = EntrysListToMove[0].EntryColumn;
+            Column AfterColumn = Group.GroupColumn;
+            Group AfterGroup = Group;
+
+            foreach (Entry EntryToMove in EntrysListToMove)
+            {
+                if (EntryToMove.EntryGroup != null)
+                {
+                    //Group BeforeGroup = EntryToMove.EntryGroup;
+                    EntryToMove.EntryGroup.GroupPanel.Children.Remove(EntryToMove.EntryBorder);
+                    EntryToMove.EntryGroup.EntryList.Remove(EntryToMove);
+                }
+                else if (EntryToMove.EntryGroup == null)
+                {
+                    EntryToMove.EntryColumn.ColumnPanel.Children.Remove(EntryToMove.EntryBorder);
+                    EntryToMove.EntryColumn.EntryList.Remove(EntryToMove);                    
+                }
+
+                AfterGroup.GroupPanel.Children.Add(EntryToMove.EntryBorder);
+                AfterGroup.EntryList.Add(EntryToMove);
+
+                EntryToMove.EntryColumn = AfterGroup.GroupColumn; //DO NOT REFER TO COLUMN CLASS DIRECTLY, I HAVE NO IDEA WHY.
+                EntryToMove.EntryGroup = AfterGroup;
+                EntryToMove.EntryRow = AfterGroup.GroupColumn.ColumnRow;
+
+
+            }
+
+            DeleteEmptyColumnsAndMakeNewOnes(AfterColumn.ColumnRow.SWData);
+            LabelWidth(BeforeColumn);
+            LabelWidth(AfterColumn);
+        }
+
         public static void MoveEntrysToColumn(List<Entry> EntrysListToMove, Column Column) 
         {
             Column BeforeColumn = EntrysListToMove[0].EntryColumn; //Save the column before we change it, so we can delete it later if needed.
@@ -62,17 +181,22 @@ namespace GameEditorStudio
 
             foreach (Entry EntryToMove in EntrysListToMove)
             {
-                EntryToMove.EntryColumn.ColumnGrid.Children.Remove(EntryToMove.EntryBorder);
+                if (EntryToMove.EntryGroup != null) 
+                {
+                
+                }
+
+                EntryToMove.EntryColumn.ColumnPanel.Children.Remove(EntryToMove.EntryBorder);
                 EntryToMove.EntryColumn.EntryList.Remove(EntryToMove);
 
-                Column.ColumnGrid.Children.Add(EntryToMove.EntryBorder);
+                Column.ColumnPanel.Children.Add(EntryToMove.EntryBorder);
                 Column.EntryList.Add(EntryToMove);
 
                 EntryToMove.EntryColumn = Column; //DO NOT REFER TO COLUMN CLASS DIRECTLY, I HAVE NO IDEA WHY.                    
                 EntryToMove.EntryRow = Column.ColumnRow;
             }
 
-            DeleteEmptyColumnsAndMakeNewOnes(Column.ColumnRow.SWData);
+            DeleteEmptyColumnsAndMakeNewOnes(AfterColumn.ColumnRow.SWData);
             LabelWidth(BeforeColumn);
             LabelWidth(AfterColumn);
         }
@@ -86,7 +210,7 @@ namespace GameEditorStudio
             EntryData.UpdateEntryProperties(TheWorkshop, EditorClass);
 
             //EditorClass.SWData.EditorTopBar.EntryNoteBox.Text = EntryClass.EntryTooltip;
-            TheWorkshop.EntryNoteTextbox.Text = EntryClass.Notepad;
+            TheWorkshop.EntryNoteTextbox.Text = EntryClass.WorkshopTooltip;
 
 
             if (TheWorkshop.ListTab.IsSelected == true) //Band-aid code fix to make the workshops "list" tab stop being selected when you select an entry, but this should really be inside the EntryBecomeActive function...
@@ -138,7 +262,7 @@ namespace GameEditorStudio
             }
 
             
-            if (EntryClass.Notepad == "")
+            if (EntryClass.WorkshopTooltip == "")
             {
                 EntryClass.EntryLeftGrid.ToolTip = null;
                 EntryClass.UnderlineBorder.BorderThickness = new Thickness(0, 0, 0, 0);
@@ -146,7 +270,7 @@ namespace GameEditorStudio
             }
             else //The underline system.
             {
-                EntryClass.EntryLeftGrid.ToolTip = EntryClass.Notepad;
+                EntryClass.EntryLeftGrid.ToolTip = EntryClass.WorkshopTooltip;
                 EntryClass.UnderlineBorder.BorderThickness = new Thickness(0, 0, 0, 2);
                 EntryClass.UnderlineBorder.Width = EntryTextBlock.Width;
                 //MainName.TextDecorations = TextDecorations.Underline;

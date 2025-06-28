@@ -66,7 +66,7 @@ namespace GameEditorStudio
         public string FileName { get; set; } = ""; //XML The actual name of the file
         public string FileLocation { get; set; } = ""; //XML The path from InputDirectory to the FileName.
         public string FileNote { get; set; } = ""; //XML. For games that have multiple files with identical names via being in diffrent folders, users can give files a nickname, but save as their real name.
-        public string FileNotepad { get; set; } = ""; //XML (or it will be)
+        public string FileWorkshopTooltip { get; set; } = ""; //XML (or it will be)
         public byte[] FileBytes { get; set; } //Not XML  //The actual loaded information from a file. This is what editors edit! This is the ENTIRE file, not just a table of bytes.
         //FileBytes is also reffered to in comments as "Memory File" due to it being a version of the file entirely in memory, and not saved back to the computer.
         //"Memory File" helps differenciate between the file's origonal bytes, and it's current ones after editing but before saving.

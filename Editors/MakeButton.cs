@@ -266,7 +266,7 @@ namespace GameEditorStudio
                         TheWorkshop.PropertiesEditorNameTableCharacterSetDropdown.IsEnabled = false;
                     }
 
-                    TheWorkshop.EntryNoteTextbox.Text = TheEditorClass.StandardEditorData.SelectedEntry.Notepad;
+                    TheWorkshop.EntryNoteTextbox.Text = TheEditorClass.StandardEditorData.SelectedEntry.WorkshopTooltip;
 
 
 

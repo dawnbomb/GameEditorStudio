@@ -108,7 +108,7 @@ namespace GameEditorStudio
         public string ItemName { get; set; } = ""; //XML
         public int ItemIndex { get; set; } = 0; //XML Basically, the row number in a table. Note: Folders have a index of 0.   I should maybe update this so folders have an index of -1. //Basically a Key
         public string ItemKey { get; set; } = LibraryMan.GenerateKey(); //This is only incase it's needed for future features, but is currently unused. 
-        public string? ItemNotepad { get; set; } = ""; //XML the orange one
+        public string? ItemWorkshopTooltip { get; set; } = ""; //XML the orange one
         public string ItemNote { get; set; } = ""; //XML The actual note?
         public bool IsChild { get; set; } = false;
         public bool IsFolder { get; set; } = false; //NOT XML  //new folder is in workshop.cs
@@ -132,7 +132,7 @@ namespace GameEditorStudio
     public class Column
     {
         public string ColumnName { get; set; } = "New Column"; //XML The name of a column.
-        public DockPanel? ColumnGrid { get; set; }
+        public DockPanel? ColumnPanel { get; set; }
         public List<Entry>? EntryList { get; set; } = new();
 
         public List<CItem>? MasterList { get; set; } = new();
@@ -149,9 +149,11 @@ namespace GameEditorStudio
     public class Group : CItem //A way to group entries together, like a folder.
     {
         public string GroupName { get; set; } = "New Group"; //XML The name of a column.
-        public DockPanel? GroupPanel { get; set; }
-        public List<Entry>? EntryList { get; set; } = new();
-        public Label GroupLabel { get; set; }
+        public string GroupTooltip { get; set; } = "";
+        public Border GroupBorder { get; set; } = new();
+        public DockPanel GroupPanel { get; set; } = new();
+        public List<Entry> EntryList { get; set; } = new();
+        public Label GroupLabel { get; set; } = new();
         public Column GroupColumn { get; set; }
         public string Key { get; set; } = LibraryMan.GenerateKey(); //Unused, Only exists incase of future features. 
     }
@@ -160,7 +162,7 @@ namespace GameEditorStudio
     public class Entry : CItem
     {
         public string Name { get; set; } = "";  //XML //The Name / Label an entry Gets. Later, it will default to "???"  
-        public string Notepad { get; set; } = ""; //XML
+        public string WorkshopTooltip { get; set; } = ""; //XML
         public bool IsNameHidden { get; set; } = false;  //XML //Yes or No, Defaults to Yes
         public bool IsEntryHidden { get; set; } = false;  //XML  -Enabled or Disabled (AutoDisabled?)//Decides If entry can save to Memory File. Occurs when the byte is also in use by the NameTable or any ExtraTables.  
         public bool IsTextInUse { get; set; } = false; //Not XML //if true, this entry actually represents name or description text, and is basically disabled / hidden. 
@@ -205,6 +207,7 @@ namespace GameEditorStudio
         public Editor EntryEditor { get; set; }
         public Category EntryRow { get; set; }
         public Column EntryColumn { get; set; }
+        public Group EntryGroup { get; set; }
 
         //The grid/Dockpanel? The labels and buttons to later delete?
 
