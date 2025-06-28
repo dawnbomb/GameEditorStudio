@@ -198,7 +198,7 @@ namespace GameEditorStudio
             FileNameText.Text = GameFile.FileName;
 
             Run FileNote = new Run();
-            FileNote.Text = "   " + GameFile.FileNote;
+            FileNote.Text = " " + GameFile.FileNote;
             FileNote.Foreground = Brushes.Orange;
 
             TextBlockItem.Inlines.Add(FileNameText);
@@ -207,14 +207,14 @@ namespace GameEditorStudio
 
 
             TreeViewItem.Tag = GameFile;
-            if (GameFile.FileNotepad == "")
+            if (GameFile.FileWorkshopTooltip == "")
             {
                 TreeViewItem.ToolTip = null;
                 FileNameText.TextDecorations = null;
             }
             else
             {
-                TreeViewItem.ToolTip = GameFile.FileNotepad;
+                TreeViewItem.ToolTip = GameFile.FileWorkshopTooltip;
                 FileNameText.TextDecorations = TextDecorations.Underline;
             }
         }
@@ -233,7 +233,7 @@ namespace GameEditorStudio
             }
             GameFile GameFile = treeViewItem.Tag as GameFile;
             FileNoteBox.Text = GameFile.FileNote;
-            FileNotepadTextbox.Text = GameFile.FileNotepad;
+            FileNotepadTextbox.Text = GameFile.FileWorkshopTooltip;
             FileLocationTextbox.Text = GameFile.FileLocation;
 
             {
@@ -392,7 +392,7 @@ namespace GameEditorStudio
             TreeViewItem treeViewItem = TreeGameFiles.SelectedItem as TreeViewItem;
             if (treeViewItem == null) { return; }
             GameFile GameFile = treeViewItem.Tag as GameFile;
-            GameFile.FileNotepad = FileNotepadTextbox.Text;
+            GameFile.FileWorkshopTooltip = FileNotepadTextbox.Text;
             FileItemNameBuilder(treeViewItem);
         }
 

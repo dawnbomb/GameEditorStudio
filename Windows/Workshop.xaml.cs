@@ -76,6 +76,7 @@ namespace GameEditorStudio
         public Editor EditorClass { get; set; }
         public Category CategoryClass { get; set; }
         public Column ColumnClass { get; set; }
+        public Group GroupClass { get; set; }
         public Entry EntryClass { get; set; }
 
         public List<Entry> EntryMoveList  {  get; set; } = new();
@@ -112,6 +113,7 @@ namespace GameEditorStudio
                 (TabTest.FindName("GeneralEditor") as TabItem).Visibility = Visibility.Collapsed;
                 (TabTest.FindName("GeneralRow") as TabItem).Visibility = Visibility.Collapsed;
                 (TabTest.FindName("GeneralColumn") as TabItem).Visibility = Visibility.Collapsed;
+                (TabTest.FindName("GeneralGroup") as TabItem).Visibility = Visibility.Collapsed;
                 (TabTest.FindName("GeneralEntry") as TabItem).Visibility = Visibility.Collapsed;
                 //(TabTest.FindName("GeneralDebug") as TabItem).Visibility = Visibility.Collapsed;
 
@@ -503,17 +505,17 @@ namespace GameEditorStudio
 
                         if (Properties.Settings.Default.ShowHiddenEntrys == true) //Will show / hide the column itself if every entry is hidden and hiddens are not set to visible. 
                         {
-                            column.ColumnGrid.Visibility = Visibility.Visible;
+                            column.ColumnPanel.Visibility = Visibility.Visible;
                         }
                         else if (Properties.Settings.Default.ShowHiddenEntrys == false)
                         {
                             if (ColumnIsVisible == false) 
                             { 
-                                column.ColumnGrid.Visibility = Visibility.Collapsed;
+                                column.ColumnPanel.Visibility = Visibility.Collapsed;
                             }
                             else
                             { 
-                                column.ColumnGrid.Visibility = Visibility.Visible;
+                                column.ColumnPanel.Visibility = Visibility.Visible;
                             }
                         }
                         
@@ -1218,15 +1220,15 @@ namespace GameEditorStudio
             RunNote.Foreground = Brushes.Orange; // Set the foreground to red   DeepSkyBlue
             TextBlockItem.Inlines.Add(RunNote);
 
-            if (ItemInfo.ItemNotepad == "")
+            if (ItemInfo.ItemWorkshopTooltip == "")
             {
                 TreeItem.ToolTip = null;
                 RunMain.TextDecorations = null;
 
             }
-            if (ItemInfo.ItemNotepad != "") 
+            if (ItemInfo.ItemWorkshopTooltip != "") 
             { 
-                TreeItem.ToolTip = ItemInfo.ItemNotepad;
+                TreeItem.ToolTip = ItemInfo.ItemWorkshopTooltip;
                 RunMain.TextDecorations = TextDecorations.Underline;
             }
 
@@ -1443,7 +1445,7 @@ namespace GameEditorStudio
         {
             if (TheColumn.EntryList.Count == 0)
             {
-                TheColumn.ColumnRow.CategoryDockPanel.Children.Remove(TheColumn.ColumnGrid);
+                TheColumn.ColumnRow.CategoryDockPanel.Children.Remove(TheColumn.ColumnPanel);
                 TheColumn.ColumnRow.ColumnList.Remove(TheColumn);
 
                 //LibraryMan.GotoGeneralEditor(this);
@@ -1478,21 +1480,58 @@ namespace GameEditorStudio
 
             }
         }
+
+
+
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////COLUMN PROPERTIES///////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //
+        //
+        //
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////GROUP PROPERTIES///////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        private void PropertiesGroupNameTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                GroupClass.GroupName = PropertiesGroupNameBox.Text;
+                GroupClass.GroupLabel.Content = PropertiesGroupNameBox.Text;
+                
+
+            }
+        }
+
+        private void PropertiesGroupTooltipTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            GroupClass.GroupTooltip = PropertiesGroupTooltipBox.Text;
+
+            //Hook into a Update Group Tooltip method.
+            if (PropertiesGroupTooltipBox.Text == "") 
+            {
+                
+            }
+            if (PropertiesGroupTooltipBox.Text != "")
+            {
+
+            }
+        }
         
 
-
-
-
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////COLUMN PROPERTIES//////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////GROUP PROPERTIES////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //
         //
         //
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////ENTRY PROPERTIES//////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////ENTRY PROPERTIES///////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
 
         private void PropertiesEntryNameBox_KeyDown(object sender, KeyEventArgs e)
         {
@@ -1507,37 +1546,7 @@ namespace GameEditorStudio
         }
 
         public void UpdateEntryName(Entry TheEntry) 
-        {
-            //if (EntryClass.Name == "")
-            //{
-            //    EntryClass.EntryLabel.Content = "??? " + TheEntry.RowOffset;
-            //}
-            //if (EntryClass.Name != "") 
-            //{
-            //    EntryClass.EntryLabel.Content = PropertiesNameBox.Text;
-            //}
-
-            //if (ItemInfo.ItemNotepad == "")
-            //{
-            //    TreeItem.ToolTip = null;
-            //    run1.TextDecorations = null;
-
-            //}
-            //if (ItemInfo.ItemNotepad != "")
-            //{
-            //    TreeItem.ToolTip = ItemInfo.ItemNotepad;
-            //    run1.TextDecorations = TextDecorations.Underline;
-            //}
-
-            //if (EntryClass.Notepad == "")
-            //{
-            //    EntryClass.EntryLabel.ToolTip = null;
-            //}
-            //else //if (EntryClass.Name != "")
-            //{
-            //    EntryClass.EntryLabel.ToolTip = EntryClass.Notepad;
-            //    //EntryClass.EntryLabel.
-            //}
+        {           
 
 
             MyDatabase.EntryManager.LoadEntry(this, EditorClass, EntryClass);
@@ -1843,13 +1852,13 @@ namespace GameEditorStudio
 
                         int MyIndex = entry.EntryColumn.EntryList.IndexOf(entry); //entry.EntryColumn.ColumnGrid.Children.IndexOf(entry.EntryDockPanel);
                         entry.EntryColumn.EntryList.RemoveAt(MyIndex);
-                        entry.EntryColumn.ColumnGrid.Children.Remove(entry.EntryBorder);
+                        entry.EntryColumn.ColumnPanel.Children.Remove(entry.EntryBorder);
 
 
-                        int EntryLocation = ColumnClass.ColumnGrid.Children.IndexOf(EntryClass.EntryBorder) - 1; //Counting starts at 1, but the first child is 0.
+                        int EntryLocation = ColumnClass.ColumnPanel.Children.IndexOf(EntryClass.EntryBorder) - 1; //Counting starts at 1, but the first child is 0.
                         int Diffrence = entry.RowOffset - EntryClass.RowOffset;
                         ColumnClass.EntryList.Insert(EntryLocation + Diffrence, entry);
-                        ColumnClass.ColumnGrid.Children.Insert(EntryLocation + Diffrence + 1, entry.EntryBorder);
+                        ColumnClass.ColumnPanel.Children.Insert(EntryLocation + Diffrence + 1, entry.EntryBorder);
 
 
                         entry.EntryRow = EntryClass.EntryRow;  //  PageClass.RowList[rowIndex + 1];
@@ -2255,10 +2264,11 @@ namespace GameEditorStudio
             }
         }
 
+
         private void EntryNoteTextboxTextChanged(object sender, TextChangedEventArgs e)
         {
             if (EditorClass == null) { return; }
-            EditorClass.StandardEditorData.SelectedEntry.Notepad = EntryNoteTextbox.Text;
+            EditorClass.StandardEditorData.SelectedEntry.WorkshopTooltip = EntryNoteTextbox.Text;
             StandardEditorMethods.UpdateEntryName(EditorClass.StandardEditorData.SelectedEntry);
         }
 
@@ -2674,6 +2684,8 @@ namespace GameEditorStudio
                 UpdateEntryName(EntryClass);
             }
         }
+
+        
     }
 
     public class NumberCount

@@ -42,6 +42,7 @@ namespace GameEditorStudio
             TheWorkshop = AWorkshop;
             Database = ADatabase;
             EditorClass = AEditor;
+            
 
             EditorClass.StandardEditorData.EditorLeftDockPanel.LeftBarDockPanel.Children.Add(this);
             EditorClass.StandardEditorData.EditorLeftDockPanel.SearchBar = SearchBar;
@@ -493,7 +494,7 @@ namespace GameEditorStudio
                 if (selectedInfo != null)
                 {
                     // Update the Name property with the text from the TextBox
-                    selectedInfo.ItemNotepad = ItemNotepadTextbox.Text;
+                    selectedInfo.ItemWorkshopTooltip = ItemNotepadTextbox.Text;
                     TheWorkshop.ItemNameBuilder(selectedItem);
                 }
             }
@@ -516,7 +517,7 @@ namespace GameEditorStudio
                 }
 
                 EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNoteTextbox.Text = data.ItemNote;
-                EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNotepadTextbox.Text = data.ItemNotepad;
+                EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNotepadTextbox.Text = data.ItemWorkshopTooltip;
 
                 if (EditorClass.StandardEditorData.DescriptionTableList.Count > 0)
                 {
@@ -604,6 +605,15 @@ namespace GameEditorStudio
             if (EditorClass.StandardEditorData.FileNameTable == null) { LabelCharacterCount.Content = "Fake Name List"; }
         }
 
-        
+
+
+
+
+
+
+
+
+
+
     }
 }

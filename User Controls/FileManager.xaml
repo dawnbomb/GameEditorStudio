@@ -45,10 +45,10 @@
                     <TextBox x:Name="FileLocationTextbox" Grid.Row="0" Grid.Column="1" Width="Auto" Margin="3" TextChanged="FileLocationTextboxTextChanged"/>
 
                     <Label Content="File Note" Grid.Row="1" Grid.Column="0"/>
-                    <TextBox x:Name="FileNoteBox" Grid.Row="1" Grid.Column="1" Margin="3" TextChanged="FileNoteBoxTextChanged"  />
+                    <TextBox x:Name="FileNoteBox" Grid.Row="1" Grid.Column="1" Margin="3" TextChanged="FileNoteBoxTextChanged" ToolTip="Write a note that appears next to the filename. Great for files with similuar or identical names. "  />
 
                     <ScrollViewer Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" VerticalScrollBarVisibility="Auto">
-                        <TextBox x:Name="FileNotepadTextbox" TextWrapping="Wrap"  TextChanged="FileNotepadTextChanged" />
+                        <TextBox x:Name="FileNotepadTextbox" TextWrapping="Wrap"  TextChanged="FileNotepadTextChanged" ToolTip="Write a tooltip for the file. :)" />
                     </ScrollViewer>
                     
                 </Grid>

@@ -325,6 +325,40 @@
                                                 </Border>
                                             </DockPanel>
                                         </TabItem>
+                                        <TabItem Name="GeneralGroup" Header="Group" Margin="0,0,1,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
+                                            <DockPanel  >
+                                                <!--Margin="-2"-->
+                                                <Border DockPanel.Dock="Top"  >
+                                                    <DockPanel Margin="0,0,0,3">
+                                                        <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" Height="23"  MinHeight="0" Margin="0,0,0,5" >
+                                                            <Label Content="Group" FontWeight="Bold" Margin="5,-5,0,-5"  />
+                                                        </DockPanel>
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="5"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="5"/>
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="Auto"/>
+
+                                                            </Grid.RowDefinitions>
+
+                                                            <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
+                                                            <TextBox x:Name="PropertiesGroupNameBox" Grid.Row="0" Grid.Column="2" Margin="3" Text="New Group" TextWrapping="Wrap"  KeyDown="PropertiesGroupNameTextBox_KeyDown"/>
+
+                                                            <Label Content="Tooltip" Grid.Row="1" Grid.Column="1" Margin="0"/>
+                                                            <TextBox x:Name="PropertiesGroupTooltipBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Height="100" Margin="3" Text="" TextWrapping="Wrap"  TextChanged="PropertiesGroupTooltipTextBox_TextChanged"/>
+                                                        </Grid>
+                                                    </DockPanel>
+                                                </Border>
+                                            </DockPanel>
+                                        </TabItem>
                                         <TabItem Name="GeneralEntry" Header="Entry" Margin="0,0,0,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
                                             <DockPanel >
                                                 <Border DockPanel.Dock="Top">

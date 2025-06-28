@@ -245,7 +245,7 @@ namespace GameEditorStudio
                             ItemName = element.Element("Name")?.Value ?? "Unnamed",
                             ItemIndex = int.Parse(element.Element("Index")?.Value ?? "0"),
                             ItemNote = element.Element("Note")?.Value,
-                            ItemNotepad = element.Element("Notepad")?.Value,
+                            ItemWorkshopTooltip = element.Element("Tooltip")?.Value,
                             ItemKey = element.Element("Key")?.Value,
 
                         };
@@ -323,7 +323,7 @@ namespace GameEditorStudio
                         EditorClass.StandardEditorData.MasterEntryList.Add(EntryClass);
 
                         EntryClass.Name = Xentry.Element("Name")?.Value;
-                        EntryClass.Notepad = Xentry.Element("Notepad")?.Value;
+                        EntryClass.WorkshopTooltip = Xentry.Element("Tooltip")?.Value;
                         EntryClass.IsNameHidden = Convert.ToBoolean(Xentry.Element("IsNameHidden")?.Value);
                         EntryClass.IsEntryHidden = Convert.ToBoolean(Xentry.Element("IsEntryHidden")?.Value);
                         EntryClass.TableKey = Xentry.Element("TableKey")?.Value;

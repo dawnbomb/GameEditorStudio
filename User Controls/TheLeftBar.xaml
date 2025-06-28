@@ -50,7 +50,7 @@
                     <Label Content="Note" Grid.Row="1" Grid.Column="0"/>
                     <TextBox x:Name="ItemNoteTextbox" Grid.Row="1" Grid.Column="1" Margin="3" KeyDown="ItemNoteboxKeyDown" ToolTip="An item note is displayed next to the item in the items list.&#xD;&#xA;It does not get saved to the game files.&#xD;&#xA;Item note data is a part of the editor, not a project. " />
 
-                    <TextBox x:Name="ItemNotepadTextbox" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" TextChanged="NotepadTextChanged" ToolTip="An item notepad is a longform note for the item.&#xD;&#xA;Unlike a note, it doesn't display next to the item, and only appears in this textbox.&#xD;&#xA;It is still very useful for keeping track of detailed information.&#xD;&#xA;Item notepad data is a part of the editor, not a project." />
+                    <TextBox x:Name="ItemNotepadTextbox" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" TextChanged="NotepadTextChanged" ToolTip="This is where you write a tooltip for the item.&#xD;&#xA;Items with a tooltip appear underlined, and hovering the mouse on them shows the tooltip.&#xD;&#xA;It also supports linebreaks (the enter key), go nuts.&#xD;&#xA;Item Tooltips are part of the editor, not a mod / project, but support for that is coming later." />
                 </Grid>
             </DockPanel>
         </ContentControl>
