@@ -288,6 +288,9 @@
                                                             <!-- Row 2 -->
                                                             <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
                                                             <TextBox x:Name="PropertiesRowNameBox" Grid.Row="0" Grid.Column="2" Margin="3" Text="New Category" TextWrapping="Wrap"  KeyDown="PropertiesRowNameBox_KeyDownEnter"/>
+                                                            
+                                                            <Label Content="Tooltip" Grid.Row="1" Grid.Column="1" Margin="0"/>
+                                                            <TextBox x:Name="PropertiesRowTooltipBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" MinHeight="100" Margin="3" TextWrapping="Wrap"  TextChanged="PropertiesRowTooltipBox_TextChanged"/>
                                                         </Grid>
                                                     </DockPanel>
                                                 </Border>

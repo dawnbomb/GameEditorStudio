@@ -301,6 +301,7 @@ namespace GameEditorStudio
                 Category CategoryClass = new();
                 CategoryClass.CategoryName = Xrow.Element("Name")?.Value;
                 CategoryClass.Key = Xrow.Element("Key")?.Value;
+                CategoryClass.Tooltip = Xrow.Element("Tooltip")?.Value;
                 CategoryClass.SWData = EditorClass.StandardEditorData;
 
                 EditorClass.StandardEditorData.CategoryList.Add(CategoryClass);

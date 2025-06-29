@@ -1363,9 +1363,21 @@ namespace GameEditorStudio
                 CategoryClass.CategoryLabel.Content = PropertiesRowNameBox.Text;
             }
         }
-        
 
-                
+        private void PropertiesRowTooltipBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CategoryClass.Tooltip = PropertiesRowTooltipBox.Text;            
+            if (PropertiesRowTooltipBox.Text == "")
+            {
+                CategoryClass.CategoryLabel.ToolTip = null;
+            }
+            else 
+            {
+                CategoryClass.CategoryLabel.ToolTip = CategoryClass.Tooltip;
+            }
+        }
+
+
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////ROW PROPERTIES//////////////////////////////////////////////////////////////////////
@@ -1377,7 +1389,7 @@ namespace GameEditorStudio
         /////////////////////////////////////////////////COLUMN PROPERTIES/////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        
+
 
         public void CreateNewColumnRight(Column TheColumn)
         {
