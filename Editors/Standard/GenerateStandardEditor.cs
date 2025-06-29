@@ -111,11 +111,27 @@ namespace GameEditorStudio
             {
                 foreach (var column in category.ColumnList)
                 {
-                    if (column.EntryList != null && column.EntryList.Count > 0)
+                    if (column.ItemBaseList != null && column.ItemBaseList.Count > 0)
                     {
-                        EditorClass.StandardEditorData.SelectedEntry = column.EntryList[0];
-                        break; // Exit as soon as one is found
+                        foreach (ItemBase itembase in column.ItemBaseList)
+                        {
+                            if (itembase is Group group)
+                            {
+                                EditorClass.StandardEditorData.SelectedEntry = group.EntryList[0];
+                                break; // Exit as soon as one is found
+                            }
+
+                            if (itembase is Entry entry)
+                            {
+                                EditorClass.StandardEditorData.SelectedEntry = entry;
+                                break; // Exit as soon as one is found
+                            }
+                        }
+
+                        
+                        
                     }
+                    if (EditorClass.StandardEditorData.SelectedEntry != null) { break; }
                 }
                 if (EditorClass.StandardEditorData.SelectedEntry != null) { break; }
             }
@@ -129,12 +145,7 @@ namespace GameEditorStudio
 
             TheLeftBar MakeLeftBar = new(TheWorkshop, Database, EditorClass);//Creates the LeftBar of the editor, the part that has the item collection.
             EditorClass.StandardEditorData.EditorLeftDockPanel.UserControl = MakeLeftBar;
-
-            //EditorClass.SWData.ScrollViewerDockPanel.Children.Add(EditorClass.SWData.PageList[0].DockPanel);
-            //EditorClass.SWData.PageList[0].DockPanel.Style = (Style)Application.Current.Resources["PageStyle"];
-            //EditorClass.SWData.PageList[0].DockPanel.Height = 20;
-            //EditorClass.SWData.PageList[0].DockPanel.Width = 250;
-            //DockPanel.SetDock(EditorClass.SWData.PageList[0].DockPanel, Dock.Top);
+                        
 
             //This creates the entire core part of the editor.
             foreach (Category CatClass in EditorClass.StandardEditorData.CategoryList)
@@ -146,11 +157,26 @@ namespace GameEditorStudio
 
                     CreateColumn(CatClass, ColumnClass, TheWorkshop, Database, -1);
 
-                    foreach (Entry EntryClass in ColumnClass.EntryList)
+                    foreach (ItemBase itembase in ColumnClass.ItemBaseList) 
                     {
-                        CreateEntry(EditorClass, CatClass, ColumnClass, EntryClass, TheWorkshop, Database);                        
+                        if (itembase is Group group) 
+                        {
+                            CreateGroup(EditorClass, group, CatClass, ColumnClass, TheWorkshop, Database);
+
+                            foreach (Entry EntryClass in group.EntryList)
+                            {
+                                CreateEntry(EditorClass, CatClass, ColumnClass, EntryClass, TheWorkshop, Database, group);
+                            }
+                        }
+
+                        if (itembase is Entry entry)
+                        {
+                            CreateEntry(EditorClass, CatClass, ColumnClass, entry, TheWorkshop, Database, null);
+                        }
                     }
-                    StandardEditorMethods.LabelWidth(ColumnClass);
+
+                    
+                    StandardEditorMethods.LabelWidth(ColumnClass); //if entry, ok, if group, uhoh.
 
                 }
             }
@@ -814,11 +840,11 @@ namespace GameEditorStudio
                     Entry InputEntry = (Entry)e.Data.GetData("MoveEntryClass");
 
                     InputEntry.EntryColumn.ColumnPanel.Children.Remove(InputEntry.EntryBorder);
-                    int FromIndex = InputEntry.EntryColumn.EntryList.IndexOf(InputEntry);
-                    InputEntry.EntryColumn.EntryList.RemoveAt(FromIndex);
+                    int FromIndex = InputEntry.EntryColumn.ItemBaseList.IndexOf(InputEntry);
+                    InputEntry.EntryColumn.ItemBaseList.RemoveAt(FromIndex);
 
                     ColumnGrid.Children.Insert(1, InputEntry.EntryBorder);
-                    ColumnClass.EntryList.Insert(0, InputEntry);
+                    ColumnClass.ItemBaseList.Insert(0, InputEntry);
 
 
                     InputEntry.EntryColumn = ColumnClass;
@@ -834,10 +860,10 @@ namespace GameEditorStudio
                         var InputEntry = TheWorkshop.EntryMoveList[i];
 
                         InputEntry.EntryColumn.ColumnPanel.Children.Remove(InputEntry.EntryBorder);
-                        InputEntry.EntryColumn.EntryList.RemoveAt(InputEntry.EntryColumn.EntryList.IndexOf(InputEntry));
+                        InputEntry.EntryColumn.ItemBaseList.RemoveAt(InputEntry.EntryColumn.ItemBaseList.IndexOf(InputEntry));
 
                         ColumnGrid.Children.Insert(1 + i, InputEntry.EntryBorder);
-                        ColumnClass.EntryList.Insert(0 + i, InputEntry);
+                        ColumnClass.ItemBaseList.Insert(0 + i, InputEntry);
 
                         InputEntry.EntryColumn = ColumnClass;
                         InputEntry.EntryRow = ColumnClass.ColumnRow;
@@ -873,13 +899,61 @@ namespace GameEditorStudio
 
         }
 
-        public void CreateGroup()
-        {
+        public void CreateGroup(Editor EditorClass, Group GroupClass, Category CatClass, Column ColumnClass, Workshop TheWorkshop, WorkshopData Database)
+        {   
+            Border GroupBorder = GroupClass.GroupBorder;
+            GroupBorder.Margin = new Thickness(0, 0, 0, 0);
+            GroupBorder.Background = Brushes.DarkBlue;
+            DockPanel.SetDock(GroupBorder, Dock.Top);
 
+            DockPanel GroupPanel = GroupClass.GroupPanel;
+            GroupBorder.Child = GroupPanel;
+            GroupPanel.Background = Brushes.Transparent; 
+            GroupPanel.LastChildFill = false;
+            DockPanel.SetDock(GroupPanel, Dock.Top);
+
+            Label GroupLabel = GroupClass.GroupLabel;
+            GroupPanel.Children.Add(GroupLabel);
+            GroupLabel.Content = GroupClass.GroupName;
+            GroupLabel.Margin = new Thickness(4, 0, 0, 0);
+            GroupLabel.ToolTip = GroupClass.GroupTooltip;
+            DockPanel.SetDock(GroupLabel, Dock.Top);
+            GroupLabel.MouseLeftButtonDown += Group_MouseLeftButtonDown;
+            void Group_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+            {
+                TheWorkshop.GroupClass = GroupClass;
+                TheWorkshop.GeneralGroup.IsSelected = true;
+                TheWorkshop.PropertiesGroupNameBox.Text = GroupClass.GroupName;
+                TheWorkshop.PropertiesGroupTooltipBox.Text = GroupClass.GroupTooltip;
+
+                e.Handled = true; // Prevents the event from bubbling up to the DockPanel, which would cause the entry to be selected instead of the group.
+
+            }
+
+            ColumnClass.ColumnPanel.Children.Add(GroupBorder);
+
+
+            GroupLabel.AllowDrop = true;
+            GroupLabel.Drop += GroupDrop;
+            void GroupDrop(object sender, DragEventArgs e)
+            {
+
+                if (e.Data.GetDataPresent("EntryMoveList")) //Entry Drop
+                {
+                    List<Entry> EntryMoveList = (List<Entry>)e.Data.GetData("EntryMoveList");
+
+
+                    StandardEditorMethods.MoveEntrysToGroup(EntryMoveList, GroupClass);
+
+                }
+
+                e.Handled = true; // 🛑 Prevent the entry's parent from stealing the drop.
+
+            }
         }
 
 
-        public void CreateEntry(Editor EditorClass, Category CatClass, Column ColumnClass, Entry EntryClass, Workshop TheWorkshop, WorkshopData Database)
+        public void CreateEntry(Editor EditorClass, Category CatClass, Column ColumnClass, Entry EntryClass, Workshop TheWorkshop, WorkshopData Database, Group GroupClass)
         {
             //An entry is the main attraction of the program. It is the numerical value of a hex / cell in a file.
             //It can do all kinds of things, be displayed all kinds of ways, and is extremely flexable.
@@ -922,6 +996,7 @@ namespace GameEditorStudio
             EntryClass.EntryEditor = EditorClass;//I say what it's parents all are for easy access.
             EntryClass.EntryRow = CatClass;
             EntryClass.EntryColumn = ColumnClass;
+            if (GroupClass != null) { EntryClass.EntryGroup = GroupClass; }
 
 
 
@@ -947,6 +1022,11 @@ namespace GameEditorStudio
             EntryCreateNewGroup.Click += new RoutedEventHandler(NewColumnGroup);
             void NewColumnGroup(object sender, RoutedEventArgs e)
             {
+                if (EntryClass.EntryGroup != null) 
+                {
+                    return;
+                }
+
                 StandardEditorMethods.CreateNewGroup(EntryClass);
 
             }
@@ -1046,7 +1126,8 @@ namespace GameEditorStudio
             }
 
             void EntryBorder_MouseMove(object sender, MouseEventArgs e)
-            {
+            {                
+
                 if (e.OriginalSource is TextBox)
                 {
                     _mousePressedOnEntry = false;
@@ -1063,7 +1144,6 @@ namespace GameEditorStudio
                     {
                         if (Keyboard.IsKeyUp(Key.LeftShift)) // Single Entry capture
                         {
-
                             //I forget what all this math code does, but i think it makes sure the mouse has actually moved, so its not dropping on itself on frame 1.
                             var currentPosition = e.GetPosition(theBorder);
                             var minimumDistance = (SystemParameters.MinimumHorizontalDragDistance + SystemParameters.MinimumVerticalDragDistance) / 2;
@@ -1075,10 +1155,9 @@ namespace GameEditorStudio
 
                                 var data = new DataObject("EntryMoveList", EntrysToMove);
                                 DragDrop.DoDragDrop(theBorder, data, DragDropEffects.Move);
-                            }
-                            theDockPanel.ReleaseMouseCapture();
+                            }                            
                         }
-                        else if (Keyboard.IsKeyDown(Key.LeftShift)) // Group Entry Capture
+                        else if (Keyboard.IsKeyDown(Key.LeftShift)) // Capture Multiple Entrys
                         {
                             var ActiveEntry = EditorClass.StandardEditorData.SelectedEntry;
 
@@ -1086,26 +1165,62 @@ namespace GameEditorStudio
                             {
                                 List<Entry> EntrysToMove = new();
 
-                                int iOne = EntryClass.EntryColumn.EntryList.IndexOf(EntryClass);
-                                int iTwo = EditorClass.StandardEditorData.SelectedEntry.EntryColumn.EntryList.IndexOf(EditorClass.StandardEditorData.SelectedEntry);
-                                int startIndex = Math.Min(iOne, iTwo);
-                                int endIndex = Math.Max(iOne, iTwo);
-                                for (int i = startIndex; i <= endIndex; i++)
+                                if (EntryClass.EntryGroup == null && EditorClass.StandardEditorData.SelectedEntry.EntryGroup == null) //If both are column entrys!
                                 {
-                                    EntrysToMove.Add(EntryClass.EntryColumn.EntryList[i]);
+                                    int iOne = EntryClass.EntryColumn.ItemBaseList.IndexOf(EntryClass);
+                                    int iTwo = EditorClass.StandardEditorData.SelectedEntry.EntryColumn.ItemBaseList.IndexOf(EditorClass.StandardEditorData.SelectedEntry);
+                                    int startIndex = Math.Min(iOne, iTwo);
+                                    int endIndex = Math.Max(iOne, iTwo);
+
+                                    for (int i = startIndex; i <= endIndex; i++)
+                                    {
+                                        if (EntryClass.EntryColumn.ItemBaseList[i] is Entry entrya)
+                                        {
+                                            EntrysToMove.Add(entrya);
+                                        }
+
+                                    }
+
+                                    var currentPosition = e.GetPosition(theBorder);
+                                    var minimumDistance = (SystemParameters.MinimumHorizontalDragDistance + SystemParameters.MinimumVerticalDragDistance) / 2;
+
+                                    if (Math.Sqrt(Math.Pow(currentPosition.X, 2) + Math.Pow(currentPosition.Y, 2)) >= minimumDistance)
+                                    {
+                                        var data = new DataObject("EntryMoveList", EntrysToMove);
+                                        DragDrop.DoDragDrop(theBorder, data, DragDropEffects.Move);
+                                    }
                                 }
-
-                                var currentPosition = e.GetPosition(theBorder);
-                                var minimumDistance = (SystemParameters.MinimumHorizontalDragDistance + SystemParameters.MinimumVerticalDragDistance) / 2;
-
-                                if (Math.Sqrt(Math.Pow(currentPosition.X, 2) + Math.Pow(currentPosition.Y, 2)) >= minimumDistance)
+                                else if (EntryClass.EntryGroup != null && EditorClass.StandardEditorData.SelectedEntry.EntryGroup != null && EntryClass.EntryGroup == EditorClass.StandardEditorData.SelectedEntry.EntryGroup) //If both are group entrys!
                                 {
-                                    var data = new DataObject("EntryMoveList", EntrysToMove);
-                                    DragDrop.DoDragDrop(theBorder, data, DragDropEffects.Move);
+                                    
+                                    int iOne = EntryClass.EntryGroup.EntryList.IndexOf(EntryClass);
+                                    int iTwo = EditorClass.StandardEditorData.SelectedEntry.EntryGroup.EntryList.IndexOf(EditorClass.StandardEditorData.SelectedEntry);
+                                    int startIndex = Math.Min(iOne, iTwo);
+                                    int endIndex = Math.Max(iOne, iTwo);
+                                    for (int i = startIndex; i <= endIndex; i++)
+                                    {
+                                        if (EntryClass.EntryGroup.EntryList[i] is Entry entrya)
+                                        {
+                                            EntrysToMove.Add(entrya);
+                                        }
+                                    }
+                                    var currentPosition = e.GetPosition(theBorder);
+                                    var minimumDistance = (SystemParameters.MinimumHorizontalDragDistance + SystemParameters.MinimumVerticalDragDistance) / 2;
+                                    if (Math.Sqrt(Math.Pow(currentPosition.X, 2) + Math.Pow(currentPosition.Y, 2)) >= minimumDistance)
+                                    {
+                                        var data = new DataObject("EntryMoveList", EntrysToMove);
+                                        DragDrop.DoDragDrop(theBorder, data, DragDropEffects.Move);
+                                    }
                                 }
-                                theDockPanel.ReleaseMouseCapture();
+                                //From Selected Entry
+                                //To EntryClass
+
+                                
+                                
                             }
                         }
+                        theDockPanel.ReleaseMouseCapture();
+
                     }
                 }
                 else
@@ -1140,11 +1255,11 @@ namespace GameEditorStudio
                 
 
             }
-            
 
 
 
-            ColumnClass.ColumnPanel.Children.Add(Border);
+            if (GroupClass == null) { ColumnClass.ColumnPanel.Children.Add(Border); }
+            if (GroupClass != null) { GroupClass.GroupPanel.Children.Add(Border); }
             Border.Child = EntryDockPanel;
             EntryClass.EntryDockPanel = new();
             EntryClass.EntryDockPanel = EntryDockPanel;

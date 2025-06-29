@@ -143,7 +143,7 @@ namespace GameEditorStudio
                 //There exist some more as well, but those aren't strictly necessary to a new entry.
 
                 Entry EntryClass = new();
-                ColumnClass.EntryList.Add(EntryClass);
+                ColumnClass.ItemBaseList.Add(EntryClass);
                 EditorClass.StandardEditorData.MasterEntryList.Add(EntryClass); 
 
                 EntryClass.DataTableRowSize = Int32.Parse(Maker.TextBoxDataTableRowSize.Text);
@@ -298,29 +298,51 @@ namespace GameEditorStudio
 
             foreach (XElement Xrow in xml.Descendants("Category"))
             {
-                string rowName = Xrow.Element("Name")?.Value;
-                string rowKey = Xrow.Element("Key")?.Value;
-                //int rowOrder = int.Parse(row.Element("RowOrder")?.Value);
-                Category CategoryClass = new Category { CategoryName = rowName, Key = rowKey }; //, RowOrder = rowOrder
+                Category CategoryClass = new();
+                CategoryClass.CategoryName = Xrow.Element("Name")?.Value;
+                CategoryClass.Key = Xrow.Element("Key")?.Value;
                 CategoryClass.SWData = EditorClass.StandardEditorData;
 
                 EditorClass.StandardEditorData.CategoryList.Add(CategoryClass);
 
                 foreach (XElement Xcolumn in Xrow.Descendants("Column"))
-                {
-                    string columnName = Xcolumn.Element("Name")?.Value;
-                    string columnKey = Xcolumn.Element("Key")?.Value;
-                    Column ColumnClass = new Column { ColumnName = columnName, Key = columnKey }; //, ColumnOrder = columnOrder
+                {                    
+                    Column ColumnClass = new(); 
+                    ColumnClass.ColumnName = Xcolumn.Element("Name")?.Value;
+                    ColumnClass.Key = Xcolumn.Element("Key")?.Value;
 
-
-                    CategoryClass.ColumnList ??= new List<Column>(); // Add the  object to the List
                     CategoryClass.ColumnList.Add(ColumnClass);
-                    ColumnClass.EntryList ??= new List<Entry>(); // Add the  object to the List
-                    foreach (XElement Xentry in Xcolumn.Descendants("Entry"))
-                    {
 
+                    foreach (XElement XCitem in Xcolumn.Elements())
+                    {
+                        if (XCitem.Name == "Group")
+                        {
+                            Group GroupClass = new();
+                            GroupClass.GroupColumn = ColumnClass;
+                            ColumnClass.ItemBaseList.Add(GroupClass);
+                            GroupClass.GroupName = XCitem.Element("Name")?.Value;
+                            GroupClass.Key = XCitem.Element("Key")?.Value;
+                            GroupClass.GroupTooltip = XCitem.Element("Tooltip")?.Value;
+
+                            foreach (XElement Xentry in XCitem.Elements("Entry"))
+                            {
+                                LoadEntry(Xentry, GroupClass);
+                            }
+                        }
+                        else if (XCitem.Name == "Entry")
+                        {
+                            LoadEntry(XCitem, null); // Pass the XElement if needed
+                        }
+                    }
+                        
+
+                    void LoadEntry(XElement Xentry, Group MyGroup) 
+                    {
                         Entry EntryClass = new();
                         EditorClass.StandardEditorData.MasterEntryList.Add(EntryClass);
+                        if (MyGroup != null) { MyGroup.EntryList.Add(EntryClass); } //Group adding.
+                        if (MyGroup == null) { ColumnClass.ItemBaseList.Add(EntryClass); } //Column adding.
+                        
 
                         EntryClass.Name = Xentry.Element("Name")?.Value;
                         EntryClass.WorkshopTooltip = Xentry.Element("Tooltip")?.Value;
@@ -400,23 +422,6 @@ namespace GameEditorStudio
                                 EntryClass.EntryTypeBitFlag.BitFlag6Name = XBitFlag.Element("Flag6Name")?.Value;
                                 EntryClass.EntryTypeBitFlag.BitFlag7Name = XBitFlag.Element("Flag7Name")?.Value;
                                 EntryClass.EntryTypeBitFlag.BitFlag8Name = XBitFlag.Element("Flag8Name")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag1CheckText = XBitFlag.Element("Flag1CheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag2CheckText = XBitFlag.Element("Flag2CheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag3CheckText = XBitFlag.Element("Flag3CheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag4CheckText = XBitFlag.Element("Flag4CheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag5CheckText = XBitFlag.Element("Flag5CheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag6CheckText = XBitFlag.Element("Flag6CheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag7CheckText = XBitFlag.Element("Flag7CheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag8CheckText = XBitFlag.Element("Flag8CheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag1UncheckText = XBitFlag.Element("Flag1UncheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag2UncheckText = XBitFlag.Element("Flag2UncheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag3UncheckText = XBitFlag.Element("Flag3UncheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag4UncheckText = XBitFlag.Element("Flag4UncheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag5UncheckText = XBitFlag.Element("Flag5UncheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag6UncheckText = XBitFlag.Element("Flag6UncheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag7UncheckText = XBitFlag.Element("Flag7UncheckText")?.Value;
-                                //EntryClass.EntryTypeBitFlag.BitFlag8UncheckText = XBitFlag.Element("Flag8UncheckText")?.Value;
-
                             }
                         }
 
@@ -495,7 +500,7 @@ namespace GameEditorStudio
                                             "You can fix this IF you know what your doing by changing that entrys linked text data. (It's probably a menu type entry), "
 
                                             );
-                                        
+
                                     }
 
                                     //if (EntryClass.EntryTypeMenu.LinkedEditor == null)
@@ -537,8 +542,10 @@ namespace GameEditorStudio
 
 
 
-                        ColumnClass.EntryList.Add(EntryClass);
-                    }
+                        
+                    }//End of LoadEntry method
+
+                    
                 }
                 
 

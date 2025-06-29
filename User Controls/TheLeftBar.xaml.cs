@@ -460,22 +460,18 @@ namespace GameEditorStudio
                 }
             }
 
-            foreach (var TheEditor in Database.GameEditors)  //This code chunk is my ultra lazy way to update every Dropdown & List across all editors the moment any item changes its name incase that data is used in them.
+            //This code chunk is my ultra lazy way to update every Dropdown & List across all editors the moment any item changes its name incase that data is used in them.
+            foreach (var TheEditor in Database.GameEditors.Values)  
             {
-                foreach (var Cats in TheEditor.Value.StandardEditorData.CategoryList)
+                foreach (Entry entry in TheEditor.StandardEditorData.MasterEntryList) 
                 {
-                    foreach (var Grops in Cats.ColumnList)
+                    if (entry.NewSubType == EntrySubTypes.Menu)
                     {
-                        foreach (var EndEntry in Grops.EntryList)
-                        {
-                            if (EndEntry.NewSubType == EntrySubTypes.Menu)
-                            {
 
-                                Database.EntryManager.EntryChange(Database, EntrySubTypes.Menu, TheWorkshop, EndEntry);
-                            }
-                        }
+                        Database.EntryManager.EntryChange(Database, EntrySubTypes.Menu, TheWorkshop, entry);
                     }
                 }
+                
             }
 
 

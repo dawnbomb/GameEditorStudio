@@ -20,10 +20,12 @@ namespace GameEditorStudio
             Column EntryColumn = EntryClass.EntryColumn;
             int Index = EntryColumn.ColumnPanel.Children.IndexOf(EntryClass.EntryBorder);
             EntryColumn.ColumnPanel.Children.Remove(EntryClass.EntryBorder); //Remove the entry from the column, so we can add it to the group.
+            int ItemIndex = EntryColumn.ItemBaseList.IndexOf(EntryClass);   
+            EntryColumn.ItemBaseList.Remove(EntryClass);
 
             Group NewGroup = new();
             NewGroup.GroupColumn = EntryColumn;
-            EntryColumn.MasterList.Add(NewGroup); //Add the new group to the column's master list.
+            EntryColumn.ItemBaseList.Insert(ItemIndex, NewGroup); //Add the new group to the column's master list. //FIX
 
             Border GroupBorder = NewGroup.GroupBorder;
             GroupBorder.Margin = new Thickness(0, 0, 0, 0);
@@ -51,6 +53,8 @@ namespace GameEditorStudio
             {
                 EntryClass.EntryEditor.Workshop.GroupClass = NewGroup; 
                 EntryClass.EntryEditor.Workshop.GeneralGroup.IsSelected = true;
+                EntryClass.EntryEditor.Workshop.PropertiesGroupNameBox.Text = NewGroup.GroupName;
+                EntryClass.EntryEditor.Workshop.PropertiesGroupTooltipBox.Text = NewGroup.GroupTooltip;
 
                 e.Handled = true; // Prevents the event from bubbling up to the DockPanel, which would cause the entry to be selected instead of the group.
                                 
@@ -107,7 +111,7 @@ namespace GameEditorStudio
                 else if (EntryToMove.EntryGroup == null) //FROM COULMN.
                 {
                     EntryToMove.EntryColumn.ColumnPanel.Children.Remove(EntryToMove.EntryBorder);
-                    EntryToMove.EntryColumn.EntryList.Remove(EntryToMove);
+                    EntryToMove.EntryColumn.ItemBaseList.Remove(EntryToMove);
                 }
 
                 if (EntryToMoveUnder.EntryGroup != null) //TO GROUP.
@@ -121,10 +125,10 @@ namespace GameEditorStudio
                 }
                 else if (EntryToMoveUnder.EntryGroup == null) //TO COLUMN. 
                 {
-                    int ToIndex = EntryToMoveUnder.EntryColumn.EntryList.IndexOf(EntryToMoveUnder) + i; // the i fixes a bug where entry list drops in reverse order. 
+                    int ToIndex = EntryToMoveUnder.EntryColumn.ItemBaseList.IndexOf(EntryToMoveUnder) + i; // the i fixes a bug where entry list drops in reverse order. 
 
                     EntryToMoveUnder.EntryColumn.ColumnPanel.Children.Insert(ToIndex + 2, EntryToMove.EntryBorder);
-                    EntryToMoveUnder.EntryColumn.EntryList.Insert(ToIndex + 1, EntryToMove);
+                    EntryToMoveUnder.EntryColumn.ItemBaseList.Insert(ToIndex + 1, EntryToMove);
                 }                
 
                 EntryToMove.EntryColumn = EntryToMoveUnder.EntryColumn; //DO NOT REFER TO COLUMN CLASS DIRECTLY, I HAVE NO IDEA WHY.                    
@@ -157,7 +161,7 @@ namespace GameEditorStudio
                 else if (EntryToMove.EntryGroup == null)
                 {
                     EntryToMove.EntryColumn.ColumnPanel.Children.Remove(EntryToMove.EntryBorder);
-                    EntryToMove.EntryColumn.EntryList.Remove(EntryToMove);                    
+                    EntryToMove.EntryColumn.ItemBaseList.Remove(EntryToMove);                    
                 }
 
                 AfterGroup.GroupPanel.Children.Add(EntryToMove.EntryBorder);
@@ -190,10 +194,10 @@ namespace GameEditorStudio
                 }
 
                 EntryToMove.EntryColumn.ColumnPanel.Children.Remove(EntryToMove.EntryBorder);
-                EntryToMove.EntryColumn.EntryList.Remove(EntryToMove);
+                EntryToMove.EntryColumn.ItemBaseList.Remove(EntryToMove);
 
                 Column.ColumnPanel.Children.Add(EntryToMove.EntryBorder);
-                Column.EntryList.Add(EntryToMove);
+                Column.ItemBaseList.Add(EntryToMove);
 
                 EntryToMove.EntryColumn = Column; //DO NOT REFER TO COLUMN CLASS DIRECTLY, I HAVE NO IDEA WHY.                    
                 EntryToMove.EntryRow = Column.ColumnRow;
@@ -366,7 +370,7 @@ namespace GameEditorStudio
             {
                 foreach (Column ColumnClass in CatClass.ColumnList.ToList())
                 {
-                    foreach (Group GroupClass in ColumnClass.MasterList.ToList()) //Delete any empty groups in each column.
+                    foreach (Group GroupClass in ColumnClass.ItemBaseList.OfType<Group>().ToList()) //Delete any empty groups in each column.
                     {
                         if (GroupClass.EntryList.Count == 0) //Delete group if it's empty. 
                         {
@@ -374,7 +378,7 @@ namespace GameEditorStudio
                         }
                     }
 
-                    if (ColumnClass.EntryList == null || ColumnClass.EntryList.Count == 0) //Delete column if it's empty. 
+                    if (ColumnClass.ItemBaseList == null || ColumnClass.ItemBaseList.Count == 0) //Delete column if it's empty. 
                     {
                         StandardEditorData.TheEditor.Workshop.ColumnDelete(ColumnClass);
                     }
@@ -386,7 +390,7 @@ namespace GameEditorStudio
             {
                 Column LastColumn = CatClass.ColumnList.Last();
 
-                if (LastColumn.EntryList.Count != 0)
+                if (LastColumn.ItemBaseList.Count != 0)
                 {
                     StandardEditorData.TheEditor.Workshop.CreateNewColumnRight(LastColumn);
                 }
@@ -403,7 +407,7 @@ namespace GameEditorStudio
             if (Group.EntryList.Count == 0)
             {
                 Group.GroupColumn.ColumnPanel.Children.Remove(Group.GroupBorder);
-                Group.GroupColumn.MasterList.Remove(Group);
+                Group.GroupColumn.ItemBaseList.Remove(Group);
             }
             
 
@@ -415,7 +419,10 @@ namespace GameEditorStudio
 
 
             double maxWidth = 0;
-            var EntryList = ColumnClass.EntryList;
+            var EntryList = ColumnClass.ColumnRow.SWData.MasterEntryList;
+
+            //var EntryList = ColumnClass.ItemBaseList; //THE OLD CODE BEFORE GROUPS
+            //.OfType<Entry>()
 
             // Measure the desired width of each label without restrictions
             foreach (Entry entry in EntryList)
