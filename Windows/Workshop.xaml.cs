@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Formats.Asn1;
+using System.Formats.Tar;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -35,6 +36,7 @@ using System.Xml.Schema;
 using GameEditorStudio.Loading;
 using Microsoft.Windows.Themes;
 using Ookii.Dialogs.Wpf;
+using WpfHexaEditor;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using static GameEditorStudio.Entry;
 using static OfficeOpenXml.ExcelErrorValue;
@@ -429,114 +431,101 @@ namespace GameEditorStudio
 
         public void UpdateEntryDecorations() 
         {
-            foreach (var editor in MyDatabase.GameEditors)
+            foreach (var editor in MyDatabase.GameEditors.Values)
             {
-                if (editor.Value.EditorType != "DataTable") { continue; }
+                if (editor.EditorType != "DataTable") { continue; }
 
-
-                foreach (var row in editor.Value.StandardEditorData.CategoryList)
+                foreach (var row in editor.StandardEditorData.CategoryList)
                 {
-                    bool RowIsVisible = false;
+                    row.CategoryDockPanel.Visibility = Visibility.Collapsed;
 
                     foreach (var column in row.ColumnList)
                     {
-                        bool ColumnIsVisible = false;
+                        column.ColumnPanel.Visibility = Visibility.Collapsed;
 
-                        foreach (var entry in column.EntryList)
+                        foreach (Group group in column.ItemBaseList.OfType<Group>())
                         {
-
-                            if (Properties.Settings.Default.ShowEntryAddress == true)
-                            {
-                                entry.EntryPrefix.Visibility = Visibility.Visible;
-                            }
-                            else if (Properties.Settings.Default.ShowEntryAddress == false) 
-                            {
-                                entry.EntryPrefix.Visibility = Visibility.Collapsed;
-                            }
-
-                            try
-                            {
-                                if (Properties.Settings.Default.EntryAddressType == "Decimal") //Properties.Settings.Default.EntryPrefix = "Row Offset - Decimal Starting at 0";
-                                {
-
-                                    entry.EntryPrefix.Content = entry.RowOffset + int.Parse(EntryAddressOffsetTextbox.Text);
-
-                                }
-                                else if (Properties.Settings.Default.EntryAddressType == "Hex") //Properties.Settings.Default.EntryPrefix = "Row Offset - Hex Starting at 0x00";
-                                {
-                                    entry.EntryPrefix.Content = (entry.RowOffset + int.Parse(EntryAddressOffsetTextbox.Text)).ToString("X");
-
-                                }
-                            }
-                            catch 
-                            {
-                            
-                            }                            
-
-                            if (entry.IsEntryHidden == true || entry.IsTextInUse == true)
-                            {
-                                if (Properties.Settings.Default.ShowHiddenEntrys == true)
-                                {
-                                    entry.EntryBorder.Visibility = Visibility.Visible;
-                                }
-                                else if (Properties.Settings.Default.ShowHiddenEntrys == false)
-                                {
-                                    entry.EntryBorder.Visibility = Visibility.Collapsed;
-                                }
-                            }
-                            if (entry.IsEntryHidden == false && entry.IsTextInUse == false)
-                            {
-                                RowIsVisible = true;
-                                ColumnIsVisible = true;
-                            }
-
-                            if (Properties.Settings.Default.ShowSymbology == true)
-                            {
-                                entry.Symbology.Visibility = Visibility.Visible;
-
-                            }
-                            else if (Properties.Settings.Default.ShowSymbology == false)
-                            {
-                                entry.Symbology.Visibility = Visibility.Collapsed;
-                            }
-
-
+                            group.GroupPanel.Visibility = Visibility.Collapsed;
                         }
-
-                        if (Properties.Settings.Default.ShowHiddenEntrys == true) //Will show / hide the column itself if every entry is hidden and hiddens are not set to visible. 
-                        {
-                            column.ColumnPanel.Visibility = Visibility.Visible;
-                        }
-                        else if (Properties.Settings.Default.ShowHiddenEntrys == false)
-                        {
-                            if (ColumnIsVisible == false) 
-                            { 
-                                column.ColumnPanel.Visibility = Visibility.Collapsed;
-                            }
-                            else
-                            { 
-                                column.ColumnPanel.Visibility = Visibility.Visible;
-                            }
-                        }
-                        
-                    }
-
-                    if (Properties.Settings.Default.ShowHiddenEntrys == true) //Will show / hide the column itself if every entry is hidden and hiddens are not set to visible. 
-                    {
-                        row.CategoryDockPanel.Visibility = Visibility.Visible;
-                    }
-                    else if (Properties.Settings.Default.ShowHiddenEntrys == false)
-                    {
-                        if (RowIsVisible == false)
-                        {
-                            row.CategoryDockPanel.Visibility = Visibility.Collapsed;
-                        }
-                        else
-                        {
-                            row.CategoryDockPanel.Visibility = Visibility.Visible;
-                        }
-                    }
+                    }                    
                 }
+
+                foreach (Entry entry in editor.StandardEditorData.MasterEntryList)
+                {
+                    if (Properties.Settings.Default.ShowEntryAddress == true)
+                    {
+                        entry.EntryPrefix.Visibility = Visibility.Visible;
+                    }
+                    else if (Properties.Settings.Default.ShowEntryAddress == false)
+                    {
+                        entry.EntryPrefix.Visibility = Visibility.Collapsed;
+                    }
+
+                    try
+                    {
+                        if (Properties.Settings.Default.EntryAddressType == "Decimal") //Properties.Settings.Default.EntryPrefix = "Row Offset - Decimal Starting at 0";
+                        {
+
+                            entry.EntryPrefix.Content = entry.RowOffset + int.Parse(EntryAddressOffsetTextbox.Text);
+
+                        }
+                        else if (Properties.Settings.Default.EntryAddressType == "Hex") //Properties.Settings.Default.EntryPrefix = "Row Offset - Hex Starting at 0x00";
+                        {
+                            entry.EntryPrefix.Content = (entry.RowOffset + int.Parse(EntryAddressOffsetTextbox.Text)).ToString("X");
+
+                        }
+                    }
+                    catch
+                    {
+
+                    }
+
+                    if (Properties.Settings.Default.ShowSymbology == true)
+                    {
+                        entry.Symbology.Visibility = Visibility.Visible;
+
+                    }
+                    else if (Properties.Settings.Default.ShowSymbology == false)
+                    {
+                        entry.Symbology.Visibility = Visibility.Collapsed;
+                    }
+
+                    /////////// Showing Row/Column/Group //////////////////////
+
+                    if (Properties.Settings.Default.ShowHiddenEntrys == false)
+                    {
+                        if (entry.IsEntryHidden == true || entry.IsTextInUse == true)
+                        {
+                            entry.EntryBorder.Visibility = Visibility.Collapsed;
+                        }
+                        else 
+                        {
+                            entry.EntryBorder.Visibility = Visibility.Visible;
+                            entry.EntryColumn.ColumnPanel.Visibility = Visibility.Visible;
+                            entry.EntryRow.CategoryDockPanel.Visibility = Visibility.Visible;
+                            if (entry.EntryGroup != null) { entry.EntryGroup.GroupPanel.Visibility = Visibility.Visible; }
+                        }
+                    }
+                    else if (Properties.Settings.Default.ShowHiddenEntrys == true)
+                    {
+                        entry.EntryBorder.Visibility = Visibility.Visible;
+                        entry.EntryColumn.ColumnPanel.Visibility = Visibility.Visible;
+                        entry.EntryRow.CategoryDockPanel.Visibility = Visibility.Visible;
+                        if (entry.EntryGroup != null) { entry.EntryGroup.GroupPanel.Visibility = Visibility.Visible; }
+                    }
+
+                                       
+
+
+                    
+                }
+
+
+
+
+
+
+                
             }
         }
 
@@ -742,40 +731,34 @@ namespace GameEditorStudio
 
                 //This next ForEach part makes it so if any of the new final 3 bytes of what would be the new offsets are part
                 //of a merged entry, that the table start change is canceled. 
-                foreach (var row in EditorClass.StandardEditorData.CategoryList)
+
+                foreach (Entry entry in EditorClass.StandardEditorData.MasterEntryList)
                 {
-                    foreach (var column in row.ColumnList)
+                    //This makes a number called Hoi. Hoi is the new Row offset, if the editor actually changed the start byte of the file it's editing.
+                    //if it underflows, it adds tablewidth. If it overflows, it removes tablewidth. So it's always a number inside GameTableSize.
+                    int Hoi = entry.RowOffset + -NumMod;
+                    if (Hoi < 0) { Hoi = Hoi + EditorClass.StandardEditorData.DataTableRowSize; }
+                    if (Hoi > EditorClass.StandardEditorData.DataTableRowSize - 1) { Hoi = Hoi - EditorClass.StandardEditorData.DataTableRowSize; }
+
+                    if (Hoi == EditorClass.StandardEditorData.DataTableRowSize - 1) //If the new Zero minus One'th entry is already part of a size 2 entry, cancel.
                     {
-                        foreach (var entry in column.EntryList)
+                        if (entry.Bytes == 2)
                         {
-                            //This makes a number called Hoi. Hoi is the new Row offset, if the editor actually changed the start byte of the file it's editing.
-                            //if it underflows, it adds tablewidth. If it overflows, it removes tablewidth. So it's always a number inside GameTableSize.
-                            int Hoi = entry.RowOffset + -NumMod;
-                            if (Hoi < 0) { Hoi = Hoi + EditorClass.StandardEditorData.DataTableRowSize; }
-                            if (Hoi > EditorClass.StandardEditorData.DataTableRowSize - 1) { Hoi = Hoi - EditorClass.StandardEditorData.DataTableRowSize; }
-
-                            if (Hoi == EditorClass.StandardEditorData.DataTableRowSize - 1) //If the new Zero minus One'th entry is already part of a size 2 entry, cancel.
-                            {
-                                if (entry.Bytes == 2)
-                                {
-                                    PropertiesEditorTableStart.Text = OldStart.ToString();
-                                    return;
-                                }
-
-                            }
-
-                            //If the new Zero -1, or -2, or -3 entrys are already part of a size 4 entry, cancel.
-                            if (Hoi == EditorClass.StandardEditorData.DataTableRowSize - 1 || Hoi == EditorClass.StandardEditorData.DataTableRowSize - 2 || Hoi == EditorClass.StandardEditorData.DataTableRowSize - 3)
-                            {
-                                if (entry.Bytes == 4)
-                                {
-                                    PropertiesEditorTableStart.Text = OldStart.ToString();
-                                    return;
-                                }
-
-                            }
-
+                            PropertiesEditorTableStart.Text = OldStart.ToString();
+                            return;
                         }
+
+                    }
+
+                    //If the new Zero -1, or -2, or -3 entrys are already part of a size 4 entry, cancel.
+                    if (Hoi == EditorClass.StandardEditorData.DataTableRowSize - 1 || Hoi == EditorClass.StandardEditorData.DataTableRowSize - 2 || Hoi == EditorClass.StandardEditorData.DataTableRowSize - 3)
+                    {
+                        if (entry.Bytes == 4)
+                        {
+                            PropertiesEditorTableStart.Text = OldStart.ToString();
+                            return;
+                        }
+
                     }
                 }
 
@@ -783,24 +766,16 @@ namespace GameEditorStudio
                 //We have not triggered a cancelation, and are now going to actually change the table start.
 
                 EditorClass.StandardEditorData.DataTableStart = NewStart; //Changes the starting byte of the editor's table, to the new one the user wanted.
-                foreach (var row in EditorClass.StandardEditorData.CategoryList)
+                foreach (Entry entry in EditorClass.StandardEditorData.MasterEntryList)
                 {
-                    foreach (var column in row.ColumnList)
-                    {
-                        foreach (var entry in column.EntryList)
-                        {
+                    entry.RowOffset = entry.RowOffset + -NumMod;
+                    if (entry.RowOffset < 0) { entry.RowOffset = entry.RowOffset + EditorClass.StandardEditorData.DataTableRowSize; }
+                    if (entry.RowOffset > EditorClass.StandardEditorData.DataTableRowSize - 1) { entry.RowOffset = entry.RowOffset - EditorClass.StandardEditorData.DataTableRowSize; }
+                    entry.EntryPrefix.Content = entry.RowOffset.ToString();
 
-                            entry.RowOffset = entry.RowOffset + -NumMod;
-                            if (entry.RowOffset < 0) { entry.RowOffset = entry.RowOffset + EditorClass.StandardEditorData.DataTableRowSize; }
-                            if (entry.RowOffset > EditorClass.StandardEditorData.DataTableRowSize - 1) { entry.RowOffset = entry.RowOffset - EditorClass.StandardEditorData.DataTableRowSize; }
-                            entry.EntryPrefix.Content = entry.RowOffset.ToString();
-
-                            MyDatabase.EntryManager.LoadEntry(this, EditorClass, entry);
-
-
-                        }
-                    }
+                    MyDatabase.EntryManager.LoadEntry(this, EditorClass, entry);
                 }
+                
             }
 
             // +/- 1 to all offsets?
@@ -1239,25 +1214,20 @@ namespace GameEditorStudio
             {
                 if (TheEditor.EditorType == "DataTable") 
                 {
-                    foreach (Category TheCategory in TheEditor.StandardEditorData.CategoryList) 
+                    foreach (Entry entry in TheEditor.StandardEditorData.MasterEntryList)
                     {
-                        foreach (Column TheColumn in TheCategory.ColumnList) 
+                        if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor && entry.EntryTypeMenu.LinkedEditor != null)
                         {
-                            foreach (Entry TheEntry in TheColumn.EntryList) 
+                            if (entry.EntryTypeMenu.LinkedEditor == EditorClass)
                             {
-                                if (TheEntry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor && TheEntry.EntryTypeMenu.LinkedEditor != null) 
-                                {
-                                    if (TheEntry.EntryTypeMenu.LinkedEditor == EditorClass)
-                                    {
-                                        if (TheEntry.EntryByteDecimal == null) { return; } //This stops a blank from being created for a dropdown because its loading before the ByteDecimal is loaded, but also probably other misc problems.
-                                        //IE i should totally not have this code chunk here, but im still to lazy to impliment this properly, so here goes this ultra bad answer i will regret later! :D
+                                if (entry.EntryByteDecimal == null) { return; } //This stops a blank from being created for a dropdown because its loading before the ByteDecimal is loaded, but also probably other misc problems.
+                                                                                   //IE i should totally not have this code chunk here, but im still to lazy to impliment this properly, so here goes this ultra bad answer i will regret later! :D
 
-                                        MyDatabase.EntryManager.EntryChange(MyDatabase, EntrySubTypes.Menu, this, TheEntry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
-                                    }
-                                }
+                                MyDatabase.EntryManager.EntryChange(MyDatabase, EntrySubTypes.Menu, this, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
                             }
                         }
                     }
+                    
                 }
             }
         }               
@@ -1307,7 +1277,6 @@ namespace GameEditorStudio
 
             Column ColumnClass = new();
             NewRow.ColumnList.Add(ColumnClass);
-            ColumnClass.EntryList = new List<Entry>();
             ColumnClass.ColumnRow = NewRow;
             CreateSWEditorCode.CreateColumn(NewRow, ColumnClass, this, MyDatabase, -1);
 
@@ -1330,7 +1299,6 @@ namespace GameEditorStudio
 
             Column ColumnClass = new();
             NewRow.ColumnList.Add(ColumnClass);
-            ColumnClass.EntryList = new List<Entry>();
             ColumnClass.ColumnRow = NewRow;
             CreateSWEditorCode.CreateColumn(NewRow, ColumnClass, this, MyDatabase, -1);
 
@@ -1373,7 +1341,7 @@ namespace GameEditorStudio
 
         public void RowDelete(Category TheCat) 
         {
-            if (TheCat.ColumnList.Count == 0 || (TheCat.ColumnList.Count == 1 && TheCat.ColumnList[0].EntryList.Count == 0) )
+            if (TheCat.ColumnList.Count == 0 || (TheCat.ColumnList.Count == 1 && TheCat.ColumnList[0].ItemBaseList.Count == 0) )
             {
                 TheCat.SWData.MainDockPanel.Children.Remove(TheCat.CatBorder);
                 TheCat.SWData.CategoryList.Remove(TheCat);
@@ -1414,7 +1382,6 @@ namespace GameEditorStudio
         public void CreateNewColumnRight(Column TheColumn)
         {
             Column Column = new();
-            Column.EntryList = new List<Entry>();
             Column.ColumnRow = TheColumn.ColumnRow;
 
             int TheIndex = TheColumn.ColumnRow.ColumnList.IndexOf(TheColumn) + 1;
@@ -1429,7 +1396,6 @@ namespace GameEditorStudio
         public void CreateNewColumnLeft(Column TheColumn)
         {
             Column Column = new();
-            Column.EntryList = new List<Entry>();
             Column.ColumnRow = TheColumn.ColumnRow;
 
             int TheIndex = TheColumn.ColumnRow.ColumnList.IndexOf(TheColumn);
@@ -1443,7 +1409,7 @@ namespace GameEditorStudio
 
         public void ColumnDelete(Column TheColumn)
         {
-            if (TheColumn.EntryList.Count == 0)
+            if (TheColumn.ItemBaseList.Count == 0)
             {
                 TheColumn.ColumnRow.CategoryDockPanel.Children.Remove(TheColumn.ColumnPanel);
                 TheColumn.ColumnRow.ColumnList.Remove(TheColumn);
@@ -1645,91 +1611,80 @@ namespace GameEditorStudio
                 //Cancel method IF: Entry is attempting to merge with an already merged entry.
                 if (PropertiesEntryByteSizeComboBox.Text == "2 Bytes Little Endian" || PropertiesEntryByteSizeComboBox.Text == "2 Bytes Big Endian")
                 {
-                    foreach (var row in EditorClass.StandardEditorData.CategoryList)
+                    foreach (Entry entry in EditorClass.StandardEditorData.MasterEntryList)
                     {
-                        foreach (var column in row.ColumnList)
+                        if (entry.RowOffset == EntryClass.RowOffset + 1)
                         {
-                            foreach (var entry in column.EntryList)
+                            if (entry.Bytes == 2)
                             {
-                                if (entry.RowOffset == EntryClass.RowOffset + 1)
-                                {
-                                    if (entry.Bytes == 2)
-                                    {
-                                        PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                        LibraryMan.NotificationNegative("Error: Entry not merged.",
-                                            "You cannot merge an entry, with an entry that is already merged with something else. " +
-                                            "\n\n" +
-                                            "If your confused, entrys merge with those next in offset decimal order, not those that are just under them in the UI. "
-                                            );
-                                        return;
-                                    }
-                                    if (entry.IsEntryHidden == true || entry.IsTextInUse == true)
-                                    {
-                                        PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                        LibraryMan.NotificationNegative("Error: Entry not merged.",
-                                            "You cannot merge an entry, with an entry that is disabled. " +
-                                            "\n\n" +
-                                            "Disabled entrys have a red color tint and users can't edit them. " +
-                                            "Entrys can be disabled for a few reasons. One, they are disabled automatically if they are text used in the editor. " +
-                                            "Two, an editor maker can choose to disable them manually. As for why, there are any number of reasons, but one example " +
-                                            "is if editing that information causes the game to crash. " +
-                                            "\n\n" +
-                                            "You can manually un-disable the entry, but entrys related to text will automatically re-disable themself when the editor loads back up, " +
-                                            "even if you save them as non-disabled."
-                                            );
-                                        return;
-                                    }
-                                }
+                                PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
+                                LibraryMan.NotificationNegative("Error: Entry not merged.",
+                                    "You cannot merge an entry, with an entry that is already merged with something else. " +
+                                    "\n\n" +
+                                    "If your confused, entrys merge with those next in offset decimal order, not those that are just under them in the UI. "
+                                    );
+                                return;
+                            }
+                            if (entry.IsEntryHidden == true || entry.IsTextInUse == true)
+                            {
+                                PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
+                                LibraryMan.NotificationNegative("Error: Entry not merged.",
+                                    "You cannot merge an entry, with an entry that is disabled. " +
+                                    "\n\n" +
+                                    "Disabled entrys have a red color tint and users can't edit them. " +
+                                    "Entrys can be disabled for a few reasons. One, they are disabled automatically if they are text used in the editor. " +
+                                    "Two, an editor maker can choose to disable them manually. As for why, there are any number of reasons, but one example " +
+                                    "is if editing that information causes the game to crash. " +
+                                    "\n\n" +
+                                    "You can manually un-disable the entry, but entrys related to text will automatically re-disable themself when the editor loads back up, " +
+                                    "even if you save them as non-disabled."
+                                    );
+                                return;
                             }
                         }
                     }
+                    
                 }
 
                 //Cancel method IF: Entry is attempting to merge with an already merged entry.
                 if (PropertiesEntryByteSizeComboBox.Text == "4 Bytes Little Endian" || PropertiesEntryByteSizeComboBox.Text == "4 Bytes Big Endian")
                 {
-                    foreach (var row in EditorClass.StandardEditorData.CategoryList)
+                    foreach (Entry entry in EditorClass.StandardEditorData.MasterEntryList)
                     {
-                        foreach (var column in row.ColumnList)
+                        if (entry.RowOffset == EntryClass.RowOffset + 1 || entry.RowOffset == EntryClass.RowOffset + 2 || entry.RowOffset == EntryClass.RowOffset + 3)
                         {
-                            foreach (var entry in column.EntryList)
+                            if (entry.Bytes == 2 || entry.Bytes == 4)
                             {
-                                if (entry.RowOffset == EntryClass.RowOffset + 1 || entry.RowOffset == EntryClass.RowOffset + 2 || entry.RowOffset == EntryClass.RowOffset + 3)
-                                {
-                                    if (entry.Bytes == 2 || entry.Bytes == 4)
-                                    {
-                                        PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                        LibraryMan.NotificationNegative("Error: Entry not merged.",
-                                           "You cannot merge an entry, with an entry that is already merged with something else. " +
-                                           "\n\n" +
-                                           "Atleast one of the 4 bytes / entrys you were attempting to merge with, is already merged. " +
-                                           "If your confused, entrys merge with those next in offset decimal order, not those that are just under them in the UI. "
-                                            );
-                                        return;
-                                    }
-                                    if (entry.IsEntryHidden == true || entry.IsTextInUse == true)
-                                    {
-                                        PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                        LibraryMan.NotificationNegative("Error: Entry not merged.",
-                                            "You cannot merge an entry, with an entry that is disabled. " +
-                                            "\n\n" +
-                                            "atleast one of the 4 entrys you were trying to merge, is disabled." +
-                                            "\n\n" +
-                                            "Disabled entrys have a red color tint and users can't edit them. " +
-                                            "Entrys can be disabled for a few reasons. One, they are disabled automatically if they are text used in the editor. " +
-                                            "Two, an editor maker can choose to disable them manually. As for why, there are any number of reasons, but one example " +
-                                            "is if editing that information causes the game to crash. " +
-                                            "\n\n" +
-                                            "You can manually un-disable the entry, but entrys related to text will automatically re-disable themself when the editor loads back up, " +
-                                            "even if you save them as non-disabled."
-                                            );
-                                        return;
-                                    }
-                                }
-
+                                PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
+                                LibraryMan.NotificationNegative("Error: Entry not merged.",
+                                   "You cannot merge an entry, with an entry that is already merged with something else. " +
+                                   "\n\n" +
+                                   "Atleast one of the 4 bytes / entrys you were attempting to merge with, is already merged. " +
+                                   "If your confused, entrys merge with those next in offset decimal order, not those that are just under them in the UI. "
+                                    );
+                                return;
+                            }
+                            if (entry.IsEntryHidden == true || entry.IsTextInUse == true)
+                            {
+                                PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
+                                LibraryMan.NotificationNegative("Error: Entry not merged.",
+                                    "You cannot merge an entry, with an entry that is disabled. " +
+                                    "\n\n" +
+                                    "atleast one of the 4 entrys you were trying to merge, is disabled." +
+                                    "\n\n" +
+                                    "Disabled entrys have a red color tint and users can't edit them. " +
+                                    "Entrys can be disabled for a few reasons. One, they are disabled automatically if they are text used in the editor. " +
+                                    "Two, an editor maker can choose to disable them manually. As for why, there are any number of reasons, but one example " +
+                                    "is if editing that information causes the game to crash. " +
+                                    "\n\n" +
+                                    "You can manually un-disable the entry, but entrys related to text will automatically re-disable themself when the editor loads back up, " +
+                                    "even if you save them as non-disabled."
+                                    );
+                                return;
                             }
                         }
                     }
+                    
                 }
 
 
@@ -1827,7 +1782,7 @@ namespace GameEditorStudio
                             {
                                 foreach (var column in row.ColumnList)
                                 {
-                                    foreach (Entry entry in column.EntryList)
+                                    foreach (Entry entry in column.ItemBaseList)
                                     {
                                         if (entry.RowOffset == num) //Search for entry with offset+1 over current entry.  Offset+X
                                         {
@@ -1850,14 +1805,14 @@ namespace GameEditorStudio
                     {
 
 
-                        int MyIndex = entry.EntryColumn.EntryList.IndexOf(entry); //entry.EntryColumn.ColumnGrid.Children.IndexOf(entry.EntryDockPanel);
-                        entry.EntryColumn.EntryList.RemoveAt(MyIndex);
+                        int MyIndex = entry.EntryColumn.ItemBaseList.IndexOf(entry); //entry.EntryColumn.ColumnGrid.Children.IndexOf(entry.EntryDockPanel);
+                        entry.EntryColumn.ItemBaseList.RemoveAt(MyIndex);
                         entry.EntryColumn.ColumnPanel.Children.Remove(entry.EntryBorder);
 
 
                         int EntryLocation = ColumnClass.ColumnPanel.Children.IndexOf(EntryClass.EntryBorder) - 1; //Counting starts at 1, but the first child is 0.
                         int Diffrence = entry.RowOffset - EntryClass.RowOffset;
-                        ColumnClass.EntryList.Insert(EntryLocation + Diffrence, entry);
+                        ColumnClass.ItemBaseList.Insert(EntryLocation + Diffrence, entry);
                         ColumnClass.ColumnPanel.Children.Insert(EntryLocation + Diffrence + 1, entry.EntryBorder);
 
 
@@ -1874,30 +1829,26 @@ namespace GameEditorStudio
                         }
                         foreach (var num in list)
                         {
-                            foreach (var row in EditorClass.StandardEditorData.CategoryList)
+                            foreach (Entry entry in EditorClass.StandardEditorData.MasterEntryList)
                             {
-                                foreach (var column in row.ColumnList)
+                                if (entry.RowOffset == num) //Search for entry with offset+1 over current entry.  Offset+X
                                 {
-                                    foreach (var entry in column.EntryList)
-                                    {
-                                        if (entry.RowOffset == num) //Search for entry with offset+1 over current entry.  Offset+X
-                                        {
-                                            entry.Endianness = "1";
-                                            entry.Bytes = 1;
-                                            MyDatabase.EntryManager.LoadEntry(this, EditorClass, entry);
-                                            //EntryData.ReloadEntry(Database, EditorClass, entry);
-                                            entry.EntryBorder.Visibility = Visibility.Visible;
+                                    entry.Endianness = "1";
+                                    entry.Bytes = 1;
+                                    MyDatabase.EntryManager.LoadEntry(this, EditorClass, entry);
+                                    //EntryData.ReloadEntry(Database, EditorClass, entry);
+                                    entry.EntryBorder.Visibility = Visibility.Visible;
 
-                                        }
-                                    }
                                 }
                             }
+                            
                         }
                     }
 
 
 
                     //I am currently not allowing size 4+ of Lists, i don't know that any game that uses more then 65K options to select from in one menu.
+                    //I ACTUALLY NEED TO ADD THIS. ITS NOT ABOUT GAMES NOT NEEDING IT, IT'S ABOUT THAT THE FUCKING DO IT ANYWAY, AND NOT SUPPORTING IT MAKES EDITORS LOOK UGLY!!! (AND IS MISLEADING TO USERS!)
 
                     //if (NewSize == 4)   
                     //{

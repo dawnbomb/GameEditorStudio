@@ -63,7 +63,7 @@ namespace GameEditorStudio
         public string CategoryName { get; set; } = "New Category"; //XML the name of a row.
         public Border CatBorder { get; set; } = new();
         public DockPanel CategoryDockPanel { get; set; } = new();
-        public List<Column>? ColumnList { get; set; } = new();
+        public List<Column> ColumnList { get; set; } = new();
         public Label CategoryLabel { get; set; }
         public StandardEditorData SWData { get; set; }
 
@@ -133,9 +133,7 @@ namespace GameEditorStudio
     {
         public string ColumnName { get; set; } = "New Column"; //XML The name of a column.
         public DockPanel? ColumnPanel { get; set; }
-        public List<Entry>? EntryList { get; set; } = new();
-
-        public List<CItem>? MasterList { get; set; } = new();
+        public List<ItemBase> ItemBaseList { get; set; } = new();
         public Label ColumnLabel { get; set; }
         public Category ColumnRow { get; set; }
 
@@ -144,9 +142,9 @@ namespace GameEditorStudio
         public string Key { get; set; } = LibraryMan.GenerateKey(); //Unused, Only exists incase of future features. 
     }
 
-    public abstract class CItem { }
+    public abstract class ItemBase { } //A group or an entry. Groups can hold entrys, and also look cool and are a way to sort stuff. 
 
-    public class Group : CItem //A way to group entries together, like a folder.
+    public class Group : ItemBase //A way to group entries together, like a folder.
     {
         public string GroupName { get; set; } = "New Group"; //XML The name of a column.
         public string GroupTooltip { get; set; } = "";
@@ -159,7 +157,7 @@ namespace GameEditorStudio
     }
     
 
-    public class Entry : CItem
+    public class Entry : ItemBase
     {
         public string Name { get; set; } = "";  //XML //The Name / Label an entry Gets. Later, it will default to "???"  
         public string WorkshopTooltip { get; set; } = ""; //XML

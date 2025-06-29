@@ -49,24 +49,16 @@ namespace GameEditorStudio
 
             for (int ColumnInRow1 = 0; ColumnInRow1 != Columns; ColumnInRow1++) //Setting up the first row, to get Column / Entry names.
             {
-                foreach (var cat in EditorClass.StandardEditorData.CategoryList)
+                foreach (Entry entry in EditorClass.StandardEditorData.MasterEntryList)
                 {
-                    foreach (var column in cat.ColumnList)
+                    if (entry.RowOffset == ColumnInRow1)
                     {
-                        foreach (var entry in column.EntryList)
-                        {
-                            if (entry.RowOffset == ColumnInRow1) 
-                            {
-                                EditorDataDecimalCurrent = EditorDataDecimalCurrent + entry.Name + ",";
-                                EditorDataHexCurrent = EditorDataHexCurrent + entry.Name + ",";
-                                EditorDataDecimalOrigonal = EditorDataDecimalOrigonal + entry.Name + ",";
-                                EditorDataHexOrigonal = EditorDataHexOrigonal + entry.Name + ",";
-                            }
-
-                        }
+                        EditorDataDecimalCurrent = EditorDataDecimalCurrent + entry.Name + ",";
+                        EditorDataHexCurrent = EditorDataHexCurrent + entry.Name + ",";
+                        EditorDataDecimalOrigonal = EditorDataDecimalOrigonal + entry.Name + ",";
+                        EditorDataHexOrigonal = EditorDataHexOrigonal + entry.Name + ",";
                     }
                 }
-
             }
             EditorDataDecimalCurrent = EditorDataDecimalCurrent + "\r\n";
             EditorDataHexCurrent = EditorDataHexCurrent + "\r\n";

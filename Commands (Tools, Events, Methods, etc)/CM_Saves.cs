@@ -300,14 +300,38 @@ namespace GameEditorStudio
                                         writer.WriteElementString("Name", column.ColumnName);
                                         writer.WriteElementString("Key", column.Key);
 
-
-                                        foreach (var entry in column.EntryList)
+                                        foreach (ItemBase itembase in column.ItemBaseList) 
                                         {
-                                            writer.WriteStartElement("Entry");                                            
+                                            if (itembase is Entry Ientry)
+                                            {
+                                                SaveAnEntry(Ientry);
+                                            }
+
+                                            if (itembase is Group group) 
+                                            {
+                                                writer.WriteStartElement("Group");
+                                                writer.WriteElementString("Name", group.GroupName);
+                                                writer.WriteElementString("Tooltip", group.GroupTooltip);
+                                                writer.WriteElementString("Key", group.Key);
+
+                                                foreach (Entry Gentry in group.EntryList)
+                                                {
+                                                    SaveAnEntry(Gentry);
+                                                }
+
+                                                writer.WriteEndElement(); //End Group
+                                            }
+
+                                            
+                                        }
+
+                                        void SaveAnEntry(Entry entry) 
+                                        {
+                                            writer.WriteStartElement("Entry");
                                             writer.WriteElementString("Name", entry.Name);
                                             writer.WriteElementString("Tooltip", entry.WorkshopTooltip);
                                             writer.WriteElementString("IsNameHidden", entry.IsNameHidden.ToString());
-                                            writer.WriteElementString("IsEntryHidden", entry.IsEntryHidden.ToString());  
+                                            writer.WriteElementString("IsEntryHidden", entry.IsEntryHidden.ToString());
                                             writer.WriteElementString("RowOffset", entry.RowOffset.ToString());
                                             writer.WriteElementString("Bytes", entry.Bytes.ToString());
                                             //writer.WriteElementString("Endianness", entry.Endianness.ToString());
@@ -329,8 +353,6 @@ namespace GameEditorStudio
                                             if (entry.NewSubType == Entry.EntrySubTypes.CheckBox)
                                             {
                                                 writer.WriteStartElement("CheckBox");
-                                                //writer.WriteElementString("TrueText", entry.EntryTypeCheckBox.TrueText.ToString());
-                                                //writer.WriteElementString("FalseText", entry.EntryTypeCheckBox.FalseText.ToString());
                                                 writer.WriteElementString("TrueValue", entry.EntryTypeCheckBox.TrueValue.ToString());
                                                 writer.WriteElementString("FalseValue", entry.EntryTypeCheckBox.FalseValue.ToString());
                                                 writer.WriteEndElement(); //End CheckBox 
@@ -341,29 +363,13 @@ namespace GameEditorStudio
                                             {
                                                 writer.WriteStartElement("BitFlag");
                                                 writer.WriteElementString("Flag1Name", entry.EntryTypeBitFlag.BitFlag1Name.ToString());
-                                                //writer.WriteElementString("Flag1CheckText", entry.EntryTypeBitFlag.BitFlag1CheckText.ToString());
-                                                //writer.WriteElementString("Flag1UncheckText", entry.EntryTypeBitFlag.BitFlag1UncheckText.ToString());
                                                 writer.WriteElementString("Flag2Name", entry.EntryTypeBitFlag.BitFlag2Name.ToString());
-                                                //writer.WriteElementString("Flag2CheckText", entry.EntryTypeBitFlag.BitFlag2CheckText.ToString());
-                                                //writer.WriteElementString("Flag2UncheckText", entry.EntryTypeBitFlag.BitFlag2UncheckText.ToString());
                                                 writer.WriteElementString("Flag3Name", entry.EntryTypeBitFlag.BitFlag3Name.ToString());
-                                                //writer.WriteElementString("Flag3CheckText", entry.EntryTypeBitFlag.BitFlag3CheckText.ToString());
-                                                //writer.WriteElementString("Flag3UncheckText", entry.EntryTypeBitFlag.BitFlag3UncheckText.ToString());
                                                 writer.WriteElementString("Flag4Name", entry.EntryTypeBitFlag.BitFlag4Name.ToString());
-                                                //writer.WriteElementString("Flag4CheckText", entry.EntryTypeBitFlag.BitFlag4CheckText.ToString());
-                                                //writer.WriteElementString("Flag4UncheckText", entry.EntryTypeBitFlag.BitFlag4UncheckText.ToString());
                                                 writer.WriteElementString("Flag5Name", entry.EntryTypeBitFlag.BitFlag5Name.ToString());
-                                                //writer.WriteElementString("Flag5CheckText", entry.EntryTypeBitFlag.BitFlag5CheckText.ToString());
-                                                //writer.WriteElementString("Flag5UncheckText", entry.EntryTypeBitFlag.BitFlag5UncheckText.ToString());
                                                 writer.WriteElementString("Flag6Name", entry.EntryTypeBitFlag.BitFlag6Name.ToString());
-                                                //writer.WriteElementString("Flag6CheckText", entry.EntryTypeBitFlag.BitFlag6CheckText.ToString());
-                                                //writer.WriteElementString("Flag6UncheckText", entry.EntryTypeBitFlag.BitFlag6UncheckText.ToString());
                                                 writer.WriteElementString("Flag7Name", entry.EntryTypeBitFlag.BitFlag7Name.ToString());
-                                                //writer.WriteElementString("Flag7CheckText", entry.EntryTypeBitFlag.BitFlag7CheckText.ToString());
-                                                //writer.WriteElementString("Flag7UncheckText", entry.EntryTypeBitFlag.BitFlag7UncheckText.ToString());
                                                 writer.WriteElementString("Flag8Name", entry.EntryTypeBitFlag.BitFlag8Name.ToString());
-                                                //writer.WriteElementString("Flag8CheckText", entry.EntryTypeBitFlag.BitFlag8CheckText.ToString());
-                                                //writer.WriteElementString("Flag8UncheckText", entry.EntryTypeBitFlag.BitFlag8UncheckText.ToString());
                                                 writer.WriteEndElement(); //End BitFlag    
                                             }
 
@@ -376,12 +382,12 @@ namespace GameEditorStudio
                                                 if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List) { writer.WriteElementString("MenuType", "List"); }
                                                 if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile) { writer.WriteElementString("LinkType", "DataFile"); }
                                                 if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile) { writer.WriteElementString("LinkType", "TextFile"); }
-                                                if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor) { writer.WriteElementString("LinkType", "Editor"); }                                                
+                                                if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor) { writer.WriteElementString("LinkType", "Editor"); }
                                                 if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing) { writer.WriteElementString("LinkType", "Nothing"); }
 
-                                                                                             
 
-                                                if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile) 
+
+                                                if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile)
                                                 {
                                                     writer.WriteStartElement("FileData");
                                                     writer.WriteElementString("FirstNameID", entry.EntryTypeMenu.FirstNameID.ToString());
@@ -411,11 +417,11 @@ namespace GameEditorStudio
                                                         writer.WriteElementString("EditorName", entry.EntryTypeMenu.OldLinkedEditorName); //Yes we're saving the OLD Editor. This is NOT an axident!
                                                         writer.WriteElementString("EditorKey", entry.EntryTypeMenu.OldLinkedEditorKey);
                                                     }
-                                                    else 
+                                                    else
                                                     {
                                                         writer.WriteElementString("EditorName", entry.EntryTypeMenu.LinkedEditor.EditorName); //Only used to notify if a link to editor is missing. (The editor is missing)
                                                         writer.WriteElementString("EditorKey", entry.EntryTypeMenu.LinkedEditor.EditorKey);
-                                                    }                                                    
+                                                    }
                                                     //writer.WriteElementString("Start", entry.EntryTypeMenu.Start.ToString());
                                                     writer.WriteElementString("NameCount", entry.EntryTypeMenu.NameCount.ToString());
                                                     writer.WriteEndElement(); //End FileData
@@ -433,7 +439,7 @@ namespace GameEditorStudio
                                                     }
                                                     writer.WriteEndElement(); //End NameList
                                                 }
-                                                
+
                                                 writer.WriteEndElement(); //End Menu    
 
                                             }
@@ -446,6 +452,8 @@ namespace GameEditorStudio
 
                                             writer.WriteEndElement(); //End Entry
                                         }
+
+                                        
                                         writer.WriteEndElement(); //End Column
                                     }
                                     writer.WriteEndElement(); //End Category
@@ -525,39 +533,30 @@ namespace GameEditorStudio
                                 
                             }
 
+                            
+
                             foreach (Editor TheEditor in Database.GameEditors.Values) 
                             {
-                                foreach (Category TheCat in TheEditor.StandardEditorData.CategoryList) 
+                                foreach (Entry theEntry in TheEditor.StandardEditorData.MasterEntryList)
                                 {
-                                    foreach (Column TheColumn in TheCat.ColumnList) 
+                                    if (theEntry.NewSubType == Entry.EntrySubTypes.Menu)
                                     {
-                                        foreach (Entry theEntry in TheColumn.EntryList) 
+                                        if (theEntry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile || theEntry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
                                         {
-                                            if (theEntry.NewSubType == Entry.EntrySubTypes.Menu) 
+                                            if (theEntry.EntryTypeMenu.GameFile != null)
                                             {
-                                                if (theEntry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile || theEntry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile) 
+                                                GameFile AFile = theEntry.EntryTypeMenu.GameFile;
+                                                if (!SomeGameFiles.Contains(AFile))
                                                 {
-                                                    if (theEntry.EntryTypeMenu.GameFile != null) 
-                                                    {
-                                                        GameFile AFile = theEntry.EntryTypeMenu.GameFile;
-                                                        if (!SomeGameFiles.Contains(AFile))
-                                                        {
-                                                            SomeGameFiles.Add(AFile);
-                                                        }
-                                                    }
+                                                    SomeGameFiles.Add(AFile);
                                                 }
-
-                                                //if (theEntry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor)
-                                                //{
-                                                    
-                                                //}
-
-
-
                                             }
                                         }
+
+
                                     }
                                 }
+                                
                             }
 
                             foreach (GameFile AGameFile in SomeGameFiles)
