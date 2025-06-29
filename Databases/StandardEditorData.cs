@@ -61,6 +61,7 @@ namespace GameEditorStudio
     public class Category //NOTE: This used to be called a row, and comments all over the program may still use this name.
     {
         public string CategoryName { get; set; } = "New Category"; //XML the name of a row.
+        public string Tooltip { get; set; } = "";
         public Border CatBorder { get; set; } = new();
         public DockPanel CategoryDockPanel { get; set; } = new();
         public List<Column> ColumnList { get; set; } = new();

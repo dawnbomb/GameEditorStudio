@@ -292,6 +292,7 @@ namespace GameEditorStudio
                                     writer.WriteStartElement("Category");
                                     writer.WriteElementString("Name", row.CategoryName);
                                     writer.WriteElementString("Key", row.Key);
+                                    writer.WriteElementString("Tooltip", row.Tooltip);
 
 
                                     foreach (var column in row.ColumnList)

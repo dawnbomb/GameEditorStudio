@@ -520,6 +520,7 @@ namespace GameEditorStudio
 
             Label Label = new Label();
             Label.Content = CatClass.CategoryName;// "Entry X";    //"Row X";
+            if (CatClass.Tooltip != "") { Label.ToolTip = CatClass.Tooltip; }            
             DockPanel.SetDock(Label, Dock.Left);
             Label.VerticalAlignment = VerticalAlignment.Top; //Top Bottom
             //Label.HorizontalAlignment = HorizontalAlignment.Left; //Left Right
@@ -535,6 +536,7 @@ namespace GameEditorStudio
                 LibraryMan.GotoGeneralRow(TheWorkshop);
                                 
                 TheWorkshop.PropertiesRowNameBox.Text = CatClass.CategoryName;
+                TheWorkshop.PropertiesRowTooltipBox.Text = CatClass.Tooltip;
                 TheWorkshop.CategoryClass = CatClass;
                                 
                 foreach (TabItem tabItem in TheWorkshop.TabTest.Items)
