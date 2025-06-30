@@ -64,6 +64,7 @@ namespace GameEditorStudio
         public string Tooltip { get; set; } = "";
         public Border CatBorder { get; set; } = new();
         public DockPanel CategoryDockPanel { get; set; } = new();
+        public Border CategoryUnderline { get; set; } = new(); //for tooltips
         public List<Column> ColumnList { get; set; } = new();
         public Label CategoryLabel { get; set; }
         public StandardEditorData SWData { get; set; }
@@ -151,6 +152,7 @@ namespace GameEditorStudio
         public string GroupTooltip { get; set; } = "";
         public Border GroupBorder { get; set; } = new();
         public DockPanel GroupPanel { get; set; } = new();
+        public Border GroupUnderline { get; set; } = new(); //for tooltips
         public List<Entry> EntryList { get; set; } = new();
         public Label GroupLabel { get; set; } = new();
         public Column GroupColumn { get; set; }
@@ -320,7 +322,7 @@ namespace GameEditorStudio
         public string OldLinkedEditorKey { get; set; } = ""; //XML - The key of the editor that was linked to this menu. Used only to preverve the info between loading and saving again when the linked editor is missing. 
 
         //Custom Name list
-        public int ListSize { get; set; } //XML If the user creates a custom name list, this is the size, i think...? //Can't this be implicit from bytes?
+        public long ListSize { get; set; } //XML If the user creates a custom name list, this is the size, i think...? //Can't this be implicit from bytes?
         public string[] NothingNameList { get; set; } //XML If the user creates a custom name list, these are the names.
 
         //File Name List

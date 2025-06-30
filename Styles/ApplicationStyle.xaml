@@ -460,8 +460,11 @@
     </Style>
 
     <Style TargetType="{x:Type DockPanel}" x:Key="RowStyle">
-        <Setter Property="Background" Value="#141114"/> <!--Value="{StaticResource ResourceKey=DarkMode_Middle}"-->
+        <Setter Property="Background" Value="#141114"/> <!--Value="{StaticResource ResourceKey=DarkMode_Middle}"--> <!--141114-->
     </Style>
+    <Style TargetType="{x:Type Border}" x:Key="RowBorder">
+    <Setter Property="Background" Value="#141114"/> 
+</Style>
 
 
     <Style TargetType="{x:Type DockPanel}" x:Key="ColumnStyle">

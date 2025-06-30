@@ -82,6 +82,20 @@ namespace GameEditorStudio
             }
         }
 
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var scrollViewer = sender as ScrollViewer;
+            if (scrollViewer == null) return;
+
+            // Adjust scrolling speed here
+            double scrollAmount = e.Delta > 0 ? -30 : 30;
+
+            scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset + scrollAmount);
+
+            // Mark event as handled so other controls don't block it
+            e.Handled = true;
+        }
+
 
 
 
@@ -117,8 +131,11 @@ namespace GameEditorStudio
                         {
                             if (itembase is Group group)
                             {
-                                EditorClass.StandardEditorData.SelectedEntry = group.EntryList[0];
-                                break; // Exit as soon as one is found
+                                if (group.EntryList.Count != 0) 
+                                {
+                                    EditorClass.StandardEditorData.SelectedEntry = group.EntryList[0];
+                                    break; // Exit as soon as one is found
+                                }  
                             }
 
                             if (itembase is Entry entry)
@@ -161,7 +178,7 @@ namespace GameEditorStudio
                     {
                         if (itembase is Group group) 
                         {
-                            CreateGroup(EditorClass, group, CatClass, ColumnClass, TheWorkshop, Database);
+                            CreateGroup(group, -1);
 
                             foreach (Entry EntryClass in group.EntryList)
                             {
@@ -352,21 +369,25 @@ namespace GameEditorStudio
             EditorPanel.Children.Add(ScrollViewer);
             ScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
 
-            ScrollViewer.PreviewMouseDown += ScrollViewer_PreviewMouseDown;
-            ScrollViewer.PreviewMouseUp += ScrollViewer_PreviewMouseUp;
-            ScrollViewer.PreviewMouseMove += ScrollViewer_PreviewMouseMove;
+            //ScrollViewer.PreviewMouseWheel += ScrollViewer_PreviewMouseWheel;
+            //ScrollViewer.PreviewMouseDown += ScrollViewer_PreviewMouseDown;
+            //ScrollViewer.PreviewMouseUp += ScrollViewer_PreviewMouseUp;
+            //ScrollViewer.PreviewMouseMove += ScrollViewer_PreviewMouseMove;
 
 
 
             DockPanel ScrollPanel = new();
+            ScrollPanel.Style = (Style)Application.Current.Resources["BorderDock"];
+            DockPanel.SetDock(ScrollPanel, Dock.Top);
             ScrollPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
             ScrollPanel.VerticalAlignment = VerticalAlignment.Stretch;
             ScrollViewer.Content = ScrollPanel;
             EditorClass.StandardEditorData.MainDockPanel = ScrollPanel;
             //ScrollPanel.Background = Brushes.DarkRed;
-            ScrollPanel.Style = (Style)Application.Current.Resources["BorderDock"];
-            //ScrollPanel.Background = Brushes.Black;
+            
+            ScrollPanel.Background = Brushes.Black;
             //ScrollPanel.Background = Brushes.Green;
+            ScrollPanel.LastChildFill = true;
 
 
             for (int i = 0; i < EditorClass.StandardEditorData.DescriptionTableList.Count; i++) //a foreach loop but using for explicitly so i can remove itself if it's invalid a little later here. 
@@ -476,12 +497,17 @@ namespace GameEditorStudio
             //Such as etrian odyssey untold 2 have skills with 20 levels, and many attributes, all assigned per level.            
 
             Border CatBorder = CatClass.CatBorder;
+            CatBorder.Style = (Style)Application.Current.Resources["RowBorder"];
             DockPanel.SetDock(CatBorder, Dock.Top);
-            CatBorder.Margin = new Thickness(0, 0, 5, 5);
-            CatBorder.BorderThickness = new Thickness(2);
+            CatBorder.Margin = new Thickness(0, 0, 0, 2);
+            CatBorder.BorderThickness = new Thickness(0);
+            //new SolidColorBrush((Color)ColorConverter.ConvertFromString("#464646"));
+
             CatBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#464646"));
             if (Index == -1) { SWData.MainDockPanel.Children.Add(CatBorder); }
             else { SWData.MainDockPanel.Children.Insert(Index, CatBorder); }
+            CatBorder.VerticalAlignment = VerticalAlignment.Stretch;
+            CatBorder.HorizontalAlignment = HorizontalAlignment.Stretch;
 
 
 
@@ -490,7 +516,7 @@ namespace GameEditorStudio
             DockPanel.SetDock(RowPanel, Dock.Top);
             RowPanel.VerticalAlignment = VerticalAlignment.Stretch; //Top Bottom
             RowPanel.HorizontalAlignment = HorizontalAlignment.Stretch; //Left Right    
-
+            RowPanel.Margin = new Thickness(8, 0, 0, 0); // Left Top Right Bottom 
             //RowPanel.Margin = new Thickness(18, 10, 18, 10); // Left Top Right Bottom 
             
             //if (Index == -1) { SWData.MainDockPanel.Children.Add(RowPanel); }
@@ -504,8 +530,10 @@ namespace GameEditorStudio
             Border HeaderBorder = new();
             //HeaderBorder.BorderThickness = new Thickness(1, 1, 1, 1);
             //HeaderBorder.BorderBrush = Brushes.Black;
-            HeaderBorder.BorderThickness = new Thickness(0, 0, 0, 1);
+            HeaderBorder.BorderThickness = new Thickness(0, 0, 0, 2);
             HeaderBorder.BorderBrush = Brushes.Black;
+            HeaderBorder.Margin = new Thickness(-10, 0, 0, 0);
+            //HeaderBorder.Visibility = Visibility.Collapsed;
 
             DockPanel.SetDock(HeaderBorder, Dock.Top);
             RowPanel.Children.Add(HeaderBorder);
@@ -515,21 +543,31 @@ namespace GameEditorStudio
             HeaderBorder.Child = Header;
             //RowPanel.Children.Add(Header);
 
+            Grid LabelGrid = new();
+            Header.Children.Add(LabelGrid);
 
-
-
-            Label Label = new Label();
-            Label.Content = CatClass.CategoryName;// "Entry X";    //"Row X";
-            if (CatClass.Tooltip != "") { Label.ToolTip = CatClass.Tooltip; }            
-            DockPanel.SetDock(Label, Dock.Left);
-            Label.VerticalAlignment = VerticalAlignment.Top; //Top Bottom
+            Label CatLabel = new Label();
+            CatLabel.Content = CatClass.CategoryName;// "Entry X";    //"Row X";
+            if (CatClass.Tooltip != "") { CatLabel.ToolTip = CatClass.Tooltip; }
+            ToolTipService.SetInitialShowDelay(CatLabel, LibraryMan.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(CatLabel, LibraryMan.TooltipBetweenDelay);
+            DockPanel.SetDock(CatLabel, Dock.Left);
+            CatLabel.VerticalAlignment = VerticalAlignment.Top; //Top Bottom
             //Label.HorizontalAlignment = HorizontalAlignment.Left; //Left Right
-            Label.Margin = new Thickness(6, 0, 0, 0); // Left Top Right Bottom 
-            CatClass.CategoryLabel = Label;
+            CatLabel.Margin = new Thickness(14, 0, 0, 0); // Left Top Right Bottom 
+            CatClass.CategoryLabel = CatLabel;
+            LabelGrid.Children.Add(CatLabel);
 
+            Border CatUnderLine = CatClass.CategoryUnderline; //This is the line under the label, to make it look like a header.
+            CatUnderLine.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A0A0A0"));
+            CatUnderLine.Margin = new Thickness(18,0,4,4);
+            CatUnderLine.BorderThickness = new Thickness(0,0,0,2);
+            LabelGrid.Children.Add(CatUnderLine);
+            if(CatClass.Tooltip == ""){ CatUnderLine.Visibility = Visibility.Collapsed; }
 
             //RowProperties
-            Label.MouseLeftButtonDown += RowGrid_MouseLeftButtonDown;
+            LabelGrid.MouseLeftButtonDown += RowGrid_MouseLeftButtonDown;
+            CatLabel.MouseLeftButtonDown += RowGrid_MouseLeftButtonDown;
             //RowPanel.MouseRightButtonDown += RowGrid_MouseLeftButtonDown; //Bandaid solution to make sure move row up/down and delete are targeting the correct row.
             void RowGrid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
             {
@@ -548,7 +586,7 @@ namespace GameEditorStudio
                     }
                 }
             }
-            Header.Children.Add(Label);
+            
 
 
             Button Button = new Button();
@@ -567,6 +605,7 @@ namespace GameEditorStudio
 
                 if (Hide == true)
                 {
+                    //CatClass.CategoryDockPanel.Visibility = Visibility.Collapsed;
                     foreach (Column column in CatClass.ColumnList)
                     {
                         column.ColumnPanel.Visibility = Visibility.Collapsed;
@@ -576,6 +615,7 @@ namespace GameEditorStudio
 
                 if (Hide == false)
                 {
+                    //CatClass.CategoryDockPanel.Visibility = Visibility.Visible;
                     foreach (Column column in CatClass.ColumnList)
                     {
                         column.ColumnPanel.Visibility = Visibility.Visible;
@@ -893,6 +933,14 @@ namespace GameEditorStudio
                     StandardEditorMethods.MoveEntrysToColumn(EntryMoveList, ColumnClass);
                 }
 
+                if (e.Data.GetDataPresent("GroupToMove")) //Entry Drop
+                {
+                    Group agroup = (Group)e.Data.GetData("GroupToMove");
+
+                    StandardEditorMethods.MoveGroupToBottomOfColumn(agroup, ColumnClass);
+
+                }
+
                 e.Handled = true; // 🛑 Prevent the entry's parent from stealing the drop.
 
 
@@ -901,12 +949,19 @@ namespace GameEditorStudio
 
         }
 
-        public void CreateGroup(Editor EditorClass, Group GroupClass, Category CatClass, Column ColumnClass, Workshop TheWorkshop, WorkshopData Database)
+        public void CreateGroup(Group GroupClass, int Index)
         {   
             Border GroupBorder = GroupClass.GroupBorder;
-            GroupBorder.Margin = new Thickness(0, 0, 0, 0);
-            GroupBorder.Background = Brushes.DarkBlue;
+            GroupBorder.Margin = new Thickness(0, 1, 0, 2);
+            GroupBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#303030")); //Brushes.LightBlue; //464646
+            GroupBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#201A20")); //Brushes.Transparent; //new SolidColorBrush((Color)ColorConverter.ConvertFromString("#141114"));  //Brushes.DarkBlue;
+            //GroupBorder.BorderBrush = Brushes.Transparent; 
             DockPanel.SetDock(GroupBorder, Dock.Top);
+            if (Index == -1) { GroupClass.GroupColumn.ColumnPanel.Children.Add(GroupBorder); }
+            else { GroupClass.GroupColumn.ColumnPanel.Children.Insert(Index, GroupBorder); }
+         
+
+
 
             DockPanel GroupPanel = GroupClass.GroupPanel;
             GroupBorder.Child = GroupPanel;
@@ -914,15 +969,31 @@ namespace GameEditorStudio
             GroupPanel.LastChildFill = false;
             DockPanel.SetDock(GroupPanel, Dock.Top);
 
+            DockPanel GroupTopPanel = new DockPanel();
+            GroupTopPanel.Margin = new Thickness(0,0,0,4);
+            GroupTopPanel.Background = Brushes.Transparent;
+            DockPanel.SetDock(GroupTopPanel, Dock.Top);
+            GroupPanel.Children.Add(GroupTopPanel);
+            GroupTopPanel.LastChildFill = false;
+
+            Grid GroupTopGrid = new Grid();
+            GroupTopGrid.Background = Brushes.Transparent;
+            GroupTopPanel.Children.Add(GroupTopGrid);
+            GroupTopGrid.MouseLeftButtonDown += Group_MouseLeftButtonDown;
+
             Label GroupLabel = GroupClass.GroupLabel;
-            GroupPanel.Children.Add(GroupLabel);
+            GroupTopGrid.Children.Add(GroupLabel);
             GroupLabel.Content = GroupClass.GroupName;
+            GroupLabel.VerticalAlignment = VerticalAlignment.Top;
             GroupLabel.Margin = new Thickness(4, 0, 0, 0);
-            GroupLabel.ToolTip = GroupClass.GroupTooltip;
-            DockPanel.SetDock(GroupLabel, Dock.Top);
+            if (GroupClass.GroupTooltip != "") { GroupLabel.ToolTip = GroupClass.GroupTooltip; }            
+            ToolTipService.SetInitialShowDelay(GroupLabel, LibraryMan.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(GroupLabel, LibraryMan.TooltipBetweenDelay);
+            DockPanel.SetDock(GroupLabel, Dock.Left);
             GroupLabel.MouseLeftButtonDown += Group_MouseLeftButtonDown;
             void Group_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
             {
+                Workshop TheWorkshop = GroupClass.GroupColumn.ColumnRow.SWData.TheEditor.Workshop; //Get the workshop from the group column, which is in the group class.
                 TheWorkshop.GroupClass = GroupClass;
                 TheWorkshop.GeneralGroup.IsSelected = true;
                 TheWorkshop.PropertiesGroupNameBox.Text = GroupClass.GroupName;
@@ -932,9 +1003,47 @@ namespace GameEditorStudio
 
             }
 
-            ColumnClass.ColumnPanel.Children.Add(GroupBorder);
+            Border GroupUnderline = GroupClass.GroupUnderline;
+            GroupUnderline.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#A0A0A0")); //Brushes.LightBlue; //464646
+            GroupUnderline.Margin = new Thickness(8, 0, 4, 4);
+            GroupUnderline.BorderThickness = new Thickness(0, 0, 0, 2);
+            GroupTopGrid.Children.Add(GroupUnderline);
+            //DockPanel.SetDock(GroupUnderline, Dock.Top);            
+            //GroupUnderline.Width = GroupLabel.Width;
+            if (GroupClass.GroupTooltip == "") { GroupUnderline.Visibility = Visibility.Collapsed; }
 
 
+
+
+            GroupTopGrid.MouseMove += GroupDrag;
+            //GroupTopPanel.MouseMove += GroupDrag;
+            void GroupDrag(object sender, MouseEventArgs e)
+            {
+
+                if (e.LeftButton == MouseButtonState.Pressed && Keyboard.IsKeyUp(Key.LeftShift)) //Single Column capture
+                {
+                    var TheDockPanel = GroupTopGrid;
+                    var currentPosition = e.GetPosition(GroupTopGrid);
+                    var minimumDistance = (SystemParameters.MinimumHorizontalDragDistance + SystemParameters.MinimumVerticalDragDistance) / 2;
+
+                    if (Math.Sqrt(Math.Pow(currentPosition.X, 2) + Math.Pow(currentPosition.Y, 2)) >= minimumDistance)
+                    {
+                        var data = new DataObject("GroupToMove", GroupClass);
+                        DragDrop.DoDragDrop(GroupTopGrid, data, DragDropEffects.Move);
+                    }
+                    TheDockPanel.ReleaseMouseCapture();
+
+
+                }
+
+
+
+
+            }
+
+
+            GroupTopGrid.AllowDrop = true;
+            GroupTopGrid.Drop += GroupDrop;
             GroupLabel.AllowDrop = true;
             GroupLabel.Drop += GroupDrop;
             void GroupDrop(object sender, DragEventArgs e)
@@ -945,7 +1054,15 @@ namespace GameEditorStudio
                     List<Entry> EntryMoveList = (List<Entry>)e.Data.GetData("EntryMoveList");
 
 
-                    StandardEditorMethods.MoveEntrysToGroup(EntryMoveList, GroupClass);
+                    StandardEditorMethods.MoveEntrysUnderGroup(EntryMoveList, GroupClass);
+
+                }
+
+                if (e.Data.GetDataPresent("GroupToMove")) //Entry Drop
+                {
+                    Group agroup = (Group)e.Data.GetData("GroupToMove");
+
+                    StandardEditorMethods.MoveGroupUnderGroup(agroup, GroupClass);
 
                 }
 
@@ -1029,7 +1146,31 @@ namespace GameEditorStudio
                     return;
                 }
 
-                StandardEditorMethods.CreateNewGroup(EntryClass);
+                Column EntryColumn = EntryClass.EntryColumn;
+                int ToIndex = EntryColumn.ColumnPanel.Children.IndexOf(EntryClass.EntryBorder);                
+                            
+
+
+                Group NewGroup = new();
+                NewGroup.GroupColumn = EntryColumn;
+
+                
+                int ItemIndex = EntryColumn.ItemBaseList.IndexOf(EntryClass);
+                EntryColumn.ItemBaseList.Remove(EntryClass);
+                EntryColumn.ItemBaseList.Insert(ItemIndex, NewGroup);
+
+                EntryColumn.ColumnPanel.Children.Remove(EntryClass.EntryBorder); //Remove the entry from the column, so we can add it to the group.
+                EntryClass.EntryGroup = NewGroup;
+
+                CreateGroup(NewGroup, ToIndex);
+
+                NewGroup.EntryList.Add(EntryClass); 
+                NewGroup.GroupPanel.Children.Add(EntryClass.EntryBorder); 
+                
+
+
+                
+                //StandardEditorMethods.CreateNewGroup(EntryClass);
 
             }
 
@@ -1246,7 +1387,15 @@ namespace GameEditorStudio
                 {
                     List<Entry> EntryMoveList = (List<Entry>)e.Data.GetData("EntryMoveList");
 
-                    StandardEditorMethods.MoveEntrysToEntry(EntryMoveList, EntryClass);
+                    StandardEditorMethods.MoveEntrysUnderEntry(EntryMoveList, EntryClass);
+
+                }
+
+                if (e.Data.GetDataPresent("GroupToMove")) //Entry Drop
+                {
+                    Group agroup = (Group)e.Data.GetData("GroupToMove");
+
+                    StandardEditorMethods.MoveGroupUnderEntry(agroup, EntryClass);
 
                 }
 
@@ -1300,13 +1449,13 @@ namespace GameEditorStudio
             EntryClass.EntryNameTextBlock.Inlines.Add(EntryClass.RunEntryName);
 
             TextBlock EntryTextBlock = EntryClass.EntryNameTextBlock;
-            EntryTextBlock.Margin = new Thickness(4, 0, 2, 0);
+            EntryTextBlock.Margin = new Thickness(5, 0, 1, 0);
             EntryTextBlock.FontSize = 20;
             EntryTextBlock.HorizontalAlignment = HorizontalAlignment.Left;
             EntryTextBlock.VerticalAlignment = VerticalAlignment.Center;
 
-            ToolTipService.SetInitialShowDelay(EntryClass.EntryLeftGrid, 200); // 0.3 seconds popup
-            ToolTipService.SetBetweenShowDelay(EntryClass.EntryLeftGrid, 0); // 0.1 seconds switch
+            ToolTipService.SetInitialShowDelay(EntryClass.EntryLeftGrid, LibraryMan.TooltipInitialDelay); 
+            ToolTipService.SetBetweenShowDelay(EntryClass.EntryLeftGrid, LibraryMan.TooltipBetweenDelay); 
 
             ////////////////END OF UNDERLINE SYSTEM//////////////////////
 

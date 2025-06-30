@@ -27,6 +27,9 @@ namespace GameEditorStudio
         public static string ApplicationLocation { get; set; } = "";
         public static string SettingsFolderName { get; set; } = "Settings";
 
+        public static int TooltipInitialDelay = 200; // 0.3 seconds popup 
+        public static int TooltipBetweenDelay = 0; //// 0.0 seconds popup
+
         public static List<ColorTheme> ColorThemeList = new();
         public static WikiDataBase Wiki = new WikiDataBase();
 
