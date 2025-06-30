@@ -769,14 +769,18 @@ namespace GameEditorStudio
 
         private void NothingNameListTextboxTextChanged(object sender, TextChangedEventArgs e)
         {
-            
+            return;
+
             ItemsNumBox.Clear();
             string[] lines = ItemsEditBox.Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            StringBuilder sb = new StringBuilder();
 
             for (int i = 0; i < lines.Length; i++)
             {
-                ItemsNumBox.AppendText((i).ToString() + Environment.NewLine);
+                sb.AppendLine(i.ToString());
             }
+
+            ItemsNumBox.Text = sb.ToString();
 
         }
 

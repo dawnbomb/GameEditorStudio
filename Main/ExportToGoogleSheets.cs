@@ -53,10 +53,28 @@ namespace GameEditorStudio
                 {
                     if (entry.RowOffset == ColumnInRow1)
                     {
-                        EditorDataDecimalCurrent = EditorDataDecimalCurrent + entry.Name + ",";
-                        EditorDataHexCurrent = EditorDataHexCurrent + entry.Name + ",";
-                        EditorDataDecimalOrigonal = EditorDataDecimalOrigonal + entry.Name + ",";
-                        EditorDataHexOrigonal = EditorDataHexOrigonal + entry.Name + ",";
+                        if (entry.IsTextInUse == false && entry.Name != "") 
+                        {
+                            EditorDataDecimalCurrent = EditorDataDecimalCurrent + entry.Name + ",";
+                            EditorDataHexCurrent = EditorDataHexCurrent + entry.Name + ",";
+                            EditorDataDecimalOrigonal = EditorDataDecimalOrigonal + entry.Name + ",";
+                            EditorDataHexOrigonal = EditorDataHexOrigonal + entry.Name + ",";
+                        }
+                        if (entry.IsTextInUse == false && entry.Name == "")
+                        {
+                            EditorDataDecimalCurrent = EditorDataDecimalCurrent + entry.RowOffset + ",";
+                            EditorDataHexCurrent = EditorDataHexCurrent + entry.RowOffset + ",";
+                            EditorDataDecimalOrigonal = EditorDataDecimalOrigonal + entry.RowOffset + ",";
+                            EditorDataHexOrigonal = EditorDataHexOrigonal + entry.RowOffset + ",";
+                        }
+                        if (entry.IsTextInUse == true)
+                        {
+                            EditorDataDecimalCurrent = EditorDataDecimalCurrent + "TEXT" + ",";
+                            EditorDataHexCurrent = EditorDataHexCurrent + "TEXT" + ",";
+                            EditorDataDecimalOrigonal = EditorDataDecimalOrigonal + "TEXT" + ",";
+                            EditorDataHexOrigonal = EditorDataHexOrigonal + "TEXT" + ",";
+                        }
+
                     }
                 }
             }

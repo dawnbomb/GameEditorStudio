@@ -238,7 +238,7 @@ namespace GameEditorStudio
 
             }
 
-            if (Properties.Settings.Default.ShowEntryAddress == true)
+            if (Properties.Settings.Default.ShowHiddenEntrys == true)
             {
                 EntryHiddenToggle.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FC1E40"));
             }
@@ -437,7 +437,8 @@ namespace GameEditorStudio
 
                 foreach (var row in editor.StandardEditorData.CategoryList)
                 {
-                    row.CategoryDockPanel.Visibility = Visibility.Collapsed;
+                    //row.CategoryDockPanel.Visibility = Visibility.Collapsed;
+                    row.CatBorder.Visibility = Visibility.Collapsed;
 
                     foreach (var column in row.ColumnList)
                     {
@@ -502,16 +503,20 @@ namespace GameEditorStudio
                         {
                             entry.EntryBorder.Visibility = Visibility.Visible;
                             entry.EntryColumn.ColumnPanel.Visibility = Visibility.Visible;
-                            entry.EntryRow.CategoryDockPanel.Visibility = Visibility.Visible;
                             if (entry.EntryGroup != null) { entry.EntryGroup.GroupPanel.Visibility = Visibility.Visible; }
+
+                            //entry.EntryRow.CategoryDockPanel.Visibility = Visibility.Visible;
+                            entry.EntryRow.CatBorder.Visibility = Visibility.Visible;
                         }
                     }
                     else if (Properties.Settings.Default.ShowHiddenEntrys == true)
                     {
                         entry.EntryBorder.Visibility = Visibility.Visible;
-                        entry.EntryColumn.ColumnPanel.Visibility = Visibility.Visible;
-                        entry.EntryRow.CategoryDockPanel.Visibility = Visibility.Visible;
+                        entry.EntryColumn.ColumnPanel.Visibility = Visibility.Visible;                        
                         if (entry.EntryGroup != null) { entry.EntryGroup.GroupPanel.Visibility = Visibility.Visible; }
+
+                        //entry.EntryRow.CategoryDockPanel.Visibility = Visibility.Visible;
+                        entry.EntryRow.CatBorder.Visibility = Visibility.Visible;
                     }
 
                                        
@@ -1370,10 +1375,12 @@ namespace GameEditorStudio
             if (PropertiesRowTooltipBox.Text == "")
             {
                 CategoryClass.CategoryLabel.ToolTip = null;
+                CategoryClass.CategoryUnderline.Visibility = Visibility.Collapsed;
             }
             else 
             {
                 CategoryClass.CategoryLabel.ToolTip = CategoryClass.Tooltip;
+                CategoryClass.CategoryUnderline.Visibility = Visibility.Visible;
             }
         }
 
@@ -1491,11 +1498,11 @@ namespace GameEditorStudio
             //Hook into a Update Group Tooltip method.
             if (PropertiesGroupTooltipBox.Text == "") 
             {
-                
+                GroupClass.GroupUnderline.Visibility = Visibility.Collapsed;
             }
             if (PropertiesGroupTooltipBox.Text != "")
             {
-
+                GroupClass.GroupUnderline.Visibility = Visibility.Visible;
             }
         }
         
@@ -1531,7 +1538,7 @@ namespace GameEditorStudio
 
             StandardEditorMethods.UpdateEntryName(EntryClass);
 
-            Dispatcher.InvokeAsync(() => StandardEditorMethods.LabelWidth(EntryClass.EntryColumn), System.Windows.Threading.DispatcherPriority.Loaded);
+            //Dispatcher.InvokeAsync(() => StandardEditorMethods.LabelWidth(EntryClass.EntryColumn), System.Windows.Threading.DispatcherPriority.Loaded);
             StandardEditorMethods.LabelWidth(EntryClass.EntryColumn);
         }
         
@@ -1691,7 +1698,7 @@ namespace GameEditorStudio
                                     "\n\n" +
                                     "You can manually un-disable the entry, but entrys related to text will automatically re-disable themself when the editor loads back up, " +
                                     "even if you save them as non-disabled."
-                                    );
+                                );
                                 return;
                             }
                         }
@@ -1705,8 +1712,6 @@ namespace GameEditorStudio
 
                 if (EntryClass.NewSubType == Entry.EntrySubTypes.Menu) //Cancel method IF: A Menu-Type entry wants to become size-4.
                 {
-
-
                     if (PropertiesEntryByteSizeComboBox.Text == "4 Bytes Little Endian" || PropertiesEntryByteSizeComboBox.Text == "4 Bytes Big Endian")
                     {
 
@@ -1718,6 +1723,17 @@ namespace GameEditorStudio
                                 break;
                             }
                         }
+
+                        LibraryMan.NotificationNegative("Not yet available D:",
+                                    "I have no idea how to make a UI for a 4 byte menu that isn't ridiculously laggy, so i'm just not letting you do this until i figure it out, sorry! x3" +
+                                    "\n\n" +
+                                    "You can still make a 2 byte menu, and i've never seen a game with a menu that actually has more then the 65535 options to select, so i'm hoping this isn't a real problem for you. If it is, reach out to me on discord." +
+                                    "\n\n" +
+                                    "Anyway, i'm aware some games will just have a 4 byte menu anyway where it doesn't use bytes 3 and 4. You can set the 3rd and 4th entry to hidden and the editor will still look proper :)" +
+                                    "" +
+                                    ""
+                        );
+
                         return;
                     }
                 }
@@ -1758,6 +1774,13 @@ namespace GameEditorStudio
                                 EntryClass.EntryTypeMenu.NothingNameList = items;
                                 EntryClass.EntryTypeMenu.ListSize = 65536;
                             }
+                            //if (NewSize == 4)
+                            //{
+                            //    string[] items = EntryClass.EntryTypeMenu.NothingNameList;
+                            //    Array.Resize(ref items, 4294967296);
+                            //    EntryClass.EntryTypeMenu.NothingNameList = items;
+                            //    EntryClass.EntryTypeMenu.ListSize = 4294967296;
+                            //}
                         }
                     }
 
@@ -1790,23 +1813,17 @@ namespace GameEditorStudio
                         }
                         foreach (var num in list)
                         {
-                            foreach (var row in EditorClass.StandardEditorData.CategoryList)
+                            foreach (var entry in EditorClass.StandardEditorData.MasterEntryList)
                             {
-                                foreach (var column in row.ColumnList)
+                                if (entry.RowOffset == num) //Search for entry with offset+1 over current entry.  Offset+X
                                 {
-                                    foreach (Entry entry in column.ItemBaseList)
-                                    {
-                                        if (entry.RowOffset == num) //Search for entry with offset+1 over current entry.  Offset+X
-                                        {
-                                            entry.Endianness = "0";
-                                            entry.Bytes = 0;
-                                            MyDatabase.EntryManager.LoadEntry(this, EditorClass, entry);
-                                            entry.EntryBorder.Visibility = Visibility.Collapsed;
+                                    entry.Endianness = "0";
+                                    entry.Bytes = 0;
+                                    MyDatabase.EntryManager.LoadEntry(this, EditorClass, entry);
+                                    entry.EntryBorder.Visibility = Visibility.Collapsed;
 
-                                            targets.Add(entry);
+                                    targets.Add(entry);
 
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -1815,21 +1832,44 @@ namespace GameEditorStudio
                     //This makes sure when a entry is hidden / merged, that it is relocated to wherever the primary entry is.
                     foreach (var entry in targets)
                     {
+                                                
+                        if (entry.EntryGroup == null) 
+                        {
+                            entry.EntryColumn.ItemBaseList.Remove(entry);
+                            entry.EntryColumn.ColumnPanel.Children.Remove(entry.EntryBorder);
+                        }
+                        if (entry.EntryGroup != null)
+                        {
+                            entry.EntryGroup.EntryList.Remove(entry);
+                            entry.EntryGroup.GroupPanel.Children.Remove(entry.EntryBorder);
+                            entry.EntryGroup = null;
+                        }
 
+                        if (EntryClass.EntryGroup == null)
+                        {
+                            int EntryLocation = ColumnClass.ColumnPanel.Children.IndexOf(EntryClass.EntryBorder) - 1; //Counting starts at 1, but the first child is 0.
+                            int Diffrence = entry.RowOffset - EntryClass.RowOffset;
+                            ColumnClass.ItemBaseList.Insert(EntryLocation + Diffrence, entry);
+                            ColumnClass.ColumnPanel.Children.Insert(EntryLocation + Diffrence + 1, entry.EntryBorder);
+                        }
+                        if (EntryClass.EntryGroup != null)
+                        {
+                            int EntryLocation = EntryClass.EntryGroup.GroupPanel.Children.IndexOf(EntryClass.EntryBorder) - 1; //Counting starts at 1, but the first child is 0.
+                            int Diffrence = entry.RowOffset - EntryClass.RowOffset;
+                            EntryClass.EntryGroup.EntryList.Insert(EntryLocation + Diffrence, entry);
+                            EntryClass.EntryGroup.GroupPanel.Children.Insert(EntryLocation + Diffrence + 1, entry.EntryBorder);
+                        }
 
-                        int MyIndex = entry.EntryColumn.ItemBaseList.IndexOf(entry); //entry.EntryColumn.ColumnGrid.Children.IndexOf(entry.EntryDockPanel);
-                        entry.EntryColumn.ItemBaseList.RemoveAt(MyIndex);
-                        entry.EntryColumn.ColumnPanel.Children.Remove(entry.EntryBorder);
-
-
-                        int EntryLocation = ColumnClass.ColumnPanel.Children.IndexOf(EntryClass.EntryBorder) - 1; //Counting starts at 1, but the first child is 0.
-                        int Diffrence = entry.RowOffset - EntryClass.RowOffset;
-                        ColumnClass.ItemBaseList.Insert(EntryLocation + Diffrence, entry);
-                        ColumnClass.ColumnPanel.Children.Insert(EntryLocation + Diffrence + 1, entry.EntryBorder);
+                        
 
 
                         entry.EntryRow = EntryClass.EntryRow;  //  PageClass.RowList[rowIndex + 1];
                         entry.EntryColumn = EntryClass.EntryColumn;   //PageClass.RowList[rowIndex + 1].ColumnList[0];
+
+                        if (EntryClass.EntryGroup != null) 
+                        {
+                            entry.EntryGroup = EntryClass.EntryGroup; 
+                        }
                     }
 
                     ////if Old bigger then new
@@ -1862,7 +1902,7 @@ namespace GameEditorStudio
                     //I am currently not allowing size 4+ of Lists, i don't know that any game that uses more then 65K options to select from in one menu.
                     //I ACTUALLY NEED TO ADD THIS. ITS NOT ABOUT GAMES NOT NEEDING IT, IT'S ABOUT THAT THE FUCKING DO IT ANYWAY, AND NOT SUPPORTING IT MAKES EDITORS LOOK UGLY!!! (AND IS MISLEADING TO USERS!)
 
-                    //if (NewSize == 4)   
+                    //if (NewSize == 4)
                     //{
                     //    string[] items = EntryClass.ListItems;
                     //    Array.Resize(ref items, 4294967296);
@@ -2258,13 +2298,13 @@ namespace GameEditorStudio
             //TheWorkshop.PropertiesEntry1Byte.Text = EditorClass.SWData.FileDataTable.FileBytes[EditorClass.SWData.DataTableStart + (EditorClass.SWData.TableRowIndex * EntryClass.RowSize) + EntryClass.RowOffset].ToString("D");
 
             {
-                List<int> BitFlags = new() { 2, 4, 8, 16, 32, 64, 128 };
+                List<long> BitFlags = new() { 2, 4, 8, 16, 32, 64, 128 };
 
                 string ValueA = "";
                 string ValueB = "";
                 string ValueX = "";
 
-                List<int> AllValues = new();
+                List<long> AllValues = new();
 
                 bool IsAlwaysZero = true;
                 bool IsNeverZero = true;
@@ -2321,7 +2361,7 @@ namespace GameEditorStudio
                         return;
                     }
 
-                    AllValues.Add(int.Parse(value));
+                    AllValues.Add(long.Parse(value));
 
                     if (ValueX == "")
                     {
@@ -2341,7 +2381,7 @@ namespace GameEditorStudio
                     IsNeverZero = !AllValues.Contains(0);
                     IsCheckboxLike = AllValues.Distinct().Count() <= 2;
                     IsAlwaysOne = AllValues.All(v => v == 1);
-                    IsAlwaysValueX = int.TryParse(ValueX, out int parsedX) && AllValues.All(v => v == parsedX);
+                    IsAlwaysValueX = long.TryParse(ValueX, out long parsedX) && AllValues.All(v => v == parsedX);
                     IsCheckbox = AllValues.All(v => v == 0 || v == 1);
 
                 }
@@ -2356,7 +2396,7 @@ namespace GameEditorStudio
                 bool HasAtLeast10Unique = AllValues.Distinct().Count() >= 10; //unused
                 bool HasAtLeast20Unique = AllValues.Distinct().Count() >= 20; //unused
                 bool HasAtLeast30Unique = AllValues.Distinct().Count() >= 30; //unused
-                int uniqueCount = AllValues.Distinct().Count();
+                long uniqueCount = AllValues.Distinct().Count();
 
                 //negative number detector
                 bool B1NoValuesAre128to199 = false;      // No values are between 128–199
@@ -2369,10 +2409,10 @@ namespace GameEditorStudio
                     B1NoValuesAre128to199 = !AllValues.Any(v => v >= 128 && v < 200);
                     B1_4PercentAbove200 = AllValues.Count(v => v >= 200) >= AllValues.Count * 0.04;
 
-                    int highValuesCount = AllValues.Count(v => v >= 128);
+                    long highValuesCount = AllValues.Count(v => v >= 128);
                     B1_4PercentAbove128 = highValuesCount >= AllValues.Count * 0.04;
 
-                    int lowValuesCount = AllValues.Count(v => v <= 127);
+                    long lowValuesCount = AllValues.Count(v => v <= 127);
                     B1_4PercentBelow127 = lowValuesCount >= AllValues.Count * 0.04;
                 }
 
@@ -2383,7 +2423,7 @@ namespace GameEditorStudio
 
                 if (EntryClass.Bytes == 1)
                 {                    
-                    var bitValues = new HashSet<int> { 0, 1, 2, 4, 8, 16, 32, 64, 128 };
+                    var bitValues = new HashSet<long> { 0, 1, 2, 4, 8, 16, 32, 64, 128 };
                     var totalCount = AllValues.Count;
                     var uniqueValues = AllValues.Distinct().ToHashSet();
 
@@ -2391,8 +2431,8 @@ namespace GameEditorStudio
                     bool allAreBitFlags = uniqueValues.All(v => bitValues.Contains(v));
 
                     // Extra checks:
-                    int count0Or1 = AllValues.Count(v => v == 0 || v == 1);
-                    int countAbove1 = AllValues.Count(v => v > 1);
+                    long count0Or1 = AllValues.Count(v => v == 0 || v == 1);
+                    long countAbove1 = AllValues.Count(v => v > 1);
 
                     bool hasAtLeast10PercentLow = count0Or1 >= totalCount * 0.1;
                     bool hasAtLeast10PercentHigh = countAbove1 >= totalCount * 0.1;
@@ -2402,8 +2442,8 @@ namespace GameEditorStudio
 
                     //////////Mostly bitflag
 
-                    var bitFlags = new HashSet<int> { 2, 4, 8, 16, 32, 64, 128 };
-                    int countBitFlagsOnly = AllValues.Count(v => bitFlags.Contains(v));
+                    var bitFlags = new HashSet<long> { 2, 4, 8, 16, 32, 64, 128 };
+                    long countBitFlagsOnly = AllValues.Count(v => bitFlags.Contains(v));
                     bool hasEnoughBitFlags = countBitFlagsOnly >= totalCount * 0.7;
                     MostlyBitFlag = hasEnoughBitFlags && hasAtLeast10PercentLow && hasAtLeast10PercentHigh;
 

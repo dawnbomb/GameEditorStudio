@@ -151,6 +151,8 @@ namespace GameEditorStudio.Loading
                     TextEditor ATextEditor = new TextEditor(Database, TheEditor);
                 }
             }
+
+            TheWorkshop.UpdateEntryDecorations();
         }
 
         //This Method is for creating a new editor while already inside a workshop. IE when going into a workshop and clicking the "New Editor" button.
