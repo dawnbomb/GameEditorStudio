@@ -17,6 +17,13 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using static GameEditorStudio.Entry;
 
+
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+
 namespace GameEditorStudio
 {
     /// <summary>
@@ -24,16 +31,260 @@ namespace GameEditorStudio
     /// </summary>
     public partial class TheLeftBar : UserControl
     {
-        Workshop TheWorkshop;
-        WorkshopData Database;
-        Editor EditorClass;
-        ByteManager ByteManager = new();
+        Workshop TheWorkshop { get; set; }
+        WorkshopData Database { get; set; }
+        Editor EditorClass { get; set; }
 
-        bool FirstTime = true;
-        bool _mousePressedOnItem = false;
-        TreeViewItem item = null;
-        EventHandler statusChangedHandler = null;
+        bool FirstTime { get; set; } = true;
+        bool _mousePressedOnItem { get; set; } = false;
+        TreeViewItem item { get; set; } = null;
+        EventHandler statusChangedHandler { get; set; } = null;
 
+        //THIS IS A UNDO POINT
+        // TO SEE WHERE TO STOP
+        //WHAT i am DOING
+
+
+        private List<TreeViewItem>? draggedItems { get; set; }
+        private TreeViewItem? originallySelectedItem { get; set; }
+
+        private void ItemsTree_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var clickedItem = VisualUpwardSearch<TreeViewItem>(e.OriginalSource as DependencyObject);
+            if (clickedItem == null)
+                return;
+
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                var selectedItem = ItemsTree.SelectedItem as TreeViewItem ?? FindTreeViewItem(ItemsTree, ItemsTree.SelectedItem);
+                if (selectedItem == null)
+                    return;
+
+                originallySelectedItem = selectedItem; // <--- Save original selection
+
+                var itemsAtLevel = GetItemsAtSameLevel(selectedItem);
+                int index1 = itemsAtLevel.IndexOf(selectedItem);
+                int index2 = itemsAtLevel.IndexOf(clickedItem);
+                if (index1 == -1 || index2 == -1)
+                    return;
+
+                int start = Math.Min(index1, index2);
+                int end = Math.Max(index1, index2);
+                draggedItems = itemsAtLevel.GetRange(start, end - start + 1);
+
+                if (!AllSameParent(draggedItems))
+                {
+                    draggedItems = null;
+                    return;
+                }
+            }
+            else
+            {
+                draggedItems = new List<TreeViewItem> { clickedItem };
+                originallySelectedItem = clickedItem; // <--- Save original selection
+            }
+
+            if (draggedItems.Count > 0)
+            {
+                DragDrop.DoDragDrop(ItemsTree, draggedItems, DragDropEffects.Move);
+            }
+        }
+
+        private void ItemsTree_DragOver(object sender, DragEventArgs e)
+        {
+            // Only allow move if dragging list of TreeViewItems
+            if (!e.Data.GetDataPresent(typeof(List<TreeViewItem>)))
+            {
+                e.Effects = DragDropEffects.None;
+                e.Handled = true;
+                return;
+            }
+
+            e.Effects = DragDropEffects.Move;
+            e.Handled = true;
+        }
+
+        private void ItemsTree_Drop(object sender, DragEventArgs e)
+        {
+            if (!e.Data.GetDataPresent(typeof(List<TreeViewItem>)))
+                return;
+
+            var targetItem = VisualUpwardSearch<TreeViewItem>(e.OriginalSource as DependencyObject);
+            if (targetItem == null)
+                return;
+
+            var targetInfo = targetItem.Tag as ItemInfo;
+            if (targetInfo == null)
+                return;
+
+            var itemsToMove = e.Data.GetData(typeof(List<TreeViewItem>)) as List<TreeViewItem>;
+            if (itemsToMove == null || itemsToMove.Count == 0)
+                return;
+
+            // === Rule 1: Prevent dropping a folder under any item that is already a child ===
+            if (targetInfo.IsChild && itemsToMove.Any(i => (i.Tag as ItemInfo)?.IsFolder == true))
+                return;
+
+            // Prevent dropping onto self or descendants
+            if (itemsToMove.Contains(targetItem) || itemsToMove.Any(d => IsDescendantOf(targetItem, d)))
+                return;
+
+            var parent = GetParentTreeViewItem(targetItem);
+            ItemCollection siblingsCollection = parent != null ? parent.Items : ItemsTree.Items;
+
+            int targetIndex = siblingsCollection.IndexOf(targetItem);
+
+            // Adjust for index shift if moving downward within the same collection
+            int shiftCount = itemsToMove.Count(d =>
+            {
+                var oldParent = GetParentTreeViewItem(d);
+                ItemCollection oldCollection = oldParent != null ? oldParent.Items : ItemsTree.Items;
+                return oldCollection == siblingsCollection && oldCollection.IndexOf(d) < targetIndex;
+            });
+
+            targetIndex -= shiftCount;
+
+            // Remove dragged items from old parents
+            foreach (var draggedItem in itemsToMove)
+            {
+                var oldParent = GetParentTreeViewItem(draggedItem);
+                if (oldParent != null)
+                    oldParent.Items.Remove(draggedItem);
+                else
+                    ItemsTree.Items.Remove(draggedItem);
+            }
+
+            // === Rule 2 & 3: Set IsChild depending on the target item's position ===
+            bool newIsChild = targetInfo.IsChild;
+
+            // Insert after target
+            int insertIndex = targetIndex + 1;
+            foreach (var draggedItem in itemsToMove)
+            {
+                siblingsCollection.Insert(insertIndex, draggedItem);
+
+                if (draggedItem.Tag is ItemInfo info)
+                    info.IsChild = newIsChild;
+
+                insertIndex++;
+            }
+
+            // Restore original selection
+            if (originallySelectedItem != null)
+            {
+                originallySelectedItem.IsSelected = true;
+                originallySelectedItem.BringIntoView();
+            }
+
+            originallySelectedItem = null;
+            draggedItems = null;
+
+            foreach (TreeViewItem TreeViewItemK in EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.Items)
+            {
+                TheWorkshop.ItemNameBuilder(TreeViewItemK); //Doing this here to make sure folder item counts work as intended.
+            }
+
+            e.Handled = true;
+        }
+
+
+        
+
+        // Helper: Get TreeViewItem's parent TreeViewItem (null if root level)
+        private TreeViewItem? GetParentTreeViewItem(TreeViewItem item)
+        {
+            var parent = VisualTreeHelper.GetParent(item);
+            while (parent != null && !(parent is TreeViewItem))
+                parent = VisualTreeHelper.GetParent(parent);
+
+            return parent as TreeViewItem;
+        }
+
+        // Helper: Check if candidate is descendant of possibleAncestor
+        private bool IsDescendantOf(TreeViewItem candidate, TreeViewItem possibleAncestor)
+        {
+            var parent = GetParentTreeViewItem(candidate);
+            while (parent != null)
+            {
+                if (parent == possibleAncestor)
+                    return true;
+                parent = GetParentTreeViewItem(parent);
+            }
+            return false;
+        }
+
+        // Helper: Get TreeViewItem at same level as the given item (its siblings)
+        private List<TreeViewItem> GetItemsAtSameLevel(TreeViewItem item)
+        {
+            var parent = GetParentTreeViewItem(item);
+            ItemCollection collection;
+
+            if (parent != null)
+                collection = parent.Items;
+            else
+                collection = ItemsTree.Items;
+
+            return collection.Cast<TreeViewItem>().ToList();
+        }
+
+        // Helper: Check all items share same parent
+        private bool AllSameParent(List<TreeViewItem> items)
+        {
+            if (items.Count == 0)
+                return true;
+
+            var parent = GetParentTreeViewItem(items[0]);
+
+            return items.All(i => GetParentTreeViewItem(i) == parent);
+        }
+
+        // Helper: Visual tree search upwards for ancestor of type T
+        private static T? VisualUpwardSearch<T>(DependencyObject? source) where T : DependencyObject
+        {
+            while (source != null && !(source is T))
+            {
+                DependencyObject? parent = null;
+
+                // Try visual parent first
+                if (source is Visual || source is System.Windows.Media.Media3D.Visual3D)
+                {
+                    parent = VisualTreeHelper.GetParent(source);
+                }
+
+                // If no visual parent, try logical parent
+                if (parent == null)
+                {
+                    parent = LogicalTreeHelper.GetParent(source);
+                }
+
+                source = parent;
+            }
+
+            return source as T;
+        }
+
+        // Helper: Find TreeViewItem container from data item (if SelectedItem is not a TreeViewItem)
+        private TreeViewItem? FindTreeViewItem(ItemsControl container, object dataItem)
+        {
+            if (container == null)
+                return null;
+
+            for (int i = 0; i < container.Items.Count; i++)
+            {
+                var item = container.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewItem;
+                if (item == null)
+                    continue;
+
+                if (item.DataContext == dataItem || item == dataItem)
+                    return item;
+
+                var childItem = FindTreeViewItem(item, dataItem);
+                if (childItem != null)
+                    return childItem;
+            }
+
+            return null;
+        }
 
         public TheLeftBar(Workshop AWorkshop, WorkshopData ADatabase, Editor AEditor) //
         {
@@ -78,56 +329,12 @@ namespace GameEditorStudio
 
             ItemsSetup();
 
-            ItemsTree.PreviewMouseLeftButtonDown += TreeView_PreviewMouseLeftButtonDown;
-            ItemsTree.PreviewMouseMove += TreeViewItemMove;
+            ItemsTree.PreviewMouseLeftButtonDown += ItemsTree_PreviewMouseLeftButtonDown;
+            ItemsTree.Drop += ItemsTree_Drop;
+            ItemsTree.DragOver += ItemsTree_DragOver;
 
-            void TreeView_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-            {
-                var treeView = (TreeView)sender;
-                var treeViewItem = GetTreeViewItemAtPoint(treeView, e.GetPosition(treeView));
-
-                if (treeViewItem != null)
-                {
-                    _mousePressedOnItem = true;
-                }
-            }
-
-            void TreeViewItemMove(object sender, MouseEventArgs e)
-            {
-                if (e.LeftButton == MouseButtonState.Pressed && Keyboard.IsKeyUp(Key.LeftShift) && _mousePressedOnItem)
-                {
-                    var treeView = (TreeView)sender;
-                    var treeViewItem = GetTreeViewItemAtPoint(treeView, e.GetPosition(treeView));
-
-                    if (treeViewItem != null)
-                    {
-                        var data = new DataObject("MoveTreeViewItem", treeViewItem);
-                        DragDrop.DoDragDrop(treeViewItem, data, DragDropEffects.Move);
-                    }
-                }
-                else
-                {
-                    _mousePressedOnItem = false;
-                }
-            }
-
-            TreeViewItem GetTreeViewItemAtPoint(ItemsControl control, Point point)
-            {
-                var hitTestResult = VisualTreeHelper.HitTest(control, point);
-                var visualHit = hitTestResult?.VisualHit;
-
-                while (visualHit != null)
-                {
-                    if (visualHit is TreeViewItem treeViewItem)
-                    {
-                        return treeViewItem;
-                    }
-
-                    visualHit = VisualTreeHelper.GetParent(visualHit);
-                }
-
-                return null;
-            }
+            // Allow dropping on tree view items
+            ItemsTree.AllowDrop = true;
 
 
 
@@ -216,107 +423,9 @@ namespace GameEditorStudio
                 }
 
 
-                SetChildrenHitTestVisible(TreeItem, false);
+                
 
-                void SetChildrenHitTestVisible(TreeViewItem treeViewItem, bool hitTestVisible)
-                {
-                    foreach (var child in treeViewItem.Items)
-                    {
-                        if (child is TreeViewItem childTreeViewItem)
-                        {
-                            childTreeViewItem.IsHitTestVisible = hitTestVisible;
-                            SetChildrenHitTestVisible(childTreeViewItem, hitTestVisible);
-                        }
-                    }
-                }
-
-
-                TreeItem.AllowDrop = true;
-                TreeItem.Drop += ItemDrop;
-                void ItemDrop(object sender, DragEventArgs e)
-                {
-                    e.Handled = true;
-
-                    TheWorkshop.TreeViewSelectionEnabled = false;
-                    //I am not reordering the item list. This strikes me as problematic, and i will ignore it and hope nothing bad happens. :^)
-                    if (e.Data.GetDataPresent("MoveTreeViewItem") && Keyboard.IsKeyUp(Key.LeftShift)) //Single Entry Drop
-                    {
-                        TreeViewItem InputItem = (TreeViewItem)e.Data.GetData("MoveTreeViewItem");
-
-                        if (InputItem != TreeItem)
-                        {
-                            ItemInfo InputItemInfo = InputItem.Tag as ItemInfo;
-                            ItemInfo TreeItemInfo = InputItem.Tag as ItemInfo;
-                            TreeView parentTreeView = EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView;
-
-                            if ((InputItemInfo.TreeItem.Items.Count > 0 || InputItemInfo.IsFolder == true)  && ItemInfo.TreeItem.Parent is TreeViewItem AparentItem) //Moving a item to anywhere inside a folder triggers drop twice, once for going to item and once for going to folder.
-                            {
-                                //This and CreateFolder in workshop.cs together, ban nested folders from existing. 
-                                //I can add this feature very post release if i want to.
-                                //However, it may also be better to refuse to allow them, to prevent workshop makers from creating nightmarish folder setups. 
-                                TheWorkshop.TreeViewSelectionEnabled = true;
-                                return;
-                            }
-
-                            if (InputItemInfo.TreeItem.Parent is TreeViewItem parentItem) //step 1: Removing input item
-                            {
-                                TreeViewItem ParentFolderItem = (TreeViewItem)InputItem.Parent;
-                                ParentFolderItem.Items.Remove(InputItem);
-                            }
-                            else
-                            {
-                                parentTreeView.Items.Remove(InputItem);
-                            }
-
-                            //if (ItemInfo.TreeItem.Items.Count == 0) //later account for child folders
-                            //{
-                            //    if (ItemInfo.TreeItem.Parent is TreeViewItem TheParentFolderItem) //step 2: Insert input item.
-                            //    {
-                            //        int ToIndex = TheParentFolderItem.ItemContainerGenerator.IndexFromContainer(TreeItem) + 1;
-                            //        TheParentFolderItem.Items.Insert(ToIndex, InputItem);
-                            //    }
-                            //    else
-                            //    {
-                            //        int ToIndex = parentTreeView.ItemContainerGenerator.IndexFromContainer(TreeItem) + 1;
-                            //        parentTreeView.Items.Insert(ToIndex, InputItem);
-                            //    }
-                            //}
-                            if (ItemInfo.TreeItem.Parent is TreeViewItem TheParentFolderItem) //step 2: Insert input item.
-                            {
-                                int ToIndex = TheParentFolderItem.ItemContainerGenerator.IndexFromContainer(TreeItem) + 1;
-                                TheParentFolderItem.Items.Insert(ToIndex, InputItem);
-                            }
-                            else 
-                            {
-                                int ToIndex = parentTreeView.ItemContainerGenerator.IndexFromContainer(TreeItem) + 1;
-                                parentTreeView.Items.Insert(ToIndex, InputItem);
-                            }
-                            
-
-                            if (ItemInfo.TreeItem.Parent is TreeViewItem parentItem3) //Step 3: Update Item Type
-                            {
-                                InputItemInfo.IsChild = true;
-                            }
-                            else
-                            {
-                                InputItemInfo.IsChild = false;
-                            }
-
-                            InputItem.IsSelected = true;
-                        }
-
-                    }
-                    TheWorkshop.TreeViewSelectionEnabled = true;
-
-                    foreach (TreeViewItem TreeViewItemK in EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.Items)
-                    {
-                        TheWorkshop.ItemNameBuilder(TreeViewItemK); //Doing this again here to make sure folder item counts work as intended.
-                    }
-
-
-
-                }
-
+                
 
             }
 
