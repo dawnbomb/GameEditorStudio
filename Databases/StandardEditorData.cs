@@ -64,6 +64,7 @@ namespace GameEditorStudio
         public string Tooltip { get; set; } = "";
         public Border CatBorder { get; set; } = new();
         public DockPanel CategoryDockPanel { get; set; } = new();
+        public Grid TooltipGrid { get; set; } = new(); 
         public Border CategoryUnderline { get; set; } = new(); //for tooltips
         public List<Column> ColumnList { get; set; } = new();
         public Label CategoryLabel { get; set; }
@@ -167,6 +168,7 @@ namespace GameEditorStudio
         public bool IsNameHidden { get; set; } = false;  //XML //Yes or No, Defaults to Yes
         public bool IsEntryHidden { get; set; } = false;  //XML  -Enabled or Disabled (AutoDisabled?)//Decides If entry can save to Memory File. Occurs when the byte is also in use by the NameTable or any ExtraTables.  
         public bool IsTextInUse { get; set; } = false; //Not XML //if true, this entry actually represents name or description text, and is basically disabled / hidden. 
+        public bool IsMerged { get; set; } = false; //Not saved to XML, but a value like this DOES save to XML. Be VERY careful on later deciding to actually use this. 
         public EntrySubTypes NewSubType { get; set; } = EntrySubTypes.NumberBox;
         public enum EntrySubTypes { NumberBox, CheckBox, BitFlag, Menu}
         //public int ByteStarting { get; set; } //This number is how many bytes from the start of a file the editor begins. Each entry keeps track of it's own, because some editors have more then 1 file.
@@ -191,7 +193,7 @@ namespace GameEditorStudio
 
         public string EntryByteDecimal { get; set; } //NOT XML  //Needed to deal with the true value of a checkbox or bitflag.  //THIS SHOULD ALWAYS READ AS A POSITIVE NUMBER, IF ITS NEGATIVE IT'S A BUG AND I NEED TO FIX IT! 
 
-        public Border EntryBorder { get; set; } //The border around a entry,
+        public Border EntryBorder { get; set; } = new(); //The border around a entry,
         public DockPanel? EntryDockPanel { get; set; } //The entrys Grid, visable to the used, and contains lots of information.
         public Label Symbology { get; set; }
         public Label EntryPrefix { get; set; }   //Used to show the byte offset to a user. Useful when creating an editor, and you don't know what things do yet.

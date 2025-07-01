@@ -349,6 +349,7 @@ namespace GameEditorStudio
                         EntryClass.WorkshopTooltip = Xentry.Element("Tooltip")?.Value;
                         EntryClass.IsNameHidden = Convert.ToBoolean(Xentry.Element("IsNameHidden")?.Value);
                         EntryClass.IsEntryHidden = Convert.ToBoolean(Xentry.Element("IsEntryHidden")?.Value);
+                        EntryClass.IsMerged = Convert.ToBoolean(Xentry.Element("IsMerged")?.Value);
                         EntryClass.TableKey = Xentry.Element("TableKey")?.Value;
                         EntryClass.DataTableRowSize = Int32.Parse(Xentry.Element("RowSize")?.Value);
                         EntryClass.RowOffset = Int32.Parse(Xentry.Element("RowOffset")?.Value);

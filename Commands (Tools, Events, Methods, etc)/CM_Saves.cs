@@ -337,8 +337,12 @@ namespace GameEditorStudio
                                             writer.WriteElementString("Bytes", entry.Bytes.ToString());
                                             //writer.WriteElementString("Endianness", entry.Endianness.ToString());
 
-                                            if (entry.Endianness == "1" || entry.Endianness == "2L" || entry.Endianness == "4L") { writer.WriteElementString("Endianness", "Little"); }
+                                            if (entry.Endianness == "1" || entry.Endianness == "2L" || entry.Endianness == "4L")
+                                            { writer.WriteElementString("Endianness", "Little"); }
                                             else { writer.WriteElementString("Endianness", "Big"); }
+                                            if (entry.Bytes == 0) 
+                                            { writer.WriteElementString("IsMerged", "True"); }
+                                            else { writer.WriteElementString("IsMerged", "False"); }
 
                                             //writer.WriteElementString("TypeX", entry.SubType);
 

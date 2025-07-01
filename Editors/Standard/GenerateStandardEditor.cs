@@ -369,10 +369,10 @@ namespace GameEditorStudio
             EditorPanel.Children.Add(ScrollViewer);
             ScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
 
-            //ScrollViewer.PreviewMouseWheel += ScrollViewer_PreviewMouseWheel;
-            //ScrollViewer.PreviewMouseDown += ScrollViewer_PreviewMouseDown;
-            //ScrollViewer.PreviewMouseUp += ScrollViewer_PreviewMouseUp;
-            //ScrollViewer.PreviewMouseMove += ScrollViewer_PreviewMouseMove;
+            ScrollViewer.PreviewMouseWheel += ScrollViewer_PreviewMouseWheel;
+            ScrollViewer.PreviewMouseDown += ScrollViewer_PreviewMouseDown;
+            ScrollViewer.PreviewMouseUp += ScrollViewer_PreviewMouseUp;
+            ScrollViewer.PreviewMouseMove += ScrollViewer_PreviewMouseMove;
 
 
 
@@ -544,6 +544,7 @@ namespace GameEditorStudio
             //RowPanel.Children.Add(Header);
 
             Grid LabelGrid = new();
+            CatClass.TooltipGrid = LabelGrid;
             Header.Children.Add(LabelGrid);
 
             Label CatLabel = new Label();
@@ -1082,7 +1083,7 @@ namespace GameEditorStudio
 
             //end of temp block
 
-            Border Border = new();
+            Border Border = EntryClass.EntryBorder;
             Border.BorderThickness = new Thickness(2);
             Border.CornerRadius = new CornerRadius(3);
             DockPanel.SetDock(Border, Dock.Top);
@@ -1412,11 +1413,8 @@ namespace GameEditorStudio
             if (GroupClass == null) { ColumnClass.ColumnPanel.Children.Add(Border); }
             if (GroupClass != null) { GroupClass.GroupPanel.Children.Add(Border); }
             Border.Child = EntryDockPanel;
-            EntryClass.EntryDockPanel = new();
             EntryClass.EntryDockPanel = EntryDockPanel;
-            EntryClass.EntryBorder = new();
-            EntryClass.EntryBorder = Border;
-            if (EntryClass.Bytes == 0) { EntryClass.EntryBorder.Visibility = Visibility.Collapsed; }
+            
 
             Label PrefixEID = new Label(); //Entry ID Prefix. 
             //Prefix.Height = 30;
@@ -1492,7 +1490,10 @@ namespace GameEditorStudio
                 TheWorkshop.UpdateSymbology(EntryClass);
             }
 
-
+            if (EntryClass.Bytes == 0)
+            {
+                Border.Visibility = Visibility.Collapsed;
+            }
 
         }
 

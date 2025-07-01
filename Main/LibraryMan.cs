@@ -18,7 +18,7 @@ namespace GameEditorStudio
     {        
         
         public static string VersionDate { get; set; } = "June 13 2025";
-        public static Version VersionNumber { get; set; } = new Version(0, 1, 0, 0); //Version Numbers (in order) are Major.Minor.Build.Revision
+        public static Version VersionNumber { get; set; } = new Version(0, 1, 1, 0); //Version Numbers (in order) are Major.Minor.Build.Revision
         //Major is big releases.
         //Minor is new features / content.
         //Build is for Bugfixes or small changes.

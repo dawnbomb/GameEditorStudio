@@ -495,7 +495,7 @@ namespace GameEditorStudio
 
                     if (Properties.Settings.Default.ShowHiddenEntrys == false)
                     {
-                        if (entry.IsEntryHidden == true || entry.IsTextInUse == true)
+                        if (entry.IsEntryHidden == true || entry.IsTextInUse == true || entry.Bytes == 0)
                         {
                             entry.EntryBorder.Visibility = Visibility.Collapsed;
                         }
@@ -509,7 +509,7 @@ namespace GameEditorStudio
                             entry.EntryRow.CatBorder.Visibility = Visibility.Visible;
                         }
                     }
-                    else if (Properties.Settings.Default.ShowHiddenEntrys == true)
+                    else if (Properties.Settings.Default.ShowHiddenEntrys == true && entry.Bytes != 0)
                     {
                         entry.EntryBorder.Visibility = Visibility.Visible;
                         entry.EntryColumn.ColumnPanel.Visibility = Visibility.Visible;                        
@@ -1131,13 +1131,15 @@ namespace GameEditorStudio
                 itemInfo.IsChild = true;
             }
 
-            ItemNameBuilder(FolderItem); //Created the Header text as a TextBlockItem
+            
             TreeView.Items.Insert(selectedIndex, FolderItem);
             FolderItem.Items.Add(TreeViewItem);
+            ItemNameBuilder(FolderItem); //Created the Header text as a TextBlockItem
 
 
+            FolderItem.IsExpanded = true;
             TreeViewSelectionEnabled = true;
-
+            TreeViewItem.IsSelected = true;
 
             ContextMenu contextMenu = new ContextMenu();
             
@@ -1183,12 +1185,13 @@ namespace GameEditorStudio
             {
                 Run RunFolder = new Run();
                 RunFolder.Foreground = Brushes.Yellow;
-                RunFolder.Text = "📁 ";
+                RunFolder.Text = "📁";
                 TextBlockItem.Inlines.Add(RunFolder);
 
                 Run RunFolderCount = new Run();
                 RunFolderCount.Text = "(" + TreeItem.Items.Count.ToString() + ") ";
                 TextBlockItem.Inlines.Add(RunFolderCount);
+                                
             }
 
             Run RunMain = new Run();
@@ -1374,11 +1377,13 @@ namespace GameEditorStudio
             CategoryClass.Tooltip = PropertiesRowTooltipBox.Text;            
             if (PropertiesRowTooltipBox.Text == "")
             {
+                CategoryClass.TooltipGrid.ToolTip = null;
                 CategoryClass.CategoryLabel.ToolTip = null;
                 CategoryClass.CategoryUnderline.Visibility = Visibility.Collapsed;
             }
             else 
             {
+                CategoryClass.TooltipGrid.ToolTip = CategoryClass.Tooltip;
                 CategoryClass.CategoryLabel.ToolTip = CategoryClass.Tooltip;
                 CategoryClass.CategoryUnderline.Visibility = Visibility.Visible;
             }
