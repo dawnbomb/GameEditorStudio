@@ -17,36 +17,47 @@ namespace GameEditorStudio
     public static class LibraryMan
     {        
         
-        public static string VersionDate { get; set; } = "June 13 2025";
+        public static string VersionDate { get; set; } = "July 2 2025";
         public static Version VersionNumber { get; set; } = new Version(0, 1, 1, 0); //Version Numbers (in order) are Major.Minor.Build.Revision
         //Major is big releases.
         //Minor is new features / content.
         //Build is for Bugfixes or small changes.
         //Revision is for code rewrites that dont* affect the user. *SHOULDN'T AFFECT THE USER >:(
 
+        //OLD SETTINGS
+        public static string ColorTheme { get; set; } = "Dark"; 
+        public static bool ShowEntryAddress { get; set; } = false; 
+        public static string EntryAddressType { get; set; } = "Decimal";
+        //public static bool CollectionPrefix { get; set; } = true;
+        public static bool ShowItemIndex { get; set; } = false;
+        public static bool ShowHiddenEntrys { get; set; } = false;
+        public static bool ShowSymbology { get; set; } = false;
+        public static bool ShowTranslationPanel { get; set; } = false;
+        //END
+
         public static string ApplicationLocation { get; set; } = "";
         public static string SettingsFolderName { get; set; } = "Settings";
 
-        public static int TooltipInitialDelay = 200; // 0.3 seconds popup 
-        public static int TooltipBetweenDelay = 0; //// 0.0 seconds popup
+        public static int TooltipInitialDelay { get; set; } = 200; // 0.3 seconds popup 
+        public static int TooltipBetweenDelay { get; set; } = 0; //// 0.0 seconds popup
 
-        public static List<ColorTheme> ColorThemeList = new();
-        public static WikiDataBase Wiki = new WikiDataBase();
+        public static List<ColorTheme> ColorThemeList { get; set; } = new();
+        public static WikiDataBase Wiki { get; set; } = new WikiDataBase();
 
 
-        static public Color ColorRed = (Color)ColorConverter.ConvertFromString("#FF0000");
-        static public Color ColorPink = (Color)ColorConverter.ConvertFromString("#FF0000");
-        static public Color ColorBlue = (Color)ColorConverter.ConvertFromString("#FF0000");
-        static public Color ColorGreen = (Color)ColorConverter.ConvertFromString("#FF0000");
-        static public Color ColorGray = (Color)ColorConverter.ConvertFromString("#FF0000");
+        static public Color ColorRed { get; set; } = (Color)ColorConverter.ConvertFromString("#FF0000");
+        static public Color ColorPink { get; set; } = (Color)ColorConverter.ConvertFromString("#FF0000");
+        static public Color ColorBlue { get; set; } = (Color)ColorConverter.ConvertFromString("#FF0000");
+        static public Color ColorGreen { get; set; } = (Color)ColorConverter.ConvertFromString("#FF0000");
+        static public Color ColorGray { get; set; } = (Color)ColorConverter.ConvertFromString("#FF0000");
 
         
-        static public Color ValueAlways0      = ColorGray;
-        static public Color ValueAlwaysSame   = ColorGray;
-        static public Color ValueLessThanX    = ColorGray;
-        static public Color ValueDisabled     = ColorGray;
-        static public Color ValueText         = ColorGray;
-        static public Color ValueName         = ColorGray;
+        static public Color ValueAlways0 { get; set; } = ColorGray;
+        static public Color ValueAlwaysSame { get; set; } = ColorGray;
+        static public Color ValueLessThanX { get; set; } = ColorGray;
+        static public Color ValueDisabled { get; set; } = ColorGray;
+        static public Color ValueText { get; set; } = ColorGray;
+        static public Color ValueName { get; set; } = ColorGray;
 
 
         public static void SwitchToColorTheme(ColorTheme Theme)

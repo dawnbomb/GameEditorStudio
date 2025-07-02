@@ -10,13 +10,7 @@
 
 
     <Grid>
-        <Label Content="Color Theme" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,46,0,0"/>
-        <ComboBox x:Name="ThemeComboBox" HorizontalAlignment="Left" Margin="165,52,0,0" VerticalAlignment="Top" Width="200" DropDownClosed="ThemeComboBox_DropDownClosed" >
-            <!--DropDownClosed="ColorModeComboBox_DropDownClosed"-->
-            <ComboBoxItem Content="Light Mode"/>
-            <ComboBoxItem Content="Dark Mode"/>
-            <ComboBoxItem Content="Thing"/>
-        </ComboBox>
+        
 
         <Label Content="Value is Always 0" HorizontalAlignment="Left" Margin="0,81,0,0" VerticalAlignment="Top"/>
         <ComboBox Name="ComboBoxAlways0" HorizontalAlignment="Left" Margin="165,86,0,0" VerticalAlignment="Top" Width="200"/>

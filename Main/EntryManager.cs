@@ -16,6 +16,7 @@ using Windows.Gaming.Preview.GamesEnumeration;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 using TabItem = System.Windows.Controls.TabItem;
 using System.Windows.Documents;
+using Windows.Management.Update;
 //using System.Windows.Forms;
 //using System.Drawing;
 
@@ -1191,7 +1192,7 @@ namespace GameEditorStudio
             EntryClass.EntryTypeMenu.ListButton = Button;
             Button.Click += (sender, e) =>
             {
-                if (TheWorkshop.IsPreviewMode == true) { return; }
+                
 
                 TheWorkshop.EntryClass = EntryClass;
                 EntryBecomeActive(EntryClass);
@@ -1202,6 +1203,8 @@ namespace GameEditorStudio
                 
                 if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile) 
                 {
+                    if (TheWorkshop.IsPreviewMode == true) { return; }
+
                     for (int i = 0; i < EntryClass.EntryTypeMenu.NameCount; i++)
                     {
                         byte[] thebytes = EntryClass.EntryTypeMenu.GameFile.FileBytes;
@@ -1227,6 +1230,8 @@ namespace GameEditorStudio
                 }
                 if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
                 {
+                    if (TheWorkshop.IsPreviewMode == true) { return; }
+
                     string fullText = Encoding.UTF8.GetString(EntryClass.EntryTypeMenu.GameFile.FileBytes);
                     string[] lines = fullText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
@@ -1247,8 +1252,7 @@ namespace GameEditorStudio
                     }
                 }
                 if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor) 
-                {
-                    
+                {                    
 
                     for (int i = 0; i < EntryClass.EntryTypeMenu.NameCount; i++)
                     {
@@ -1285,7 +1289,8 @@ namespace GameEditorStudio
                     }
                 }
                 if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing)
-                {
+                {                    
+
                     for (int i = 0; i < EntryClass.EntryTypeMenu.NothingNameList.Length; i++)
                     {
                         if (!string.IsNullOrEmpty(EntryClass.EntryTypeMenu.NothingNameList[i]))
@@ -1320,7 +1325,7 @@ namespace GameEditorStudio
 
             };
 
-            if (TheWorkshop.IsPreviewMode == true) { return; }
+            if (TheWorkshop.IsPreviewMode == true) { Button.Content = "Preview OK";  return; }
 
             if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile) 
             {                
@@ -1381,11 +1386,21 @@ namespace GameEditorStudio
             EntryClass.EntryTypeMenu.Dropdown = comboBox;
             EntryClass.EntryDockPanel.Children.Add(comboBox);
 
-            if (Workshop.IsPreviewMode == true) { return; }
+            //if (Workshop.IsPreviewMode == true) { return; }
 
             
             if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile)
             {
+                if (Workshop.IsPreviewMode == true) 
+                {
+                    //ComboBoxItem comboBoxItem = new();
+                    //comboBoxItem.Content = "disabled...";
+                    //comboBox.Items.Add(comboBoxItem);
+                    //comboBoxItem.IsSelected = true;
+                    comboBox.IsEnabled = false;
+                    return; 
+                }
+
                 for (int i = 0; i < EntryClass.EntryTypeMenu.NameCount; i++)
                 {
                     ComboBoxItem comboBoxItem = new();
@@ -1416,6 +1431,16 @@ namespace GameEditorStudio
             }
             if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
             {
+                if (Workshop.IsPreviewMode == true)
+                {
+                    //ComboBoxItem comboBoxItem = new();
+                    //comboBoxItem.Content = "disabled...";
+                    //comboBox.Items.Add(comboBoxItem);
+                    //comboBoxItem.IsSelected = true;
+                    comboBox.IsEnabled = false;
+                    return;
+                }
+
                 string fullText = Encoding.UTF8.GetString(EntryClass.EntryTypeMenu.GameFile.FileBytes);
                 string[] lines = fullText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
@@ -1439,6 +1464,15 @@ namespace GameEditorStudio
             }
             if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor)
             {
+                if (Workshop.IsPreviewMode == true)
+                {
+                    ComboBoxItem previewItem = new();
+                    comboBox.Items.Add(previewItem);
+                    previewItem.Content = "Preview OK";
+                    previewItem.Foreground = Brushes.Gray; //Doesn't work, bah...
+                    previewItem.IsSelected = true;
+                    //return;
+                }
 
                 if (EntryClass.EntryTypeMenu.LinkedEditor == null) { return; } //This is if the editor it's looking for doesn't exist, didn't load, etc. 
 
@@ -1464,12 +1498,24 @@ namespace GameEditorStudio
 
                     comboBoxItem.Content = (i + EntryClass.EntryTypeMenu.FirstNameID) + ": " + asdf; //EntryClass.EntryTypeMenu.NothingNameList[i]
                     comboBox.Items.Add(comboBoxItem);
+
+                    
                 }
 
                 
             }
             if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing)
             {
+                if (Workshop.IsPreviewMode == true)
+                {
+                    ComboBoxItem previewItem = new();
+                    comboBox.Items.Add(previewItem);
+                    previewItem.Content = "Preview OK";
+                    previewItem.Foreground = Brushes.Gray; //Doesn't work, bah...
+                    previewItem.IsSelected = true;
+                    //return;
+                }
+
                 for (int i = 0; i < EntryClass.EntryTypeMenu.NothingNameList.Length; i++)
                 {
                     if (!string.IsNullOrEmpty(EntryClass.EntryTypeMenu.NothingNameList[i]))
@@ -1486,6 +1532,8 @@ namespace GameEditorStudio
 
             comboBox.DropDownClosed += (sender, e) =>
             {
+                if (Workshop.IsPreviewMode == true) { return; }
+
                 ComboBoxItem comboItem = comboBox.SelectedItem as ComboBoxItem;
                 if (comboItem == null) { return; }
 
@@ -1501,7 +1549,7 @@ namespace GameEditorStudio
             };
 
 
-            if (Workshop.IsPreviewMode == true) { comboBox.IsEnabled = false; }
+            //if (Workshop.IsPreviewMode == true) { comboBox.IsEnabled = false; }
 
         }
 
@@ -1656,6 +1704,7 @@ namespace GameEditorStudio
             Entry PreviousEntry = EditorClass.StandardEditorData.SelectedEntry;
             EditorClass.StandardEditorData.SelectedEntry = EntryClass; //Note: This MUST be here, After clear EntryClass color, and before set EntryClass Color.  
 
+
             EntryStyleUpdate(PreviousEntry);            
             EntryStyleUpdate(EntryClass);
 
@@ -1699,7 +1748,7 @@ namespace GameEditorStudio
         {
             //This used to happen on tree view selection change, but it caused a shit ton of lag. Now it doesn't. if my program starts lagging again, consider if this is responsible! >:(
 
-            if (TheWorkshop.IsPreviewMode == true) { return; }
+            
             LibraryMan.GotoGeneralEntry(TheWorkshop);
 
             Entry EntryClass = EditorClass.StandardEditorData.SelectedEntry;
@@ -1804,6 +1853,8 @@ namespace GameEditorStudio
 
         public void UpdateEntryHexProperties(Workshop TheWorkshop, Editor EditorClass) 
         {
+            //if (TheWorkshop.IsPreviewMode == true) { return; }
+
             Entry EntryClass = EditorClass.StandardEditorData.SelectedEntry;
 
             TheWorkshop.PropertiesEntryHexAddressTextbox.Text = (EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("X2");
@@ -1813,7 +1864,8 @@ namespace GameEditorStudio
 
             /////////////////////Data Analyzer/////////////////////
             //TheWorkshop.PropertiesEntry1Byte.Text = EditorClass.StandardEditorData.FileDataTable.FileBytes[EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
-            TheWorkshop.PropertiesEntry1Byte.Text = EntryClass.EntryByteDecimal;
+            if (TheWorkshop.IsPreviewMode == true) { return; }
+            TheWorkshop.PropertiesEntry1Byte.Text = EntryClass.EntryByteDecimal;            
             TheWorkshop.PropertiesEntryHex1Byte.Text = EditorClass.StandardEditorData.FileDataTable.FileBytes[EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("X2");
 
 

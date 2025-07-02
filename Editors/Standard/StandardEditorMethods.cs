@@ -254,6 +254,7 @@ namespace GameEditorStudio
 
         public static void EntryActivate(Workshop TheWorkshop, Entry EntryClass) 
         {
+            //if (TheWorkshop.IsPreviewMode == true) { return; }
             Editor EditorClass = EntryClass.EntryEditor;
 
             EntryManager EntryData = new();

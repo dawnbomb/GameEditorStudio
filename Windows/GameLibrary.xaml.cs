@@ -497,8 +497,7 @@ namespace GameEditorStudio
 
             TheWorkshop.Show();
 
-            Properties.Settings.Default.LastWorkshop = WorkshopName; //Set the workshop name in settings, so it can be used by other parts of the program. 
-            Properties.Settings.Default.Save();
+            //Properties.Settings.Default.LastWorkshop = WorkshopName; //Set the workshop name in settings, so it can be used by other parts of the program. 
         }
 
         private void LaunchWorkshopPreviewMode(object sender, RoutedEventArgs e)

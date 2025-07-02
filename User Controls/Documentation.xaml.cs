@@ -79,7 +79,11 @@ namespace GameEditorStudio
 
                 if (workshopWindow.IsPreviewMode == true) 
                 {
-                    return;
+                    NewWorkDocButton.IsEnabled = false;
+                    NewProjDocButton.IsEnabled = false;
+                    DocumentNameBox.IsEnabled = false;
+                    DocumentTextBox.IsEnabled = false;
+                    //return;
                 }
 
                 WorkshopName = workshopWindow.WorkshopName;
@@ -87,13 +91,17 @@ namespace GameEditorStudio
 
                 Database.Workshop.TheDocumentsUserControl = this;
 
+                if (workshopWindow.IsPreviewMode == false)
+                {
+                    NewWorkDocButton.IsEnabled = false;
+                    NewProjDocButton.IsEnabled = false;
+                    DocumentNameBox.IsEnabled = false;
+                    DocumentTextBox.IsEnabled = false;
+                    //return;
+                }
 
                 string[] WorkshopDocumentOrder = File.ReadLines(LibraryMan.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Documents\\" + "LoadOrder.txt").ToArray();
                 string[] WorkshopDocumentFolderNames = Directory.GetDirectories(LibraryMan.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
-                string[] ProjectDocumentOrder = File.ReadLines(LibraryMan.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\Documents\\" + "LoadOrder.txt").ToArray();
-                string[] ProjectDocumentFolderNames = Directory.GetDirectories(LibraryMan.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
-
-
                 foreach (string name in WorkshopDocumentOrder)
                 {
                     if (WorkshopDocumentFolderNames.Contains(name))
@@ -102,7 +110,6 @@ namespace GameEditorStudio
                         DocumentsWorkshop.Add(TheDocument); // Adding the document object to the list
                     }
                 }
-
                 foreach (string name in WorkshopDocumentFolderNames)//The, add any new documents to the document tree in alphabetical order.
                 {
                     if (!WorkshopDocumentOrder.Contains(name))
@@ -112,8 +119,15 @@ namespace GameEditorStudio
 
                     }
                 }
+                foreach (Document WorkDoc in DocumentsWorkshop)
+                {
+                    CreateTreeItem(WorkDoc, WorkshopDocumentsTreeView, ProjectDocumentsTreeView);
+                }
 
 
+                if (workshopWindow.IsPreviewMode == true) { return; }
+                string[] ProjectDocumentOrder = File.ReadLines(LibraryMan.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\Documents\\" + "LoadOrder.txt").ToArray();
+                string[] ProjectDocumentFolderNames = Directory.GetDirectories(LibraryMan.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
                 foreach (string name in ProjectDocumentOrder)//The last known list of documents for this workshop, in the order they were saved in.
                 {
                     if (ProjectDocumentFolderNames.Contains(name))
@@ -123,7 +137,6 @@ namespace GameEditorStudio
 
                     }
                 }
-
                 foreach (string name in ProjectDocumentFolderNames)//The, add any new documents to the document tree in alphabetical order.
                 {
                     if (!ProjectDocumentOrder.Contains(name))
@@ -133,12 +146,17 @@ namespace GameEditorStudio
 
                     }
                 }
+                foreach (Document WorkDoc in DocumentsProject)
+                {
+                    CreateTreeItem(WorkDoc, ProjectDocumentsTreeView, WorkshopDocumentsTreeView);
+                }
 
             }
 
 
 
-            ShowDocuments();
+            
+            
 
         }
 
@@ -163,19 +181,6 @@ namespace GameEditorStudio
 
         }
 
-
-
-        private void ShowDocuments() 
-        {
-            foreach (Document WorkDoc in DocumentsWorkshop)
-            {
-                CreateTreeItem(WorkDoc, WorkshopDocumentsTreeView, ProjectDocumentsTreeView);
-            }
-            foreach (Document WorkDoc in DocumentsProject)
-            {
-                CreateTreeItem(WorkDoc, ProjectDocumentsTreeView, WorkshopDocumentsTreeView);
-            }
-        }
 
 
 

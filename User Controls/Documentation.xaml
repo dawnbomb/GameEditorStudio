@@ -26,11 +26,11 @@
                     </Grid.ColumnDefinitions>
 
                     <DockPanel Grid.Column="0" Margin="5">
-                        <Button Content="New Workshop Doc"  Click="ButtonNewWorkshopDocument" DockPanel.Dock="Top"  Height="30" ToolTip="Workshop documents are text files that when you share the workshop, &#xD;&#xA;other people can access them. Basically, these will be public text files. &#xD;&#xA;Any info you would post on forumns, online documents, etc, should be made into a workshop document."/>
+                        <Button Name="NewWorkDocButton" Content="New Workshop Doc"  Click="ButtonNewWorkshopDocument" DockPanel.Dock="Top"  Height="30" ToolTip="Workshop documents are text files that when you share the workshop, &#xD;&#xA;other people can access them. Basically, these will be public text files. &#xD;&#xA;Any info you would post on forumns, online documents, etc, should be made into a workshop document."/>
                         <TreeView x:Name="WorkshopDocumentsTreeView" PreviewMouseMove="DocumentTreePreviewMouseMove"   DockPanel.Dock="Top" />
                     </DockPanel>
                     <DockPanel Margin="5" Grid.Column="1">
-                        <Button Content="New Project Doc"  Click="ButtonNewProjectDocument"  DockPanel.Dock="Top"  Height="30" ToolTip="Project documents are text files that only you can access. &#xD;&#xA;They are per project, so if you start a new project for the same game, the list will be empty. &#xD;&#xA;This is useful to write down your thoughts and plans for what you want to make. &#xD;&#xA;Anything that is more objective (Such as details on the game) should instead be a workshop document."/>
+                        <Button Name="NewProjDocButton" Content="New Project Doc"  Click="ButtonNewProjectDocument"  DockPanel.Dock="Top"  Height="30" ToolTip="Project documents are text files that only you can access. &#xD;&#xA;They are per project, so if you start a new project for the same game, the list will be empty. &#xD;&#xA;This is useful to write down your thoughts and plans for what you want to make. &#xD;&#xA;Anything that is more objective (Such as details on the game) should instead be a workshop document."/>
                         <TreeView x:Name="ProjectDocumentsTreeView" PreviewMouseMove="DocumentTreePreviewMouseMove"  DockPanel.Dock="Top" />
                     </DockPanel>
                     

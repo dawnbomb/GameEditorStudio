@@ -245,9 +245,8 @@ namespace GameEditorStudio
 
 
             //When making a new editor, i forcibly turn on symbology.
-            Properties.Settings.Default.ShowSymbology = true;
-            Properties.Settings.Default.ShowEntryAddress = true; //i now also force on E-IDs
-            Properties.Settings.Default.Save();
+            LibraryMan.ShowSymbology = true;
+            LibraryMan.ShowEntryAddress = true; //i now also force on E-IDs
             TheWorkshop.UpdateEntryDecorations();
             
         }
@@ -268,7 +267,7 @@ namespace GameEditorStudio
             LoadStandardEditor EditorMaker = new LoadStandardEditor();
             EditorMaker.NewStandardEditorIntoDatabase(TheWorkshop, this);
 
-            RequestClose?.Invoke(this, EventArgs.Empty);
+            RequestClose?.Invoke(this, EventArgs.Empty);            
 
 
         }
