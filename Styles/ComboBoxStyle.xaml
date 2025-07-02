@@ -14,7 +14,10 @@
         <Setter Property="Height" Value="2" />
     </Style>
 
-    <Style x:Key="MyComboBoxItemStyle" TargetType="ComboBoxItem">
+    <Style  TargetType="ComboBoxItem">
+        <Setter Property="Background" Value="{DynamicResource DropDownBack}"/>
+        <Setter Property="Foreground" Value="{DynamicResource DropDownText}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource DropDownBorder}"/>
         <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
         <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
         <Setter Property="SnapsToDevicePixels" Value="true" />
@@ -29,26 +32,38 @@
                         <Label>
                             <Label.Style>
                                 <Style TargetType="Label">
-                                    <Style.Triggers>
-                                        
-                                        <!--DarkMode Default-->
-                                        <DataTrigger Binding="{Binding Path=ColorTheme, Source={x:Static properties:Settings.Default}}" Value="Dark">
-                                            <Setter Property="Background" Value="{DynamicResource DropDownBack}"/> 
-                                            <Setter Property="Foreground" Value="{DynamicResource DropDownText}"/> 
-                                            <Setter Property="BorderBrush" Value="{DynamicResource DropDownBorder}"/> 
-                                        </DataTrigger>
-
-                                        <!--DarkMode MouseOver-->
+                                    <Style.Triggers>   
+                                        <!--MouseOver-->
                                         <MultiDataTrigger>
                                             <MultiDataTrigger.Conditions>
                                                 <Condition Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Mode=Self}}" Value="true"/>
-                                                <Condition Binding="{Binding Path=ColorTheme, Source={x:Static properties:Settings.Default}}" Value="Dark"/>
                                             </MultiDataTrigger.Conditions>
                                             <MultiDataTrigger.Setters>
                                                 <Setter Property="Background" Value="{DynamicResource DarkMode_TabItemMouseoverBackground}"/> <!--THIS COLOR ELEMENT HAS NOT YET BEEN MODIFIED AND IT STILL NEEDS TO BE-->
                                                 <Setter Property="Foreground" Value="{DynamicResource Dark_Foreground_MouseOver}"/> <!--THIS COLOR ELEMENT HAS NOT YET BEEN MODIFIED AND IT STILL NEEDS TO BE-->
                                             </MultiDataTrigger.Setters>
                                         </MultiDataTrigger>
+                                        <MultiDataTrigger> <!--IDK how i broke the normal item color, but when i removed dark mode setting right before release i somehow did... so this is a temp fix :(-->
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Mode=Self}}" Value="false"/>
+                                            </MultiDataTrigger.Conditions>
+                                            <MultiDataTrigger.Setters>
+                                                <Setter Property="Background" Value="{DynamicResource DropDownBack}"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource DropDownText}"/>
+                                                <Setter Property="BorderBrush" Value="{DynamicResource DropDownBorder}"/>
+                                            </MultiDataTrigger.Setters>
+                                        </MultiDataTrigger>
+                                        <!--<MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding Path=IsEnabled, RelativeSource={RelativeSource Mode=Self}}" Value="false"/>
+                                            </MultiDataTrigger.Conditions>
+                                            <MultiDataTrigger.Setters>
+                                                <Setter Property="Background" Value="{DynamicResource DarkMode_TabItemMouseoverBackground}"/>
+                                                --><!--THIS COLOR ELEMENT HAS NOT YET BEEN MODIFIED AND IT STILL NEEDS TO BE--><!--
+                                                <Setter Property="Foreground" Value="Gray"/>
+                                                --><!--THIS COLOR ELEMENT HAS NOT YET BEEN MODIFIED AND IT STILL NEEDS TO BE--><!--
+                                            </MultiDataTrigger.Setters>
+                                        </MultiDataTrigger>-->
                                     </Style.Triggers>
                                 </Style>
                             </Label.Style>
@@ -61,15 +76,16 @@
     </Style>
 
     <Style TargetType="ComboBox">
+        <Setter Property="Background" Value="{DynamicResource DropDownBack}"/>
+        <Setter Property="Foreground" Value="{DynamicResource DropDownText}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource DropDownBorder}"/>
         <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
         <Setter Property="TextOptions.TextRenderingMode" Value="Aliased"/>
-        <Setter Property="Background" Value="{DynamicResource DropDownBack}"/>
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontFamily" Value="Dawns 10px ArkPixel" />
         <Setter Property="OverridesDefaultStyle" Value="true"/>
         
         <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
-        <Setter Property="ItemContainerStyle" Value="{StaticResource MyComboBoxItemStyle}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBox">
@@ -109,7 +125,7 @@
                                     <Setter Property="Background" Value="{DynamicResource DropDownBack}"/>                                    
                                     <Setter Property="BorderBrush" Value="{DynamicResource DropDownBorder}"/>
                                     <Style.Triggers>  
-                                        <!--DarkMode MouseOver-->
+                                        <!-- MouseOver-->
                                         <MultiDataTrigger>
                                             <MultiDataTrigger.Conditions>
                                                 <Condition Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Mode=Self}}" Value="true"/>
@@ -121,7 +137,7 @@
                                             </MultiDataTrigger.Setters>
                                         </MultiDataTrigger>
 
-                                        <!--DarkMode Pressed-->
+                                        <!-- Pressed-->
                                         <MultiDataTrigger>
                                             <MultiDataTrigger.Conditions>
                                                 <Condition Binding="{Binding Path=IsPressed, RelativeSource={RelativeSource Mode=Self}}" Value="true"/>
@@ -132,7 +148,7 @@
                                             </MultiDataTrigger.Setters>
                                         </MultiDataTrigger>
 
-                                        <!--DarkMode InteractWithBox-->
+                                        <!--InteractWithBox-->
                                         <MultiDataTrigger>
                                             <MultiDataTrigger.Conditions>
                                                 <Condition Binding="{Binding Path=IsChecked, RelativeSource={RelativeSource Mode=Self}}" Value="true"/>

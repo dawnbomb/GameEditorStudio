@@ -154,6 +154,7 @@ namespace GameEditorStudio
         public Border GroupBorder { get; set; } = new();
         public DockPanel GroupPanel { get; set; } = new();
         public Border GroupUnderline { get; set; } = new(); //for tooltips
+        public Grid TooltipGrid { get; set; } = new(); //for tooltips
         public List<Entry> EntryList { get; set; } = new();
         public Label GroupLabel { get; set; } = new();
         public Column GroupColumn { get; set; }

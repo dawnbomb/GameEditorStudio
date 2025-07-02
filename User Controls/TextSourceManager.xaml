@@ -352,6 +352,7 @@
                                             </ScrollViewer>
                                         </DockPanel>
                                     </Border>
+                                    <Label Content="Yes im aware copy/paste here&#xD;&#xA;can cause like a 10 min freeze.&#xD;&#xA;SAVE YOUR STUFF BEFORE&#xD;&#xA;USING THIS. &#xD;&#xA;&#xD;&#xA;I will fix it later." HorizontalAlignment="Left" Margin="425,12,0,0" VerticalAlignment="Top" Background="#FF120000" Foreground="#FFF33737"/>
 
                                 </Grid>
                             </Grid>

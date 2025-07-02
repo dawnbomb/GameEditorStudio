@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static OfficeOpenXml.ExcelErrorValue;
 
 namespace GameEditorStudio
 {
@@ -62,27 +64,90 @@ namespace GameEditorStudio
                     }
                 }
             }
-            Dictionary<int, NumberCount> counts = new Dictionary<int, NumberCount>();
+            //Dictionary<int, NumberCount> counts = new Dictionary<int, NumberCount>();
+            Dictionary<long, NumberCount> counts = new();
 
             for (int i = 0; i < Goal; i++)
             {
-                int Num = TheWorkshop.EditorClass.StandardEditorData.FileDataTable.FileBytes[TheWorkshop.EditorClass.StandardEditorData.DataTableStart + (i * TheWorkshop.EntryClass.DataTableRowSize) + TheWorkshop.EntryClass.RowOffset];
+                StandardEditorData TheData = TheWorkshop.EditorClass.StandardEditorData;
 
-                if (counts.ContainsKey(Num))
+                //if bytes
+                //int Num = TheData.FileDataTable.FileBytes[TheWorkshop.EditorClass.StandardEditorData.DataTableStart + (i * TheWorkshop.EntryClass.DataTableRowSize) + TheWorkshop.EntryClass.RowOffset];
+
+
+
+                long num = 0;
+
+                int offset = TheData.DataTableStart + (i * TheEntry.DataTableRowSize) + TheEntry.RowOffset;
+
+                bool isSigned = TheEntry.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Signed;
+
+                if (TheEntry.Endianness == "1")
                 {
-                    counts[Num].Count++;
-                    counts[Num].RowIndices.Add(i);
+                    byte b = TheData.FileDataTable.FileBytes[offset];
+                    num = isSigned ? (sbyte)b : b;
+                }
+                else if (TheEntry.Endianness == "2B")
+                {
+                    if (isSigned)
+                        num = BitConverter.ToInt16(TheData.FileDataTable.FileBytes, offset);
+                    else
+                        num = BitConverter.ToUInt16(TheData.FileDataTable.FileBytes, offset);
+                }
+                else if (TheEntry.Endianness == "2L")
+                {
+                    byte[] bytes = TheData.FileDataTable.FileBytes.Skip(offset).Take(2).ToArray();
+                    Array.Reverse(bytes);
+                    if (isSigned)
+                        num = BitConverter.ToInt16(bytes, 0);
+                    else
+                        num = BitConverter.ToUInt16(bytes, 0);
+                }
+                else if (TheEntry.Endianness == "4B")
+                {
+                    if (isSigned)
+                        num = BitConverter.ToInt32(TheData.FileDataTable.FileBytes, offset);
+                    else
+                        num = BitConverter.ToUInt32(TheData.FileDataTable.FileBytes, offset);
+                }
+                else if (TheEntry.Endianness == "4L")
+                {
+                    byte[] bytes = TheData.FileDataTable.FileBytes.Skip(offset).Take(4).ToArray();
+                    Array.Reverse(bytes);
+                    if (isSigned)
+                        num = BitConverter.ToInt32(bytes, 0);
+                    else
+                        num = BitConverter.ToUInt32(bytes, 0);
+                }
+
+
+                if (counts.ContainsKey(num))
+                {
+                    counts[num].Count++;
+                    counts[num].RowIndices.Add(i);
                 }
                 else
                 {
-                    counts[Num] = new NumberCount { Number = Num, Count = 1, RowIndices = new List<int> { i } };
+                    counts[num] = new NumberCount { Number = num, Count = 1, RowIndices = new List<int> { i } };
                 }
+
+                //int Num = Int32.Parse(value); 
+
+                //if (counts.ContainsKey(Num))
+                //{
+                //    counts[Num].Count++;
+                //    counts[Num].RowIndices.Add(i);
+                //}
+                //else
+                //{
+                //    counts[Num] = new NumberCount { Number = Num, Count = 1, RowIndices = new List<int> { i } };
+                //}
             }
 
-            List<int> sortedKeys = counts.Keys.ToList();
+            List<long> sortedKeys = counts.Keys.ToList();
             sortedKeys.Sort();
 
-            foreach (int key in sortedKeys)
+            foreach (long key in sortedKeys)
             {
                 EntryValueInsightDataGrid.Items.Add(counts[key]);
             }

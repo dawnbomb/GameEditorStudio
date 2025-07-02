@@ -5,16 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameEditorStudio"
         mc:Ignorable="d"
-        Title="Tool Manager" Height="600" Width="1000">
+        Title="Tool Manager" Height="650" Width="1000">
     <DockPanel Background="#FF373738" >
         <DockPanel Name="MainDockPanel" LastChildFill="True" Margin="10,0,10,0" Background="{x:Null}" >
             <Label DockPanel.Dock="Top" Content="Tip: If you put any of your tools inside the CrystalEditor/Tools folder, they are automatically used. &#xD;&#xA;Even if they are inside folders, subfoldes, and even if the folders are renamed!"  VerticalAlignment="Top" Foreground="#FFB1CC78"/>
             
-            <ContentControl  Height="130"  Margin="0,10,0,10" DockPanel.Dock="Bottom">
+            <ContentControl  Height="145"  Margin="0,10,0,10" DockPanel.Dock="Bottom">
                 <DockPanel LastChildFill="False" Background="#FF191919">
                     <TextBox Name="ToolNameBox" Margin="8,2,0,0" Text="Tool Name" Height="25" FontSize="20" BorderBrush="{x:Null}" DockPanel.Dock="Top" Background="{x:Null}" FontWeight="Bold"/>
                     <Rectangle Stroke="#FFE0E0E0" Margin="8,6,8,2" DockPanel.Dock="Top"/>
-                    <TextBox Name="ToolDescriptionBox" TextWrapping="Wrap" Margin="8,0,5,0" Text="Tool Description" Height="90" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="White" DockPanel.Dock="Top"/>
+                    <TextBox Name="ToolDescriptionBox" TextWrapping="Wrap" Margin="8,0,5,0" Text="Tool Description" Height="100" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="White" DockPanel.Dock="Top"/>
                 </DockPanel>
                 
 

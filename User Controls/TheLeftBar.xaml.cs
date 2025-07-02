@@ -50,6 +50,8 @@ namespace GameEditorStudio
 
         private void ItemsTree_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (TheWorkshop.IsPreviewMode == true) { return; }
+
             var clickedItem = VisualUpwardSearch<TreeViewItem>(e.OriginalSource as DependencyObject);
             if (clickedItem == null)
                 return;
@@ -615,14 +617,12 @@ namespace GameEditorStudio
                 ItemInfo data = selectedItem.Tag as ItemInfo;
                 EntryManager EManager = new();
 
-                if (TheWorkshop.IsPreviewMode == false)
-                {
-                    EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNameTextBox.Text = data.ItemName.TrimEnd('\0');
-                    UpdateNameCharacterCount();
-                }
-
+                
+                
+                EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNameTextBox.Text = data.ItemName.TrimEnd('\0');
                 EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNoteTextbox.Text = data.ItemNote;
                 EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNotepadTextbox.Text = data.ItemWorkshopTooltip;
+                UpdateNameCharacterCount();
 
                 if (EditorClass.StandardEditorData.DescriptionTableList.Count > 0)
                 {
@@ -681,13 +681,11 @@ namespace GameEditorStudio
         //    if (Properties.Settings.Default.ShowItemIndex == "Hide")
         //    {
         //        Properties.Settings.Default.ShowItemIndex = "Show";
-        //        Properties.Settings.Default.Save();
 
         //    }
         //    else if (Properties.Settings.Default.ShowItemIndex == "Show")
         //    {
         //        Properties.Settings.Default.ShowItemIndex = "Hide";
-        //        Properties.Settings.Default.Save();
 
         //    }
         //    foreach (var editor in Database.GameEditors)
@@ -704,7 +702,12 @@ namespace GameEditorStudio
         //}
 
         private void UpdateNameCharacterCount() 
-        {            
+        {
+            if (TheWorkshop.IsPreviewMode == true)
+            {
+                return;
+            }
+
             LabelCharacterCount.Content = "Chars: " + (ItemNameTextbox.Text.Length).ToString() + " / " + EditorClass.StandardEditorData.NameTableTextSize.ToString(); //(ItemNameTextbox.Text.Length + 1)
 
             if (EditorClass.StandardEditorData.FileNameTable == null) { LabelCharacterCount.Content = "Fake Name List"; }

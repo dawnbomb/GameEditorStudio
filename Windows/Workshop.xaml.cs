@@ -126,8 +126,8 @@ namespace GameEditorStudio
             }
 
             //This is all just making sure the current user settings are displayed.
-            if (Properties.Settings.Default.EntryAddressType == "Decimal") { EntryAddressTypeButton.Content = "Dec"; }
-            if (Properties.Settings.Default.EntryAddressType == "Hex") { EntryAddressTypeButton.Content = "Hex"; }
+            if (LibraryMan.EntryAddressType == "Decimal") { EntryAddressTypeButton.Content = "Dec"; }
+            if (LibraryMan.EntryAddressType == "Hex") { EntryAddressTypeButton.Content = "Hex"; }
 
 
             //<ComboBoxItem Content="NumberBox"/>
@@ -178,7 +178,6 @@ namespace GameEditorStudio
             foreach (KeyValuePair<string, Editor> editor in MyDatabase.GameEditors)
             {
                 editor.Value.EditorBackPanel.Visibility = Visibility.Collapsed;
-
             }
 
             
@@ -221,24 +220,32 @@ namespace GameEditorStudio
                 FileManager.IsEnabled = false;
 
                 PropertiesRowNameBox.IsEnabled = false;
+                PropertiesRowTooltipBox.IsEnabled = false;
+
                 PropertiesColumnNameBox.IsEnabled = false;
+
+                PropertiesGroupNameBox.IsEnabled = false;
+                PropertiesGroupTooltipBox.IsEnabled = false;
 
                 PropertiesNameBox.IsEnabled = false;
                 HideNameCheckbox.IsEnabled = false;
-                HideNameCheckbox.IsEnabled = false;
+                HideEntryCheckbox.IsEnabled = false;
                 PropertiesEntryByteSizeComboBox.IsEnabled = false;
                 PropertiesEntryType.IsEnabled = false;
                 NumberboxSignCheckbox.IsEnabled = false;
                 DropdownMenuType.IsEnabled = false;
+                foreach (ComboBoxItem item in DropdownMenuType.Items) { item.IsEnabled = false; }
                 ButtonMenuManager.IsEnabled = false;
                 EntryNoteTextbox.IsEnabled = false;
+
+                
 
 
                 IconManagerButton.IsEnabled = false; 
 
             }
 
-            if (Properties.Settings.Default.ShowHiddenEntrys == true)
+            if (LibraryMan.ShowHiddenEntrys == true)
             {
                 EntryHiddenToggle.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FC1E40"));
             }
@@ -246,6 +253,8 @@ namespace GameEditorStudio
             {
                 EntryHiddenToggle.Foreground = Brushes.Gray;
             }
+
+            
                 
 
         }
@@ -326,77 +335,71 @@ namespace GameEditorStudio
         private void ToggleTranslationPanel(object sender, RoutedEventArgs e)
         {   
             #if DEBUG
-            if (Properties.Settings.Default.ShowTranslationPanel == true)
+            if (LibraryMan.ShowTranslationPanel == true)
             {
-                Properties.Settings.Default.ShowTranslationPanel = false;
+                LibraryMan.ShowTranslationPanel = false;
             }
-            else if (Properties.Settings.Default.ShowTranslationPanel == false)
+            else if (LibraryMan.ShowTranslationPanel == false)
             {
-                Properties.Settings.Default.ShowTranslationPanel = true;
-            }
-            Properties.Settings.Default.Save();                
+                LibraryMan.ShowTranslationPanel = true;
+            }               
             #endif
             
             UpdateLeftBars();
         }
         private void ToggleEntrySynbology(object sender, RoutedEventArgs e)
         {
-            if (Properties.Settings.Default.ShowSymbology == true)
+            if (LibraryMan.ShowSymbology == true)
             {
-                Properties.Settings.Default.ShowSymbology = false;
+                LibraryMan.ShowSymbology = false;
             }
-            else if (Properties.Settings.Default.ShowSymbology == false)
+            else if (LibraryMan.ShowSymbology == false)
             {
-                Properties.Settings.Default.ShowSymbology = true;
+                LibraryMan.ShowSymbology = true;
             }
-            Properties.Settings.Default.Save();
 
             {   //This is the Entry ID toggle. I'm merging it into the symbology toggle because it makes sense to have them together.
-                if (Properties.Settings.Default.ShowEntryAddress == true)
+                if (LibraryMan.ShowEntryAddress == true)
                 {
-                    Properties.Settings.Default.ShowEntryAddress = false;
+                    LibraryMan.ShowEntryAddress = false;
                 }
-                else if (Properties.Settings.Default.ShowEntryAddress == false)
+                else if (LibraryMan.ShowEntryAddress == false)
                 {
-                    Properties.Settings.Default.ShowEntryAddress = true;                    
+                    LibraryMan.ShowEntryAddress = true;                    
                 }
-                Properties.Settings.Default.Save();
-            }
-            
+            }            
             UpdateEntryDecorations();
         }
 
         private void EntryAddressToggle(object sender, RoutedEventArgs e)
         {
-            if (Properties.Settings.Default.ShowEntryAddress == true)
+            if (LibraryMan.ShowEntryAddress == true)
             {
-                Properties.Settings.Default.ShowEntryAddress = false;
+                LibraryMan.ShowEntryAddress = false;
             }
-            else if (Properties.Settings.Default.ShowEntryAddress == false)
+            else if (LibraryMan.ShowEntryAddress == false)
             {
-                Properties.Settings.Default.ShowEntryAddress = true;
+                LibraryMan.ShowEntryAddress = true;
             }            
-            Properties.Settings.Default.Save();
             UpdateEntryDecorations();
         }
         private void EntryAddressType(object sender, RoutedEventArgs e)
         {
-            if (Properties.Settings.Default.EntryAddressType == "Decimal")
+            if (LibraryMan.EntryAddressType == "Decimal")
             {
-                Properties.Settings.Default.EntryAddressType = "Hex";
+                LibraryMan.EntryAddressType = "Hex";
                 EntryAddressTypeButton.Content = "Hex";
             }
-            else if (Properties.Settings.Default.EntryAddressType == "Hex")
+            else if (LibraryMan.EntryAddressType == "Hex")
             {
-                Properties.Settings.Default.EntryAddressType = "Decimal";
+                LibraryMan.EntryAddressType = "Decimal";
                 EntryAddressTypeButton.Content = "Dec";
             }
             else
             {
-                Properties.Settings.Default.EntryAddressType = "Decimal";
+                LibraryMan.EntryAddressType = "Decimal";
                 EntryAddressTypeButton.Content = "Dec";
             }
-            Properties.Settings.Default.Save();
             UpdateEntryDecorations();
 
         }
@@ -413,18 +416,21 @@ namespace GameEditorStudio
         private void ToggleHiddenEntrys(object sender, RoutedEventArgs e)
         {            
 
-            if (Properties.Settings.Default.ShowHiddenEntrys == true)
+            if (LibraryMan.ShowHiddenEntrys == true)
             {
-                Properties.Settings.Default.ShowHiddenEntrys = false;
+                LibraryMan.ShowHiddenEntrys = false;
                 EntryHiddenToggle.Foreground = Brushes.Gray;
             }
-            else if (Properties.Settings.Default.ShowHiddenEntrys == false)
+            else if (LibraryMan.ShowHiddenEntrys == false)
             {
-                Properties.Settings.Default.ShowHiddenEntrys = true;
+                LibraryMan.ShowHiddenEntrys = true;
                 EntryHiddenToggle.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FC1E40"));
             }
-            Properties.Settings.Default.Save();
             UpdateEntryDecorations();
+
+            if (IsPreviewMode == true) { LibraryMan.Notification("Heyo~", "I didn't bother programming preview mode to " +
+                "properly hide entrys / bytes that are in use by text. I will figure it out some other time. " +
+                "Just be aware the workshop owner probably intends some of the entrys to be hidden. Sorry~"); }
         }
 
         
@@ -448,32 +454,34 @@ namespace GameEditorStudio
                         {
                             group.GroupPanel.Visibility = Visibility.Collapsed;
                         }
+
+                        if (column.ItemBaseList.Count == 0) 
+                        {
+                            column.ColumnPanel.Visibility = Visibility.Visible;
+                        }
                     }                    
                 }
 
                 foreach (Entry entry in editor.StandardEditorData.MasterEntryList)
                 {
-                    if (Properties.Settings.Default.ShowEntryAddress == true)
+                    if (LibraryMan.ShowEntryAddress == true)
                     {
                         entry.EntryPrefix.Visibility = Visibility.Visible;
                     }
-                    else if (Properties.Settings.Default.ShowEntryAddress == false)
+                    else if (LibraryMan.ShowEntryAddress == false)
                     {
                         entry.EntryPrefix.Visibility = Visibility.Collapsed;
                     }
 
                     try
                     {
-                        if (Properties.Settings.Default.EntryAddressType == "Decimal") //Properties.Settings.Default.EntryPrefix = "Row Offset - Decimal Starting at 0";
+                        if (LibraryMan.EntryAddressType == "Decimal") //Properties.Settings.Default.EntryPrefix = "Row Offset - Decimal Starting at 0";
                         {
-
                             entry.EntryPrefix.Content = entry.RowOffset + int.Parse(EntryAddressOffsetTextbox.Text);
-
                         }
-                        else if (Properties.Settings.Default.EntryAddressType == "Hex") //Properties.Settings.Default.EntryPrefix = "Row Offset - Hex Starting at 0x00";
+                        else if (LibraryMan.EntryAddressType == "Hex") //Properties.Settings.Default.EntryPrefix = "Row Offset - Hex Starting at 0x00";
                         {
                             entry.EntryPrefix.Content = (entry.RowOffset + int.Parse(EntryAddressOffsetTextbox.Text)).ToString("X");
-
                         }
                     }
                     catch
@@ -481,19 +489,19 @@ namespace GameEditorStudio
 
                     }
 
-                    if (Properties.Settings.Default.ShowSymbology == true)
+                    if (LibraryMan.ShowSymbology == true)
                     {
                         entry.Symbology.Visibility = Visibility.Visible;
 
                     }
-                    else if (Properties.Settings.Default.ShowSymbology == false)
+                    else if (LibraryMan.ShowSymbology == false)
                     {
                         entry.Symbology.Visibility = Visibility.Collapsed;
                     }
 
                     /////////// Showing Row/Column/Group //////////////////////
 
-                    if (Properties.Settings.Default.ShowHiddenEntrys == false)
+                    if (LibraryMan.ShowHiddenEntrys == false)
                     {
                         if (entry.IsEntryHidden == true || entry.IsTextInUse == true || entry.Bytes == 0)
                         {
@@ -509,7 +517,7 @@ namespace GameEditorStudio
                             entry.EntryRow.CatBorder.Visibility = Visibility.Visible;
                         }
                     }
-                    else if (Properties.Settings.Default.ShowHiddenEntrys == true && entry.Bytes != 0)
+                    else if (LibraryMan.ShowHiddenEntrys == true && entry.Bytes != 0)
                     {
                         entry.EntryBorder.Visibility = Visibility.Visible;
                         entry.EntryColumn.ColumnPanel.Visibility = Visibility.Visible;                        
@@ -543,13 +551,13 @@ namespace GameEditorStudio
             {
                 if (editor.Value.EditorType != "DataTable") { continue; }
 
-                if (Properties.Settings.Default.ShowTranslationPanel == true)
+                if (LibraryMan.ShowTranslationPanel == true)
                 {
                     TheLeftBar asdas = editor.Value.StandardEditorData.EditorLeftDockPanel.UserControl as TheLeftBar;
                     asdas.TranslationsPanelBorder.Visibility = Visibility.Visible;
                     //TranslationsPanelBorder
                 }
-                else if (Properties.Settings.Default.ShowTranslationPanel == false)
+                else if (LibraryMan.ShowTranslationPanel == false)
                 {
                     TheLeftBar asdas = editor.Value.StandardEditorData.EditorLeftDockPanel.UserControl as TheLeftBar;
                     asdas.TranslationsPanelBorder.Visibility = Visibility.Collapsed;
@@ -1171,7 +1179,7 @@ namespace GameEditorStudio
 
             if (ItemInfo.IsFolder == false)
             {
-                if (Properties.Settings.Default.ShowItemIndex == true)
+                if (LibraryMan.ShowItemIndex == true)
                 {
                     Run RunIndex = new Run();
                     RunIndex.Text = ItemInfo.ItemIndex + ": ";
@@ -1378,13 +1386,11 @@ namespace GameEditorStudio
             if (PropertiesRowTooltipBox.Text == "")
             {
                 CategoryClass.TooltipGrid.ToolTip = null;
-                CategoryClass.CategoryLabel.ToolTip = null;
                 CategoryClass.CategoryUnderline.Visibility = Visibility.Collapsed;
             }
             else 
             {
                 CategoryClass.TooltipGrid.ToolTip = CategoryClass.Tooltip;
-                CategoryClass.CategoryLabel.ToolTip = CategoryClass.Tooltip;
                 CategoryClass.CategoryUnderline.Visibility = Visibility.Visible;
             }
         }
@@ -1504,10 +1510,12 @@ namespace GameEditorStudio
             if (PropertiesGroupTooltipBox.Text == "") 
             {
                 GroupClass.GroupUnderline.Visibility = Visibility.Collapsed;
+                GroupClass.TooltipGrid.ToolTip = null;
             }
             if (PropertiesGroupTooltipBox.Text != "")
             {
                 GroupClass.GroupUnderline.Visibility = Visibility.Visible;
+                GroupClass.TooltipGrid.ToolTip = GroupClass.GroupTooltip;
             }
         }
         
@@ -2018,6 +2026,8 @@ namespace GameEditorStudio
             //FormulaComboBox
             //FormulaTextBox
 
+            if (IsPreviewMode == true) { return; }
+
             if (EntryClass.IsEntryHidden == true || EntryClass.IsTextInUse == true) { return; } //prevents users from axidentally modding values that should be otherwise already disabled.
             if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Signed) { return; }
 
@@ -2208,6 +2218,8 @@ namespace GameEditorStudio
 
         public void EntryListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (IsPreviewMode == true) { return; }
+
             ListViewItem ListItem = EntryListBox.SelectedItem as ListViewItem;
             //TextBlock TheBlock = ListItem.Content as TextBlock;
             string selectedItem = ListItem.Content.ToString();
@@ -2250,15 +2262,15 @@ namespace GameEditorStudio
 
         private void ToggleItemIDNumberVisibility(object sender, RoutedEventArgs e)
         {
-            if (Properties.Settings.Default.ShowItemIndex == false)
+            if (LibraryMan.ShowItemIndex == false)
             {
-                Properties.Settings.Default.ShowItemIndex = true;
+                LibraryMan.ShowItemIndex = true;
             }
-            else if (Properties.Settings.Default.ShowItemIndex == true)
+            else if (LibraryMan.ShowItemIndex == true)
             {
-                Properties.Settings.Default.ShowItemIndex = false;  
+                LibraryMan.ShowItemIndex = false;  
             }
-            Properties.Settings.Default.Save();
+            
             foreach (var editor in MyDatabase.GameEditors)
             {
                 if (editor.Value.EditorType == "DataTable")
@@ -2296,6 +2308,7 @@ namespace GameEditorStudio
 
         public void UpdateSymbology(Entry EntryClass)
         {
+            if (IsPreviewMode == true) { return; }
             EntryClass.Symbology.Content = "";
             EntryClass.Symbology.Width = 48;
             EntryClass.Symbology.Foreground = Brushes.White;
@@ -2372,13 +2385,13 @@ namespace GameEditorStudio
                     {
                         ValueX = value;
                     }                    
-                    if (ValueA != "" && ValueB == "")
-                    {
-                        ValueB = value;
-                    }
-                    if (ValueA == "" && ValueB == "")
+                    if (ValueA == "")
                     {
                         ValueA = value;
+                    }
+                    if (ValueB == "" && ValueA != value)
+                    {
+                        ValueB = value;
                     }
 
 
@@ -2570,11 +2583,11 @@ namespace GameEditorStudio
 
 
 
-                if (Properties.Settings.Default.ShowSymbology == true)
+                if (LibraryMan.ShowSymbology == true)
                 {
                     EntryClass.Symbology.Visibility = Visibility.Visible;
                 }
-                if (Properties.Settings.Default.ShowSymbology == false)
+                if (LibraryMan.ShowSymbology == false)
                 {
                     EntryClass.Symbology.Visibility = Visibility.Collapsed;
                 }
@@ -2698,9 +2711,10 @@ namespace GameEditorStudio
 
     public class NumberCount
     {
-        public int Number { get; set; }
+        public long Number { get; set; }  // <-- changed from int to long
         public int Count { get; set; }
         public List<int> RowIndices { get; set; } = new List<int>();
+
         public string RowIndicesAsString
         {
             get

@@ -131,6 +131,7 @@ namespace GameEditorStudio
             RowClass.SWData = EditorClass.StandardEditorData;
 
             Column ColumnClass = new();
+            ColumnClass.ColumnRow = RowClass; 
             RowClass.ColumnList.Add(ColumnClass);
 
 
@@ -162,6 +163,8 @@ namespace GameEditorStudio
             //This is not inside any loop, so it really just makes an editor.
 
             EditorClass.EditorButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+
+           
 
         }
 
@@ -311,6 +314,7 @@ namespace GameEditorStudio
                     Column ColumnClass = new(); 
                     ColumnClass.ColumnName = Xcolumn.Element("Name")?.Value;
                     ColumnClass.Key = Xcolumn.Element("Key")?.Value;
+                    ColumnClass.ColumnRow = CategoryClass;
 
                     CategoryClass.ColumnList.Add(ColumnClass);
 
@@ -554,7 +558,7 @@ namespace GameEditorStudio
 
             }
 
-
+            
 
         }
 

@@ -45,8 +45,8 @@
                             <Setter TargetName="checkBoxBorder" Property="BorderBrush" Value="#FF526C7B" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter TargetName="checkBoxBorder" Property="Background" Value="#FFF4F4F4" />
-                            <Setter TargetName="checkBoxBorder" Property="BorderBrush" Value="#FFADB2B5" />
+                            <Setter TargetName="checkBoxBorder" Property="Background" Value="{DynamicResource ResourceKey= CheckboxBack}" />
+                            <Setter TargetName="checkBoxBorder" Property="BorderBrush" Value="{DynamicResource ResourceKey= CheckboxBorder}" />
                             <Setter TargetName="CheckMark" Property="Stroke" Value="#FFADB2B5" />
                         </Trigger>
                     </ControlTemplate.Triggers>

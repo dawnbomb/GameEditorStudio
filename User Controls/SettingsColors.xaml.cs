@@ -39,9 +39,6 @@ namespace GameEditorStudio
             PopulateColors(ComboBoxText);
             //PopulateColors(ComboBoxAlways0);
 
-            if (Properties.Settings.Default.ColorTheme == "Light") { ThemeComboBox.Text = "Light Mode"; }
-            if (Properties.Settings.Default.ColorTheme == "Dark") { ThemeComboBox.Text = "Dark Mode"; }
-
 
         }
 
@@ -73,19 +70,7 @@ namespace GameEditorStudio
             if (ComboBoxName.SelectedValue.ToString() == "⬤ Blue") { LibraryMan.ValueName = LibraryMan.ColorBlue; }
         }
 
-        private void ThemeComboBox_DropDownClosed(object sender, EventArgs e)
-        {
-            if (ThemeComboBox.Text == "Light Mode")
-            {
-                Properties.Settings.Default.ColorTheme = "Light";
-                Properties.Settings.Default.Save();
-            }
-            if (ThemeComboBox.Text == "Dark Mode")
-            {
-                Properties.Settings.Default.ColorTheme = "Dark";
-                Properties.Settings.Default.Save();
-            }
-        }
+        
     }
 
 }

@@ -206,6 +206,7 @@ namespace GameEditorStudio
 
             StandardEditorMethods.DeleteEmptyColumnsAndMakeNewOnes(EditorClass.StandardEditorData);
 
+
         }
 
 
@@ -545,13 +546,13 @@ namespace GameEditorStudio
 
             Grid LabelGrid = new();
             CatClass.TooltipGrid = LabelGrid;
+            if (CatClass.Tooltip != "") { LabelGrid.ToolTip = CatClass.Tooltip; }
+            ToolTipService.SetInitialShowDelay(LabelGrid, LibraryMan.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(LabelGrid, LibraryMan.TooltipBetweenDelay);
             Header.Children.Add(LabelGrid);
 
             Label CatLabel = new Label();
-            CatLabel.Content = CatClass.CategoryName;// "Entry X";    //"Row X";
-            if (CatClass.Tooltip != "") { CatLabel.ToolTip = CatClass.Tooltip; }
-            ToolTipService.SetInitialShowDelay(CatLabel, LibraryMan.TooltipInitialDelay);
-            ToolTipService.SetBetweenShowDelay(CatLabel, LibraryMan.TooltipBetweenDelay);
+            CatLabel.Content = CatClass.CategoryName;// "Entry X";    //"Row X";            
             DockPanel.SetDock(CatLabel, Dock.Left);
             CatLabel.VerticalAlignment = VerticalAlignment.Top; //Top Bottom
             //Label.HorizontalAlignment = HorizontalAlignment.Left; //Left Right
@@ -809,7 +810,7 @@ namespace GameEditorStudio
             Header.MouseMove += ColumnDrag;
             void ColumnDrag(object sender, MouseEventArgs e)
             {
-
+                if (TheWorkshop.IsPreviewMode == true) { return; }
 
                 if (e.LeftButton == MouseButtonState.Pressed && Keyboard.IsKeyUp(Key.LeftShift)) //Single Column capture
                 {
@@ -977,19 +978,19 @@ namespace GameEditorStudio
             GroupPanel.Children.Add(GroupTopPanel);
             GroupTopPanel.LastChildFill = false;
 
-            Grid GroupTopGrid = new Grid();
+            Grid GroupTopGrid = GroupClass.TooltipGrid;
             GroupTopGrid.Background = Brushes.Transparent;
             GroupTopPanel.Children.Add(GroupTopGrid);
+            if (GroupClass.GroupTooltip != "") { GroupTopGrid.ToolTip = GroupClass.GroupTooltip; }
+            ToolTipService.SetInitialShowDelay(GroupTopGrid, LibraryMan.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(GroupTopGrid, LibraryMan.TooltipBetweenDelay);
             GroupTopGrid.MouseLeftButtonDown += Group_MouseLeftButtonDown;
 
             Label GroupLabel = GroupClass.GroupLabel;
             GroupTopGrid.Children.Add(GroupLabel);
             GroupLabel.Content = GroupClass.GroupName;
             GroupLabel.VerticalAlignment = VerticalAlignment.Top;
-            GroupLabel.Margin = new Thickness(4, 0, 0, 0);
-            if (GroupClass.GroupTooltip != "") { GroupLabel.ToolTip = GroupClass.GroupTooltip; }            
-            ToolTipService.SetInitialShowDelay(GroupLabel, LibraryMan.TooltipInitialDelay);
-            ToolTipService.SetBetweenShowDelay(GroupLabel, LibraryMan.TooltipBetweenDelay);
+            GroupLabel.Margin = new Thickness(4, 0, 0, 0);            
             DockPanel.SetDock(GroupLabel, Dock.Left);
             GroupLabel.MouseLeftButtonDown += Group_MouseLeftButtonDown;
             void Group_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -1013,13 +1014,43 @@ namespace GameEditorStudio
             //GroupUnderline.Width = GroupLabel.Width;
             if (GroupClass.GroupTooltip == "") { GroupUnderline.Visibility = Visibility.Collapsed; }
 
+            ContextMenu contextMenu = new ContextMenu(); // THE RIGHT CLICK MENU
+            GroupTopGrid.ContextMenu = contextMenu;
 
+            MenuItem MenuItemNewGroupRight = new MenuItem();
+            MenuItemNewGroupRight.Header = "  Move Into New Group (Right)  ";
+            contextMenu.Items.Add(MenuItemNewGroupRight);
+            MenuItemNewGroupRight.Click += new RoutedEventHandler(NewGroupRight);
+            void NewGroupRight(object sender, RoutedEventArgs e)
+            {                
+                GroupClass.GroupColumn.ColumnRow.SWData.TheEditor.Workshop.CreateNewColumnRight(GroupClass.GroupColumn);
+
+                int IndexC = GroupClass.GroupColumn.ColumnRow.ColumnList.IndexOf(GroupClass.GroupColumn) + 1;
+                Column ColumnC = GroupClass.GroupColumn.ColumnRow.ColumnList[IndexC];
+
+                StandardEditorMethods.MoveGroupToBottomOfColumn(GroupClass, ColumnC);
+            }
+
+            MenuItem MenuItemNewGroupLeft = new MenuItem();
+            MenuItemNewGroupLeft.Header = "  Move Into New Group (Left)  ";
+            contextMenu.Items.Add(MenuItemNewGroupLeft);
+            MenuItemNewGroupLeft.Click += new RoutedEventHandler(NewGroupLeft);
+            void NewGroupLeft(object sender, RoutedEventArgs e)
+            {                
+                GroupClass.GroupColumn.ColumnRow.SWData.TheEditor.Workshop.CreateNewColumnLeft(GroupClass.GroupColumn);
+
+                int IndexC = GroupClass.GroupColumn.ColumnRow.ColumnList.IndexOf(GroupClass.GroupColumn) - 1;
+                Column ColumnC = GroupClass.GroupColumn.ColumnRow.ColumnList[IndexC];
+
+                StandardEditorMethods.MoveGroupToBottomOfColumn(GroupClass, ColumnC);
+            }
 
 
             GroupTopGrid.MouseMove += GroupDrag;
             //GroupTopPanel.MouseMove += GroupDrag;
             void GroupDrag(object sender, MouseEventArgs e)
             {
+                if (GroupClass.GroupColumn.ColumnRow.SWData.TheEditor.Workshop.IsPreviewMode == true) { return; }
 
                 if (e.LeftButton == MouseButtonState.Pressed && Keyboard.IsKeyUp(Key.LeftShift)) //Single Column capture
                 {
@@ -1090,7 +1121,7 @@ namespace GameEditorStudio
             Border.Margin = new Thickness(4, 0, 5, 3);// Left Top Right Bottom 
             Border.MinHeight = 38; //Height of a entry, so it doesn't shrink too small when there are no entrys in it.
 
-            if (Properties.Settings.Default.ShowHiddenEntrys == false && (EntryClass.IsEntryHidden == true || EntryClass.IsTextInUse == true))
+            if (LibraryMan.ShowHiddenEntrys == false && (EntryClass.IsEntryHidden == true || EntryClass.IsTextInUse == true))
             {
                 Border.Visibility = Visibility.Collapsed;
             }
@@ -1270,7 +1301,8 @@ namespace GameEditorStudio
             }
 
             void EntryBorder_MouseMove(object sender, MouseEventArgs e)
-            {                
+            {
+                if (TheWorkshop.IsPreviewMode == true) { return; }
 
                 if (e.OriginalSource is TextBox)
                 {
@@ -1428,10 +1460,10 @@ namespace GameEditorStudio
             PrefixEID.VerticalContentAlignment = VerticalAlignment.Center;
             //Prefix.Margin = new Thickness(0, 0, 0, 0); // Left Top Right Bottom 
             PrefixEID.Visibility = Visibility.Collapsed;
-            if (Properties.Settings.Default.ShowEntryAddress == false) { PrefixEID.Visibility = Visibility.Collapsed; }
-            if (Properties.Settings.Default.ShowEntryAddress == true) { PrefixEID.Visibility = Visibility.Visible; }
-            if (Properties.Settings.Default.EntryAddressType == "Decimal") { PrefixEID.Content = EntryClass.RowOffset; }
-            if (Properties.Settings.Default.EntryAddressType == "Hex") { PrefixEID.Content = (EntryClass.RowOffset + int.Parse(TheWorkshop.EntryAddressOffsetTextbox.Text)).ToString("X"); }
+            if (LibraryMan.ShowEntryAddress == false) { PrefixEID.Visibility = Visibility.Collapsed; }
+            if (LibraryMan.ShowEntryAddress == true) { PrefixEID.Visibility = Visibility.Visible; }
+            if (LibraryMan.EntryAddressType == "Decimal") { PrefixEID.Content = EntryClass.RowOffset; }
+            if (LibraryMan.EntryAddressType == "Hex") { PrefixEID.Content = (EntryClass.RowOffset + int.Parse(TheWorkshop.EntryAddressOffsetTextbox.Text)).ToString("X"); }
             EntryDockPanel.Children.Add(PrefixEID);
             EntryClass.EntryPrefix = PrefixEID;
 
