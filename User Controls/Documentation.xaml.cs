@@ -75,9 +75,7 @@ namespace GameEditorStudio
 
             if (parentWindow is Workshop workshopWindow)
             {
-                Database = workshopWindow.MyDatabase;
-
-                if (workshopWindow.IsPreviewMode == true) 
+                if (workshopWindow.IsPreviewMode == true)
                 {
                     NewWorkDocButton.IsEnabled = false;
                     NewProjDocButton.IsEnabled = false;
@@ -86,19 +84,14 @@ namespace GameEditorStudio
                     //return;
                 }
 
+
+                Database = workshopWindow.MyDatabase;
                 WorkshopName = workshopWindow.WorkshopName;
                 TheWorkshop = workshopWindow;
 
                 Database.Workshop.TheDocumentsUserControl = this;
 
-                if (workshopWindow.IsPreviewMode == false)
-                {
-                    NewWorkDocButton.IsEnabled = false;
-                    NewProjDocButton.IsEnabled = false;
-                    DocumentNameBox.IsEnabled = false;
-                    DocumentTextBox.IsEnabled = false;
-                    //return;
-                }
+                
 
                 string[] WorkshopDocumentOrder = File.ReadLines(LibraryMan.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Documents\\" + "LoadOrder.txt").ToArray();
                 string[] WorkshopDocumentFolderNames = Directory.GetDirectories(LibraryMan.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
@@ -126,6 +119,7 @@ namespace GameEditorStudio
 
 
                 if (workshopWindow.IsPreviewMode == true) { return; }
+
                 string[] ProjectDocumentOrder = File.ReadLines(LibraryMan.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\Documents\\" + "LoadOrder.txt").ToArray();
                 string[] ProjectDocumentFolderNames = Directory.GetDirectories(LibraryMan.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
                 foreach (string name in ProjectDocumentOrder)//The last known list of documents for this workshop, in the order they were saved in.
