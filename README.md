@@ -1,14 +1,22 @@
 # Game Editor Studio
 
-NOT open source, but i plan on figuring out lisencing stuff later.
+I'll make a readme over the next few days, sorry! x3
+Short version for now, this is a program that you can use to create editors for video games! These editors can be made WITHOUT KNOWING HOW TO CODE. They are 100% code free. They are extremely customizable as well. 
+They will all be forward compatable with all future features, and the program will hopefully grow to support hundreds of games!
+Making these editors is VERY EASY, and if you need help, join my discord! (Link in the program)
 
-PLEASE do NOT use this (yet) to make editors for games!!!
+My goal for the end of 2025: I want atleast 10 games to each have a ton of editors.  
 Any editors made will not be forward compatable with features i plan to add. 
 Fixing forward compatability is currently my #1 priority, as soon as i'm confidant the program is forward compatabile i'll make a release.
 
 If you want to help my discord is Dawnbomb.
 
-Read about the project in much more detail over here: <https://www.crystalmods.com/index.php/crystal-editor/>
+
+
+
+
+# README FOR DEVELOPERS
+- This is WPF instead of Avalonia UI because i'm new and it's missing Toolbox support. I will revisit when Avalonia Accelerate releases (It's supposed to have toolbox support).
 
 NuGet Packages used: 
 Ookii.Dialogs.Wpf by OOkii Dialogs Contributors  (used for selecting files, appearently WPF has literally no way to do this by defalt, yes really)
@@ -16,11 +24,6 @@ System.Text.Encoding.CodePages by Microsoft  (used to encode / decode text from 
 
 Project is C# / WPF / .net8 / Visual Studio 2022
 (used to be .net7 but i changed to .net8 when it released)
-
-# README FOR DEVELOPERS
-- This is WPF instead of Avalonia UI because i'm new and it's missing Toolbox support. I will revisit when Avalonia Accelerate releases (It's supposed to have toolbox support).
-
-
 
 OLD README
 
@@ -46,46 +49,16 @@ Modernly, modders work by copying this info to google sheets, doing everything t
 Modding is easy, now lets make it accessable to anyone. Together. Help me! :)
 
 
-# LEGAL INFO (NOT OPEN SOURCE, ALL RIGHTS ARE RESERVED)
-This project is NOT open source. You may NOT modify, distribute, or sell etc anything in here. Furthermore, you automatatically lose the rights to any work you contribute to this project the moment a pull request is accepted. I made a license.md file if you want a more detailed explanation. The short version is because I suspect once i get a stable beta off the ground, i may want to try selling it (for like 2$ or something) to afford hiring someone to help make it even better. If that bothers whoever wants to help me, we can talk about it. If i do end up profitting off it, i would pay anyone who helped create it. Anyway unless stated explicitly otherwise by me to you directly, you lose the right of ownership on anything you add to Crystal Editor.
-
-# Documentation
-
-Heres some random info about tools and stuff.
-
-The program has the following Definitions: Tool, Command, Action, Event.
-
-A Command is a class storing all kinds of data related to executing things. This is a base object / container.
-An Action is code to be executed.  A command holds an action inside it. When the command is called, it executes the action it's storing.
-A Tool is an actual download utility. An action may execute a tool, or do something using a tool. The command stores a reference to every tool it's action needs.
-An event is a list of Commands. When an event is run, the commands are first checked to make sure their actions requirements are met (every commands tools are accounted for, etc). Afterward, it runs every command in sequence.
-The database folder hold all Enums used in defining many things around the command system, all Tools data, Commands Data, and Actions Data. Events are just a list of events a end user makes, there is no master event list.
-
-
-# Files
-In a workshop, these is this stuff.
-Documentation Folder: Meant to be sharable. I may turn this into nothing but .txt files and remove the subfoldering.
-Editors:
-Tools: Users can add special tools here not supported by the program that are needed for this workshop. Particularly useful for workshop specific tools, like a tool that is useful for only 1 game it was made for.
-
-Commands.xml: A list of all commands a workshop uses. May later include events, and Event Resources.
-LibraryInfo.xml: Info users won't share. A list of info about a workshop a user probably won't share with anyone else (no reason to). Loaded when a user clicks a workshop in the library.  
-
-WorkshopInfo.xml: Users may collaborate share this. A list of editors to load in order (Consider replacing this with a EditorLoadOrder.txt) and a list of every file used in a workshop and their locations from InputFolder.
-	Wait, don't i NEED to split this? if EVERYTHING about a editor was meant to be stored in its editor, isn't a file obviously related to it? a editor can't load without it's file?
-
-
-
-
-
-Editor files / Code  (Go from either New or Load to Create)
-
-NewXEditor:    Load editor data from preset into the Database.
-LoadXEditor:   Load editor data from   XML  into the Database.
-CreateXEditor: Generate an editor into a window, using data from the Database.
-
 # History (for lore enjoyers)
 
 This started as Etrian Editor, then became Crystal Tools, then Crystal Editor, and now Game Editor Studio. :3
 
-Test3
+July 2 2025: First Release! (0.1.1)
+
+
+
+# LEGAL INFO (NOT OPEN SOURCE, ALL RIGHTS ARE RESERVED)
+This project is NOT open source. You may NOT modify, distribute, or sell etc anything in here. Furthermore, you automatatically lose the rights to any work you contribute to this project the moment a pull request is accepted. I made a license.md file if you want a more detailed explanation. The short version is because I suspect once i get a stable beta off the ground, i may want to try selling it (for like 2$ or something) to afford hiring someone to help make it even better. If that bothers whoever wants to help me, we can talk about it. If i do end up profitting off it, i would pay anyone who helped create it. Anyway unless stated explicitly otherwise by me to you directly, you lose the right of ownership on anything you add to Crystal Editor.
+
+
+
