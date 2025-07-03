@@ -278,11 +278,8 @@ namespace GameEditorStudio
                 }
             }
 
-            if (TheWorkshop.TheCrossReference != null) 
-            {
-                TheWorkshop.TheCrossReference.FillLearnBox(EditorClass, EntryClass);
-            }
-            
+                        
+
         }
 
         public static void UpdateEntryName(Entry EntryClass) 

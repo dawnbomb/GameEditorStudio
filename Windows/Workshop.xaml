@@ -288,7 +288,7 @@
                                                             <!-- Row 2 -->
                                                             <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
                                                             <TextBox x:Name="PropertiesRowNameBox" Grid.Row="0" Grid.Column="2" Margin="3" Text="New Category" TextWrapping="Wrap"  KeyDown="PropertiesRowNameBox_KeyDownEnter"/>
-                                                            
+
                                                             <Label Content="Tooltip" Grid.Row="1" Grid.Column="1" Margin="0"/>
                                                             <TextBox x:Name="PropertiesRowTooltipBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" MinHeight="100" Margin="3" TextWrapping="Wrap"  TextChanged="PropertiesRowTooltipBox_TextChanged"/>
                                                         </Grid>
@@ -419,12 +419,14 @@
                                             </ComboBox>-->
 
                                                             <Label Content="Byte Size" Grid.Row="4" Grid.Column="1" Margin="0"/>
+                                                            <Border Grid.Row="4" Grid.Column="1" Margin="3,0,24,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="Big Endian: 00 on left (0014, 002B). &#xA;Little Endian: 00 on right (1400, 2B00).&#xA;   &#xA;Most consoles use Big Endian."/>
                                                             <ComboBox x:Name="PropertiesEntryByteSizeComboBox" Grid.Row="4" Grid.Column="2" Margin="3" DropDownClosed="PropertiesEntryByteSizeComboBox_DropDownClosed" >
                                                                 <ComboBoxItem Content="1 Byte"/>
                                                                 <ComboBoxItem Content="2 Bytes Little Endian"/>
                                                                 <ComboBoxItem Content="4 Bytes Little Endian"/>
                                                                 <ComboBoxItem Content="2 Bytes Big Endian"/>
                                                                 <ComboBoxItem Content="4 Bytes Big Endian"/>
+                                                                
                                                             </ComboBox>
 
                                                             <Label Content="Entry Type" Grid.Row="5" Grid.Column="1" Margin="0"/>
@@ -518,30 +520,35 @@
 
                                                 <Border DockPanel.Dock="Top" Margin="0,0,0,0">
                                                     <DockPanel>
-                                                        <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
-                                                            <Label Content="Hex Info" FontWeight="Bold" />
+                                                        <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" LastChildFill="False" >
+                                                            <Label Content="Hex Info" FontWeight="Bold"/>
+                                                            <Border Margin="-100,0,0,4" BorderThickness="0,0,0,2" Width="90" BorderBrush="#FFB7B7B7" ToolTip="Big Endian: 00 on left (0014, 002B). &#xA;Little Endian: 00 on right (1400, 2B00).&#xA;   &#xA;Most consoles use Big Endian."/>
                                                         </DockPanel>
                                                         <Grid DockPanel.Dock="Top">
-                                                            <Label Content="Decimal" HorizontalAlignment="Left" Margin="50,0,0,0" VerticalAlignment="Top"/>
-                                                            <Label Content="Hex" HorizontalAlignment="Left" Margin="184,0,0,0" VerticalAlignment="Top"/>
-
+                                                            <Label Content="Decimal" HorizontalAlignment="Left" Margin="50,-1,0,0" VerticalAlignment="Top"/>
+                                                            <Label Content="Hex" HorizontalAlignment="Left" Margin="178,-1,0,0" VerticalAlignment="Top"/>
+                                                            <Label Content="D Negatives" HorizontalAlignment="Left" Margin="259,-2,0,0" VerticalAlignment="Top"/>
 
                                                             <Label Content="1" HorizontalAlignment="Left" Margin="4,24,0,0" VerticalAlignment="Top"/>
-                                                            <Label Content="2B" HorizontalAlignment="Left" Margin="4,115,0,0" VerticalAlignment="Top"/>
-                                                            <Label Content="2L" HorizontalAlignment="Left" Margin="4,55,0,0" VerticalAlignment="Top"/>
-                                                            <Label Content="4B" HorizontalAlignment="Left" Margin="4,141,0,0" VerticalAlignment="Top"/>
-                                                            <Label Content="4L" HorizontalAlignment="Left" Margin="4,84,0,0" VerticalAlignment="Top"/>
+                                                            <Label Content="2B" HorizontalAlignment="Left" Margin="4,56,0,0" VerticalAlignment="Top"/>
+                                                            <Label Content="2L" HorizontalAlignment="Left" Margin="4,115,0,0" VerticalAlignment="Top"/>
+                                                            <Label Content="4B" HorizontalAlignment="Left" Margin="4,84,0,0" VerticalAlignment="Top"/>
+                                                            <Label Content="4L" HorizontalAlignment="Left" Margin="4,145,0,0" VerticalAlignment="Top"/>
                                                             <TextBox x:Name="PropertiesEntry1Byte" HorizontalAlignment="Left" Margin="34,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
-                                                            <TextBox x:Name="PropertiesEntry2ByteB" HorizontalAlignment="Left" Margin="34,117,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
-                                                            <TextBox x:Name="PropertiesEntry2ByteL" HorizontalAlignment="Left" Margin="34,58,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
-                                                            <TextBox x:Name="PropertiesEntry4ByteB" HorizontalAlignment="Left" Margin="34,146,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
-                                                            <TextBox x:Name="PropertiesEntry4ByteL" HorizontalAlignment="Left" Margin="34,88,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
-                                                            <TextBox x:Name="PropertiesEntryHex1Byte" HorizontalAlignment="Left" Margin="149,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="96"/>
-                                                            <TextBox x:Name="PropertiesEntryHex2ByteB" HorizontalAlignment="Left" Margin="149,117,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="96"/>
-                                                            <TextBox x:Name="PropertiesEntryHex2ByteL" HorizontalAlignment="Left" Margin="149,58,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="96"/>
-                                                            <TextBox x:Name="PropertiesEntryHex4ByteB" HorizontalAlignment="Left" Margin="149,146,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="96"/>
-                                                            <TextBox x:Name="PropertiesEntryHex4ByteL" HorizontalAlignment="Left" Margin="149,88,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="96"/>
-                                                            <Label Content="Lil Endian 00 right &#xA;Ex: 1400  2B00&#xA;Big Endian 00 left&#xA;Ex: 0014  002B&#xD;&#xA;&#xA;Most consoles use&#xD;&#xA;big" Margin="243,0,0,0" Height="176" VerticalAlignment="Center" HorizontalAlignment="Left" Width="193"/>
+                                                            <TextBox x:Name="PropertiesEntry2ByteB" HorizontalAlignment="Left" Margin="34,58,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
+                                                            <TextBox x:Name="PropertiesEntry2ByteL" HorizontalAlignment="Left" Margin="34,119,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="112"/>
+                                                            <TextBox x:Name="PropertiesEntry4ByteB" HorizontalAlignment="Left" Margin="34,88,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
+                                                            <TextBox x:Name="PropertiesEntry4ByteL" HorizontalAlignment="Left" Margin="34,149,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="112"/>
+                                                            <TextBox x:Name="PropertiesEntryHex1Byte" HorizontalAlignment="Left" Margin="149,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="110"/>
+                                                            <TextBox x:Name="PropertiesEntryHex2ByteB" HorizontalAlignment="Left" Margin="149,58,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="110"/>
+                                                            <TextBox x:Name="PropertiesEntryHex2ByteL" HorizontalAlignment="Left" Margin="150,119,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
+                                                            <TextBox x:Name="PropertiesEntryHex4ByteB" HorizontalAlignment="Left" Margin="149,88,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="110"/>
+                                                            <TextBox x:Name="PropertiesEntryHex4ByteL" HorizontalAlignment="Left" Margin="150,149,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
+                                                            <TextBox x:Name="PropertiesEntry1ByteNegative" HorizontalAlignment="Left" Margin="264,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="122" Foreground="#FFFF8000"/>
+                                                            <TextBox x:Name="PropertiesEntry2ByteBNegative" HorizontalAlignment="Left" Margin="264,58,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="122" Foreground="#FFFF8000"/>
+                                                            <TextBox x:Name="PropertiesEntry2ByteLNegative" HorizontalAlignment="Left" Margin="264,119,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="122" Foreground="#FFFF8000"/>
+                                                            <TextBox x:Name="PropertiesEntry4ByteBNegative" HorizontalAlignment="Left" Margin="264,88,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="122" Foreground="#FFFF8000"/>
+                                                            <TextBox x:Name="PropertiesEntry4ByteLNegative" HorizontalAlignment="Left" Margin="264,149,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="122" Foreground="#FFFF8000"/>
 
                                                         </Grid>
                                                     </DockPanel>

@@ -1865,11 +1865,10 @@ namespace GameEditorStudio
             /////////////////////Data Analyzer/////////////////////
             //TheWorkshop.PropertiesEntry1Byte.Text = EditorClass.StandardEditorData.FileDataTable.FileBytes[EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
             if (TheWorkshop.IsPreviewMode == true) { return; }
-            TheWorkshop.PropertiesEntry1Byte.Text = EntryClass.EntryByteDecimal;            
+            
+            
+            TheWorkshop.PropertiesEntry1Byte.Text = EditorClass.StandardEditorData.FileDataTable.FileBytes[EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
             TheWorkshop.PropertiesEntryHex1Byte.Text = EditorClass.StandardEditorData.FileDataTable.FileBytes[EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("X2");
-
-
-
 
             try
             {
@@ -1907,6 +1906,71 @@ namespace GameEditorStudio
                 TheWorkshop.PropertiesEntryHex4ByteB.Text = "END OF FILE";
                 TheWorkshop.PropertiesEntry4ByteL.Text = "END OF FILE";
                 TheWorkshop.PropertiesEntryHex4ByteL.Text = "END OF FILE";
+            }
+
+
+            //Starting here is for attempting to read possible negative values. 
+            // === 1 Byte (Signed) ===
+            try
+            {
+                sbyte signedByte = (sbyte)EditorClass.StandardEditorData.FileDataTable.FileBytes[
+                    EditorClass.StandardEditorData.DataTableStart +
+                    (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) +
+                    EntryClass.RowOffset];
+                TheWorkshop.PropertiesEntry1ByteNegative.Text = signedByte < 0 ? signedByte.ToString("D") : "";
+            }
+            catch
+            {
+                TheWorkshop.PropertiesEntry1ByteNegative.Text = "END OF FILE";
+            }
+
+            // === 2 Byte (Signed) ===
+            try
+            {
+                int offset2 = EditorClass.StandardEditorData.DataTableStart +
+                              (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) +
+                              EntryClass.RowOffset;
+
+                short s2B = BitConverter.ToInt16(EditorClass.StandardEditorData.FileDataTable.FileBytes, offset2);
+                TheWorkshop.PropertiesEntry2ByteBNegative.Text = s2B < 0 ? s2B.ToString("D") : "";
+
+                byte[] signedBytes2L = EditorClass.StandardEditorData.FileDataTable.FileBytes
+                    .Skip(offset2).Take(2).ToArray();
+                Array.Reverse(signedBytes2L);
+                short swappedS2L = BitConverter.ToInt16(signedBytes2L, 0);
+                TheWorkshop.PropertiesEntry2ByteLNegative.Text = swappedS2L < 0 ? swappedS2L.ToString("D") : "";
+            }
+            catch
+            {
+                TheWorkshop.PropertiesEntry2ByteBNegative.Text = "END OF FILE";
+                TheWorkshop.PropertiesEntry2ByteLNegative.Text = "END OF FILE";
+            }
+
+            // === 4 Byte (Signed) ===
+            try
+            {
+                int offset4 = EditorClass.StandardEditorData.DataTableStart +
+                              (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) +
+                              EntryClass.RowOffset;
+
+                int s4B = BitConverter.ToInt32(EditorClass.StandardEditorData.FileDataTable.FileBytes, offset4);
+                TheWorkshop.PropertiesEntry4ByteBNegative.Text = s4B < 0 ? s4B.ToString("D") : "";
+
+                byte[] signedBytes4L = EditorClass.StandardEditorData.FileDataTable.FileBytes
+                    .Skip(offset4).Take(4).ToArray();
+                Array.Reverse(signedBytes4L);
+                int swappedS4L = BitConverter.ToInt32(signedBytes4L, 0);
+                TheWorkshop.PropertiesEntry4ByteLNegative.Text = swappedS4L < 0 ? swappedS4L.ToString("D") : "";
+            }
+            catch
+            {
+                TheWorkshop.PropertiesEntry4ByteBNegative.Text = "END OF FILE";
+                TheWorkshop.PropertiesEntry4ByteLNegative.Text = "END OF FILE";
+            }
+
+            if (TheWorkshop.TheCrossReference != null)
+            {
+                TheWorkshop.TheCrossReference.FillLearnBox(EditorClass, EntryClass);
             }
         }
 
