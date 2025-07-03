@@ -61,3 +61,4 @@ July 2 2025: First Release! (0.1.1)
 This project is NOT open source. You may NOT modify, distribute, or sell etc anything in here. Furthermore, you automatatically lose the rights to any work you contribute to this project the moment a pull request is accepted. I made a license.md file if you want a more detailed explanation. The short version is because I suspect once i get a stable beta off the ground, i may want to try selling it (for like 2$ or something) to afford hiring someone to help make it even better. If that bothers whoever wants to help me, we can talk about it. If i do end up profitting off it, i would pay anyone who helped create it. Anyway unless stated explicitly otherwise by me to you directly, you lose the right of ownership on anything you add to Crystal Editor.
 
 
+
