@@ -1948,6 +1948,11 @@ namespace GameEditorStudio
 
             EntryManager EntryManager = new();
             EntryManager.LoadEntry(this, EditorClass, EntryClass);
+
+            if (TheCrossReference != null)
+            {
+                TheCrossReference.FillLearnBox(EditorClass, EntryClass);
+            }
         }
 
         private void SetNumberboxSigned(object sender, RoutedEventArgs e)
@@ -1956,6 +1961,11 @@ namespace GameEditorStudio
 
             EntryManager EntryManager = new();
             EntryManager.LoadEntry(this, EditorClass, EntryClass);
+
+            if (TheCrossReference != null)
+            {
+                TheCrossReference.FillLearnBox(EditorClass, EntryClass);
+            }
         }
 
 
@@ -2563,6 +2573,14 @@ namespace GameEditorStudio
                     EntryClass.Symbology.ToolTip = "This entry is never zero.\n\nThis is actually pretty rare, so you should be suspicious. ";
 
                 }
+                else if (AllValues.All(v => v == 0 || v == 1 || v == 2) && AllValues.Contains(0) && AllValues.Contains(1) && AllValues.Contains(2)) //Is always 0/1/2
+                {
+                    //EntryClass.Symbology.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(HalfColor));
+                    EntryClass.Symbology.Foreground = Brushes.Gray;
+                    EntryClass.Symbology.Content = "012";
+                    EntryClass.Symbology.ToolTip = "This entry's value is always 0, 1, or 2.";
+
+                }
                 else if (IsMostlyX == true) //If Mostly X
                 {
                     //EntryClass.Symbology.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(HalfColor));
@@ -2576,7 +2594,15 @@ namespace GameEditorStudio
                     EntryClass.Symbology.Foreground = Brushes.Gray;
                     EntryClass.Symbology.Content = "X??";
                     EntryClass.Symbology.ToolTip = "This entry's value is the same somewhere between 50% and 80% of the time.";
-                    EntryClass.Symbology.FontSize = 12;
+                    EntryClass.Symbology.FontSize = 20;
+
+                }
+                else //If Mostly X
+                {
+                    //EntryClass.Symbology.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(HalfColor));
+                    EntryClass.Symbology.Foreground = Brushes.Gray; 
+                    EntryClass.Symbology.Content = "" + uniqueCount;
+                    EntryClass.Symbology.ToolTip = "This entry has " + uniqueCount + " unique values.";
 
                 }
 
