@@ -144,6 +144,10 @@ namespace GameEditorStudio
                 //There exist some more as well, but those aren't strictly necessary to a new entry.
 
                 Entry EntryClass = new();
+                EntryClass.EntryColumn = ColumnClass; //This is the column this entry belongs to.
+                EntryClass.EntryRow = RowClass; //This is the row this entry belongs to.
+                EntryClass.EntryEditor = EditorClass; //This is the editor this entry belongs to.
+
                 ColumnClass.ItemBaseList.Add(EntryClass);
                 EditorClass.StandardEditorData.MasterEntryList.Add(EntryClass); 
 
@@ -344,9 +348,23 @@ namespace GameEditorStudio
                     void LoadEntry(XElement Xentry, Group MyGroup) 
                     {
                         Entry EntryClass = new();
+                        EntryClass.EntryColumn = ColumnClass; //This is the column this entry belongs to.
+                        EntryClass.EntryRow = CategoryClass; //This is the row this entry belongs to.
+                        EntryClass.EntryEditor = EditorClass; //This is the editor this entry belongs to.
+                        if (MyGroup != null)
+                        {
+                            EntryClass.EntryGroup = MyGroup; 
+                        }
+
                         EditorClass.StandardEditorData.MasterEntryList.Add(EntryClass);
-                        if (MyGroup != null) { MyGroup.EntryList.Add(EntryClass); } //Group adding.
-                        if (MyGroup == null) { ColumnClass.ItemBaseList.Add(EntryClass); } //Column adding.
+                        if (MyGroup != null) 
+                        {
+                            MyGroup.EntryList.Add(EntryClass); 
+                        } 
+                        if (MyGroup == null)
+                        {
+                            ColumnClass.ItemBaseList.Add(EntryClass);
+                        } //Column adding.
                         
 
                         EntryClass.Name = Xentry.Element("Name")?.Value;

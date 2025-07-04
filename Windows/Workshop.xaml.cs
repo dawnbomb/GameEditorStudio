@@ -99,7 +99,12 @@ namespace GameEditorStudio
             ProjectDataItem = Project;  
 
             MyDatabase.Workshop = this;
-            
+
+            #if DEBUG
+
+            #else
+            DebugShowALL.Visibility = Visibility.Collapsed; //DebugShowALL is only visible in debug mode.
+            #endif
 
             foreach (Command command in TrueDatabase.Commands)
             {
@@ -334,7 +339,7 @@ namespace GameEditorStudio
 
         private void ToggleTranslationPanel(object sender, RoutedEventArgs e)
         {   
-            #if DEBUG
+#if DEBUG
             if (LibraryMan.ShowTranslationPanel == true)
             {
                 LibraryMan.ShowTranslationPanel = false;
@@ -343,7 +348,7 @@ namespace GameEditorStudio
             {
                 LibraryMan.ShowTranslationPanel = true;
             }               
-            #endif
+#endif
             
             UpdateLeftBars();
         }
@@ -433,7 +438,24 @@ namespace GameEditorStudio
                 "Just be aware the workshop owner probably intends some of the entrys to be hidden. Sorry~"); }
         }
 
-        
+        private void ToggleDebugShowALL(object sender, RoutedEventArgs e)
+        {
+            if (LibraryMan.DebugShowALL == true)
+            {
+                LibraryMan.DebugShowALL = false;
+                DebugShowALL.Foreground = Brushes.Gray;
+            }
+            else if (LibraryMan.DebugShowALL == false)
+            {
+                LibraryMan.DebugShowALL = true;
+                DebugShowALL.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E70EC"));
+            }
+            UpdateEntryDecorations();
+
+            
+        }
+
+
 
         public void UpdateEntryDecorations() 
         {
@@ -443,8 +465,8 @@ namespace GameEditorStudio
 
                 foreach (var row in editor.StandardEditorData.CategoryList)
                 {
-                    //row.CategoryDockPanel.Visibility = Visibility.Collapsed;
-                    row.CatBorder.Visibility = Visibility.Collapsed;
+                    if (row.ColumnList.Count != 0) if( row.ColumnList[0].ItemBaseList.Count != 0) { row.CatBorder.Visibility = Visibility.Collapsed; }
+                    
 
                     foreach (var column in row.ColumnList)
                     {
@@ -459,7 +481,9 @@ namespace GameEditorStudio
                         {
                             column.ColumnPanel.Visibility = Visibility.Visible;
                         }
-                    }                    
+                    }
+
+                    
                 }
 
                 foreach (Entry entry in editor.StandardEditorData.MasterEntryList)
@@ -539,6 +563,40 @@ namespace GameEditorStudio
 
 
                 
+            }
+
+            if (LibraryMan.DebugShowALL == true) 
+            {
+                DEBUGSHOWALL();
+            }
+            
+        }
+
+        public void DEBUGSHOWALL() 
+        {
+            foreach (var editor in MyDatabase.GameEditors.Values) 
+            {
+                if (editor.EditorType != "DataTable") { continue; }
+
+                foreach (var row in editor.StandardEditorData.CategoryList) 
+                {
+                    row.CatBorder.Visibility = Visibility.Visible;
+
+                    foreach (var column in row.ColumnList)
+                    {
+                        column.ColumnPanel.Visibility = Visibility.Visible;
+
+                        foreach (Group group in column.ItemBaseList.OfType<Group>())
+                        {
+                            group.GroupPanel.Visibility = Visibility.Visible;
+                        }
+                    }
+                }
+
+                foreach (Entry entry in editor.StandardEditorData.MasterEntryList) 
+                {
+                    entry.EntryBorder.Visibility = Visibility.Visible;
+                }
             }
         }
 
@@ -1280,7 +1338,6 @@ namespace GameEditorStudio
         public void CreateNewRowAbove(Category TheCat)
         {
             Category NewRow = new();
-            NewRow.ColumnList = new List<Column>();
             NewRow.SWData = TheCat.SWData;
 
             int TheIndex = TheCat.SWData.CategoryList.IndexOf(TheCat);
@@ -1288,13 +1345,13 @@ namespace GameEditorStudio
 
 
             GenerateStandardEditor CreateSWEditorCode = new();
-            CreateSWEditorCode.CreateCategory(EditorClass.StandardEditorData, NewRow, this, MyDatabase, TheIndex);
+            CreateSWEditorCode.CreateCategory(NewRow);
 
 
             Column ColumnClass = new();
             NewRow.ColumnList.Add(ColumnClass);
             ColumnClass.ColumnRow = NewRow;
-            CreateSWEditorCode.CreateColumn(NewRow, ColumnClass, this, MyDatabase, -1);
+            CreateSWEditorCode.CreateColumn(ColumnClass);
 
         }
 
@@ -1302,7 +1359,6 @@ namespace GameEditorStudio
         public void CreateNewRowBelow(Category TheCat)
         {
             Category NewRow = new();
-            NewRow.ColumnList = new List<Column>();
             NewRow.SWData = TheCat.SWData;
 
             int TheIndex = TheCat.SWData.CategoryList.IndexOf(TheCat) + 1;
@@ -1310,13 +1366,13 @@ namespace GameEditorStudio
 
 
             GenerateStandardEditor CreateSWEditorCode = new();
-            CreateSWEditorCode.CreateCategory(EditorClass.StandardEditorData, NewRow, this, MyDatabase, TheIndex);
+            CreateSWEditorCode.CreateCategory(NewRow);
 
 
             Column ColumnClass = new();
             NewRow.ColumnList.Add(ColumnClass);
             ColumnClass.ColumnRow = NewRow;
-            CreateSWEditorCode.CreateColumn(NewRow, ColumnClass, this, MyDatabase, -1);
+            CreateSWEditorCode.CreateColumn(ColumnClass);
 
         }
 
@@ -1361,7 +1417,7 @@ namespace GameEditorStudio
             {
                 TheCat.SWData.MainDockPanel.Children.Remove(TheCat.CatBorder);
                 TheCat.SWData.CategoryList.Remove(TheCat);
-                LibraryMan.GotoGeneralEditor(this);
+                LibraryMan.GotoRightBarGeneralTab(this);
             }
             
             //Add a IF: count all entrys in all columns in this row, and do IF that is 0.
@@ -1419,7 +1475,7 @@ namespace GameEditorStudio
 
 
             GenerateStandardEditor CreateSWEditorCode = new();
-            CreateSWEditorCode.CreateColumn(Column.ColumnRow, Column, this, MyDatabase, TheIndex);
+            CreateSWEditorCode.CreateColumn(Column);
 
         }
 
@@ -1433,7 +1489,7 @@ namespace GameEditorStudio
 
 
             GenerateStandardEditor CreateSWEditorCode = new();
-            CreateSWEditorCode.CreateColumn(Column.ColumnRow, Column, this, MyDatabase, TheIndex);
+            CreateSWEditorCode.CreateColumn(Column);
 
         }
 
@@ -1625,7 +1681,7 @@ namespace GameEditorStudio
 
             EntryManager EManager = new();
             EManager.EntryBecomeActive(EntryClass);
-            EManager.UpdateEntryProperties(this, EditorClass);
+            EManager.UpdateEntryProperties(EditorClass.StandardEditorData.SelectedEntry);
         }
 
 
@@ -1762,6 +1818,8 @@ namespace GameEditorStudio
                 if (PropertiesEntryByteSizeComboBox.Text == "2 Bytes Big Endian") { NewSize = 2; NewSizeS = "2B"; }
                 if (PropertiesEntryByteSizeComboBox.Text == "4 Bytes Big Endian") { NewSize = 4; NewSizeS = "4B"; }
 
+                List<Entry> targets = new();
+
                 if (EntryClass.RowOffset <= EditorClass.StandardEditorData.DataTableRowSize - NewSize) //Cancel method IF: New size would overflow off the end of GameTableSize
                 {
 
@@ -1812,7 +1870,7 @@ namespace GameEditorStudio
                     //Below is what happens to OTHER ENTRYS, NOT the main entry having it's size changed.
 
 
-                    List<Entry> targets = new();
+                    
 
 
                     List<int> list = new();
@@ -1843,10 +1901,40 @@ namespace GameEditorStudio
                     }
 
                     //This makes sure when a entry is hidden / merged, that it is relocated to wherever the primary entry is.
+                    
+
+                    ////if Old bigger then new
+                    if (OldSize > NewSize)
+                    {
+                        foreach (int i in Enumerable.Range(Math.Min(OldSize, NewSize), Math.Abs(OldSize - NewSize))) //.OrderByDescending(x => x)
+                        {
+                            list.Add(EntryClass.RowOffset + i);
+                        }
+                        foreach (var num in list)
+                        {
+                            foreach (Entry entry in EditorClass.StandardEditorData.MasterEntryList)
+                            {
+                                if (entry.RowOffset == num) //Search for entry with offset+1 over current entry.  Offset+X
+                                {
+                                    entry.Endianness = "1";
+                                    entry.Bytes = 1;
+                                    MyDatabase.EntryManager.LoadEntry(this, EditorClass, entry);
+                                    //EntryData.ReloadEntry(Database, EditorClass, entry);
+                                    entry.EntryBorder.Visibility = Visibility.Visible;
+
+                                    targets.Add(entry);
+
+                                }
+                            }
+                            
+                        }
+                    }
+
+
                     foreach (var entry in targets)
                     {
-                                                
-                        if (entry.EntryGroup == null) 
+
+                        if (entry.EntryGroup == null)
                         {
                             entry.EntryColumn.ItemBaseList.Remove(entry);
                             entry.EntryColumn.ColumnPanel.Children.Remove(entry.EntryBorder);
@@ -1873,40 +1961,15 @@ namespace GameEditorStudio
                             EntryClass.EntryGroup.GroupPanel.Children.Insert(EntryLocation + Diffrence + 1, entry.EntryBorder);
                         }
 
-                        
+
 
 
                         entry.EntryRow = EntryClass.EntryRow;  //  PageClass.RowList[rowIndex + 1];
                         entry.EntryColumn = EntryClass.EntryColumn;   //PageClass.RowList[rowIndex + 1].ColumnList[0];
 
-                        if (EntryClass.EntryGroup != null) 
+                        if (EntryClass.EntryGroup != null)
                         {
-                            entry.EntryGroup = EntryClass.EntryGroup; 
-                        }
-                    }
-
-                    ////if Old bigger then new
-                    if (OldSize > NewSize)
-                    {
-                        foreach (int i in Enumerable.Range(Math.Min(OldSize, NewSize), Math.Abs(OldSize - NewSize))) //.OrderByDescending(x => x)
-                        {
-                            list.Add(EntryClass.RowOffset + i);
-                        }
-                        foreach (var num in list)
-                        {
-                            foreach (Entry entry in EditorClass.StandardEditorData.MasterEntryList)
-                            {
-                                if (entry.RowOffset == num) //Search for entry with offset+1 over current entry.  Offset+X
-                                {
-                                    entry.Endianness = "1";
-                                    entry.Bytes = 1;
-                                    MyDatabase.EntryManager.LoadEntry(this, EditorClass, entry);
-                                    //EntryData.ReloadEntry(Database, EditorClass, entry);
-                                    entry.EntryBorder.Visibility = Visibility.Visible;
-
-                                }
-                            }
-                            
+                            entry.EntryGroup = EntryClass.EntryGroup;
                         }
                     }
 
@@ -1934,6 +1997,7 @@ namespace GameEditorStudio
             }//End of IF
 
             UpdateSymbology(EntryClass);
+            UpdateEntryDecorations();
             
         }
 
@@ -2244,7 +2308,7 @@ namespace GameEditorStudio
 
 
             MyDatabase.EntryManager.SaveEntry(EntryClass.EntryEditor, EntryClass);
-            MyDatabase.EntryManager.UpdateEntryProperties(this, EntryClass.EntryEditor);
+            MyDatabase.EntryManager.UpdateEntryProperties(EditorClass.StandardEditorData.SelectedEntry);
 
 
             foreach (TabItem tabItem in MainTabControl.Items)

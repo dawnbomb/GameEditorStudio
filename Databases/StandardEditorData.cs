@@ -135,7 +135,7 @@ namespace GameEditorStudio
     public class Column
     {
         public string ColumnName { get; set; } = "New Column"; //XML The name of a column.
-        public DockPanel? ColumnPanel { get; set; }
+        public DockPanel ColumnPanel { get; set; } = new();
         public List<ItemBase> ItemBaseList { get; set; } = new();
         public Label ColumnLabel { get; set; }
         public Category ColumnRow { get; set; }
