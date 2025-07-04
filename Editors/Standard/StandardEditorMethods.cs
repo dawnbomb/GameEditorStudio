@@ -17,18 +17,18 @@ namespace GameEditorStudio
     {
                 
 
-        public static void MoveGroupToBottomOfColumn(Group Group, Column column) 
+        public static void MoveGroupToBottomOfColumn(Group Group, Column ToColumn) 
         {
             Column BeforeColumn = Group.GroupColumn; //Save the column before we change it, so we can delete it later if needed.
-            Column AfterColumn = column; //Save the column after we change it, so we can delete it later if needed.
+            Column AfterColumn = ToColumn; //Save the column after we change it, so we can delete it later if needed.
 
             Group.GroupColumn.ItemBaseList.Remove(Group);
             Group.GroupColumn.ColumnPanel.Children.Remove(Group.GroupBorder);
 
-            column.ColumnPanel.Children.Add(Group.GroupBorder);
-            column.ItemBaseList.Add(Group);
+            ToColumn.ColumnPanel.Children.Add(Group.GroupBorder);
+            ToColumn.ItemBaseList.Add(Group);
 
-            Group.GroupColumn = column;
+            Group.GroupColumn = ToColumn;
             foreach (Entry entry in Group.EntryList)
             {
                 entry.EntryColumn = Group.GroupColumn; //Update the entry's column to the new group column.
@@ -252,14 +252,14 @@ namespace GameEditorStudio
             LabelWidth(AfterColumn);
         }
 
-        public static void EntryActivate(Workshop TheWorkshop, Entry EntryClass) 
+        public static void EntryActivate(Entry EntryClass) 
         {
-            //if (TheWorkshop.IsPreviewMode == true) { return; }
-            Editor EditorClass = EntryClass.EntryEditor;
+            //if (TheWorkshop.IsPreviewMode == true) { return; }            
+            Workshop TheWorkshop = EntryClass.EntryEditor.Workshop;
 
             EntryManager EntryData = new();
             EntryData.EntryBecomeActive(EntryClass);
-            EntryData.UpdateEntryProperties(TheWorkshop, EditorClass);
+            EntryData.UpdateEntryProperties(EntryClass);
 
             //EditorClass.SWData.EditorTopBar.EntryNoteBox.Text = EntryClass.EntryTooltip;
             TheWorkshop.EntryNoteTextbox.Text = EntryClass.WorkshopTooltip;

@@ -33,6 +33,8 @@ namespace GameEditorStudio
         public static bool ShowHiddenEntrys { get; set; } = false;
         public static bool ShowSymbology { get; set; } = false;
         public static bool ShowTranslationPanel { get; set; } = false;
+
+        public static bool DebugShowALL { get; set; } = false;
         //END
 
         public static string ApplicationLocation { get; set; } = "";
@@ -372,7 +374,7 @@ namespace GameEditorStudio
             var generalRowTab = TheWorkshop.TabTest.Visibility = Visibility.Hidden;
         }
 
-        public static void GotoGeneralEditor(Workshop TheWorkshop) 
+        public static void GotoRightBarGeneralTab(Workshop TheWorkshop) 
         {
             var GeneralTabControl = TheWorkshop.TabTest.Visibility = Visibility.Visible;
 

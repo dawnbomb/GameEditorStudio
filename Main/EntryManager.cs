@@ -514,7 +514,7 @@ namespace GameEditorStudio
             NumberBox.PreviewMouseDown += (sender, e) =>
             {
                 EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(TheWorkshop, EntryClass.EntryEditor);
+                UpdateEntryProperties(EntryClass);
             };
             NumberBox.PreviewTextInput += (sender, e) =>
             {
@@ -596,7 +596,7 @@ namespace GameEditorStudio
                         if (EntryClass == EntryClass.EntryEditor.StandardEditorData.SelectedEntry)
                         {
                             SaveEntry(EntryClass.EntryEditor, EntryClass);
-                            UpdateEntryProperties(TheWorkshop, EntryClass.EntryEditor);
+                            UpdateEntryProperties(EntryClass);
                         }
                     }
                 }
@@ -653,7 +653,7 @@ namespace GameEditorStudio
                 }
 
                 EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(TheWorkshop, EntryClass.EntryEditor);
+                UpdateEntryProperties(EntryClass);
 
             };
             EntryClass.EntryTypeCheckBox.CheckBoxButton = CheckBox;
@@ -719,7 +719,7 @@ namespace GameEditorStudio
                 }
 
                 EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(TheWorkshop, EntryClass.EntryEditor);
+                UpdateEntryProperties(EntryClass);
 
             };
             ////////////////////////////////////////////////
@@ -758,7 +758,7 @@ namespace GameEditorStudio
                     SaveEntry(EntryClass.EntryEditor, EntryClass);
                 }
                 EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(TheWorkshop, EntryClass.EntryEditor);
+                UpdateEntryProperties(EntryClass);
 
             };
             ////////////////////////////////////////////////
@@ -797,7 +797,7 @@ namespace GameEditorStudio
                     SaveEntry(EntryClass.EntryEditor, EntryClass);
                 }
                 EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(TheWorkshop, EntryClass.EntryEditor);
+                UpdateEntryProperties(EntryClass);
 
             };
             ////////////////////////////////////////////////
@@ -836,7 +836,7 @@ namespace GameEditorStudio
                     SaveEntry(EntryClass.EntryEditor, EntryClass);
                 }
                 EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(TheWorkshop, EntryClass.EntryEditor);
+                UpdateEntryProperties(EntryClass);
 
             };
             ////////////////////////////////////////////////
@@ -875,7 +875,7 @@ namespace GameEditorStudio
                     SaveEntry(EntryClass.EntryEditor, EntryClass);
                 }
                 EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(TheWorkshop, EntryClass.EntryEditor);
+                UpdateEntryProperties(EntryClass);
 
             };
             ////////////////////////////////////////////////
@@ -914,7 +914,7 @@ namespace GameEditorStudio
                     SaveEntry(EntryClass.EntryEditor, EntryClass);
                 }
                 EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(TheWorkshop, EntryClass.EntryEditor);
+                UpdateEntryProperties(EntryClass);
 
             };
             ////////////////////////////////////////////////
@@ -953,7 +953,7 @@ namespace GameEditorStudio
                     SaveEntry(EntryClass.EntryEditor, EntryClass);
                 }
                 EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(TheWorkshop, EntryClass.EntryEditor);
+                UpdateEntryProperties(EntryClass);
 
             };
             ////////////////////////////////////////////////
@@ -992,7 +992,7 @@ namespace GameEditorStudio
                     SaveEntry(EntryClass.EntryEditor, EntryClass);
                 }
                 EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(TheWorkshop, EntryClass.EntryEditor);
+                UpdateEntryProperties(EntryClass);
             };
             ////////////////////////////////////////////////
 
@@ -1196,7 +1196,7 @@ namespace GameEditorStudio
 
                 TheWorkshop.EntryClass = EntryClass;
                 EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(TheWorkshop, EntryClass.EntryEditor);
+                UpdateEntryProperties(EntryClass);
 
                 TheWorkshop.EntryListBox.SelectionChanged -= TheWorkshop.EntryListBox_SelectionChanged; // Remove event handler    
                 TheWorkshop.EntryListBox.Items.Clear(); // Clear items
@@ -1545,7 +1545,7 @@ namespace GameEditorStudio
                 EntryClass.EntryByteDecimal = number;
 
                 SaveEntry(EntryClass.EntryEditor, EntryClass);
-                UpdateEntryProperties(Workshop, EntryClass.EntryEditor);
+                UpdateEntryProperties(EntryClass);
             };
 
 
@@ -1744,14 +1744,16 @@ namespace GameEditorStudio
         }
 
 
-        public void UpdateEntryProperties(Workshop TheWorkshop ,Editor EditorClass) 
+        public void UpdateEntryProperties(Entry EntryClass) 
         {
             //This used to happen on tree view selection change, but it caused a shit ton of lag. Now it doesn't. if my program starts lagging again, consider if this is responsible! >:(
 
-            
+            Workshop TheWorkshop = EntryClass.EntryEditor.Workshop;
+            Editor EditorClass = EntryClass.EntryEditor;
+
+
             LibraryMan.GotoGeneralEntry(TheWorkshop);
 
-            Entry EntryClass = EditorClass.StandardEditorData.SelectedEntry;
             //////////////////////////////////////Workship Update//////////////////////////////////////////
             TheWorkshop.EditorClass = EntryClass.EntryEditor;
             TheWorkshop.CategoryClass = EntryClass.EntryRow;

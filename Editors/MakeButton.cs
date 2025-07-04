@@ -141,7 +141,7 @@ namespace GameEditorStudio
                 TheWorkshop.HIDEALL();
                 TheEditorClass.EditorBackPanel.Visibility = Visibility.Visible;
 
-                LibraryMan.GotoGeneralEditor(TheWorkshop);
+                LibraryMan.GotoRightBarGeneralTab(TheWorkshop);
 
                 TheWorkshop.PropertiesTextboxEditorName.Text = TheEditorNameLabel.Content.ToString();
 
@@ -276,7 +276,14 @@ namespace GameEditorStudio
 
 
                 TheWorkshop.EditorClass = TheEditorClass; //this used to be EditorClass = TheEditorClass; and i changed it because i might have meant this, but also maybe not and i made a new bug?
-
+                TheWorkshop.EntryClass = TheEditorClass.StandardEditorData.SelectedEntry; //This is the entry that is currently selected in the editor.
+                TheWorkshop.ColumnClass = TheWorkshop.EntryClass.EntryColumn;
+                TheWorkshop.CategoryClass = TheWorkshop.ColumnClass.ColumnRow; //This is the category that is currently selected in the editor.
+                if (TheWorkshop.EntryClass.EntryGroup != null) 
+                {
+                    TheWorkshop.GroupClass = TheWorkshop.EntryClass.EntryGroup; //This is the group that is currently selected in the editor.
+                }
+                
 
 
 
