@@ -2381,12 +2381,14 @@ namespace GameEditorStudio
 
 
         public void UpdateSymbology(Entry EntryClass)
-        {
-            if (IsPreviewMode == true) { return; }
+        {            
             EntryClass.Symbology.Content = "";
             EntryClass.Symbology.Width = 48;
             EntryClass.Symbology.Foreground = Brushes.White;
             EntryClass.Symbology.FontSize = 20;
+
+            if (IsPreviewMode == true) { return; }
+            if (EntryClass.Bytes == 0) { return; }
             //TheWorkshop.PropertiesEntry1Byte.Text = EditorClass.SWData.FileDataTable.FileBytes[EditorClass.SWData.DataTableStart + (EditorClass.SWData.TableRowIndex * EntryClass.RowSize) + EntryClass.RowOffset].ToString("D");
 
             {
