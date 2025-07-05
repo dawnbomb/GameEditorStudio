@@ -93,18 +93,95 @@ namespace GameEditorStudio
             LabelWidth(AfterColumn);
         }
 
-        public static void MoveEntrysUnderEntry(List<Entry> EntrysListToMove, Entry EntryToMoveUnder)
+        public static void MoveEntrysToColumn(List<Entry> EntrysListToMove, Column Column)
         {
-            if (EntrysListToMove.Contains(EntryToMoveUnder)) 
+            Column BeforeColumn = EntrysListToMove[0].EntryColumn; //Save the column before we change it, so we can delete it later if needed.
+            Column AfterColumn = Column; //Save the column after we change it, so we can delete it later if needed.
+            List<Entry> MasterList = Column.ColumnRow.SWData.MasterEntryList; //Get the master list of entrys.            
+
+            foreach (Entry EntryToMove in EntrysListToMove)
+            {
+                DoThing(EntryToMove); // First thing
+
+                int repeats = EntryToMove.Bytes - 1;
+
+                for (int x = 1; x <= repeats; x++) // Starts at 1 because first DoThing already ran
+                {
+                    int targetOffset = EntryToMove.RowOffset + x;
+
+                    Entry? NextEntryToMove = MasterList.Find(e => e.RowOffset == targetOffset);
+
+                    if (NextEntryToMove != null)
+                    {
+                        DoThing(NextEntryToMove);
+                    }
+                }
+            }
+
+            DeleteEmptyColumnsAndMakeNewOnes(AfterColumn.ColumnRow.SWData);
+            LabelWidth(BeforeColumn);
+            LabelWidth(AfterColumn);
+
+            void DoThing(Entry EntryToMove) 
+            {
+                if (EntryToMove.EntryGroup != null)
+                {
+                    EntryToMove.EntryGroup.GroupPanel.Children.Remove(EntryToMove.EntryBorder);
+                    EntryToMove.EntryGroup.EntryList.Remove(EntryToMove);
+                    EntryToMove.EntryGroup = null;
+                }
+
+                EntryToMove.EntryColumn.ColumnPanel.Children.Remove(EntryToMove.EntryBorder);
+                EntryToMove.EntryColumn.ItemBaseList.Remove(EntryToMove);
+
+                Column.ColumnPanel.Children.Add(EntryToMove.EntryBorder);
+                Column.ItemBaseList.Add(EntryToMove);
+
+                EntryToMove.EntryColumn = Column; //DO NOT REFER TO COLUMN CLASS DIRECTLY, I HAVE NO IDEA WHY.                    
+                EntryToMove.EntryRow = Column.ColumnRow;
+            }
+        }
+
+        public static void MoveEntrysUnderEntry(List<Entry> EntrysListToMove, Entry FirstEntryToMoveUnder)
+        {
+            if (EntrysListToMove.Contains(FirstEntryToMoveUnder)) 
             {
                 return;
             }
+            
+            List<Entry> MasterList = FirstEntryToMoveUnder.EntryEditor.StandardEditorData.MasterEntryList; //Get the master list of entrys.
 
-            int i = 0;
             Column BeforeColumn = EntrysListToMove[0].EntryColumn; //Save the column before we change it, so we can delete it later if needed.
-            Column AfterColumn = EntryToMoveUnder.EntryColumn; //Save the column after we change it, so we can delete it later if needed.
+            Column AfterColumn = FirstEntryToMoveUnder.EntryColumn; //Save the column after we change it, so we can delete it later if needed.
 
-            foreach (Entry EntryToMove in EntrysListToMove) 
+            Entry EntryToMoveUnder = FirstEntryToMoveUnder; //This is the entry we are moving under.
+
+            foreach (Entry EntryToMove in EntrysListToMove)
+            {
+                DoThing(EntryToMove); // First thing
+
+                int repeats = EntryToMove.Bytes - 1;
+
+                for (int x = 1; x <= repeats; x++) // Starts at 1 because first DoThing already ran
+                {
+                    int targetOffset = EntryToMove.RowOffset + x;
+
+                    Entry? NextEntryToMove = MasterList.Find(e => e.RowOffset == targetOffset);
+
+                    if (NextEntryToMove != null)
+                    {
+                        DoThing(NextEntryToMove);
+                    }
+                }
+            }
+
+
+            DeleteEmptyColumnsAndMakeNewOnes(FirstEntryToMoveUnder.EntryEditor.StandardEditorData);
+            LabelWidth(BeforeColumn);
+            LabelWidth(AfterColumn);
+
+
+            void DoThing(Entry EntryToMove) 
             {
                 if (EntryToMove.EntryGroup != null) //FROM GROUP.
                 {
@@ -120,31 +197,27 @@ namespace GameEditorStudio
 
                 if (EntryToMoveUnder.EntryGroup != null) //TO GROUP.
                 {
-                    int ToIndex = EntryToMoveUnder.EntryGroup.EntryList.IndexOf(EntryToMoveUnder) + i; // the i fixes a bug where entry list drops in reverse order. 
+                    int ToIndex = EntryToMoveUnder.EntryGroup.EntryList.IndexOf(EntryToMoveUnder); // the i fixes a bug where entry list drops in reverse order. 
 
                     EntryToMoveUnder.EntryGroup.GroupPanel.Children.Insert(ToIndex + 2, EntryToMove.EntryBorder);
                     EntryToMoveUnder.EntryGroup.EntryList.Insert(ToIndex + 1, EntryToMove);
 
-                    EntryToMove.EntryGroup = EntryToMoveUnder.EntryGroup; 
+                    EntryToMove.EntryGroup = EntryToMoveUnder.EntryGroup;
                 }
                 else if (EntryToMoveUnder.EntryGroup == null) //TO COLUMN. 
                 {
-                    int ToIndex = EntryToMoveUnder.EntryColumn.ItemBaseList.IndexOf(EntryToMoveUnder) + i; // the i fixes a bug where entry list drops in reverse order. 
+                    int ToIndex = EntryToMoveUnder.EntryColumn.ItemBaseList.IndexOf(EntryToMoveUnder); // the i fixes a bug where entry list drops in reverse order. 
 
                     EntryToMoveUnder.EntryColumn.ColumnPanel.Children.Insert(ToIndex + 2, EntryToMove.EntryBorder);
                     EntryToMoveUnder.EntryColumn.ItemBaseList.Insert(ToIndex + 1, EntryToMove);
-                }                
+                }
 
                 EntryToMove.EntryColumn = EntryToMoveUnder.EntryColumn; //DO NOT REFER TO COLUMN CLASS DIRECTLY, I HAVE NO IDEA WHY.                    
                 EntryToMove.EntryRow = EntryToMoveUnder.EntryRow;
 
-                i++;
+                EntryToMoveUnder = EntryToMove;
+                                
             }
-
-
-            DeleteEmptyColumnsAndMakeNewOnes(EntryToMoveUnder.EntryEditor.StandardEditorData);
-            LabelWidth(BeforeColumn);
-            LabelWidth(AfterColumn);
 
         }
 
@@ -152,9 +225,32 @@ namespace GameEditorStudio
         {
             Column BeforeColumn = EntrysListToMove[0].EntryColumn;
             Column AfterColumn = GroupToMoveUnder.GroupColumn;
-            int i = 0;
+            List<Entry> MasterList = AfterColumn.ColumnRow.SWData.MasterEntryList; //Get the master list of entrys.
 
             foreach (Entry EntryToMove in EntrysListToMove)
+            {
+                DoThing(EntryToMove); // First thing
+
+                int repeats = EntryToMove.Bytes - 1;
+
+                for (int x = 1; x <= repeats; x++) // Starts at 1 because first DoThing already ran
+                {
+                    int targetOffset = EntryToMove.RowOffset + x;
+
+                    Entry? NextEntryToMove = MasterList.Find(e => e.RowOffset == targetOffset);
+
+                    if (NextEntryToMove != null)
+                    {
+                        DoThing(NextEntryToMove);
+                    }
+                }
+            }
+
+            DeleteEmptyColumnsAndMakeNewOnes(AfterColumn.ColumnRow.SWData);
+            LabelWidth(BeforeColumn);
+            LabelWidth(AfterColumn);
+
+            void DoThing(Entry EntryToMove) 
             {
                 if (EntryToMove.EntryGroup != null) //FROM GROUP
                 {
@@ -165,11 +261,11 @@ namespace GameEditorStudio
                 else if (EntryToMove.EntryGroup == null) //FROM COLUMN
                 {
                     EntryToMove.EntryColumn.ColumnPanel.Children.Remove(EntryToMove.EntryBorder);
-                    EntryToMove.EntryColumn.ItemBaseList.Remove(EntryToMove);                    
+                    EntryToMove.EntryColumn.ItemBaseList.Remove(EntryToMove);
                 }
 
                 { //TO COLUMN 
-                    int ToIndex = GroupToMoveUnder.GroupColumn.ItemBaseList.IndexOf(GroupToMoveUnder) + i; // the i fixes a bug where entry list drops in reverse order. 
+                    int ToIndex = GroupToMoveUnder.GroupColumn.ItemBaseList.IndexOf(GroupToMoveUnder); // the i fixes a bug where entry list drops in reverse order. 
 
                     GroupToMoveUnder.GroupColumn.ColumnPanel.Children.Insert(ToIndex + 2, EntryToMove.EntryBorder);
                     GroupToMoveUnder.GroupColumn.ItemBaseList.Insert(ToIndex + 1, EntryToMove);
@@ -177,80 +273,12 @@ namespace GameEditorStudio
 
                 EntryToMove.EntryColumn = AfterColumn; //DO NOT REFER TO COLUMN CLASS DIRECTLY, I HAVE NO IDEA WHY.
                 EntryToMove.EntryGroup = null;
-                EntryToMove.EntryRow = AfterColumn.ColumnRow;
-
-                i++;
+                EntryToMove.EntryRow = AfterColumn.ColumnRow;                
             }
-
-            DeleteEmptyColumnsAndMakeNewOnes(AfterColumn.ColumnRow.SWData);
-            LabelWidth(BeforeColumn);
-            LabelWidth(AfterColumn);
         }
+                
 
-        //Backup of old method that moved entrys INTO the bottom of a group instead of under it. 
-        //public static void MoveEntrysUnderGroup(List<Entry> EntrysListToMove, Group Group)
-        //{
-        //    Column BeforeColumn = EntrysListToMove[0].EntryColumn;
-        //    Column AfterColumn = Group.GroupColumn;
-        //    Group AfterGroup = Group;
-
-        //    foreach (Entry EntryToMove in EntrysListToMove)
-        //    {
-        //        if (EntryToMove.EntryGroup != null) //FROM GROUP
-        //        {
-        //            //Group BeforeGroup = EntryToMove.EntryGroup;
-        //            EntryToMove.EntryGroup.GroupPanel.Children.Remove(EntryToMove.EntryBorder);
-        //            EntryToMove.EntryGroup.EntryList.Remove(EntryToMove);
-        //        }
-        //        else if (EntryToMove.EntryGroup == null) //FROM COLUMN
-        //        {
-        //            EntryToMove.EntryColumn.ColumnPanel.Children.Remove(EntryToMove.EntryBorder);
-        //            EntryToMove.EntryColumn.ItemBaseList.Remove(EntryToMove);
-        //        }
-
-        //        AfterGroup.GroupPanel.Children.Add(EntryToMove.EntryBorder);
-        //        AfterGroup.EntryList.Add(EntryToMove);
-
-        //        EntryToMove.EntryColumn = AfterGroup.GroupColumn; //DO NOT REFER TO COLUMN CLASS DIRECTLY, I HAVE NO IDEA WHY.
-        //        EntryToMove.EntryGroup = AfterGroup;
-        //        EntryToMove.EntryRow = AfterGroup.GroupColumn.ColumnRow;
-
-
-        //    }
-
-        //    DeleteEmptyColumnsAndMakeNewOnes(AfterColumn.ColumnRow.SWData);
-        //    LabelWidth(BeforeColumn);
-        //    LabelWidth(AfterColumn);
-        //}
-
-        public static void MoveEntrysToColumn(List<Entry> EntrysListToMove, Column Column) 
-        {
-            Column BeforeColumn = EntrysListToMove[0].EntryColumn; //Save the column before we change it, so we can delete it later if needed.
-            Column AfterColumn = Column; //Save the column after we change it, so we can delete it later if needed.
-
-            foreach (Entry EntryToMove in EntrysListToMove)
-            {
-                if (EntryToMove.EntryGroup != null) 
-                {
-                    EntryToMove.EntryGroup.GroupPanel.Children.Remove(EntryToMove.EntryBorder);
-                    EntryToMove.EntryGroup.EntryList.Remove(EntryToMove);
-                    EntryToMove.EntryGroup = null; 
-                }
-
-                EntryToMove.EntryColumn.ColumnPanel.Children.Remove(EntryToMove.EntryBorder);
-                EntryToMove.EntryColumn.ItemBaseList.Remove(EntryToMove);
-
-                Column.ColumnPanel.Children.Add(EntryToMove.EntryBorder);
-                Column.ItemBaseList.Add(EntryToMove);
-
-                EntryToMove.EntryColumn = Column; //DO NOT REFER TO COLUMN CLASS DIRECTLY, I HAVE NO IDEA WHY.                    
-                EntryToMove.EntryRow = Column.ColumnRow;
-            }
-
-            DeleteEmptyColumnsAndMakeNewOnes(AfterColumn.ColumnRow.SWData);
-            LabelWidth(BeforeColumn);
-            LabelWidth(AfterColumn);
-        }
+        
 
         public static void EntryActivate(Entry EntryClass) 
         {
