@@ -2494,7 +2494,7 @@ namespace GameEditorStudio
 
                 //negative number detector
                 bool B1NoValuesAre128to199 = false;      // No values are between 128–199
-                bool B1_4PercentAbove128 = false; // At least 4% of values are 128+
+                bool B1_3PercentAbove128 = false; // At least 4% of values are 128+
                 bool B1_4PercentAbove200 = false;  // At least 10% of values are 200–255
                 bool B1_4PercentBelow127 = false; // At least 10% of values are 127 or below
 
@@ -2504,7 +2504,7 @@ namespace GameEditorStudio
                     B1_4PercentAbove200 = AllValues.Count(v => v >= 200) >= AllValues.Count * 0.04;
 
                     long highValuesCount = AllValues.Count(v => v >= 128);
-                    B1_4PercentAbove128 = highValuesCount >= AllValues.Count * 0.04;
+                    B1_3PercentAbove128 = highValuesCount >= AllValues.Count * 0.03;
 
                     long lowValuesCount = AllValues.Count(v => v <= 127);
                     B1_4PercentBelow127 = lowValuesCount >= AllValues.Count * 0.04;
@@ -2547,6 +2547,12 @@ namespace GameEditorStudio
 
                 }
 
+                bool B2NoValuesAre32768to40000 = AllValues.All(v => v < 32768 || v > 40000);
+                bool B2_1PercentAbove40000 = AllValues.Count(v => v >= 40000) / (double)AllValues.Count >= 0.01;
+
+                bool B4NoValuesAre2BTo2_4B = AllValues.All(v => v < 2147483648 || v > 2400000000);
+                bool B4_1PercentAbove2_4B = AllValues.Count(v => v >= 2400000000) / (double)AllValues.Count >= 0.01;
+
                 //////////////////////////////////// ACTUALLY MAKING THE SYMBOLOGY STARTS HERE /////////////////////////////////////
 
 
@@ -2556,18 +2562,30 @@ namespace GameEditorStudio
                     EntryClass.Symbology.Content = "!!!";
                     EntryClass.Symbology.ToolTip = "This entry is probably not a checkbox, it has more then 2 possible values.   ValueA: " + ValueA + " ValueB: " + ValueB + " ValueX: " + ValueX;
                 }
-                else if (B1NoValuesAre128to199 == true && B1_4PercentAbove128 == true && B1_4PercentBelow127 == true && EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox) //Is Probably Negative
-                {
-                    EntryClass.Symbology.Foreground = Brushes.Orange;
-                    EntryClass.Symbology.Content = " -?";
-                    EntryClass.Symbology.ToolTip = "This is PROBABLY data that can represent negative numbers.\n\nNo values are between 128-200, 4%+ of values are 200+, and 4%+ are 127 or less.\nThis is at the very least, extremely suspicious.\n\nPS: values 200~255 are -1 ~ -54 when read as negatives.";
-                }                
-                else if (B1NoValuesAre128to199 == true && B1_4PercentAbove200 == true && EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox) //Is Likely Negative
+                else if (EntryClass.Bytes == 1 && EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox && B1NoValuesAre128to199 == true && B1_3PercentAbove128 == true) //Is Probably Negative  // && B1_4PercentBelow127 == true
                 {
                     EntryClass.Symbology.Foreground = Brushes.Gray;
-                    EntryClass.Symbology.Content = " -?";
-                    EntryClass.Symbology.ToolTip = "This is PROBABLY data that can represent negative numbers.\n\nNo values are between 128-200, 4%+ of values are 200+.\nThis is at the very least, extremely suspicious.\n\nPS: values 200~255 are -1 ~ -54 when read as negatives.";
+                    EntryClass.Symbology.Content = "-N";
+                    EntryClass.Symbology.ToolTip = "This might be a numberbox that supports negative numbers.\n\n- No values are between 128-200.\n- 3%+ of values are 200+.\nThis is at least suspicious.\n\nPS: values 200~255 are -54 ~ -1 when read as negatives.";
                 }
+                else if (EntryClass.Bytes == 2 && EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox && B2NoValuesAre32768to40000 && B2_1PercentAbove40000)
+                {
+                    EntryClass.Symbology.Foreground = Brushes.Orange;
+                    EntryClass.Symbology.Content = "-N";
+                    EntryClass.Symbology.ToolTip = "This might be a numberbox that supports negative numbers.\n\n- No values are between 32768-40000.\n- 1%+ of values are 40000+.\nThis is at least suspicious, but as this entry is more then 1 byte, it's almost guarenteed.";
+                }
+                else if (EntryClass.Bytes == 4 && EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox && B4NoValuesAre2BTo2_4B && B4_1PercentAbove2_4B)
+                {
+                    EntryClass.Symbology.Foreground = Brushes.Orange;
+                    EntryClass.Symbology.Content = "-N";
+                    EntryClass.Symbology.ToolTip = "This might be a numberbox that supports negative numbers.\n\n- No values are between 2147483648-2400000000.\n- 1%+ of values are 2400000000+.\nThis is at least suspicious, but as this entry is more then 1 byte, it's almost guarenteed.";
+                }
+                //else if (EntryClass.Bytes == 1 && EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox && B1NoValuesAre128to199 == true && B1_4PercentAbove128 == true) //Is Likely Negative
+                //{
+                //    EntryClass.Symbology.Foreground = Brushes.Gray;
+                //    EntryClass.Symbology.Content = " -?";
+                //    EntryClass.Symbology.ToolTip = "This is PROBABLY data that can represent negative numbers.\n\nNo values are between 128-200, 4%+ of values are 200+.\nThis is at the very least, extremely suspicious.\n\nPS: values 200~255 are -1 ~ -54 when read as negatives.";
+                //}
 
                 else if (PureBitFlags == true) //Is bitflag
                 {
