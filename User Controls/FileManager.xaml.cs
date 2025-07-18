@@ -12,17 +12,20 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms; //Im actually using this for the file picker because VistaOpenFileDialog refuses to respect setting an initil directory.
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
 //using static System.Net.WebRequestMethods;
 using static System.Windows.Forms.LinkLabel;
+using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
+
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Path = System.IO.Path;
-using System.Windows.Forms; //Im actually using this for the file picker because VistaOpenFileDialog refuses to respect setting an initil directory.
 
 namespace GameEditorStudio
 {
@@ -284,25 +287,23 @@ namespace GameEditorStudio
             //TheTextEditor.TextEditorData. ;
         }
 
+        private void TreeGameFilesDrop(object sender, System.Windows.DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
+            {
+                string[] droppedFiles = (string[])e.Data.GetData(System.Windows.DataFormats.FileDrop);
+
+                foreach (string fullPath in droppedFiles)
+                {
+                    AddWorkshopFile(fullPath, null); // Pass null since no dialog was used
+                }
+            }
+        }
+
+
+
         private void ButtonAddFileToWorkshop(object sender, RoutedEventArgs e)
         {
-
-            //{   //Smart seleting the folder to start in.
-            //    string inputPath = TextBoxInputDirectory.Text + "\\";
-            //    DirectoryInfo? current = new DirectoryInfo(inputPath);
-            //    while (current != null && !current.Exists)
-            //    {
-            //        current = current.Parent;
-            //    }
-            //    if (current != null)
-            //    {
-            //        FolderSelect.SelectedPath = current.FullName + "\\";
-            //    }
-            //}
-            //openFileDialog.Filter = "All files (*.*)|*.*";
-            //openFileDialog.RestoreDirectory = true;
-
-
             if (TheWorkshop.MyDatabase == null) { return; }
 
             //VistaOpenFileDialog
@@ -318,62 +319,134 @@ namespace GameEditorStudio
             {
                 //string Testa = openFileDialog.FileName.Substring(TheWorkshop.ProjectDataItem.ProjectInputDirectory.Length).TrimStart('\\');
                 string fullPath = openFileDialog.FileName;
-                string inputDir2 = TheWorkshop.ProjectDataItem.ProjectInputDirectory;
-                string Testa = fullPath.Substring(inputDir2.Length).TrimStart('\\');
-                foreach (KeyValuePair<string, GameFile> gamefile in TheWorkshop.MyDatabase.GameFiles)
-                {
-                    if (gamefile.Key == Testa)
-                    {
-                        LibraryMan.Notification("Notice: File already in workshop",
-                            "FYI: Yes i'm aware that sometimes games will have diffrent folders with identical file names inside them, causing those files to be hard to work with. " +
-                            "To deal with this problem, Game Editor Studio allows users to give a Nickname. Files with nicknames are shown as if their Nickname IS their filename. " +
-                            "To better understand what just happened involving the file you tried adding to the workshop, here is the workshops information on that file. " +
-                            "\n" +
-                            "\nRealname: " + gamefile.Value.FileName +
-                            "\nNickname: " + gamefile.Value.FileNote +
-                            "\nFilepath: " + gamefile.Value.FileLocation +
-                            "\n" +
-                            "\n*The file path is relative, based on the input directory of this project and is not an absolute location on your computer. " +
-                            "You can access the input directory from Shortcuts -> open input directory."
-                            );
-                                               
-                        return;
-                    }
-                }
-
-
-                try 
-                {
-                    GameFile FileInfo = new();
-
-                    FileInfo.FileName = Path.GetFileName(openFileDialog.FileName);
-                    FileInfo.FileLocation = openFileDialog.FileName.Substring(TheWorkshop.ProjectDataItem.ProjectInputDirectory.Length).TrimStart('\\');
-                    FileInfo.FileBytes = System.IO.File.ReadAllBytes(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + FileInfo.FileLocation);
-
-                    TheWorkshop.MyDatabase.GameFiles.Add(FileInfo.FileLocation, FileInfo);
-                }
-                catch 
-                {
-                    LibraryMan.Notification("Notice: File not found?",
-                        "For some reason the workshop couldn't find the file you selected." +
-                        "\n\n" +
-                        "Possible causes..." +
-                        "\n1: You tried adding a file outside the workshops input folder." +
-                        "\n2: You selected the wrong input folder when first setting up your project." +
-                        "\n3: Whoever created the workshop picked a bad workshops input folder to begin with." +
-                        "\n\n" +
-                        "Note: You can access the input folder from Shortcuts -> open input folder."
-                        );
-                                   
-                }
-
-                TheWorkshop.FileManager.RefreshFileTree();
-                RefreshFileTree();
 
 
 
+                AddWorkshopFile(fullPath, openFileDialog);
             }
-        }   
+        }
+
+        private void AddWorkshopFile(string fullPath, OpenFileDialog openFileDialog)
+        {
+            string inputDir = TheWorkshop.ProjectDataItem.ProjectInputDirectory;
+
+            // Make sure the dropped file is inside the input directory
+            if (!fullPath.StartsWith(inputDir, StringComparison.OrdinalIgnoreCase))
+            {
+                LibraryMan.NotificationNegative("Error: File outside the input folder!",
+                    "You can only add files that are INSIDE the project's input directory!\n\n" +
+                    $"Input folder: {inputDir}\n\n" +
+                    $"Attempted: {fullPath}");
+                return;
+            }
+
+            string relativePath = fullPath.Substring(inputDir.Length).TrimStart('\\');
+
+            foreach (KeyValuePair<string, GameFile> gamefile in TheWorkshop.MyDatabase.GameFiles)
+            {
+                if (gamefile.Key == relativePath)
+                {
+                    LibraryMan.Notification("Notice: File already in workshop",
+                        "FYI: Yes i'm aware that sometimes games will have diffrent folders with identical file names inside them, causing those files to be hard to work with. " +
+                        "To deal with this problem, Game Editor Studio allows users to give a Nickname. Files with nicknames are shown as if their Nickname IS their filename. " +
+                        "To better understand what just happened involving the file you tried adding to the workshop, here is the workshops information on that file. " +
+                        "\n" +
+                        "\nRealname: " + gamefile.Value.FileName +
+                        "\nNickname: " + gamefile.Value.FileNote +
+                        "\nFilepath: " + gamefile.Value.FileLocation +
+                        "\n" +
+                        "\n*The file path is relative, based on the input directory of this project and is not an absolute location on your computer. " +
+                        "You can access the input directory from Shortcuts -> open input directory."
+                        );
+
+                    return;
+                }
+            }
+
+            try
+            {
+                GameFile FileInfo = new()
+                {
+                    FileName = Path.GetFileName(fullPath),
+                    FileLocation = relativePath,
+                    FileBytes = File.ReadAllBytes(fullPath)
+                };
+
+                TheWorkshop.MyDatabase.GameFiles.Add(FileInfo.FileLocation, FileInfo);
+            }
+            catch
+            {
+                LibraryMan.Notification("Notice: File not found?",
+                    "For some reason the workshop couldn't find the file you selected." +
+                    "\n\n" +
+                    "Possible causes..." +
+                    "\n1: You tried adding a file outside the workshops input folder." +
+                    "\n2: You selected the wrong input folder when first setting up your project." +
+                    "\n3: Whoever created the workshop picked a bad workshops input folder to begin with." +
+                    "\n\n" +
+                    "Note: You can access the input folder from Shortcuts -> open input folder."
+                    );
+            }
+
+            TheWorkshop.FileManager.RefreshFileTree();
+            RefreshFileTree();
+        }
+
+        //private void AddWorkshopFile(string fullPath, OpenFileDialog openFileDialog)
+        //{
+        //    string inputDir2 = TheWorkshop.ProjectDataItem.ProjectInputDirectory;
+        //    string Testa = fullPath.Substring(inputDir2.Length).TrimStart('\\');
+        //    foreach (KeyValuePair<string, GameFile> gamefile in TheWorkshop.MyDatabase.GameFiles)
+        //    {
+        //        if (gamefile.Key == Testa)
+        //        {
+        //            LibraryMan.Notification("Notice: File already in workshop",
+        //                "FYI: Yes i'm aware that sometimes games will have diffrent folders with identical file names inside them, causing those files to be hard to work with. " +
+        //                "To deal with this problem, Game Editor Studio allows users to give a Nickname. Files with nicknames are shown as if their Nickname IS their filename. " +
+        //                "To better understand what just happened involving the file you tried adding to the workshop, here is the workshops information on that file. " +
+        //                "\n" +
+        //                "\nRealname: " + gamefile.Value.FileName +
+        //                "\nNickname: " + gamefile.Value.FileNote +
+        //                "\nFilepath: " + gamefile.Value.FileLocation +
+        //                "\n" +
+        //                "\n*The file path is relative, based on the input directory of this project and is not an absolute location on your computer. " +
+        //                "You can access the input directory from Shortcuts -> open input directory."
+        //                );
+
+        //            return;
+        //        }
+        //    }
+
+
+        //    try
+        //    {
+        //        GameFile FileInfo = new();
+
+        //        FileInfo.FileName = Path.GetFileName(openFileDialog.FileName);
+        //        FileInfo.FileLocation = openFileDialog.FileName.Substring(TheWorkshop.ProjectDataItem.ProjectInputDirectory.Length).TrimStart('\\');
+        //        FileInfo.FileBytes = System.IO.File.ReadAllBytes(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + FileInfo.FileLocation);
+
+        //        TheWorkshop.MyDatabase.GameFiles.Add(FileInfo.FileLocation, FileInfo);
+        //    }
+        //    catch
+        //    {
+        //        LibraryMan.Notification("Notice: File not found?",
+        //            "For some reason the workshop couldn't find the file you selected." +
+        //            "\n\n" +
+        //            "Possible causes..." +
+        //            "\n1: You tried adding a file outside the workshops input folder." +
+        //            "\n2: You selected the wrong input folder when first setting up your project." +
+        //            "\n3: Whoever created the workshop picked a bad workshops input folder to begin with." +
+        //            "\n\n" +
+        //            "Note: You can access the input folder from Shortcuts -> open input folder."
+        //            );
+
+        //    }
+
+        //    TheWorkshop.FileManager.RefreshFileTree();
+        //    RefreshFileTree();
+        //}
+
 
         private void FileNoteBoxTextChanged(object sender, TextChangedEventArgs e)
         {
@@ -424,5 +497,7 @@ namespace GameEditorStudio
                 "From Project Output: " +
                 "\n" + TheWorkshop.ProjectDataItem.ProjectOutputDirectory + "\\"+ FileLocationTextbox.Text; // Update the tooltip to show the file location text
         }
+
+        
     }
 }

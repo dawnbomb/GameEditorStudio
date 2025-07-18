@@ -23,6 +23,19 @@ namespace GameEditorStudio
         public TopEastMenu()
         {
             InitializeComponent();
+
+            #if DEBUG
+
+            #else
+            HUDReshade.Visibility = Visibility.Collapsed; 
+            #endif
+        }
+
+        private void OpenReshade(object sender, RoutedEventArgs e)
+        {
+            Reshade f2 = new();
+            f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+            f2.Show();
         }
 
         private void OpenWiki(object sender, RoutedEventArgs e)
@@ -57,5 +70,18 @@ namespace GameEditorStudio
             System.Diagnostics.Process.Start(psi);
         
         }
+
+        private void GithubButton(object sender, RoutedEventArgs e)
+        {
+            string url = "https://github.com/dawnbomb/GameEditorStudio";
+            System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            };
+            System.Diagnostics.Process.Start(psi);
+        }
+
+        
     }
 }

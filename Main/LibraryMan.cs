@@ -224,6 +224,11 @@ namespace GameEditorStudio
             
         }
 
+        public static string GetFolderFromFilepath(string Filepath) 
+        {
+            return Path.GetDirectoryName(Filepath);
+        }
+
         public static string GetSelectedFolderPath(string Description, string Message = null) 
         {
             VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog(); //This starts folder selection using Ookii.Dialogs.WPF NuGet Package
