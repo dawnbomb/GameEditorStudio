@@ -16,10 +16,10 @@
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
                     <Label Name="ItemsLabel" Content="Workshop" FontWeight="Bold"/>
-                    <Button Name="AddFileButton" Content="Add File" DockPanel.Dock="Right" Click="ButtonAddFileToWorkshop" Width="100" HorizontalAlignment="Right" Margin="3" Height="30"/>
+                    <Button Name="AddFileButton" Content="Add File" DockPanel.Dock="Right" Click="ButtonAddFileToWorkshop" Width="100" HorizontalAlignment="Right" Margin="3" Height="30" ToolTip="Tip: You can just drag and drop files onto the file tree and they will be added. :)"/>
 
                 </DockPanel>
-                <TreeView x:Name="TreeGameFiles" SelectedItemChanged="SelectedTreeItemChanged" />
+                <TreeView x:Name="TreeGameFiles" SelectedItemChanged="SelectedTreeItemChanged" Drop="TreeGameFilesDrop" AllowDrop="True"/>
             </DockPanel>
         </ContentControl>
         <GridSplitter Style="{DynamicResource SplitterHorizontal}" Height="12" Grid.Row="1"   />

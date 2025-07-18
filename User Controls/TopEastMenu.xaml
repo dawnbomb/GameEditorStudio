@@ -6,8 +6,10 @@
              xmlns:local="clr-namespace:GameEditorStudio"
              mc:Ignorable="d" Height="30" >    
     <DockPanel Background="Transparent">
+        <Button DockPanel.Dock="Left" Content="Reshade"  x:Name="HUDReshade" Width="100" Height="30" Click="OpenReshade"  Margin="4,0,4,0" Style="{DynamicResource ButtonError}"  />
         <Button DockPanel.Dock="Left" Content="Wiki"  Click="OpenWiki" Height="30" Width="65" Style="{DynamicResource ButtonError}"/>
-        <Button DockPanel.Dock="Left" Content="Discord :)"  x:Name="HUDButtonDiscord" Width="115" Height="30" Click="OpenDiscord"  Margin="5,0,5,0"  />
-        <Button DockPanel.Dock="Left" Content="Website"  Click="WebsiteButton"  Width="100" Height="30"/>
+        <Button DockPanel.Dock="Left" Content="Discord :)"  x:Name="HUDButtonDiscord" Width="115" Height="30" Click="OpenDiscord"  Margin="4,0,0,0"  />
+        <Button DockPanel.Dock="Left" Content="Website"  Click="WebsiteButton"  Width="100" Height="30"  Margin="4,0,4,0"/>
+        <Button DockPanel.Dock="Left" Content="Github"  Click="GithubButton"  Width="90" Height="30"/>
     </DockPanel>
 </UserControl>

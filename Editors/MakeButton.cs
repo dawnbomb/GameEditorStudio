@@ -315,7 +315,10 @@ namespace GameEditorStudio
 
                                 WorkshopData.GameEditors.Remove(editor.Key);
                                 TheWorkshop.MidGrid.Children.Remove(editor.Value.EditorBackPanel);
+                                TheWorkshop.EditorBar.Children.Remove(EditorTabButton);
                                 LibraryMan.GotoGeneralHide(TheWorkshop);
+
+                                
                                 //also hide the details panel for entrys / column / row etc?
 
                                 //Directory.Delete(ExePath + "\\Workshops\\" + WorkshopName + "\\Editors\\" + editor.Key, true);
