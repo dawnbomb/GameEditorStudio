@@ -31,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="AsperiteCursor.cur" />
     <None Remove="Other\AsperiteCursor.cur" />
     <None Remove="Other\pixel_button_with_cutout.png" />
     <None Remove="User Controls\Start Address 010.png" />
@@ -55,9 +56,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="AssemblyInfo.cs">
+    <None Include="AssemblyInfo.cs">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
+    </None>
     <Content Include="Graphics\Game Editor Studio Icon.ico" />
   </ItemGroup>
 
