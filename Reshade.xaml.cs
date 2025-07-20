@@ -66,6 +66,10 @@ namespace GameEditorStudio
 
                 if (GamePath == "") { return; }
 
+                string GameFolder = LibraryMan.GetFolderFromFilepath(GamePath);
+                NukeShadersAndPresetsInGameFolder(GameFolder);
+                SetupReshadeDocumentsFolder();
+                EditReshadeIni(GameFolder);
 
                 string ReshadeExe = files[0];
                 Process process = new Process
@@ -100,8 +104,7 @@ namespace GameEditorStudio
 
             string reshadeIniPath = Path.Combine(GameFolder, "ReShade.ini");
             if (File.Exists(reshadeIniPath)) //IF reshade is actually installed to the game. 
-            {
-                SetupReshadeDocumentsFolder();
+            {                
                 CleanupGameFolder(GameFolder);
                 LibraryMan.Notification("ReShade has been INSTALLED!!!", "Normally reshade creates some folders inside your game's exe folder. Instead of that, i have setup a Reshade folder in your Documents folder, and it will be your new main location for all things Reshade going forward. All games you install reshade to will load presets from there, and all screenshots are saved there. \n\nAlso a shortcut to this new location was created in your game's exe folder, so you can access reshade stuff like you normally would. :) Also HAVE FUUUN!!! :D");
 
@@ -166,46 +169,56 @@ namespace GameEditorStudio
 
 
         public void CleanupGameFolder(string GameFolder)
-        {            
-            string presetsFolder = Path.Combine(GameFolder, "reshade-presets");
-            string shadersFolder = Path.Combine(GameFolder, "reshade-shaders");
+        {
             string documentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-            if (Directory.Exists(presetsFolder))
-            {
-                Directory.Delete(presetsFolder, recursive: true);
-            }
-            if (Directory.Exists(shadersFolder))
-            {
+            {   //Copy over any new shaders / textures from later reshade updates to the master Reshade folder.
+                string shadersFolder = Path.Combine(GameFolder, "reshade-shaders");                
+
                 string FromShadersFolder = Path.Combine(shadersFolder, "Shaders");
                 string FromTexturesFolder = Path.Combine(shadersFolder, "Textures");
 
-                
                 string ToShadersFolder = Path.Combine(documentsFolder, "Reshade\\Reshade Shaders");
                 string ToTexturesFolder = Path.Combine(documentsFolder, "Reshade\\Reshade Textures");
 
                 CopyDirectory(FromShadersFolder, ToShadersFolder);
                 CopyDirectory(FromTexturesFolder, ToTexturesFolder);
-
-                Directory.Delete(shadersFolder, recursive: true);
             }
+            
+
+            NukeShadersAndPresetsInGameFolder(GameFolder);
 
             //Edit the ReShade.ini
             EditReshadeIni(GameFolder);
 
 
-            //Delete the default blank preset ReShadePreset.ini that gets put in the GameFolder
-            string presetIniFile = Path.Combine(GameFolder, "ReShadePreset.ini");
-            if (File.Exists(presetIniFile))
-            {
-                File.Delete(presetIniFile);
-            }
+            
 
             //Create a windows shortcut to Documents\Reshade and put it in GameFolder.
             string reshadeTarget = Path.Combine(documentsFolder, "Reshade");
             string shortcutPath = Path.Combine(GameFolder, "Reshade Folder.lnk");
             CreateShortcut(shortcutPath, reshadeTarget, "Open the Reshade documents folder.");
 
+        }
+
+        private void NukeShadersAndPresetsInGameFolder(string GameFolder) 
+        {
+            string presetsFolder = Path.Combine(GameFolder, "reshade-presets");
+            string shadersFolder = Path.Combine(GameFolder, "reshade-shaders");
+            string presetIniFile = Path.Combine(GameFolder, "ReShadePreset.ini");
+
+            if (Directory.Exists(presetsFolder))
+            {
+                Directory.Delete(presetsFolder, recursive: true);
+            }
+            if (Directory.Exists(shadersFolder))
+            {   
+                Directory.Delete(shadersFolder, recursive: true);
+            }
+            if (File.Exists(presetIniFile)) //Delete the default blank preset ReShadePreset.ini that gets put in the GameFolder
+            {
+                File.Delete(presetIniFile);
+            }
         }
 
 
@@ -226,7 +239,7 @@ namespace GameEditorStudio
 
             string userDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-            string presetPath = Path.Combine(userDocs, "Reshade", "Reshade Presets", "Dawnbombs Colorful World Less Blackout.ini");
+            string presetPath = Path.Combine(userDocs, "Reshade", "Reshade Presets", "Color Splash for Normal 3D Games.ini");
             string shadersPath = Path.Combine(userDocs, "Reshade", "Reshade Shaders") + "\\**";
             string texturesPath = Path.Combine(userDocs, "Reshade", "Reshade Textures") + "\\**";
             string screenshotPath = Path.Combine(userDocs, "Reshade", "Reshade Screenshots");
