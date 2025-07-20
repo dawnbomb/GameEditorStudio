@@ -61,7 +61,8 @@ namespace GameEditorStudio
             #if DEBUG
             
             #else
-            ExtrasMenu.Visibility = Visibility.Collapsed; //Show the extra menu in debug mode.
+            ExtrasMenu.Visibility = Visibility.Collapsed; //Show only in debug mode.
+            DebugMenu.Visibility = Visibility.Collapsed; //Show only in debug mode.
             #endif
         }
 
@@ -863,19 +864,19 @@ namespace GameEditorStudio
 
         private void OpenSettingsWindow(object sender, RoutedEventArgs e)
         {
-#if DEBUG
+
             UserSettings UserSettings = new();
             UserSettings.Show();                                    
-#endif
+
 
         }
 
         private void OpenDevWindow(object sender, RoutedEventArgs e)
         {
-#if DEBUG
+
             DevTools Window = new();
             Window.Show();                                            
-#endif
+
 
         }
 
@@ -888,11 +889,15 @@ namespace GameEditorStudio
 
         private void OpenHexTest(object sender, RoutedEventArgs e)
         {
-#if DEBUG
             HexTest HexTest = new HexTest();
             HexTest.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             HexTest.Show();
-#endif
+
+        }
+
+        private void DebugNotification(object sender, RoutedEventArgs e)
+        {
+            LibraryMan.Notification("Title Test","Content test");
         }
 
 

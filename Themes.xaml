@@ -13,7 +13,7 @@
 
     <SolidColorBrush x:Key="PanelText" Color="#800000"/>
     <SolidColorBrush x:Key="PanelBack" Color="#333333"/>
-    <SolidColorBrush x:Key="PanelBorder" Color="#800000"/>
+    <SolidColorBrush x:Key="PanelBorder" Color="#FF000000"/>
 
     <SolidColorBrush x:Key="TextboxText" Color="#CFCBC7"/> 
     <SolidColorBrush x:Key="TextboxBack" Color="#18191B"/> 

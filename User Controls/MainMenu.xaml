@@ -38,12 +38,17 @@
             <MenuItem Header="Open Downloads Folder" Click="OpenDownloadsFolder"/>
             <MenuItem Header="Open Crystal Editor Folder" Click="OpenCrystalEditorFolder"/>
         </MenuItem>
-        <MenuItem Name="ExtrasMenu" Header="Extras"  >
-            <MenuItem Header="⚙ Settings"  Click="OpenSettingsWindow" Foreground="#FF2C2C"/>
+        <MenuItem Name="ExtrasMenu" Header="Extras" Visibility="Collapsed" >
+            
             <MenuItem Header="Report a Bug, or Request a Feature" Foreground="#FF2C2C"/>
             <MenuItem Header="Request support for a new Tool" Foreground="#FF2C2C"/>
+            
+        </MenuItem>
+        <MenuItem Name="DebugMenu" Header="Debug" Foreground="#FF2C2C"   >
+            <MenuItem Header="⚙ Settings"  Click="OpenSettingsWindow" Foreground="#FF2C2C"/>
+            <MenuItem Header="Call Notification"  Click="DebugNotification" Foreground="#FF2C2C"/>
             <MenuItem Header="DevTools"  Click="OpenDevWindow" Foreground="#FF2C2C"/>
-            <MenuItem Header="HexTest"  Click="OpenHexTest" Foreground="#FF2C2C"/>            
+            <MenuItem Header="HexTest"  Click="OpenHexTest" Foreground="#FF2C2C"/>
             <MenuItem Header="Set 1080P"  Click="Set1080P"/>
         </MenuItem>
     </Menu>
