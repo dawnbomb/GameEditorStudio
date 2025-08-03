@@ -116,15 +116,15 @@ namespace GameEditorStudio
                 ExtraPath = "\\Other\\Dummy Workshops"; //This extra string causes stuff to be saved to a path variant of the normal location, letting us test if a problem would occur, before actually saving to the right location.
                 
 
-                Directory.CreateDirectory(LibraryMan.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName);
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName);
                 SaveAllEditors(Database, TheWorkshop, ExtraPath);
 
                 //Step 2: Delete everything in the example location.
-                Directory.Delete(LibraryMan.ApplicationLocation + ExtraPath + "\\", true);
+                Directory.Delete(LibraryGES.ApplicationLocation + ExtraPath + "\\", true);
 
                 //Step 3: Delete everything in the REAL location.
                 ExtraPath = "";
-                string FolderPath = LibraryMan.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors";
+                string FolderPath = LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors";
                 DirectoryInfo DummyDirectory = new DirectoryInfo(FolderPath);
 
                 foreach (FileInfo file in DummyDirectory.GetFiles())
@@ -146,7 +146,7 @@ namespace GameEditorStudio
                     
                     List<string> EditorsToDelete = new List<string>(); //Used to delete aka rename old folders. Currently causes a access forbidden crash.
 
-                    string LoadOrderFile = LibraryMan.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors\\" + "LoadOrder.txt"; //causes weird errors if outside this
+                    string LoadOrderFile = LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors\\" + "LoadOrder.txt"; //causes weird errors if outside this
 
                     string LoadOrderContent = "";   
 
@@ -166,19 +166,19 @@ namespace GameEditorStudio
                         LoadOrderContent += editor.Key + Environment.NewLine; //for load order text
 
                         EditorsToDelete.Add(editor.Key);//Add editor string to name list
-                        Directory.CreateDirectory(LibraryMan.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors\\" + editor.Key);
+                        Directory.CreateDirectory(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors\\" + editor.Key);
 
                         XmlWriterSettings settings = new XmlWriterSettings();
                         settings.Indent = true;
                         settings.IndentChars = ("    ");
                         settings.CloseOutput = true;
                         settings.OmitXmlDeclaration = true;
-                        using (XmlWriter writer = XmlWriter.Create(LibraryMan.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors\\" + editor.Key + "\\" + "\\Editor.xml", settings))
+                        using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors\\" + editor.Key + "\\" + "\\Editor.xml", settings))
                         {
 
                             writer.WriteStartElement("Editor"); //This is the root of the XML
-                            writer.WriteElementString("VersionNumber", LibraryMan.VersionNumber.ToString());
-                            writer.WriteElementString("VersionDate", LibraryMan.VersionDate);                            
+                            writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                            writer.WriteElementString("VersionDate", LibraryGES.VersionDate);                            
                             writer.WriteElementString("Name", editor.Key); //This is all misc editor data.
                             writer.WriteElementString("Type", editor.Value.EditorType);
                             writer.WriteElementString("Icon", editor.Value.EditorIcon); //This is the name of the file that this editor uses.
@@ -485,7 +485,7 @@ namespace GameEditorStudio
 
                         } //End of using XmlWriter
 
-                        using (XmlWriter FileWriter = XmlWriter.Create(LibraryMan.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors\\" + editor.Key + "\\" + "\\Files.xml", settings))
+                        using (XmlWriter FileWriter = XmlWriter.Create(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors\\" + editor.Key + "\\" + "\\Files.xml", settings))
                         {                            
 
                             List<GameFile> SomeGameFiles = new();
@@ -493,8 +493,8 @@ namespace GameEditorStudio
                             
 
                             FileWriter.WriteStartElement("Files"); //
-                            FileWriter.WriteElementString("VersionNumber", LibraryMan.VersionNumber.ToString());
-                            FileWriter.WriteElementString("VersionDate", LibraryMan.VersionDate);
+                            FileWriter.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                            FileWriter.WriteElementString("VersionDate", LibraryGES.VersionDate);
 
 
                             if (editor.Value.StandardEditorData.FileNameTable != null) //if name table file exists! For editors using a custom name list, it won't exist.
@@ -619,7 +619,7 @@ namespace GameEditorStudio
             catch
             {
 
-                LibraryMan.NotificationNegative("Error: Editors not saved.",
+                PixelWPF.LibraryPixel.NotificationNegative("Error: Editors not saved.",
                     "An error occured during the \"Saving Editors\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +
                     "\n\n" +
                     "As you were probably saving more then just your editors, you'll be happy to hear that each part of saving is handled seperately. This means there is NO CHANCE that any other parts of the saving operation are affected, such as when also saving documents or game giles. " +
@@ -706,21 +706,21 @@ namespace GameEditorStudio
             
             //Step 1: Make sure everything can save to a Example location, letting us test if a problem (crash) would occur, before actually saving to the right location.
             string ExtraPath = "\\Lab"; //This extra string causes stuff to be saved to a path variant of the normal location, 
-            Directory.CreateDirectory(LibraryMan.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events\\");
-            Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Events\\");
+            Directory.CreateDirectory(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events\\");
+            Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Events\\");
 
             //Step 1.5: Save to the example location.
             SaveEventsToXML(ExtraPath);
 
             //Step 2: Delete everything in the example location.
-            Directory.Delete(LibraryMan.ApplicationLocation + ExtraPath + "\\", true);
+            Directory.Delete(LibraryGES.ApplicationLocation + ExtraPath + "\\", true);
 
             bool Failed = false;
             if (Failed == true) { return; }
 
             //Step 3: Delete everything in the REAL location.
             ExtraPath = "";
-            string FolderPath = LibraryMan.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events";
+            string FolderPath = LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events";
             DirectoryInfo DummyDirectory = new DirectoryInfo(FolderPath);
             foreach (FileInfo file in DummyDirectory.GetFiles())
             {
@@ -740,12 +740,12 @@ namespace GameEditorStudio
             {
                 try
                 {
-                    string LoadOrderFile = LibraryMan.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events\\" + "LoadOrder.txt"; //causes weird errors if outside this
+                    string LoadOrderFile = LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events\\" + "LoadOrder.txt"; //causes weird errors if outside this
                     string LoadOrderContent = "";
 
                     foreach (Event Event in MethodData.mainMenu.Events)
                     {
-                        Directory.CreateDirectory(LibraryMan.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events\\" + Event.DisplayName + "\\");
+                        Directory.CreateDirectory(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events\\" + Event.DisplayName + "\\");
 
                         LoadOrderContent += Event.DisplayName + Environment.NewLine; //for load order text
 
@@ -754,11 +754,11 @@ namespace GameEditorStudio
                         settings.IndentChars = ("    ");
                         settings.CloseOutput = true;
                         settings.OmitXmlDeclaration = true;
-                        using (XmlWriter writer = XmlWriter.Create(LibraryMan.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events\\" + Event.DisplayName + "\\Event.xml", settings))
+                        using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events\\" + Event.DisplayName + "\\Event.xml", settings))
                         {
                             writer.WriteStartElement("Event");
-                            writer.WriteElementString("VersionNumber", LibraryMan.VersionNumber.ToString());
-                            writer.WriteElementString("VersionDate", LibraryMan.VersionDate);
+                            writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                            writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
                             writer.WriteElementString("Note", "The resource's name is unused and for debugging. The current name could be diffrent.");
                             writer.WriteElementString("Note2", "The Resource's Key is the WorkshopResourceKey. Not the ProjectResourceKey.");
                             
@@ -796,7 +796,7 @@ namespace GameEditorStudio
                 }
                 catch
                 {
-                    LibraryMan.NotificationNegative("Error: Events failed to save properly.",
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Events failed to save properly.",
                         "Don't worry, your events SHOULD be fine, as they simulate saving before actually saving (so most save crashes dont affect actual data)" +
                         "\n\n" +
                         "I need to write the rest of this error message later." +

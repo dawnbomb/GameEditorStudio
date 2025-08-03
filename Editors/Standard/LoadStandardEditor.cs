@@ -27,14 +27,14 @@ namespace GameEditorStudio
             Editor EditorClass = new(); //Creates the base class of the editor. Everything else becomes a child of this class, including other classes.
             EditorClass.StandardEditorData.TheEditor = EditorClass;
             EditorClass.EditorName = Maker.TextboxEditorName.Text;
-            EditorClass.EditorKey = LibraryMan.GenerateKey();
+            EditorClass.EditorKey = PixelWPF.LibraryPixel.GenerateKey();
             EditorClass.EditorType = "DataTable";
             //EditorClass.EditorIcon = Maker.DemoEditorImage.Tag as string; //For old editor icon system. 
 
 
             EditorClass.StandardEditorData.DataTableStart = int.Parse(Maker.TextBoxDataTableBaseAddress.Text);
             EditorClass.StandardEditorData.DataTableRowSize = int.Parse(Maker.TextBoxDataTableRowSize.Text);
-            EditorClass.StandardEditorData.TableKey = LibraryMan.GenerateKey();
+            EditorClass.StandardEditorData.TableKey = PixelWPF.LibraryPixel.GenerateKey();
             
             var selectedItem = Maker.FileManager.TreeGameFiles.SelectedItem as TreeViewItem; //The file the user wants to make an editor for.
             GameFile HexFile = selectedItem.Tag as GameFile;
@@ -102,7 +102,7 @@ namespace GameEditorStudio
             {
                 EditorClass.StandardEditorData.NameTableLinkType = StandardEditorData.NameTableLinkTypes.Editor;
 
-                LibraryMan.NotificationNegative("Error: How did you even trigger this?",
+                PixelWPF.LibraryPixel.NotificationNegative("Error: How did you even trigger this?",
                     "I didn't actually make any code for getting Editor text from another editor. Huh. Also now your gonna crash, and you should definatly report this!!! "
                     );
                 Environment.FailFast(null); //Kills program instantly. 
@@ -198,7 +198,7 @@ namespace GameEditorStudio
                 if (item.Element("LinkType")?.Value == "TextFile") { EditorClass.StandardEditorData.NameTableLinkType = StandardEditorData.NameTableLinkTypes.TextFile; }
                 if (item.Element("LinkType")?.Value == "Editor")   { EditorClass.StandardEditorData.NameTableLinkType = StandardEditorData.NameTableLinkTypes.Editor; }
                 if (item.Element("LinkType")?.Value == "Nothing")  { EditorClass.StandardEditorData.NameTableLinkType = StandardEditorData.NameTableLinkTypes.Nothing; }
-                EditorClass.StandardEditorData.FileNameTable = LibraryMan.GetGameFileUsingLocation(Database, item.Element("Location")?.Value);
+                EditorClass.StandardEditorData.FileNameTable = LibraryGES.GetGameFileUsingLocation(Database, item.Element("Location")?.Value);
                 EditorClass.StandardEditorData.NameTableCharacterSet = item.Element("CharacterSet")?.Value;
                 EditorClass.StandardEditorData.NameTableStart = Int32.Parse(item.Element("Start")?.Value);
                 EditorClass.StandardEditorData.NameTableTextSize = Int32.Parse(item.Element("TextSize")?.Value);
@@ -209,7 +209,7 @@ namespace GameEditorStudio
 
             foreach (XElement item in xml.Descendants("DataTable"))
             {
-                EditorClass.StandardEditorData.FileDataTable = LibraryMan.GetGameFileUsingLocation(Database, item.Element("Location")?.Value);
+                EditorClass.StandardEditorData.FileDataTable = LibraryGES.GetGameFileUsingLocation(Database, item.Element("Location")?.Value);
                 EditorClass.StandardEditorData.DataTableStart = Int32.Parse(item.Element("Start")?.Value);
                 EditorClass.StandardEditorData.DataTableRowSize = Int32.Parse(item.Element("RowSize")?.Value);
                 EditorClass.StandardEditorData.TableKey = item.Element("TableKey")?.Value;
@@ -227,7 +227,7 @@ namespace GameEditorStudio
                 if (item.Element("LinkType")?.Value == "TextFile") { ExtraTable.LinkType = DescriptionTable.LinkTypes.TextFile; }
                 if (item.Element("LinkType")?.Value == "Editor") { ExtraTable.LinkType = DescriptionTable.LinkTypes.Editor; }
                 if (item.Element("LinkType")?.Value == "Nothing") { ExtraTable.LinkType = DescriptionTable.LinkTypes.Nothing; }
-                ExtraTable.FileTextTable = LibraryMan.GetGameFileUsingLocation(Database, item.Element("Location")?.Value);   
+                ExtraTable.FileTextTable = LibraryGES.GetGameFileUsingLocation(Database, item.Element("Location")?.Value);   
                 ExtraTable.Start = Int32.Parse(item.Element("Start")?.Value);
                 ExtraTable.RowSize = Int32.Parse(item.Element("RowSize")?.Value);
                 ExtraTable.CharacterSet = item.Element("CharacterSet")?.Value;
@@ -299,7 +299,7 @@ namespace GameEditorStudio
 
         public void LoadDataTableFromFilePart2(Workshop TheWorkshop, WorkshopData Database, Editor EditorClass) 
         {
-            string TargetXML = Path.Combine(LibraryMan.ApplicationLocation, "Workshops", TheWorkshop.WorkshopName, "Editors", EditorClass.EditorName, "Editor.xml");
+            string TargetXML = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopName, "Editors", EditorClass.EditorName, "Editor.xml");
 
             XElement xml = XElement.Load(TargetXML);
 
@@ -474,7 +474,7 @@ namespace GameEditorStudio
                                 if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile)
                                 {
                                     XElement XThing = XList.Element("FileData");
-                                    EntryClass.EntryTypeMenu.GameFile = LibraryMan.GetGameFileUsingLocation(Database, XThing.Element("Location")?.Value);
+                                    EntryClass.EntryTypeMenu.GameFile = LibraryGES.GetGameFileUsingLocation(Database, XThing.Element("Location")?.Value);
                                     EntryClass.EntryTypeMenu.FirstNameID = Int32.Parse(XThing.Element("FirstNameID")?.Value);
                                     EntryClass.EntryTypeMenu.Start = Int32.Parse(XThing.Element("Start")?.Value);
                                     EntryClass.EntryTypeMenu.RowSize = Int32.Parse(XThing.Element("RowSize")?.Value);
@@ -485,7 +485,7 @@ namespace GameEditorStudio
                                 if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
                                 {
                                     XElement XThing = XList.Element("TextData");
-                                    EntryClass.EntryTypeMenu.GameFile = LibraryMan.GetGameFileUsingLocation(Database, XThing.Element("Location")?.Value);
+                                    EntryClass.EntryTypeMenu.GameFile = LibraryGES.GetGameFileUsingLocation(Database, XThing.Element("Location")?.Value);
                                     EntryClass.EntryTypeMenu.NameCount = Int32.Parse(XThing.Element("NameCount")?.Value);
                                     EntryClass.EntryTypeMenu.Start = Int32.Parse(XThing.Element("Start")?.Value);
                                     EntryClass.EntryTypeMenu.FirstNameID = Int32.Parse(XThing.Element("FirstNameID")?.Value);
@@ -515,7 +515,7 @@ namespace GameEditorStudio
                                         string thisEntryName = EntryClass.Name;
                                         string thisEntryID = EntryClass.RowOffset.ToString();
 
-                                        LibraryMan.NotificationNegative("Error: Editor \"" + theEditorName + "\" is missing!",
+                                        PixelWPF.LibraryPixel.NotificationNegative("Error: Editor \"" + theEditorName + "\" is missing!",
                                             "Editor \"" + thisEditorName + "\" uses it, but it's... missing? " +
                                             "\n\n" +
                                             "Anyway, " + thisEditorName + " will load anyway, but it's entry \"" + thisEntryName + "\" (Entry ID: " + thisEntryID + ") won't display text properly. " +

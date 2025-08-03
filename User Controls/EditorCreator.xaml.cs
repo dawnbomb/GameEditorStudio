@@ -245,8 +245,8 @@ namespace GameEditorStudio
 
 
             //When making a new editor, i forcibly turn on symbology.
-            LibraryMan.ShowSymbology = true;
-            LibraryMan.ShowEntryAddress = true; //i now also force on E-IDs
+            LibraryGES.ShowSymbology = true;
+            LibraryGES.ShowEntryAddress = true; //i now also force on E-IDs
             TheWorkshop.UpdateEntryDecorations();
             
         }

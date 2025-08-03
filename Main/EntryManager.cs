@@ -1752,7 +1752,7 @@ namespace GameEditorStudio
             Editor EditorClass = EntryClass.EntryEditor;
 
 
-            LibraryMan.GotoGeneralEntry(TheWorkshop);
+            LibraryGES.GotoGeneralEntry(TheWorkshop);
 
             //////////////////////////////////////Workship Update//////////////////////////////////////////
             TheWorkshop.EditorClass = EntryClass.EntryEditor;

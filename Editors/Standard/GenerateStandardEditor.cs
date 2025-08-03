@@ -499,7 +499,7 @@ namespace GameEditorStudio
             Workshop TheWorkshop = CatClass.SWData.TheEditor.Workshop; //This is the workshop that contains the editor, and is used to access the main grid and other workshop related information.
             WorkshopData Database = CatClass.SWData.TheEditor.Workshop.MyDatabase; //This is the database that contains all the information about the game, such as the entries and columns.
 
-            if (SWData == null || TheWorkshop == null || Database == null) { LibraryMan.NotificationNegative("Critical Error!", "Create Category error, will crash soon. Report this D:"); }
+            if (SWData == null || TheWorkshop == null || Database == null) { PixelWPF.LibraryPixel.NotificationNegative("Critical Error!", "Create Category error, will crash soon. Report this D:"); }
                         
             int TheIndex = CatClass.SWData.CategoryList.IndexOf(CatClass);
             SWData.MainDockPanel.Children.Insert(TheIndex, CatClass.CatBorder);
@@ -563,8 +563,8 @@ namespace GameEditorStudio
             Grid LabelGrid = new();
             CatClass.TooltipGrid = LabelGrid;
             if (CatClass.Tooltip != "") { LabelGrid.ToolTip = CatClass.Tooltip; }
-            ToolTipService.SetInitialShowDelay(LabelGrid, LibraryMan.TooltipInitialDelay);
-            ToolTipService.SetBetweenShowDelay(LabelGrid, LibraryMan.TooltipBetweenDelay);
+            ToolTipService.SetInitialShowDelay(LabelGrid, LibraryGES.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(LabelGrid, LibraryGES.TooltipBetweenDelay);
             Header.Children.Add(LabelGrid);
 
             Label CatLabel = new Label();
@@ -589,7 +589,7 @@ namespace GameEditorStudio
             //RowPanel.MouseRightButtonDown += RowGrid_MouseLeftButtonDown; //Bandaid solution to make sure move row up/down and delete are targeting the correct row.
             void RowGrid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
             {
-                LibraryMan.GotoGeneralRow(TheWorkshop);
+                LibraryGES.GotoGeneralRow(TheWorkshop);
                                 
                 TheWorkshop.PropertiesRowNameBox.Text = CatClass.CategoryName;
                 TheWorkshop.PropertiesRowTooltipBox.Text = CatClass.Tooltip;
@@ -798,7 +798,7 @@ namespace GameEditorStudio
 
             void ColumnActivate()
             {
-                LibraryMan.GotoGeneralColumn(TheWorkshop);
+                LibraryGES.GotoGeneralColumn(TheWorkshop);
                 TheWorkshop.PropertiesColumnNameBox.Text = ColumnClass.ColumnName;
                 //TheWorkshop.EntryClass = EntryClass;
                 TheWorkshop.CategoryClass = ColumnClass.ColumnRow;
@@ -986,8 +986,8 @@ namespace GameEditorStudio
             GroupTopGrid.Background = Brushes.Transparent;
             GroupTopPanel.Children.Add(GroupTopGrid);
             if (GroupClass.GroupTooltip != "") { GroupTopGrid.ToolTip = GroupClass.GroupTooltip; }
-            ToolTipService.SetInitialShowDelay(GroupTopGrid, LibraryMan.TooltipInitialDelay);
-            ToolTipService.SetBetweenShowDelay(GroupTopGrid, LibraryMan.TooltipBetweenDelay);
+            ToolTipService.SetInitialShowDelay(GroupTopGrid, LibraryGES.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(GroupTopGrid, LibraryGES.TooltipBetweenDelay);
             GroupTopGrid.MouseLeftButtonDown += Group_MouseLeftButtonDown;
 
             Label GroupLabel = GroupClass.GroupLabel;
@@ -1133,7 +1133,7 @@ namespace GameEditorStudio
             EntryBorder.Margin = new Thickness(4, 0, 5, 3);// Left Top Right Bottom 
             EntryBorder.MinHeight = 38; //Height of a entry, so it doesn't shrink too small when there are no entrys in it.
 
-            if (LibraryMan.ShowHiddenEntrys == false && (EntryClass.IsEntryHidden == true || EntryClass.IsTextInUse == true))
+            if (LibraryGES.ShowHiddenEntrys == false && (EntryClass.IsEntryHidden == true || EntryClass.IsTextInUse == true))
             {
                 EntryBorder.Visibility = Visibility.Collapsed;
             }
@@ -1466,10 +1466,10 @@ namespace GameEditorStudio
             PrefixEID.VerticalContentAlignment = VerticalAlignment.Center;
             //Prefix.Margin = new Thickness(0, 0, 0, 0); // Left Top Right Bottom 
             PrefixEID.Visibility = Visibility.Collapsed;
-            if (LibraryMan.ShowEntryAddress == false) { PrefixEID.Visibility = Visibility.Collapsed; }
-            if (LibraryMan.ShowEntryAddress == true) { PrefixEID.Visibility = Visibility.Visible; }
-            if (LibraryMan.EntryAddressType == "Decimal") { PrefixEID.Content = EntryClass.RowOffset; }
-            if (LibraryMan.EntryAddressType == "Hex") { PrefixEID.Content = (EntryClass.RowOffset + int.Parse(TheWorkshop.EntryAddressOffsetTextbox.Text)).ToString("X"); }
+            if (LibraryGES.ShowEntryAddress == false) { PrefixEID.Visibility = Visibility.Collapsed; }
+            if (LibraryGES.ShowEntryAddress == true) { PrefixEID.Visibility = Visibility.Visible; }
+            if (LibraryGES.EntryAddressType == "Decimal") { PrefixEID.Content = EntryClass.RowOffset; }
+            if (LibraryGES.EntryAddressType == "Hex") { PrefixEID.Content = (EntryClass.RowOffset + int.Parse(TheWorkshop.EntryAddressOffsetTextbox.Text)).ToString("X"); }
             EntryDockPanel.Children.Add(PrefixEID);
             EntryClass.EntryPrefix = PrefixEID;
 
@@ -1490,8 +1490,8 @@ namespace GameEditorStudio
             EntryTextBlock.HorizontalAlignment = HorizontalAlignment.Left;
             EntryTextBlock.VerticalAlignment = VerticalAlignment.Center;
 
-            ToolTipService.SetInitialShowDelay(EntryClass.EntryLeftGrid, LibraryMan.TooltipInitialDelay); 
-            ToolTipService.SetBetweenShowDelay(EntryClass.EntryLeftGrid, LibraryMan.TooltipBetweenDelay); 
+            ToolTipService.SetInitialShowDelay(EntryClass.EntryLeftGrid, LibraryGES.TooltipInitialDelay); 
+            ToolTipService.SetBetweenShowDelay(EntryClass.EntryLeftGrid, LibraryGES.TooltipBetweenDelay); 
 
             ////////////////END OF UNDERLINE SYSTEM//////////////////////
 

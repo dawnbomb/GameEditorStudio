@@ -46,13 +46,13 @@ namespace GameEditorStudio
         private void ButtonUpdateReshadeFolder(object sender, RoutedEventArgs e)
         {
             SetupReshadeDocumentsFolder();
-            LibraryMan.Notification("ReShade Folder Updated!", "The reshade folder in your Documents was updated to the latest / setup to begin with. :)");
+            PixelWPF.LibraryPixel.Notification("ReShade Folder Updated!", "The reshade folder in your Documents was updated to the latest / setup to begin with. :)");
         }
 
         public void ReshadeInstall() //Start actual reshade install
         {
             //Becuase reshade updates change the name of the setup exe, i search for every program with ReShade_Setup prefix, and run the first one i find.
-            string exeDirectory = Path.Combine(LibraryMan.ApplicationLocation, "Other\\Reshade");
+            string exeDirectory = Path.Combine(LibraryGES.ApplicationLocation, "Other\\Reshade");
             string[] files = Directory.GetFiles(exeDirectory, "ReShade_Setup*.exe");
             if (files.Length > 0)
             {
@@ -66,7 +66,7 @@ namespace GameEditorStudio
 
                 if (GamePath == "") { return; }
 
-                string GameFolder = LibraryMan.GetFolderFromFilepath(GamePath);
+                string GameFolder = LibraryGES.GetFolderFromFilepath(GamePath);
                 NukeShadersAndPresetsInGameFolder(GameFolder);
                 SetupReshadeDocumentsFolder();
                 EditReshadeIni(GameFolder);
@@ -100,13 +100,13 @@ namespace GameEditorStudio
 
         private void AfterReshadeSetup(string GamePath) 
         {               
-            string GameFolder = LibraryMan.GetFolderFromFilepath(GamePath);
+            string GameFolder = LibraryGES.GetFolderFromFilepath(GamePath);
 
             string reshadeIniPath = Path.Combine(GameFolder, "ReShade.ini");
             if (File.Exists(reshadeIniPath)) //IF reshade is actually installed to the game. 
             {                
                 CleanupGameFolder(GameFolder);
-                LibraryMan.Notification("ReShade has been INSTALLED!!!", "Normally reshade creates some folders inside your game's exe folder. Instead of that, i have setup a Reshade folder in your Documents folder, and it will be your new main location for all things Reshade going forward. All games you install reshade to will load presets from there, and all screenshots are saved there. \n\nAlso a shortcut to this new location was created in your game's exe folder, so you can access reshade stuff like you normally would. :) Also HAVE FUUUN!!! :D");
+                PixelWPF.LibraryPixel.Notification("ReShade has been INSTALLED!!!", "Normally reshade creates some folders inside your game's exe folder. Instead of that, i have setup a Reshade folder in your Documents folder, and it will be your new main location for all things Reshade going forward. All games you install reshade to will load presets from there, and all screenshots are saved there. \n\nAlso a shortcut to this new location was created in your game's exe folder, so you can access reshade stuff like you normally would. :) Also HAVE FUUUN!!! :D");
 
                 this.Close();
             }
@@ -120,7 +120,7 @@ namespace GameEditorStudio
 
         public void SetupReshadeDocumentsFolder()
         {
-            string sourceFolder = Path.Combine(LibraryMan.ApplicationLocation, "Other\\Reshade\\Reshade");
+            string sourceFolder = Path.Combine(LibraryGES.ApplicationLocation, "Other\\Reshade\\Reshade");
             string documentsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string destinationFolder = Path.Combine(documentsFolder, "Reshade");
 
@@ -162,7 +162,7 @@ namespace GameEditorStudio
             }
             catch (Exception ex)
             {
-                LibraryMan.NotificationNegative("Error!", "Failed to copy ReShade folder.\n\nThis really should not happen, so, uh, IDK, oh fuck?" + ex.Message);
+                PixelWPF.LibraryPixel.NotificationNegative("Error!", "Failed to copy ReShade folder.\n\nThis really should not happen, so, uh, IDK, oh fuck?" + ex.Message);
             }
         }
         //Reminder to delete any duplicate shaders!

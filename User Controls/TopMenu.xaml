@@ -9,15 +9,15 @@
         <Menu Name="TheMenu" Height="27" DockPanel.Dock="Left" >
             <MenuItem x:Name="WorkshopMenu" Header="File" SubmenuOpened="FileMenuOpened" >
                 <MenuItem Header="Save Everything" Click="SaveAll"/>
-                <Separator Style="{DynamicResource KeySeperator}"/>
+                <Separator Style="{DynamicResource DashLineForMenu}"/>
                 <MenuItem Header="Save Editors" Click="SaveEditors" Name="MenuSaveEditors" ToolTip="This saves ONLY the editors. Good for when you axidentally changes some values but you still really wanna save."/>
                 <MenuItem Header="Save Game Data"   Click="SaveGameData" Name="MenuSaveGameData" ToolTip="Game Data is the actual game files that stuff like enemy stats, items stats, etc are on."/>
                 <MenuItem Header="Save Workshop Documents"  Click="SaveWorkshopDocuments" Name="MenuSaveWorkshopDocuments" ToolTip="These are the documents that people get when a workshop is shared with others."/>
                 <MenuItem Header="Save Project Documents"  Click="SaveProjectDocuments" Name="MenuSaveProjectDocuments" ToolTip="These are text files that only you have access to."/>
                 <MenuItem Header="Save Events" Click="SaveEvents" ToolTip="I wanna improve the event system in the future. Hmmm...."/>
-                <Separator Style="{DynamicResource KeySeperator}"/>
+                <Separator Style="{DynamicResource DashLineForMenu}"/>
                 <MenuItem Header="Create New Editor"  Click="FileNewEditor" Name="NewEditorItem" ToolTip="Create a new game editor using game files. It also supports getting text from text dumps. "/>
-                <Separator Style="{DynamicResource KeySeperator}"/>
+                <Separator Style="{DynamicResource DashLineForMenu}"/>
                 <MenuItem Header="Export ALL data table editors to excel files." Click="ExportEditors" Name="ItemExportEditors" ToolTip="Google sheets can import excel files, so you could basically put a datamine infodump of gamedata onto the internet. :D" />
             </MenuItem>
             <MenuItem x:Name="ToolsMenu" Header="Tools" SubmenuOpened="ToolsMenuOpened">
@@ -45,13 +45,17 @@
                 <MenuItem Header="Request support for a new Tool" Foreground="#FF2C2C"/>
 
             </MenuItem>
-            <MenuItem Name="DebugMenu" Header="Debug" Foreground="#FF2C2C"   >
-                <MenuItem Header="⚙ Settings"  Click="OpenSettingsWindow" Foreground="#FF2C2C"/>
-                <MenuItem Header="Call Notification"  Click="DebugNotification" Foreground="#FF2C2C"/>
-                <MenuItem Header="DevTools"  Click="OpenDevWindow" Foreground="#FF2C2C"/>
-                <MenuItem Header="HexTest"  Click="OpenHexTest" Foreground="#FF2C2C"/>
-                <MenuItem Header="Set 1080P"  Click="Set1080P"/>
+            <MenuItem Header="Help">
+                <MenuItem Header="Patchnotes"  Click="OpenPatchnotes" />
+                <MenuItem Name="DebugMenu" Header="Debug" Foreground="#FF2C2C"   >
+                    <MenuItem Header="⚙ Settings"  Click="OpenSettingsWindow" Foreground="#FF2C2C"/>
+                    <MenuItem Header="Call Notification"  Click="DebugNotification" Foreground="#FF2C2C"/>
+                    <MenuItem Header="DevTools"  Click="OpenDevWindow" Foreground="#FF2C2C"/>
+                    <MenuItem Header="HexTest"  Click="OpenHexTest" Foreground="#FF2C2C"/>
+                    <MenuItem Header="Set 1080P"  Click="Set1080P"/>
+                </MenuItem>
             </MenuItem>
+            
         </Menu>
 
         <DockPanel Background="#FF382E4E" Margin="20,3,0,3" DockPanel.Dock="Left">

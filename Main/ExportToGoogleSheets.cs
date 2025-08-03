@@ -145,20 +145,20 @@ namespace GameEditorStudio
 
 
             //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
-            Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Decimal (Editor Order)");
-            System.IO.File.WriteAllText(LibraryMan.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Decimal (Editor Order)\\" + EditorClass.EditorName + ".csv", EditorDataDecimalCurrent);
+            Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Decimal (Editor Order)");
+            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Decimal (Editor Order)\\" + EditorClass.EditorName + ".csv", EditorDataDecimalCurrent);
 
-            Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Hex (Editor Order)");
-            System.IO.File.WriteAllText(LibraryMan.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Hex (Editor Order)\\" + EditorClass.EditorName + ".csv", EditorDataHexCurrent);
+            Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Hex (Editor Order)");
+            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Hex (Editor Order)\\" + EditorClass.EditorName + ".csv", EditorDataHexCurrent);
 
-            Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Decimal (Origonal Order)");
-            System.IO.File.WriteAllText(LibraryMan.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Decimal (Origonal Order)\\" + EditorClass.EditorName + ".csv", EditorDataDecimalOrigonal);
+            Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Decimal (Origonal Order)");
+            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Decimal (Origonal Order)\\" + EditorClass.EditorName + ".csv", EditorDataDecimalOrigonal);
 
-            Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Hex (Origonal Order)");
-            System.IO.File.WriteAllText(LibraryMan.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Hex (Origonal Order)\\" + EditorClass.EditorName + ".csv", EditorDataHexOrigonal);
+            Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Hex (Origonal Order)");
+            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Hex (Origonal Order)\\" + EditorClass.EditorName + ".csv", EditorDataHexOrigonal);
 
-            File.Create(LibraryMan.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Exported " + DateTime.Now.ToString("MMMM d yyyy h;mmtt") + ".txt").Dispose(); ;
-            LibraryMan.OpenFolder(LibraryMan.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName);
+            File.Create(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Exported " + DateTime.Now.ToString("MMMM d yyyy h;mmtt") + ".txt").Dispose(); ;
+            LibraryGES.OpenFolder(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName);
 
         }
 

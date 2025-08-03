@@ -38,7 +38,7 @@ namespace GameEditorStudio
         public string DisplayName { get; set; } = "New Tool"; //The name of the tool. IE Notepad++. This is what shows up in menus. It's also the key, but i've come to dislike having to refer to keys as variables.
         public string Description { get; set; } = ""; //A longer description of the tool. Appears in the tool setup window, and possibly as a tooltip.        
         public string Notepad { get; set; } = "";
-        public string Key { get; set; } = LibraryMan.GenerateKey();
+        public string Key { get; set; } = PixelWPF.LibraryPixel.GenerateKey();
         public string Category { get; set; } = "Tools";
         
         public string DownloadLink { get; set; } = "";
@@ -57,7 +57,7 @@ namespace GameEditorStudio
         public string DisplayName { get; set; } = "New Command"; //The display name of the command that appears in the Tools dropdown Menu, or the Event Commands menu.
         public string Description { get; set; } = "";
         public string Notepad { get; set; } = "";
-        public string Key { get; set; } = LibraryMan.GenerateKey();
+        public string Key { get; set; } = PixelWPF.LibraryPixel.GenerateKey();
         public string OldKey { get; set; } = ""; //The name of the command that appears in XML files. This name should never be changed. (because saved editors use old names)
         //IDEA: Change the code that normally calls an command using it's OldKey, to instead call a CommonEvent...except...that still needs a key huh...fuck.
         //Yeah, i need a way to directly call a command without a action pack. 
@@ -89,7 +89,7 @@ namespace GameEditorStudio
         public string DisplayName { get; set; } = "New Common Event";
         public string Description { get; set; } = "";
         public string Notepad { get; set; } = "";
-        public string Key { get; set; } = LibraryMan.GenerateKey(); //XML
+        public string Key { get; set; } = PixelWPF.LibraryPixel.GenerateKey(); //XML
         public string Category { get; set; } = "Basic"; //Used in the tools menu for commons.
         public List<Command> MyCommands { get; set; } = new(); //The list of commands this CommonEvent executes. At the time of writing this, no common event even has more then 1
                                                                //I'm making it a list anyway to be future proof, but that can also mean i messed up as i had no test examples to work with. 

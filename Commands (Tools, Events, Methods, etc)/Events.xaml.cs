@@ -140,7 +140,7 @@ namespace GameEditorStudio
 
                 if (eventCommand.Command.TheMethod == null) { continue; }
                 
-                MethodData ActionPack = LibraryMan.TransformKeysToLocations(eventCommand.ResourceKeys, EventResources, MainMenu, eventCommand);
+                MethodData ActionPack = LibraryGES.TransformKeysToLocations(eventCommand.ResourceKeys, EventResources, MainMenu, eventCommand);
                 ActionPack.Command.TheMethod(ActionPack);
 
             }
@@ -537,8 +537,8 @@ namespace GameEditorStudio
             TreeViewItem Itemm = EventListTree.SelectedItem as TreeViewItem;
             Event Event = Itemm.Tag as Event;
 
-            LibraryMan.MoveListItemUp(Events, Event);
-            LibraryMan.MoveTreeItemUp(EventListTree, Itemm);
+            LibraryGES.MoveListItemUp(Events, Event);
+            LibraryGES.MoveTreeItemUp(EventListTree, Itemm);
 
             Itemm.IsSelected = true;
         }
@@ -553,8 +553,8 @@ namespace GameEditorStudio
             TreeViewItem Itemm = EventListTree.SelectedItem as TreeViewItem;
             Event Event = Itemm.Tag as Event;
 
-            LibraryMan.MoveListItemDown(Events, Event);
-            LibraryMan.MoveTreeItemDown(EventListTree, Itemm);
+            LibraryGES.MoveListItemDown(Events, Event);
+            LibraryGES.MoveTreeItemDown(EventListTree, Itemm);
 
             Itemm.IsSelected = true; 
         }

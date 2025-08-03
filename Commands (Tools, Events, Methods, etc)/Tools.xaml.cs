@@ -357,7 +357,7 @@ namespace GameEditorStudio
             }
             catch
             {
-                LibraryMan.NotificationGenericError();
+                PixelWPF.LibraryPixel.NotificationGenericError();
                 return;
             }
         }
@@ -365,9 +365,9 @@ namespace GameEditorStudio
 
         public void SaveToolsXML(object sender, RoutedEventArgs e, Tool Tool)
         {
-            if (!Directory.Exists(LibraryMan.ApplicationLocation + "\\Settings")) 
+            if (!Directory.Exists(LibraryGES.ApplicationLocation + "\\Settings")) 
             {
-                Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Settings");
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Settings");
             }            
 
             VistaOpenFileDialog FileSelect = new VistaOpenFileDialog();
@@ -389,11 +389,11 @@ namespace GameEditorStudio
             settings.IndentChars = ("    ");
             settings.CloseOutput = true;
             settings.OmitXmlDeclaration = true;
-            using (XmlWriter writer = XmlWriter.Create(LibraryMan.ApplicationLocation + "\\Settings\\Tools.xml", settings))
+            using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + "\\Settings\\Tools.xml", settings))
             {
                 writer.WriteStartElement("Tools"); //This is the root of the XML   
-                writer.WriteElementString("VersionNumber", LibraryMan.VersionNumber.ToString());
-                writer.WriteElementString("VersionDate", LibraryMan.VersionDate);
+                writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
                 foreach (Tool tool in TrueDatabase.Tools)
                 {
                     writer.WriteStartElement("Tool");
@@ -410,9 +410,9 @@ namespace GameEditorStudio
 
         public void SaveCommonEventsLocal() 
         {
-            if (!Directory.Exists(LibraryMan.ApplicationLocation + "\\Settings"))
+            if (!Directory.Exists(LibraryGES.ApplicationLocation + "\\Settings"))
             {
-                Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Settings");
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Settings");
             }
 
             XmlWriterSettings settings = new();
@@ -420,12 +420,12 @@ namespace GameEditorStudio
             settings.IndentChars = ("    ");
             settings.CloseOutput = true;
             settings.OmitXmlDeclaration = true;
-            using (XmlWriter writer = XmlWriter.Create(LibraryMan.ApplicationLocation + "\\Settings\\Common Events.xml", settings))
+            using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + "\\Settings\\Common Events.xml", settings))
             {
 
                 writer.WriteStartElement("CommonEvents"); //This is the root of the XML   
-                writer.WriteElementString("VersionNumber", LibraryMan.VersionNumber.ToString());
-                writer.WriteElementString("VersionDate", LibraryMan.VersionDate);
+                writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
                 writer.WriteElementString("ReadMe", "This is a list of every common event you have globally enabled. (IE events ALWAYS available, useful for power users who mod many games) " +
                     "\nEvents enabled for a specific workshop are instead stored in Workshops/(Workshop Folder)/CommonEvents.xml " +
                     "\n(even if i move it, it'll be in there somewhere.)");
@@ -459,12 +459,12 @@ namespace GameEditorStudio
             settings.IndentChars = ("    ");
             settings.CloseOutput = true;
             settings.OmitXmlDeclaration = true;
-            using (XmlWriter writer = XmlWriter.Create(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Common Events.xml", settings))
+            using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Common Events.xml", settings))
             {
 
                 writer.WriteStartElement("CommonEvents"); //This is the root of the XML   
-                writer.WriteElementString("VersionNumber", LibraryMan.VersionNumber.ToString());
-                writer.WriteElementString("VersionDate", LibraryMan.VersionDate);
+                writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
                 writer.WriteElementString("ReadMe", "This is a list of every common event the workshop maker decided is relevant for modding this game." +
                     "\nEven if a user doesn't have a common event locally enabled it will appear anyway, and even if they are missing a tool or something the common event will still appear, but gray.");
 

@@ -92,7 +92,7 @@ namespace GameEditorStudio
         public Workshop(string TheWorkshopName, ProjectDataItem Project, bool IsWorkshopPreviewModeActive = false) //GameLibrary GameLibrary
         {
             InitializeComponent();
-            this.Title = "Game Editor Studio     Version: " + LibraryMan.VersionNumber + "   ( " + LibraryMan.VersionDate + " )";
+            this.Title = "Game Editor Studio     Version: " + LibraryGES.VersionNumber + "   ( " + LibraryGES.VersionDate + " )";
 
             WorkshopName = TheWorkshopName;
             IsPreviewMode = IsWorkshopPreviewModeActive;
@@ -131,8 +131,8 @@ namespace GameEditorStudio
             }
 
             //This is all just making sure the current user settings are displayed.
-            if (LibraryMan.EntryAddressType == "Decimal") { EntryAddressTypeButton.Content = "Dec"; }
-            if (LibraryMan.EntryAddressType == "Hex") { EntryAddressTypeButton.Content = "Hex"; }
+            if (LibraryGES.EntryAddressType == "Decimal") { EntryAddressTypeButton.Content = "Dec"; }
+            if (LibraryGES.EntryAddressType == "Hex") { EntryAddressTypeButton.Content = "Hex"; }
 
 
             //<ComboBoxItem Content="NumberBox"/>
@@ -250,7 +250,7 @@ namespace GameEditorStudio
 
             }
 
-            if (LibraryMan.ShowHiddenEntrys == true)
+            if (LibraryGES.ShowHiddenEntrys == true)
             {
                 EntryHiddenToggle.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FC1E40"));
             }
@@ -297,13 +297,13 @@ namespace GameEditorStudio
         private void ToggleTranslationPanel(object sender, RoutedEventArgs e)
         {   
 #if DEBUG
-            if (LibraryMan.ShowTranslationPanel == true)
+            if (LibraryGES.ShowTranslationPanel == true)
             {
-                LibraryMan.ShowTranslationPanel = false;
+                LibraryGES.ShowTranslationPanel = false;
             }
-            else if (LibraryMan.ShowTranslationPanel == false)
+            else if (LibraryGES.ShowTranslationPanel == false)
             {
-                LibraryMan.ShowTranslationPanel = true;
+                LibraryGES.ShowTranslationPanel = true;
             }               
 #endif
             
@@ -311,23 +311,23 @@ namespace GameEditorStudio
         }
         private void ToggleEntrySynbology(object sender, RoutedEventArgs e)
         {
-            if (LibraryMan.ShowSymbology == true)
+            if (LibraryGES.ShowSymbology == true)
             {
-                LibraryMan.ShowSymbology = false;
+                LibraryGES.ShowSymbology = false;
             }
-            else if (LibraryMan.ShowSymbology == false)
+            else if (LibraryGES.ShowSymbology == false)
             {
-                LibraryMan.ShowSymbology = true;
+                LibraryGES.ShowSymbology = true;
             }
 
             {   //This is the Entry ID toggle. I'm merging it into the symbology toggle because it makes sense to have them together.
-                if (LibraryMan.ShowEntryAddress == true)
+                if (LibraryGES.ShowEntryAddress == true)
                 {
-                    LibraryMan.ShowEntryAddress = false;
+                    LibraryGES.ShowEntryAddress = false;
                 }
-                else if (LibraryMan.ShowEntryAddress == false)
+                else if (LibraryGES.ShowEntryAddress == false)
                 {
-                    LibraryMan.ShowEntryAddress = true;                    
+                    LibraryGES.ShowEntryAddress = true;                    
                 }
             }            
             UpdateEntryDecorations();
@@ -335,31 +335,31 @@ namespace GameEditorStudio
 
         private void EntryAddressToggle(object sender, RoutedEventArgs e)
         {
-            if (LibraryMan.ShowEntryAddress == true)
+            if (LibraryGES.ShowEntryAddress == true)
             {
-                LibraryMan.ShowEntryAddress = false;
+                LibraryGES.ShowEntryAddress = false;
             }
-            else if (LibraryMan.ShowEntryAddress == false)
+            else if (LibraryGES.ShowEntryAddress == false)
             {
-                LibraryMan.ShowEntryAddress = true;
+                LibraryGES.ShowEntryAddress = true;
             }            
             UpdateEntryDecorations();
         }
         private void EntryAddressType(object sender, RoutedEventArgs e)
         {
-            if (LibraryMan.EntryAddressType == "Decimal")
+            if (LibraryGES.EntryAddressType == "Decimal")
             {
-                LibraryMan.EntryAddressType = "Hex";
+                LibraryGES.EntryAddressType = "Hex";
                 EntryAddressTypeButton.Content = "Hex";
             }
-            else if (LibraryMan.EntryAddressType == "Hex")
+            else if (LibraryGES.EntryAddressType == "Hex")
             {
-                LibraryMan.EntryAddressType = "Decimal";
+                LibraryGES.EntryAddressType = "Decimal";
                 EntryAddressTypeButton.Content = "Dec";
             }
             else
             {
-                LibraryMan.EntryAddressType = "Decimal";
+                LibraryGES.EntryAddressType = "Decimal";
                 EntryAddressTypeButton.Content = "Dec";
             }
             UpdateEntryDecorations();
@@ -378,33 +378,34 @@ namespace GameEditorStudio
         private void ToggleHiddenEntrys(object sender, RoutedEventArgs e)
         {            
 
-            if (LibraryMan.ShowHiddenEntrys == true)
+            if (LibraryGES.ShowHiddenEntrys == true)
             {
-                LibraryMan.ShowHiddenEntrys = false;
+                LibraryGES.ShowHiddenEntrys = false;
                 EntryHiddenToggle.Foreground = Brushes.Gray;
             }
-            else if (LibraryMan.ShowHiddenEntrys == false)
+            else if (LibraryGES.ShowHiddenEntrys == false)
             {
-                LibraryMan.ShowHiddenEntrys = true;
+                LibraryGES.ShowHiddenEntrys = true;
                 EntryHiddenToggle.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FC1E40"));
             }
             UpdateEntryDecorations();
 
-            if (IsPreviewMode == true) { LibraryMan.Notification("Heyo~", "I didn't bother programming preview mode to " +
+            if (IsPreviewMode == true) {
+                PixelWPF.LibraryPixel.Notification("Heyo~", "I didn't bother programming preview mode to " +
                 "properly hide entrys / bytes that are in use by text. I will figure it out some other time. " +
                 "Just be aware the workshop owner probably intends some of the entrys to be hidden. Sorry~"); }
         }
 
         private void ToggleDebugShowALL(object sender, RoutedEventArgs e)
         {
-            if (LibraryMan.DebugShowALL == true)
+            if (LibraryGES.DebugShowALL == true)
             {
-                LibraryMan.DebugShowALL = false;
+                LibraryGES.DebugShowALL = false;
                 DebugShowALL.Foreground = Brushes.Gray;
             }
-            else if (LibraryMan.DebugShowALL == false)
+            else if (LibraryGES.DebugShowALL == false)
             {
-                LibraryMan.DebugShowALL = true;
+                LibraryGES.DebugShowALL = true;
                 DebugShowALL.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E70EC"));
             }
             UpdateEntryDecorations();
@@ -445,22 +446,22 @@ namespace GameEditorStudio
 
                 foreach (Entry entry in editor.StandardEditorData.MasterEntryList)
                 {
-                    if (LibraryMan.ShowEntryAddress == true)
+                    if (LibraryGES.ShowEntryAddress == true)
                     {
                         entry.EntryPrefix.Visibility = Visibility.Visible;
                     }
-                    else if (LibraryMan.ShowEntryAddress == false)
+                    else if (LibraryGES.ShowEntryAddress == false)
                     {
                         entry.EntryPrefix.Visibility = Visibility.Collapsed;
                     }
 
                     try
                     {
-                        if (LibraryMan.EntryAddressType == "Decimal") //Properties.Settings.Default.EntryPrefix = "Row Offset - Decimal Starting at 0";
+                        if (LibraryGES.EntryAddressType == "Decimal") //Properties.Settings.Default.EntryPrefix = "Row Offset - Decimal Starting at 0";
                         {
                             entry.EntryPrefix.Content = entry.RowOffset + int.Parse(EntryAddressOffsetTextbox.Text);
                         }
-                        else if (LibraryMan.EntryAddressType == "Hex") //Properties.Settings.Default.EntryPrefix = "Row Offset - Hex Starting at 0x00";
+                        else if (LibraryGES.EntryAddressType == "Hex") //Properties.Settings.Default.EntryPrefix = "Row Offset - Hex Starting at 0x00";
                         {
                             entry.EntryPrefix.Content = (entry.RowOffset + int.Parse(EntryAddressOffsetTextbox.Text)).ToString("X");
                         }
@@ -470,19 +471,19 @@ namespace GameEditorStudio
 
                     }
 
-                    if (LibraryMan.ShowSymbology == true)
+                    if (LibraryGES.ShowSymbology == true)
                     {
                         entry.Symbology.Visibility = Visibility.Visible;
 
                     }
-                    else if (LibraryMan.ShowSymbology == false)
+                    else if (LibraryGES.ShowSymbology == false)
                     {
                         entry.Symbology.Visibility = Visibility.Collapsed;
                     }
 
                     /////////// Showing Row/Column/Group //////////////////////
 
-                    if (LibraryMan.ShowHiddenEntrys == false)
+                    if (LibraryGES.ShowHiddenEntrys == false)
                     {
                         if (entry.IsEntryHidden == true || entry.IsTextInUse == true || entry.Bytes == 0)
                         {
@@ -498,7 +499,7 @@ namespace GameEditorStudio
                             entry.EntryRow.CatBorder.Visibility = Visibility.Visible;
                         }
                     }
-                    else if (LibraryMan.ShowHiddenEntrys == true && entry.Bytes != 0)
+                    else if (LibraryGES.ShowHiddenEntrys == true && entry.Bytes != 0)
                     {
                         entry.EntryBorder.Visibility = Visibility.Visible;
                         entry.EntryColumn.ColumnPanel.Visibility = Visibility.Visible;                        
@@ -522,7 +523,7 @@ namespace GameEditorStudio
                 
             }
 
-            if (LibraryMan.DebugShowALL == true) 
+            if (LibraryGES.DebugShowALL == true) 
             {
                 DEBUGSHOWALL();
             }
@@ -566,13 +567,13 @@ namespace GameEditorStudio
             {
                 if (editor.Value.EditorType != "DataTable") { continue; }
 
-                if (LibraryMan.ShowTranslationPanel == true)
+                if (LibraryGES.ShowTranslationPanel == true)
                 {
                     TheLeftBar asdas = editor.Value.StandardEditorData.EditorLeftDockPanel.UserControl as TheLeftBar;
                     asdas.TranslationsPanelBorder.Visibility = Visibility.Visible;
                     //TranslationsPanelBorder
                 }
-                else if (LibraryMan.ShowTranslationPanel == false)
+                else if (LibraryGES.ShowTranslationPanel == false)
                 {
                     TheLeftBar asdas = editor.Value.StandardEditorData.EditorLeftDockPanel.UserControl as TheLeftBar;
                     asdas.TranslationsPanelBorder.Visibility = Visibility.Collapsed;
@@ -826,7 +827,7 @@ namespace GameEditorStudio
                 {
 
                     PropertiesEditorNameTableStartByte.Text = EditorClass.StandardEditorData.NameTableStart.ToString();
-                    LibraryMan.NotificationNegative("Error: Start byte cannot be less then 0",
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Start byte cannot be less then 0",
                         "I'm not sure why you tried to do this, but it's obviously not allowed. " +
                         "\n\n" +
                         "If this was not a mistake and there is a reason i don't understand why this would ever be desired, " +
@@ -892,7 +893,7 @@ namespace GameEditorStudio
                 {
 
                     PropertiesEditorNameTableTextSize.Text = EditorClass.StandardEditorData.NameTableTextSize.ToString();
-                    LibraryMan.NotificationNegative("Error: Name Table Text Size cannot be less then 0",
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Name Table Text Size cannot be less then 0",
                         "This value is how many letters / characters are being read from a file. " +
                         "Hopefully it is obvious why this number cannot be less then 0." +
                         "\n\n" +
@@ -927,7 +928,7 @@ namespace GameEditorStudio
                 {
 
                     PropertiesEditorNameTableRowSize.Text = EditorClass.StandardEditorData.NameTableRowSize.ToString();
-                    LibraryMan.NotificationNegative("Error: Name Row Size cannot be less then 0.",
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Name Row Size cannot be less then 0.",
                         "If you got confused, the Row Size is how many bytes are in 1 FULL Row of a table, not just how many bytes of text your dealing with." +
                         "\n\n" +
                         "Fow example..." +
@@ -974,7 +975,7 @@ namespace GameEditorStudio
             catch
             {
                 //Note: Compare each against their source in EntryClass to see if they even match and callout the actual problem.
-                LibraryMan.NotificationNegative("Error!",
+                PixelWPF.LibraryPixel.NotificationNegative("Error!",
                     "This checks if the data table has any actual data located at byte (Data Table Start Byte + (NameCount * RowSize)). " +
                     "It seems like thats beyond the end of the data table file (data that doesn't exist). " +
                     "This data is used to fill out entrys, so it's important that it actually exists :P" +
@@ -1017,7 +1018,7 @@ namespace GameEditorStudio
                 int Diffrence = NewNameCount - OldNameCount;
                 if (NewNameCount < 1)
                 {
-                    LibraryMan.Notification("Notice: Lol no.",
+                    PixelWPF.LibraryPixel.Notification("Notice: Lol no.",
                     "As a precautionary measure against any accidents, attempting to delete ALL items is not allowed." +
                     "\n\n" +
                     "The textbox has been reset to it's previous value. "
@@ -1194,7 +1195,7 @@ namespace GameEditorStudio
 
             if (ItemInfo.IsFolder == false)
             {
-                if (LibraryMan.ShowItemIndex == true)
+                if (LibraryGES.ShowItemIndex == true)
                 {
                     Run RunIndex = new Run();
                     RunIndex.Text = ItemInfo.ItemIndex + ": ";
@@ -1374,7 +1375,7 @@ namespace GameEditorStudio
             {
                 TheCat.SWData.MainDockPanel.Children.Remove(TheCat.CatBorder);
                 TheCat.SWData.CategoryList.Remove(TheCat);
-                LibraryMan.GotoRightBarGeneralTab(this);
+                LibraryGES.GotoRightBarGeneralTab(this);
             }
             
             //Add a IF: count all entrys in all columns in this row, and do IF that is 0.
@@ -1663,7 +1664,7 @@ namespace GameEditorStudio
                             if (entry.Bytes == 2)
                             {
                                 PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                LibraryMan.NotificationNegative("Error: Entry not merged.",
+                                PixelWPF.LibraryPixel.NotificationNegative("Error: Entry not merged.",
                                     "You cannot merge an entry, with an entry that is already merged with something else. " +
                                     "\n\n" +
                                     "If your confused, entrys merge with those next in offset decimal order, not those that are just under them in the UI. "
@@ -1673,7 +1674,7 @@ namespace GameEditorStudio
                             if (entry.IsEntryHidden == true || entry.IsTextInUse == true)
                             {
                                 PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                LibraryMan.NotificationNegative("Error: Entry not merged.",
+                                PixelWPF.LibraryPixel.NotificationNegative("Error: Entry not merged.",
                                     "You cannot merge an entry, with an entry that is disabled. " +
                                     "\n\n" +
                                     "Disabled entrys have a red color tint and users can't edit them. " +
@@ -1701,7 +1702,7 @@ namespace GameEditorStudio
                             if (entry.Bytes == 2 || entry.Bytes == 4)
                             {
                                 PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                LibraryMan.NotificationNegative("Error: Entry not merged.",
+                                PixelWPF.LibraryPixel.NotificationNegative("Error: Entry not merged.",
                                    "You cannot merge an entry, with an entry that is already merged with something else. " +
                                    "\n\n" +
                                    "Atleast one of the 4 bytes / entrys you were attempting to merge with, is already merged. " +
@@ -1712,7 +1713,7 @@ namespace GameEditorStudio
                             if (entry.IsEntryHidden == true || entry.IsTextInUse == true)
                             {
                                 PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                LibraryMan.NotificationNegative("Error: Entry not merged.",
+                                PixelWPF.LibraryPixel.NotificationNegative("Error: Entry not merged.",
                                     "You cannot merge an entry, with an entry that is disabled. " +
                                     "\n\n" +
                                     "atleast one of the 4 entrys you were trying to merge, is disabled." +
@@ -1750,7 +1751,7 @@ namespace GameEditorStudio
                             }
                         }
 
-                        LibraryMan.NotificationNegative("Not yet available D:",
+                        PixelWPF.LibraryPixel.NotificationNegative("Not yet available D:",
                                     "I have no idea how to make a UI for a 4 byte menu that isn't ridiculously laggy, so i'm just not letting you do this until i figure it out, sorry! x3" +
                                     "\n\n" +
                                     "You can still make a 2 byte menu, and i've never seen a game with a menu that actually has more then the 65535 options to select, so i'm hoping this isn't a real problem for you. If it is, reach out to me on discord." +
@@ -2084,7 +2085,7 @@ namespace GameEditorStudio
             }
             catch 
             {
-                LibraryMan.NotificationNegative("Error: ",
+                PixelWPF.LibraryPixel.NotificationNegative("Error: ",
                     "An error happened during the first step of auto-mod. " +
                     "In this step, it simply tries to count how many items it's going to mod. " +
                     "This error can probably only appear if the editor is not getting it's item names from an actual game file. " +
@@ -2220,7 +2221,7 @@ namespace GameEditorStudio
                 }
                 catch 
                 {
-                    LibraryMan.NotificationNegative("Error: ???",
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: ???",
                         "An error happened during the actual modifying of data in memory." +
                         "\nThis means some of the items have been changed, and others have not." +
                         "\nNothing has been saved to actual files on the computer, so don't worry." +
@@ -2293,13 +2294,13 @@ namespace GameEditorStudio
 
         private void ToggleItemIDNumberVisibility(object sender, RoutedEventArgs e)
         {
-            if (LibraryMan.ShowItemIndex == false)
+            if (LibraryGES.ShowItemIndex == false)
             {
-                LibraryMan.ShowItemIndex = true;
+                LibraryGES.ShowItemIndex = true;
             }
-            else if (LibraryMan.ShowItemIndex == true)
+            else if (LibraryGES.ShowItemIndex == true)
             {
-                LibraryMan.ShowItemIndex = false;  
+                LibraryGES.ShowItemIndex = false;  
             }
             
             foreach (var editor in MyDatabase.GameEditors)
@@ -2401,7 +2402,7 @@ namespace GameEditorStudio
                     } 
                     catch 
                     {
-                        LibraryMan.Notification("Error: Symbology caused a crash.",
+                        PixelWPF.LibraryPixel.Notification("Error: Symbology caused a crash.",
                             "List of possible causes..." +
                             "\n1: Creating a new editor where the list of names is more then the actual data." +
                             "\n2: ?????." +
@@ -2650,11 +2651,11 @@ namespace GameEditorStudio
 
 
 
-                if (LibraryMan.ShowSymbology == true)
+                if (LibraryGES.ShowSymbology == true)
                 {
                     EntryClass.Symbology.Visibility = Visibility.Visible;
                 }
-                if (LibraryMan.ShowSymbology == false)
+                if (LibraryGES.ShowSymbology == false)
                 {
                     EntryClass.Symbology.Visibility = Visibility.Collapsed;
                 }
@@ -2668,12 +2669,12 @@ namespace GameEditorStudio
 
         private void OpenWorkshopInputButton(object sender, RoutedEventArgs e)
         {            
-            LibraryMan.OpenFileFolder(PropertiesEditorReadGameDataFrom.Text);
+            LibraryGES.OpenFileFolder(PropertiesEditorReadGameDataFrom.Text);
         }
 
         private void OpenWorkshopOutputButton(object sender, RoutedEventArgs e)
         {            
-            LibraryMan.OpenFileFolder(EditorOutputLocationTextbox.Text);
+            LibraryGES.OpenFileFolder(EditorOutputLocationTextbox.Text);
         }
 
         private void OpenIconManager(object sender, RoutedEventArgs e)

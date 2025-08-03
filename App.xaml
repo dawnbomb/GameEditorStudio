@@ -13,24 +13,9 @@
     <Application.Resources>   
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Styles/Colors/Colors.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/PixelWPF;component/PixelDictionary.xaml" />
 
-                <ResourceDictionary Source="Styles/MenuStyle.xaml"/>
-                <ResourceDictionary Source="Styles/ApplicationStyle.xaml"/>
-                <ResourceDictionary Source="Styles/TextboxStyle.xaml"/>
-                <ResourceDictionary Source="Styles/ComboBoxStyle.xaml"/>
-
-                <ResourceDictionary Source="Styles/TreeviewStyle.xaml"/>
-                <ResourceDictionary Source="Styles/RadioButtonStyle.xaml"/>
-                <ResourceDictionary Source="Styles/ScrollViewerStyle.xaml"/>
-                <ResourceDictionary Source="Styles/TabControlStyle.xaml"/>
-                <ResourceDictionary Source="Styles/TitleBarStyle.xaml"/>
-                <ResourceDictionary Source="Styles/ContextMenuStyle.xaml"/>
-                <ResourceDictionary Source="Styles/DataGridStyle.xaml"/>
-                <ResourceDictionary Source="Styles/CheckBoxStyle.xaml"/> <!--Checkbox appears not to work?-->
-
-                <ResourceDictionary Source="Themes.xaml"/>
-
+                <ResourceDictionary Source="Styles/GES Colors.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="{x:Type Window}" BasedOn="{StaticResource DarkModeWindowStyle}"/>
         </ResourceDictionary>

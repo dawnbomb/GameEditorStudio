@@ -14,18 +14,17 @@ using Windows.UI.Notifications;
 
 namespace GameEditorStudio
 {
-    public static class LibraryMan
+    public static class LibraryGES
     {        
         
-        public static string VersionDate { get; set; } = "July 2 2025";
-        public static Version VersionNumber { get; set; } = new Version(0, 1, 1); //Version Numbers (in order) are Major.Minor.Build.Revision
+        public static string VersionDate { get; set; } = "Augest 3 2025";
+        public static Version VersionNumber { get; set; } = new Version(0, 1, 2); //Version Numbers (in order) are Major.Minor.Build.Revision
         //Major is big releases.
         //Minor is new features / content.
         //Build is for Bugfixes or small changes.
         //Revision is for code rewrites that dont* affect the user. *SHOULDN'T AFFECT THE USER >:(
 
-        //OLD SETTINGS
-        public static string ColorTheme { get; set; } = "Dark"; 
+
         public static bool ShowEntryAddress { get; set; } = false; 
         public static string EntryAddressType { get; set; } = "Decimal";
         //public static bool CollectionPrefix { get; set; } = true;
@@ -38,7 +37,6 @@ namespace GameEditorStudio
         //END
 
         public static string ApplicationLocation { get; set; } = "";
-        public static string SettingsFolderName { get; set; } = "Settings";
 
         public static int TooltipInitialDelay { get; set; } = 200; // 0.3 seconds popup 
         public static int TooltipBetweenDelay { get; set; } = 0; //// 0.0 seconds popup
@@ -436,12 +434,6 @@ namespace GameEditorStudio
             return null;
         }
 
-        public static string GenerateKey()
-        {
-            string Key = DateTimeOffset.UtcNow.Ticks.ToString() + "-" + new Random().Next(0, 999999999).ToString() + "-" + new Random().Next(0, 999999999).ToString();
-            return Key ; 
-        }
-
 
         public static void MoveListItemUp<T>(List<T> list, T item)
         {
@@ -506,62 +498,6 @@ namespace GameEditorStudio
         }
 
 
-        public static void Notification(string Title, string Text) 
-        {
-            Notification Notification = new("", Title, Text);
-            bool? result = Notification.ShowDialog();
-            if (result == true) // User clicked OK
-            {
-                
-            }
-            else // User closed the window or cancelled
-            {
-                
-            }
-        }
-
-        public static void NotificationPositive(string Title, string Text)
-        {
-            Notification Notification = new("✔",Title, Text);
-            bool? result = Notification.ShowDialog();
-            if (result == true) // User clicked OK
-            {
-
-            }
-            else // User closed the window or cancelled
-            {
-
-            }
-
-        }
-
-        public static void NotificationNegative(string Title, string Text)
-        {
-            Notification Notification = new("X", Title, Text);
-            bool? result = Notification.ShowDialog();
-            if (result == true) // User clicked OK
-            {
-
-            }
-            else // User closed the window or cancelled
-            {
-
-            }
-        }
-
-        public static void NotificationGenericError()
-        {
-            Notification Notification = new("X", "An error occured.", "Please report it :(");
-            bool? result = Notification.ShowDialog();
-            if (result == true) // User clicked OK
-            {
-
-            }
-            else // User closed the window or cancelled
-            {
-
-            }
-        }
 
 
 

@@ -27,7 +27,7 @@ namespace GameEditorStudio
         public int NameTableItemCount { get; set; } //XML  How many items are in the collection. It determines how many rows of data the editor reads. For manual name lists, the number is always 0.
                                                     //The name table item count only happens for editors getting names from file. Any function relying on this will break when using a manual name list.
 
-        public string NameTableKey { get; set; } = LibraryMan.GenerateKey(); //This is only incase it's needed for future features, but is currently unused.  (Also i cant even think of any scenario where this would be required)
+        public string NameTableKey { get; set; } = PixelWPF.LibraryPixel.GenerateKey(); //This is only incase it's needed for future features, but is currently unused.  (Also i cant even think of any scenario where this would be required)
 
         ///////////////////////////////// DATA TABLE READING DATA ///////////////////////////////////        
         public int DataTableStart { get; set; } //XML Says what byte a table of information starts at. 
@@ -70,7 +70,7 @@ namespace GameEditorStudio
         public Label CategoryLabel { get; set; }
         public StandardEditorData SWData { get; set; }
 
-        public string Key { get; set; } = LibraryMan.GenerateKey(); //This is only incase it's needed for future features, but is currently unused.  (Also i cant even think of any scenario where this would be required)
+        public string Key { get; set; } = PixelWPF.LibraryPixel.GenerateKey(); //This is only incase it's needed for future features, but is currently unused.  (Also i cant even think of any scenario where this would be required)
     }
 
 
@@ -86,7 +86,7 @@ namespace GameEditorStudio
         public LinkTypes LinkType { get; set; } = LinkTypes.DataFile;
         public enum LinkTypes { DataFile, TextFile, Editor, Nothing } //Nothing means user uses custom name list.
 
-        public string Key { get; set; } = LibraryMan.GenerateKey(); //This is only incase it's needed for future features, but is currently unused.  (Also i cant even think of any scenario where this would be required)
+        public string Key { get; set; } = PixelWPF.LibraryPixel.GenerateKey(); //This is only incase it's needed for future features, but is currently unused.  (Also i cant even think of any scenario where this would be required)
     }
 
     public class LeftBar
@@ -110,7 +110,7 @@ namespace GameEditorStudio
 
         public string ItemName { get; set; } = ""; //XML
         public int ItemIndex { get; set; } = 0; //XML Basically, the row number in a table. Note: Folders have a index of 0.   I should maybe update this so folders have an index of -1. //Basically a Key
-        public string ItemKey { get; set; } = LibraryMan.GenerateKey(); //This is only incase it's needed for future features, but is currently unused. 
+        public string ItemKey { get; set; } = PixelWPF.LibraryPixel.GenerateKey(); //This is only incase it's needed for future features, but is currently unused. 
         public string? ItemWorkshopTooltip { get; set; } = ""; //XML the orange one
         public string ItemNote { get; set; } = ""; //XML The actual note?
         public bool IsChild { get; set; } = false;
@@ -142,7 +142,7 @@ namespace GameEditorStudio
 
         //public List<T> Stuff { get; set; } = new(); //This is a list of stuff that the column holds. It can be used to hold any type of object, but is currently only used to hold Entry objects.
 
-        public string Key { get; set; } = LibraryMan.GenerateKey(); //Unused, Only exists incase of future features. 
+        public string Key { get; set; } = PixelWPF.LibraryPixel.GenerateKey(); //Unused, Only exists incase of future features. 
     }
 
     public abstract class ItemBase { } //A group or an entry. Groups can hold entrys, and also look cool and are a way to sort stuff. 
@@ -158,7 +158,7 @@ namespace GameEditorStudio
         public List<Entry> EntryList { get; set; } = new();
         public Label GroupLabel { get; set; } = new();
         public Column GroupColumn { get; set; }
-        public string Key { get; set; } = LibraryMan.GenerateKey(); //Unused, Only exists incase of future features. 
+        public string Key { get; set; } = PixelWPF.LibraryPixel.GenerateKey(); //Unused, Only exists incase of future features. 
     }
     
 
@@ -189,7 +189,7 @@ namespace GameEditorStudio
         public string Endianness { get; set; } = "1"; //XML - 1, 2L, 2B, 4L, 4B //Become a enum.
 
 
-        public string Key { get; set; } = LibraryMan.GenerateKey(); //This is only incase it's needed for future features, but is currently unused.  (Also i cant even think of any scenario where this would be required)
+        public string Key { get; set; } = PixelWPF.LibraryPixel.GenerateKey(); //This is only incase it's needed for future features, but is currently unused.  (Also i cant even think of any scenario where this would be required)
 
 
         public string EntryByteDecimal { get; set; } //NOT XML  //Needed to deal with the true value of a checkbox or bitflag.  //THIS SHOULD ALWAYS READ AS A POSITIVE NUMBER, IF ITS NEGATIVE IT'S A BUG AND I NEED TO FIX IT! 
