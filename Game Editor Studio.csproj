@@ -99,6 +99,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Graphics\Example Images\" />
     <Folder Include="NewFolder\" />
   </ItemGroup>
 
