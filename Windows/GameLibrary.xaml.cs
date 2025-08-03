@@ -96,14 +96,14 @@ namespace GameEditorStudio
         {
             InitializeComponent();
             this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-            this.Title = "Game Editor Studio     Version: " + LibraryMan.VersionNumber + "   ( " + LibraryMan.VersionDate + " )"; 
+            this.Title = "Game Editor Studio     Version: " + LibraryGES.VersionNumber + "   ( " + LibraryGES.VersionDate + " )"; 
 
             string basepath = AppDomain.CurrentDomain.BaseDirectory;
 
             #if DEBUG //The App Location is the folder location of the executable. It's used by other parts of the program to find files.
             //I don't understand (and don't feel like spending the time) setting it up so release is the same as debug mode, so this is a temporary lazy fix.
             //LibraryMan.ApplicationLocation = Path.GetFullPath(Path.Combine(basepath, @"..\..\..\..\..\..\Game Editor Studio\Release"));
-            LibraryMan.ApplicationLocation = "D:\\Game Editor Studio";//
+            LibraryGES.ApplicationLocation = "D:\\Game Editor Studio";//
             #else
             //ExePath = basepath; //for published versions of the program to the public.
             LibraryMan.ApplicationLocation = basepath;
@@ -143,7 +143,7 @@ namespace GameEditorStudio
         public void LoadThemes()
         {
             //LibraryMan.ColorThemeList.Clear();
-            string themesDirectory = Path.Combine(LibraryMan.ApplicationLocation, "Other\\Themes");
+            string themesDirectory = Path.Combine(LibraryGES.ApplicationLocation, "Other\\Themes");
 
             if (Directory.Exists(themesDirectory))
             {
@@ -172,7 +172,7 @@ namespace GameEditorStudio
                         }
                     }
 
-                    LibraryMan.ColorThemeList.Add(theme);
+                    LibraryGES.ColorThemeList.Add(theme);
                 }
             }
             else
@@ -182,8 +182,8 @@ namespace GameEditorStudio
 
             try
             {
-                ColorTheme LastTheme = LibraryMan.ColorThemeList.FirstOrDefault(e => e.Name == "Asperite");
-                LibraryMan.SwitchToColorTheme(LastTheme);
+                ColorTheme LastTheme = LibraryGES.ColorThemeList.FirstOrDefault(e => e.Name == "Asperite");
+                LibraryGES.SwitchToColorTheme(LastTheme);
             }
             catch 
             {
@@ -206,21 +206,21 @@ namespace GameEditorStudio
         {
             LibraryTreeOfWorkshops.Items.Clear();
 
-            if (!Directory.Exists(LibraryMan.ApplicationLocation + "\\Workshops")) 
+            if (!Directory.Exists(LibraryGES.ApplicationLocation + "\\Workshops")) 
             {
-                Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Workshops");
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops");
 
                 MessageBox.Show("The Workshops folder did not exist. A new one was created.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
-            if (Directory.GetDirectories(LibraryMan.ApplicationLocation + "\\Workshops").Length == 0)
+            if (Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops").Length == 0)
             {
                 MessageBox.Show("There seems to be no workshops in the workshops folder. This should never happen unless you manually deleted them all. It's strongly recommended you go find the latest workshops list.", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
-            if (Directory.Exists(LibraryMan.ApplicationLocation + "\\Workshops"))
+            if (Directory.Exists(LibraryGES.ApplicationLocation + "\\Workshops"))
             {
-                string[] allWorkshopsPathsArray = Directory.GetDirectories(LibraryMan.ApplicationLocation + "\\Workshops", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
+                string[] allWorkshopsPathsArray = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
                 foreach (var WorkshopPath in allWorkshopsPathsArray)
                 {
                     TreeViewItem treeItem = new TreeViewItem { Header = WorkshopPath };
@@ -284,7 +284,7 @@ namespace GameEditorStudio
                 WorkshopName = selectedTreeItem.Header.ToString();
             }
 
-            using (FileStream TargetXML = new FileStream(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Workshop.xml", FileMode.Open, FileAccess.Read))
+            using (FileStream TargetXML = new FileStream(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Workshop.xml", FileMode.Open, FileAccess.Read))
             {
                 XElement xml = XElement.Load(TargetXML);                
                 
@@ -298,7 +298,7 @@ namespace GameEditorStudio
 
                 //WorkshopInfoDocuments.Content = "Documents: " + Convert.ToString(System.IO.Directory.GetDirectories(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Documentation", "*", SearchOption.TopDirectoryOnly).Count());
                 
-                string documentationPath = Path.Combine(LibraryMan.ApplicationLocation, "Workshops", WorkshopName, "Documents");
+                string documentationPath = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", WorkshopName, "Documents");
                 string[] folderPaths = Directory.GetDirectories(documentationPath);
                 foreach (string folderPath in folderPaths)
                 {
@@ -316,7 +316,7 @@ namespace GameEditorStudio
 
 
                 
-                string WorkshopEditorsFolder = LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Editors\\";
+                string WorkshopEditorsFolder = LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Editors\\";
                 string[] EditorFoldersList = Directory.GetDirectories(WorkshopEditorsFolder);
 
                 // Create TreeViewItems for each folder and add them to the EditorsTree
@@ -337,7 +337,7 @@ namespace GameEditorStudio
             
             
 
-            string ProjectsFolder = @LibraryMan.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\"; //"\\LibraryBannerArt.png";   
+            string ProjectsFolder = LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\"; //"\\LibraryBannerArt.png";   
             if (Directory.Exists(ProjectsFolder))
             {
                 foreach (string TheProjectFolder in Directory.GetDirectories(ProjectsFolder))
@@ -428,7 +428,7 @@ namespace GameEditorStudio
         public void LoadEventResources() 
         {            
 
-            using (FileStream TargetXML = new FileStream(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Workshop.xml", FileMode.Open, FileAccess.Read))
+            using (FileStream TargetXML = new FileStream(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Workshop.xml", FileMode.Open, FileAccess.Read))
             {
                 XElement libraryxml = XElement.Load(TargetXML);
 
@@ -476,14 +476,14 @@ namespace GameEditorStudio
 
             if (!Directory.Exists(UserProject.ProjectInputDirectory)) 
             {
-                LibraryMan.Notification("Huh?",
+                PixelWPF.LibraryPixel.Notification("Huh?",
                     "It seems the input folder for this project ... doesn't exist?"
                     );   
                 return;
             }
             if (!Directory.Exists(UserProject.ProjectOutputDirectory))
             {
-                LibraryMan.Notification("Huh?",
+                PixelWPF.LibraryPixel.Notification("Huh?",
                     "It seems the output folder for this project ... doesn't exist?"
                     );
                 return;
@@ -733,11 +733,11 @@ namespace GameEditorStudio
                 {
                     if (WorkshopEventResource.ResourceType == "LocalFile")
                     {
-                        LibraryMan.OpenFileFolder(Textbox.Text);
+                        LibraryGES.OpenFileFolder(Textbox.Text);
                     }
                     else if (WorkshopEventResource.ResourceType == "LocalFolder") 
                     {
-                        LibraryMan.OpenFolder(Textbox.Text);
+                        LibraryGES.OpenFolder(Textbox.Text);
                     }
                 };
 
@@ -787,8 +787,8 @@ namespace GameEditorStudio
                 {
                     string TheString = "";
 
-                    if (WorkshopEventResource.ResourceType == "LocalFile") { TheString = LibraryMan.GetSelectedFilePath("Select a File"); }  //TYPE IF
-                    if (WorkshopEventResource.ResourceType == "LocalFolder") { TheString = LibraryMan.GetSelectedFolderPath("Select a Folder"); }  //TYPE IF
+                    if (WorkshopEventResource.ResourceType == "LocalFile") { TheString = LibraryGES.GetSelectedFilePath("Select a File"); }  //TYPE IF
+                    if (WorkshopEventResource.ResourceType == "LocalFolder") { TheString = LibraryGES.GetSelectedFolderPath("Select a Folder"); }  //TYPE IF
 
 
 
@@ -849,7 +849,7 @@ namespace GameEditorStudio
         private void CreateNewProject(object sender, RoutedEventArgs e) //THE NEW PROJECT sdkjfsdjfklsdjfklsjfklsjfklsjkflsjklfjklfsdjklfsjlfkjfklsda
         {
             string NewProjectName = "New Project";
-            string TheProjectFolder = @LibraryMan.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + NewProjectName + "\\";
+            string TheProjectFolder = LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + NewProjectName + "\\";
 
             if (LibraryTreeOfWorkshops.SelectedItem == null || Directory.Exists(TheProjectFolder))
             {
@@ -890,11 +890,11 @@ namespace GameEditorStudio
                 settings.IndentChars = ("    ");
                 settings.CloseOutput = true;
                 settings.OmitXmlDeclaration = true;
-                using (XmlWriter writer = XmlWriter.Create(LibraryMan.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + ProjectData.ProjectName + "\\" + "Project.xml", settings))
+                using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + ProjectData.ProjectName + "\\" + "Project.xml", settings))
                 {
                     writer.WriteStartElement("Project"); //This is the root of the XML
-                    writer.WriteElementString("VersionNumber", LibraryMan.VersionNumber.ToString());
-                    writer.WriteElementString("VersionDate", LibraryMan.VersionDate);
+                    writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                    writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
                     writer.WriteElementString("NOTE", "The resources are (Project Event Resources) with a key matching (Workshop Event Resources).");
                     writer.WriteElementString("Seperator", "====================================================================================");
                     writer.WriteElementString("Name", ProjectData.ProjectName);
@@ -922,7 +922,7 @@ namespace GameEditorStudio
             }
 
             //DataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
-            string TheProjectFolder = @LibraryMan.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + ProjectData.ProjectName + "\\";
+            string TheProjectFolder = LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + ProjectData.ProjectName + "\\";
 
             if (Directory.Exists(TheProjectFolder + "\\" + "Documents" + "\\"))  //Documents Folder
             {
@@ -953,8 +953,8 @@ namespace GameEditorStudio
                 if (ProjectsSelector.SelectedIndex < 0 || LibraryTreeOfWorkshops.SelectedItem == null|| ProjectNameTextbox.Text == "")   {return;}
 
                 ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
-                string oldFolderPath = LibraryMan.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + UserProject.ProjectName;
-                string newFolderPath = LibraryMan.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + ProjectNameTextbox.Text;
+                string oldFolderPath = LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + UserProject.ProjectName;
+                string newFolderPath = LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + ProjectNameTextbox.Text;
 
                 if (oldFolderPath == newFolderPath) {return;}
 
@@ -1019,7 +1019,7 @@ namespace GameEditorStudio
                 //if (System.IO.File.ReadAllText(ExePath + "\\Workshops\\" + WorkshopName + "\\" +  WorkshopInputDirectory) == Path.GetFileName(FolderSelect.SelectedPath))
                 if (WorkshopProjectsRequireSameFolderName == false)
                 {
-                    LibraryMan.NotificationPositive("You MAYBE selected the correct folder?",
+                    PixelWPF.LibraryPixel.NotificationPositive("You MAYBE selected the correct folder?",
                         "This workshop doesn't require a specific folder name to be selected. " +
                         "This is usually set when the input folder is one that users commonly want to be able to rename. " +
                         "\n\n" +
@@ -1035,7 +1035,7 @@ namespace GameEditorStudio
                 }
                 else if (WorkshopInputDirectory == Path.GetFileName(FolderSelect.SelectedPath) && WorkshopProjectsRequireSameFolderName == true)
                 {
-                    LibraryMan.NotificationPositive("You selected the correct folder!",
+                    PixelWPF.LibraryPixel.NotificationPositive("You selected the correct folder!",
                         "The folder name you selected is the same as the one this workshop is looking for. " +
                         "This can only be wrong if you selected a folder with the exact same name, but a diffrent location."
                     );
@@ -1050,7 +1050,7 @@ namespace GameEditorStudio
                 }
                 else
                 {
-                    LibraryMan.NotificationNegative("Error: Wrong folder selected!",
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Wrong folder selected!",
                         "This workshop is looking for you to select a folder named \"" + WorkshopInputDirectory + "\"." +
                         "\n\n" +
                         "If your confused, check the README, or see if there are any helpful discords.");
@@ -1108,7 +1108,7 @@ namespace GameEditorStudio
 
             ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
 
-            Directory.Delete(LibraryMan.ApplicationLocation + "\\Projects" + "\\" + WorkshopName + "\\" + UserProject.ProjectName, true);
+            Directory.Delete(LibraryGES.ApplicationLocation + "\\Projects" + "\\" + WorkshopName + "\\" + UserProject.ProjectName, true);
 
             TreeViewItem WorkItem = LibraryTreeOfWorkshops.SelectedItem as TreeViewItem;
             WorkItem.IsSelected = false;

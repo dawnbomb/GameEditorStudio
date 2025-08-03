@@ -51,7 +51,7 @@ namespace GameEditorStudio
 
         public void ImportTools()
         {
-            XElement xml = XElement.Load(LibraryMan.ApplicationLocation + "\\Other\\Tools.xml");
+            XElement xml = XElement.Load(LibraryGES.ApplicationLocation + "\\Other\\Tools.xml");
 
             foreach (XElement item in xml.Descendants("Tool"))
             {
@@ -74,17 +74,17 @@ namespace GameEditorStudio
 
         public void LoadToolLocations()
         {
-            if (!Directory.Exists(LibraryMan.ApplicationLocation + "\\Settings")) 
+            if (!Directory.Exists(LibraryGES.ApplicationLocation + "\\Settings")) 
             {
                 return;
             }
-            if (!File.Exists(LibraryMan.ApplicationLocation + "\\Settings\\Tools.xml"))
+            if (!File.Exists(LibraryGES.ApplicationLocation + "\\Settings\\Tools.xml"))
             {
                 return;
             }
 
             XmlDocument doc = new XmlDocument();
-            doc.Load(LibraryMan.ApplicationLocation + "\\Settings\\Tools.xml"); // replace this with the actual path to your XML file
+            doc.Load(LibraryGES.ApplicationLocation + "\\Settings\\Tools.xml"); // replace this with the actual path to your XML file
 
             XmlNodeList toolNodes = doc.SelectNodes("/Tools/Tool");
             foreach (XmlNode toolNode in toolNodes) // For each Tool node in the XML, If the Tools dictionary has the listed tool, load it's location and General status. 
@@ -105,7 +105,7 @@ namespace GameEditorStudio
             //Also automatically search the Tools folder and auto-update user paths to these.
             foreach (var tool in TrueDatabase.Tools)
             {
-                var files = Directory.GetFiles(LibraryMan.ApplicationLocation + "\\Tools", tool.ExeName, SearchOption.AllDirectories);
+                var files = Directory.GetFiles(LibraryGES.ApplicationLocation + "\\Tools", tool.ExeName, SearchOption.AllDirectories);
 
                 if (files.Length > 0)
                 {
@@ -129,7 +129,7 @@ namespace GameEditorStudio
 
         public void ImportCommands(GameLibrary gameLibrary)
         {
-            XElement xml = XElement.Load(LibraryMan.ApplicationLocation + "\\Other\\Commands.xml");
+            XElement xml = XElement.Load(LibraryGES.ApplicationLocation + "\\Other\\Commands.xml");
 
             foreach (XElement XCommand in xml.Descendants("Command"))
             {
@@ -220,7 +220,7 @@ namespace GameEditorStudio
 
         public void ImportCommonEvents()
         {
-            XElement xml = XElement.Load(LibraryMan.ApplicationLocation + "\\Other\\Common Events.xml");
+            XElement xml = XElement.Load(LibraryGES.ApplicationLocation + "\\Other\\Common Events.xml");
 
             foreach (XElement XCommonEvent in xml.Descendants("CommonEvent"))
             {
@@ -253,11 +253,11 @@ namespace GameEditorStudio
 
         public void LoadEnabledCommonEvents()
         {
-            if (!Directory.Exists(LibraryMan.ApplicationLocation + "\\Settings"))
+            if (!Directory.Exists(LibraryGES.ApplicationLocation + "\\Settings"))
             {
                 return;
             }
-            if (!File.Exists(LibraryMan.ApplicationLocation + "\\Settings\\Common Events.xml"))
+            if (!File.Exists(LibraryGES.ApplicationLocation + "\\Settings\\Common Events.xml"))
             {
                 return;
             }
@@ -265,7 +265,7 @@ namespace GameEditorStudio
 
             List<string> ListOfCommonEventKeys = new();
 
-            XElement xml = XElement.Load(LibraryMan.ApplicationLocation + "\\Settings\\Common Events.xml");
+            XElement xml = XElement.Load(LibraryGES.ApplicationLocation + "\\Settings\\Common Events.xml");
             foreach (XElement XCommonEvent in xml.Descendants("CommonEvent"))
             {
                 string TheKey = XCommonEvent.Element("Key")?.Value;

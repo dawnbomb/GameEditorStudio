@@ -31,7 +31,7 @@ namespace GameEditorStudio
                 HttpClient client = new();
 
                 client.DefaultRequestHeaders.UserAgent.Add(
-                    new ProductInfoHeaderValue("GameEditorStudio", LibraryMan.VersionNumber.ToString() ));
+                    new ProductInfoHeaderValue("GameEditorStudio", LibraryGES.VersionNumber.ToString() ));
 
                 var response = await client.GetAsync("https://api.github.com/repos/dawnbomb/GameEditorStudio/releases/latest");
                 response.EnsureSuccessStatusCode();
@@ -46,12 +46,12 @@ namespace GameEditorStudio
 
                 Version latest = Version.Parse(tag);
 
-                if (latest > LibraryMan.VersionNumber)
+                if (latest > LibraryGES.VersionNumber)
                 {
                     // Replace this with your WPF popup
                     System.Windows.MessageBoxResult result =
                         System.Windows.MessageBox.Show(
-                            $"New version {latest} is available!\n(Current: {LibraryMan.VersionNumber})\n\nOpen download page?",
+                            $"New version {latest} is available!\n(Current: {LibraryGES.VersionNumber})\n\nOpen download page?",
                             "Update Available",
                             System.Windows.MessageBoxButton.YesNo,
                             System.Windows.MessageBoxImage.Information
@@ -69,7 +69,7 @@ namespace GameEditorStudio
             }
             catch (Exception ex)
             {
-                LibraryMan.NotificationNegative("Error: Update Checker has failed.",
+                PixelWPF.LibraryPixel.NotificationNegative("Error: Update Checker has failed.",
                     "IDK why this happened but Game Editor Studio is definatly not dead. You should manually check for updates." +
                     "\n\n" +
                     "PS: I have seen that sometimes the update checker fails even when the server it's connecting to IS online, " +

@@ -21,6 +21,8 @@ namespace GameEditorStudio
 
             // Register the encoding provider here
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            PixelWPF.PixelStartup.Initialize();
         }
+        
     }
 }

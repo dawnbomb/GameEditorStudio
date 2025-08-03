@@ -128,7 +128,7 @@ namespace GameEditorStudio
         {
             InitializeComponent();
 
-            foreach (ColorTheme Theme in LibraryMan.ColorThemeList)
+            foreach (ColorTheme Theme in LibraryGES.ColorThemeList)
             {
                 TreeViewItem Item = new();
                 Item.Header = Theme.Name;
@@ -259,7 +259,7 @@ namespace GameEditorStudio
             TreeViewItem Item = ColorThemeTree.SelectedItem as TreeViewItem;    
             ColorTheme Theme = Item.Tag as ColorTheme;
             UpdateDataGrid(Theme);
-            LibraryMan.SwitchToColorTheme(Theme);
+            LibraryGES.SwitchToColorTheme(Theme);
         }
 
 
@@ -275,18 +275,18 @@ namespace GameEditorStudio
 
             try
             {
-                Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Other\\Themes\\");
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Other\\Themes\\");
 
                 XmlWriterSettings settings = new XmlWriterSettings();
                 settings.Indent = true;
                 settings.IndentChars = ("    ");
                 settings.CloseOutput = true;
                 settings.OmitXmlDeclaration = true;
-                using (XmlWriter writer = XmlWriter.Create(LibraryMan.ApplicationLocation + "\\Other\\Themes\\" + Theme.Name + ".xml", settings))
+                using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + "\\Other\\Themes\\" + Theme.Name + ".xml", settings))
                 {
                     writer.WriteStartElement("Theme"); //This is the root of the XML
-                    writer.WriteElementString("VersionNumber", LibraryMan.VersionNumber.ToString());
-                    writer.WriteElementString("VersionDate", LibraryMan.VersionDate);
+                    writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                    writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
                     writer.WriteElementString("Name", Theme.Name);
 
                     writer.WriteStartElement("ElementList");
@@ -309,7 +309,7 @@ namespace GameEditorStudio
             {
 
             }
-            LibraryMan.SwitchToColorTheme(Theme);
+            LibraryGES.SwitchToColorTheme(Theme);
         }
     }
 

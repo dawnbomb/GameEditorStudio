@@ -106,17 +106,17 @@ namespace GameEditorStudio
                         
                     }
 
-                    Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text);
-                    Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents");
-                    Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Editors");
-                    Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Tools");
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text);
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents");
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Editors");
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Tools");
 
                     
-                    System.IO.File.WriteAllText(LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\LoadOrder.txt", " "); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
+                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\LoadOrder.txt", " "); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
                     SaveWorkshopLibrary();
 
-                    Directory.CreateDirectory(LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\READ ME");
-                    System.IO.File.WriteAllText(LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\READ ME\\Text.txt", "" +
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\READ ME");
+                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\READ ME\\Text.txt", "" +
                         "The READ ME is always the first loaded document, so fill it out with useful info! " +
                         "Here are some examples :3" +
                         "\n- How to extract the game files (If required)." +
@@ -148,7 +148,7 @@ namespace GameEditorStudio
                 }
                 else
                 {
-                    LibraryMan.NotificationNegative("Error: Workshop creation failed.",
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Workshop creation failed.",
                         "Either you did not name the game / workshop, or you forgot to give it an Input Folder." 
                     );
                 }
@@ -158,10 +158,10 @@ namespace GameEditorStudio
             {
                 if (TextBoxGameName.Text != null && TextBoxGameName.Text != "" && WorkshopTextboxExampleInputFolder.Text != null && WorkshopTextboxExampleInputFolder.Text != "")
                 {
-                    string OldWorkshopName = LibraryMan.ApplicationLocation + "\\Workshops\\" + Library.WorkshopName;
-                    string NewWorkshopName = LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text;
-                    string OldProjectsName = LibraryMan.ApplicationLocation + "\\Projects\\" + Library.WorkshopName;
-                    string NewProjectsName = LibraryMan.ApplicationLocation + "\\Projects\\" + TextBoxGameName.Text;
+                    string OldWorkshopName = LibraryGES.ApplicationLocation + "\\Workshops\\" + Library.WorkshopName;
+                    string NewWorkshopName = LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text;
+                    string OldProjectsName = LibraryGES.ApplicationLocation + "\\Projects\\" + Library.WorkshopName;
+                    string NewProjectsName = LibraryGES.ApplicationLocation + "\\Projects\\" + TextBoxGameName.Text;
                     try
                     {
                         Directory.Move(OldWorkshopName, NewWorkshopName);
@@ -193,7 +193,7 @@ namespace GameEditorStudio
                 }
                 else
                 {
-                    LibraryMan.NotificationNegative("Error: Workshop saving failed.",
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Workshop saving failed.",
                         "Either you are trying to save the game without a name, or you somehow deleted the Input Directory."
                     );
                 }
@@ -208,7 +208,7 @@ namespace GameEditorStudio
 
         private void SaveWorkshopLibrary()
         {            
-            string LibraryXmlPath = LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\" + "LibraryTestSave.xml";   
+            string LibraryXmlPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\" + "LibraryTestSave.xml";   
             
             SaveIt();
             try
@@ -220,7 +220,7 @@ namespace GameEditorStudio
             
             }            
 
-            LibraryXmlPath = LibraryMan.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\" + "Workshop.xml";  
+            LibraryXmlPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\" + "Workshop.xml";  
 
             SaveIt();
 
@@ -236,8 +236,8 @@ namespace GameEditorStudio
                     using (XmlWriter writer = XmlWriter.Create(LibraryXmlPath, settings))
                     {
                         writer.WriteStartElement("Workshop");
-                        writer.WriteElementString("VersionNumber", LibraryMan.VersionNumber.ToString());
-                        writer.WriteElementString("VersionDate", LibraryMan.VersionDate);
+                        writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                        writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
                         writer.WriteElementString("WorkshopName", TextBoxGameName.Text); //Note: This is for reference only, so i can tell what workshop a file is for when it's open in notepad. This isn't actually used anywhere. 
                         writer.WriteElementString("InputLocation", WorkshopTextboxExampleInputFolder.Text);
                         writer.WriteElementString("ProjectsRequireSameInputFolderName", WorkshopCheckboxSameFolderName.IsChecked == true ? "true" : "false");
@@ -287,7 +287,7 @@ namespace GameEditorStudio
                 }
                 catch 
                 {
-                    LibraryMan.NotificationNegative("Error: Workshop.xml failed to save properly.",
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Workshop.xml failed to save properly.",
                         "All saves (are supposed to be) simulated in this program, so pre-existing data should be fine... " +
                         "but...this is really weird! This one especially should never crash! What the hell did you do?!?" +
                         "\n\n" +
@@ -327,7 +327,7 @@ namespace GameEditorStudio
             Library.WorkshopEventResources.Add(EventResource);
             EventResource.Name = "New File";
             EventResource.ResourceType = "LocalFile";
-            EventResource.WorkshopResourceKey = LibraryMan.GenerateKey();
+            EventResource.WorkshopResourceKey = PixelWPF.LibraryPixel.GenerateKey();
             GenerateWEventResourceUI(EventResource);
         }
 
@@ -337,7 +337,7 @@ namespace GameEditorStudio
             Library.WorkshopEventResources.Add(EventResource);
             EventResource.Name = "New Folder";
             EventResource.ResourceType = "LocalFolder";
-            EventResource.WorkshopResourceKey = LibraryMan.GenerateKey();
+            EventResource.WorkshopResourceKey = PixelWPF.LibraryPixel.GenerateKey();
             GenerateWEventResourceUI(EventResource);
         }
 
@@ -347,13 +347,13 @@ namespace GameEditorStudio
             Library.WorkshopEventResources.Add(EventResource);
             EventResource.Name = "New Relative File";
             EventResource.ResourceType = "RelativeFile";
-            EventResource.WorkshopResourceKey = LibraryMan.GenerateKey();
+            EventResource.WorkshopResourceKey = PixelWPF.LibraryPixel.GenerateKey();
             GenerateWEventResourceUI(EventResource);
         }
 
         private void NewEventResourceRelativeFolder(object sender, RoutedEventArgs e)
         {
-            LibraryMan.Notification("Notice: Upcoming feature.",
+            PixelWPF.LibraryPixel.Notification("Notice: Upcoming feature.",
                 "Being able to add a folder that is relative to another folder resource's location is an upcoming feature. " +
                 "I'll add support soon enough, i just really wanna release the damn program already! x3 " +
                 "If you want it on priority for something, let me know on discord." 
@@ -364,7 +364,7 @@ namespace GameEditorStudio
             Library.WorkshopEventResources.Add(EventResource);
             EventResource.Name = "New Relative Folder";
             EventResource.ResourceType = "RelativeFolder";
-            EventResource.WorkshopResourceKey = LibraryMan.GenerateKey();
+            EventResource.WorkshopResourceKey = PixelWPF.LibraryPixel.GenerateKey();
             GenerateWEventResourceUI(EventResource);
         }
 
@@ -563,8 +563,8 @@ namespace GameEditorStudio
             {
                 if (MainPanel.Parent is DockPanel Parent) 
                 {
-                    LibraryMan.MoveListItemUp(Library.WorkshopEventResources, EventResource);
-                    LibraryMan.MoveDockElementUp(Parent, MainPanel);
+                    LibraryGES.MoveListItemUp(Library.WorkshopEventResources, EventResource);
+                    LibraryGES.MoveDockElementUp(Parent, MainPanel);
                 }
                 
             };
@@ -578,8 +578,8 @@ namespace GameEditorStudio
             {
                 if (MainPanel.Parent is DockPanel Parent)
                 {
-                    LibraryMan.MoveListItemDown(Library.WorkshopEventResources, EventResource);
-                    LibraryMan.MoveDockElementDown(Parent, MainPanel);
+                    LibraryGES.MoveListItemDown(Library.WorkshopEventResources, EventResource);
+                    LibraryGES.MoveDockElementDown(Parent, MainPanel);
                 }
                 
             };
@@ -671,10 +671,10 @@ namespace GameEditorStudio
                 }
 
 
-                if (EventResource.ResourceType == "LocalFile") { LocationString = LibraryMan.GetSelectFileName("Select a File"); }  //TYPE IF
-                if (EventResource.ResourceType == "LocalFolder") { LocationString = LibraryMan.GetSelectFolderName("Select a Folder"); }  //TYPE IF                
-                if (EventResource.ResourceType == "RelativeFile") { LocationString = LibraryMan.GetSelectedRelativeFilePath("Select a File", FolderStartPath); }  //TYPE IF
-                if (EventResource.ResourceType == "RelativeFolder") { LocationString = LibraryMan.GetSelectedRelativeFolderPath("Select a Folder", FolderStartPath); }  //TYPE IF
+                if (EventResource.ResourceType == "LocalFile") { LocationString = LibraryGES.GetSelectFileName("Select a File"); }  //TYPE IF
+                if (EventResource.ResourceType == "LocalFolder") { LocationString = LibraryGES.GetSelectFolderName("Select a Folder"); }  //TYPE IF                
+                if (EventResource.ResourceType == "RelativeFile") { LocationString = LibraryGES.GetSelectedRelativeFilePath("Select a File", FolderStartPath); }  //TYPE IF
+                if (EventResource.ResourceType == "RelativeFolder") { LocationString = LibraryGES.GetSelectedRelativeFolderPath("Select a Folder", FolderStartPath); }  //TYPE IF
                 //i can fix this problem by using the project path's current local folder path.
 
                 //if (CheckBox.IsChecked == true) 

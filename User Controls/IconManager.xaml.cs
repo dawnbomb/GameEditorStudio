@@ -66,7 +66,7 @@ namespace GameEditorStudio
 
         public void Setup()
         {
-            string GraphicsFolder = Path.Combine(LibraryMan.ApplicationLocation, "Other\\Icons");
+            string GraphicsFolder = Path.Combine(LibraryGES.ApplicationLocation, "Other\\Icons");
 
             string[] directories = Directory.GetDirectories(GraphicsFolder);
 
@@ -319,8 +319,8 @@ namespace GameEditorStudio
         {
             TheWorkshop.EditorClass.EditorIcon = GraphicName;
 
-            string baseGraphicsPath = Path.Combine(LibraryMan.ApplicationLocation, "Other\\Icons");
-            string[] files = Directory.GetFiles(LibraryMan.ApplicationLocation + "\\Other\\Icons\\", GraphicName, SearchOption.AllDirectories);
+            string baseGraphicsPath = Path.Combine(LibraryGES.ApplicationLocation, "Other\\Icons");
+            string[] files = Directory.GetFiles(LibraryGES.ApplicationLocation + "\\Other\\Icons\\", GraphicName, SearchOption.AllDirectories);
             if (files.Length > 0)
             {
                 // File found, use the first found instance

@@ -32,11 +32,11 @@ namespace GameEditorStudio
             {
                 if (Directory.Exists(project.ProjectInputDirectory))
                 {
-                    LibraryMan.OpenFolder(project.ProjectInputDirectory);
+                    LibraryGES.OpenFolder(project.ProjectInputDirectory);
                 }
                 else
                 {
-                    LibraryMan.NotificationNegative("Error: Project Input Folder not found.",
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Project Input Folder not found.",
                         "This is actually a pretty serious error, so you should probably look into fixing it." 
                         );
                     //Note that if your looking at the workshop in preview mode, you will always get this error and can ignore it.
@@ -73,11 +73,11 @@ namespace GameEditorStudio
 
                 if (Directory.Exists(project.ProjectOutputDirectory))
                 {
-                    LibraryMan.OpenFolder(project.ProjectOutputDirectory);
+                    LibraryGES.OpenFolder(project.ProjectOutputDirectory);
                 }
                 else
                 {
-                    LibraryMan.NotificationNegative("Error: Project Output Folder not found.",
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Project Output Folder not found.",
                         "Your projects output folder doesn't seem to exist! :(" +
                         "\n\n" +
                         "If you didn't set one up, saving is SUPPOSED to default to your input folder instead."
@@ -103,18 +103,18 @@ namespace GameEditorStudio
 
                 if (MethodData.WorkshopData != null) //If Workshop
                 {
-                    folderPath = LibraryMan.ApplicationLocation + "\\Workshops\\" + MethodData.WorkshopData.Workshop.WorkshopName + "\\";
+                    folderPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + MethodData.WorkshopData.Workshop.WorkshopName + "\\";
                 }
                 else if (MethodData.GameLibrary != null) //If Library
                 {
-                    folderPath = LibraryMan.ApplicationLocation + "\\Workshops\\" + MethodData.GameLibrary.WorkshopName + "\\";
+                    folderPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + MethodData.GameLibrary.WorkshopName + "\\";
                 }
 
                 
 
                 if (Directory.Exists(folderPath))
                 {
-                    LibraryMan.OpenFolder(folderPath);
+                    LibraryGES.OpenFolder(folderPath);
                 }
                 else
                 {
@@ -144,11 +144,11 @@ namespace GameEditorStudio
                 // Open the folder in the file explorer
                 if (Directory.Exists(folderPath))
                 {
-                    LibraryMan.OpenFolder(folderPath);
+                    LibraryGES.OpenFolder(folderPath);
                 }
                 else
                 {
-                    LibraryMan.NotificationNegative("Error: Can't find downloads folder.",
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Can't find downloads folder.",
                         "We can't find where your downloads folder is! :( " +
                         "IDK what would cause this error. Maybe your on mac or linux PC instead of windows? " +
                         "If anyone gets this error on windows, please report it."
@@ -157,7 +157,7 @@ namespace GameEditorStudio
             }
             catch
             {
-                LibraryMan.NotificationGenericError();             
+                PixelWPF.LibraryPixel.NotificationGenericError();             
             }
 
         }
@@ -168,12 +168,12 @@ namespace GameEditorStudio
 
             try
             {
-                string folderPath = LibraryMan.ApplicationLocation;
+                string folderPath = LibraryGES.ApplicationLocation;
 
                 // Open the folder in the file explorer
                 if (Directory.Exists(folderPath))
                 {
-                    LibraryMan.OpenFolder(folderPath);
+                    LibraryGES.OpenFolder(folderPath);
                 }
                 else
                 {
@@ -184,7 +184,7 @@ namespace GameEditorStudio
             }
             catch
             {
-                LibraryMan.NotificationGenericError();
+                PixelWPF.LibraryPixel.NotificationGenericError();
             }
 
         }

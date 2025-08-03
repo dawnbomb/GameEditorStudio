@@ -126,7 +126,7 @@ namespace GameEditorStudio
             List<WorkshopResource> EventResources2 = new();
             EventResources = EventResources2;
 
-            using (FileStream TargetXML = new FileStream(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Workshop.xml", FileMode.Open, FileAccess.Read))
+            using (FileStream TargetXML = new FileStream(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Workshop.xml", FileMode.Open, FileAccess.Read))
             {
                 XElement libraryxml = XElement.Load(TargetXML);
 
@@ -338,12 +338,12 @@ namespace GameEditorStudio
         public void LoadEventsFromXML() // Assuming 'Commands' is available in this context
         {            
 
-            string eventsDirectory = Path.Combine(LibraryMan.ApplicationLocation, "Workshops", WorkshopName, "Events");
+            string eventsDirectory = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", WorkshopName, "Events");
             if (!Directory.Exists(eventsDirectory)) { return; }
 
 
             List<string> EventsListLoadOrder = new();
-            string EventsOrderText = LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Events\\" + "LoadOrder.txt";
+            string EventsOrderText = LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Events\\" + "LoadOrder.txt";
             if (File.Exists(EventsOrderText))
             {
                 string[] lines = File.ReadAllLines(EventsOrderText);
@@ -571,14 +571,14 @@ namespace GameEditorStudio
 
         public void LoadWorkshopCommonEvents() //Dictionary<CommandName, Command> Commands
         {
-            if (!File.Exists(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Common Events.xml"))
+            if (!File.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Common Events.xml"))
             {
                 return;
             }
 
             List<string> ListOfCommonEventKeys = new();
 
-            XElement xml = XElement.Load(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Common Events.xml");
+            XElement xml = XElement.Load(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Common Events.xml");
             foreach (XElement XCommonEvent in xml.Descendants("CommonEvent"))
             {
                 string TheKey = XCommonEvent.Element("Key")?.Value;
@@ -758,7 +758,7 @@ namespace GameEditorStudio
                         {
                             if (myCommand.Command.TheMethod != null)
                             {
-                                MethodData actionPack = LibraryMan.TransformKeysToLocations(myCommand.ResourceKeys, EventResources, this, myCommand);
+                                MethodData actionPack = LibraryGES.TransformKeysToLocations(myCommand.ResourceKeys, EventResources, this, myCommand);
                                 actionPack.mainMenu = this;
                                 myCommand.Command.TheMethod(actionPack);
                             }
@@ -899,7 +899,7 @@ namespace GameEditorStudio
 
         private void DebugNotification(object sender, RoutedEventArgs e)
         {
-            LibraryMan.Notification("Title Test","Content test");
+            PixelWPF.LibraryPixel.Notification("Title Test","Content test");
         }
 
 
@@ -1099,6 +1099,11 @@ namespace GameEditorStudio
             System.Diagnostics.Process.Start(psi);
         }
 
-        
+        private void OpenPatchnotes(object sender, RoutedEventArgs e)
+        {
+            PixelWPF.Patchnotes patchnotes = new();
+            patchnotes.LoadPatchnotes(LibraryGES.ApplicationLocation + "\\Other\\Patchnotes.txt");
+            patchnotes.Show();
+        }
     }
 }

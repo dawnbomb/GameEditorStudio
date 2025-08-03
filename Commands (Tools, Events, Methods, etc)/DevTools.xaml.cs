@@ -376,13 +376,13 @@ namespace GameEditorStudio
 
             //Step 1: Make sure everything can save to a Example location, letting us test if a problem (crash) would occur, before actually saving to the right location.
             string ExtraPath = "\\Lab"; //This extra string causes stuff to be saved to a path variant of the normal location, 
-            Directory.CreateDirectory(LibraryMan.ApplicationLocation + ExtraPath + "\\");
+            Directory.CreateDirectory(LibraryGES.ApplicationLocation + ExtraPath + "\\");
 
             //Step 1.5: Save to the example location.
             SaveDevStuff(ExtraPath);
 
             //Step 2: Delete everything in the example location. (The Lab folder)
-            Directory.Delete(LibraryMan.ApplicationLocation + ExtraPath + "\\", true);
+            Directory.Delete(LibraryGES.ApplicationLocation + ExtraPath + "\\", true);
 
             ////Step 3: Delete everything in the REAL location.
             //ExtraPath = "";
@@ -408,18 +408,18 @@ namespace GameEditorStudio
             {
                 try
                 {
-                    Directory.CreateDirectory(LibraryMan.ApplicationLocation + SaveLocation + "\\Other\\" );
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + SaveLocation + "\\Other\\" );
 
                     XmlWriterSettings settings = new XmlWriterSettings();
                     settings.Indent = true;
                     settings.IndentChars = ("    ");
                     settings.CloseOutput = true;
                     settings.OmitXmlDeclaration = true;
-                    using (XmlWriter writer = XmlWriter.Create(LibraryMan.ApplicationLocation + SaveLocation + "\\Other\\Tools.xml", settings))
+                    using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + SaveLocation + "\\Other\\Tools.xml", settings))
                     {
                         writer.WriteStartElement("Tools");
-                        writer.WriteElementString("VersionNumber", LibraryMan.VersionNumber.ToString());
-                        writer.WriteElementString("VersionDate", LibraryMan.VersionDate);
+                        writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                        writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
 
                         writer.WriteStartElement("ToolList");
                         foreach (Tool tool in TrueDatabase.Tools)
@@ -449,18 +449,18 @@ namespace GameEditorStudio
 
                 try
                 {
-                    Directory.CreateDirectory(LibraryMan.ApplicationLocation + SaveLocation + "\\Other\\");
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + SaveLocation + "\\Other\\");
 
                     XmlWriterSettings settings = new XmlWriterSettings();
                     settings.Indent = true;
                     settings.IndentChars = ("    ");
                     settings.CloseOutput = true;
                     settings.OmitXmlDeclaration = true;
-                    using (XmlWriter writer = XmlWriter.Create(LibraryMan.ApplicationLocation + SaveLocation + "\\Other\\Commands.xml", settings))
+                    using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + SaveLocation + "\\Other\\Commands.xml", settings))
                     {
                         writer.WriteStartElement("Commands");
-                        writer.WriteElementString("VersionNumber", LibraryMan.VersionNumber.ToString());
-                        writer.WriteElementString("VersionDate", LibraryMan.VersionDate);
+                        writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                        writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
 
                         writer.WriteStartElement("CommandsList");
                         foreach (Command command in TrueDatabase.Commands)
@@ -509,18 +509,18 @@ namespace GameEditorStudio
 
                 try
                 {
-                    Directory.CreateDirectory(LibraryMan.ApplicationLocation + SaveLocation + "\\Other\\");
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + SaveLocation + "\\Other\\");
 
                     XmlWriterSettings settings = new XmlWriterSettings();
                     settings.Indent = true;
                     settings.IndentChars = ("    ");
                     settings.CloseOutput = true;
                     settings.OmitXmlDeclaration = true;
-                    using (XmlWriter writer = XmlWriter.Create(LibraryMan.ApplicationLocation + SaveLocation + "\\Other\\Common Events.xml", settings))
+                    using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + SaveLocation + "\\Other\\Common Events.xml", settings))
                     {
                         writer.WriteStartElement("CommonEvents");
-                        writer.WriteElementString("VersionNumber", LibraryMan.VersionNumber.ToString());
-                        writer.WriteElementString("VersionDate", LibraryMan.VersionDate);
+                        writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                        writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
 
                         writer.WriteStartElement("CommonEventList");
                         foreach (CommonEvent commonevent in TrueDatabase.CommonEvents)
@@ -561,7 +561,7 @@ namespace GameEditorStudio
 
             void FailedSave(string SomeText) 
             {
-                LibraryMan.NotificationNegative("Error: Failed to save properly.",
+                PixelWPF.LibraryPixel.NotificationNegative("Error: Failed to save properly.",
                     "I will now crash." +
                     "\n\n" +
                     "PS: I set it up to first attempt to save to a folder named Lab to prevent data corruption, so everything should be fine. :D"
@@ -743,8 +743,8 @@ namespace GameEditorStudio
             var tool = (Tool)item.Tag;
             if (tool == null) return;
 
-            LibraryMan.MoveListItemUp(TrueDatabase.Tools, tool);
-            LibraryMan.MoveTreeItemUp(ToolsTree, item);
+            LibraryGES.MoveListItemUp(TrueDatabase.Tools, tool);
+            LibraryGES.MoveTreeItemUp(ToolsTree, item);
 
             item.IsSelected = true;
         }
@@ -756,8 +756,8 @@ namespace GameEditorStudio
             var tool = (Tool)item.Tag;
             if (tool == null) return;
 
-            LibraryMan.MoveListItemDown(TrueDatabase.Tools, tool);
-            LibraryMan.MoveTreeItemDown(ToolsTree, item);
+            LibraryGES.MoveListItemDown(TrueDatabase.Tools, tool);
+            LibraryGES.MoveTreeItemDown(ToolsTree, item);
 
             item.IsSelected = true;
         }
@@ -769,8 +769,8 @@ namespace GameEditorStudio
             var command = (Command)item.Tag;
             if (command == null) return;
 
-            LibraryMan.MoveListItemUp(TrueDatabase.Commands, command);
-            LibraryMan.MoveTreeItemUp(CommandsTree, item);
+            LibraryGES.MoveListItemUp(TrueDatabase.Commands, command);
+            LibraryGES.MoveTreeItemUp(CommandsTree, item);
 
             item.IsSelected = true;
         }
@@ -782,8 +782,8 @@ namespace GameEditorStudio
             var command = (Command)item.Tag;
             if (command == null) return;
 
-            LibraryMan.MoveListItemDown(TrueDatabase.Commands, command);
-            LibraryMan.MoveTreeItemDown(CommandsTree, item);
+            LibraryGES.MoveListItemDown(TrueDatabase.Commands, command);
+            LibraryGES.MoveTreeItemDown(CommandsTree, item);
 
             item.IsSelected = true;
         }
@@ -795,8 +795,8 @@ namespace GameEditorStudio
             var common = (CommonEvent)item.Tag;
             if (common == null) return;
 
-            LibraryMan.MoveListItemUp(TrueDatabase.CommonEvents, common);
-            LibraryMan.MoveTreeItemUp(CommonEventsTree, item);
+            LibraryGES.MoveListItemUp(TrueDatabase.CommonEvents, common);
+            LibraryGES.MoveTreeItemUp(CommonEventsTree, item);
 
             item.IsSelected = true;
         }
@@ -808,8 +808,8 @@ namespace GameEditorStudio
             var common = (CommonEvent)item.Tag;
             if (common == null) return;
 
-            LibraryMan.MoveListItemDown(TrueDatabase.CommonEvents, common);
-            LibraryMan.MoveTreeItemDown(CommonEventsTree, item);
+            LibraryGES.MoveListItemDown(TrueDatabase.CommonEvents, common);
+            LibraryGES.MoveTreeItemDown(CommonEventsTree, item);
 
             item.IsSelected = true;
         }

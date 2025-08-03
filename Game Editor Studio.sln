@@ -4,6 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game Editor Studio", "Game Editor Studio.csproj", "{8DB6A47C-3768-439A-B0CB-963629FEA2C7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3A2627F0-2735-22D7-B916-33AD4DFD6266} = {3A2627F0-2735-22D7-B916-33AD4DFD6266}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelWPF", "..\PixelWPF\PixelWPF.csproj", "{3A2627F0-2735-22D7-B916-33AD4DFD6266}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +20,10 @@ Global
 		{8DB6A47C-3768-439A-B0CB-963629FEA2C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DB6A47C-3768-439A-B0CB-963629FEA2C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DB6A47C-3768-439A-B0CB-963629FEA2C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A2627F0-2735-22D7-B916-33AD4DFD6266}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A2627F0-2735-22D7-B916-33AD4DFD6266}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A2627F0-2735-22D7-B916-33AD4DFD6266}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A2627F0-2735-22D7-B916-33AD4DFD6266}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

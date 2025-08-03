@@ -47,7 +47,7 @@ namespace GameEditorStudio
         private void NewWikiCategory(object sender, RoutedEventArgs e)
         {
             WikiCategory Category = new();
-            LibraryMan.Wiki.Categories.Add(Category);  
+            LibraryGES.Wiki.Categories.Add(Category);  
             TreeViewItem item = new();
             item.Tag = Category;
             item.Header = Category.Name;

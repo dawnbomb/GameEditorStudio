@@ -151,7 +151,7 @@ namespace GameEditorStudio
             OpenInputFileLocation.Click += new RoutedEventHandler(OpenFileInputLocationFunction);
             void OpenFileInputLocationFunction(object sender, RoutedEventArgs e)
             {
-                LibraryMan.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + GameFile.FileLocation);
+                LibraryGES.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + GameFile.FileLocation);
             }
 
             MenuItem OpenOutputFileLocation = new MenuItem();
@@ -160,7 +160,7 @@ namespace GameEditorStudio
             OpenOutputFileLocation.Click += new RoutedEventHandler(OpenFileOutputLocationFunction);
             void OpenFileOutputLocationFunction(object sender, RoutedEventArgs e)
             {
-                LibraryMan.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectOutputDirectory + "\\" + GameFile.FileLocation);
+                LibraryGES.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectOutputDirectory + "\\" + GameFile.FileLocation);
             }
             string TheOutputPath = Path.Combine(TheWorkshop.ProjectDataItem.ProjectOutputDirectory, GameFile.FileLocation);
             if (File.Exists(TheOutputPath))
@@ -333,7 +333,7 @@ namespace GameEditorStudio
             // Make sure the dropped file is inside the input directory
             if (!fullPath.StartsWith(inputDir, StringComparison.OrdinalIgnoreCase))
             {
-                LibraryMan.NotificationNegative("Error: File outside the input folder!",
+                PixelWPF.LibraryPixel.NotificationNegative("Error: File outside the input folder!",
                     "You can only add files that are INSIDE the project's input directory!\n\n" +
                     $"Input folder: {inputDir}\n\n" +
                     $"Attempted: {fullPath}");
@@ -346,7 +346,7 @@ namespace GameEditorStudio
             {
                 if (gamefile.Key == relativePath)
                 {
-                    LibraryMan.Notification("Notice: File already in workshop",
+                    PixelWPF.LibraryPixel.Notification("Notice: File already in workshop",
                         "FYI: Yes i'm aware that sometimes games will have diffrent folders with identical file names inside them, causing those files to be hard to work with. " +
                         "To deal with this problem, Game Editor Studio allows users to give a Nickname. Files with nicknames are shown as if their Nickname IS their filename. " +
                         "To better understand what just happened involving the file you tried adding to the workshop, here is the workshops information on that file. " +
@@ -376,7 +376,7 @@ namespace GameEditorStudio
             }
             catch
             {
-                LibraryMan.Notification("Notice: File not found?",
+                PixelWPF.LibraryPixel.Notification("Notice: File not found?",
                     "For some reason the workshop couldn't find the file you selected." +
                     "\n\n" +
                     "Possible causes..." +

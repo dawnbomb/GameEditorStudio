@@ -141,7 +141,7 @@ namespace GameEditorStudio
                 TheWorkshop.HIDEALL();
                 TheEditorClass.EditorBackPanel.Visibility = Visibility.Visible;
 
-                LibraryMan.GotoRightBarGeneralTab(TheWorkshop);
+                LibraryGES.GotoRightBarGeneralTab(TheWorkshop);
 
                 TheWorkshop.PropertiesTextboxEditorName.Text = TheEditorNameLabel.Content.ToString();
 
@@ -302,8 +302,8 @@ namespace GameEditorStudio
                 contextMenu.Items.Add(OpenEditor);
                 void OpenEditorFolder_Click(object sender, RoutedEventArgs e)
                 {
-                    string EditorFolderPath = Path.Combine(LibraryMan.ApplicationLocation, "Workshops", TheWorkshop.WorkshopName, "Editors", EditorClass.EditorName);
-                    LibraryMan.OpenFolder(EditorFolderPath);
+                    string EditorFolderPath = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopName, "Editors", EditorClass.EditorName);
+                    LibraryGES.OpenFolder(EditorFolderPath);
                 }
 
                 MenuItem OpenNTFile = new MenuItem();
@@ -312,7 +312,7 @@ namespace GameEditorStudio
                 contextMenu.Items.Add(OpenNTFile);
                 void OpenNTFile_Click(object sender, RoutedEventArgs e)
                 {
-                    LibraryMan.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.FileNameTable.FileLocation);
+                    LibraryGES.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.FileNameTable.FileLocation);
                 }
                 if (EditorClass.StandardEditorData.NameTableLinkType == StandardEditorData.NameTableLinkTypes.Nothing) { OpenNTFile.IsEnabled = false; }
 
@@ -322,7 +322,7 @@ namespace GameEditorStudio
                 contextMenu.Items.Add(OpenDTFile);
                 void OpenDTFile_Click(object sender, RoutedEventArgs e)
                 {                    
-                    LibraryMan.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\"+ EditorClass.StandardEditorData.FileDataTable.FileLocation);
+                    LibraryGES.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\"+ EditorClass.StandardEditorData.FileDataTable.FileLocation);
                 }
 
 
@@ -344,7 +344,7 @@ namespace GameEditorStudio
                                     OpenDescriptionFolder.Click += OpenDTFolder_Click; // Event handler for click action                                   
                                     void OpenDTFolder_Click(object sender, RoutedEventArgs e)
                                     {
-                                        LibraryMan.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable.FileLocation);
+                                        LibraryGES.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable.FileLocation);
                                     }
                                     OpenDescriptionFolder.IsEnabled = true;
                                 }
@@ -402,7 +402,7 @@ namespace GameEditorStudio
                                 WorkshopData.GameEditors.Remove(editor.Key);
                                 TheWorkshop.MidGrid.Children.Remove(editor.Value.EditorBackPanel);
                                 TheWorkshop.EditorBar.Children.Remove(EditorTabButton);
-                                LibraryMan.GotoGeneralHide(TheWorkshop);
+                                LibraryGES.GotoGeneralHide(TheWorkshop);
 
 
                                 //also hide the details panel for entrys / column / row etc?

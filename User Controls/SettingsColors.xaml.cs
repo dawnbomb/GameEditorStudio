@@ -67,7 +67,7 @@ namespace GameEditorStudio
 
         private void ChangeColor(object sender, EventArgs e)
         {
-            if (ComboBoxName.SelectedValue.ToString() == "⬤ Blue") { LibraryMan.ValueName = LibraryMan.ColorBlue; }
+            if (ComboBoxName.SelectedValue.ToString() == "⬤ Blue") { LibraryGES.ValueName = LibraryGES.ColorBlue; }
         }
 
         

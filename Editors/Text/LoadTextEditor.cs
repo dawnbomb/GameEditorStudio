@@ -21,7 +21,7 @@ namespace GameEditorStudio
             Editor EditorClass = new(); //Creates the base class of the editor. Everything else becomes a child of this class, including other classes.
             EditorClass.EditorName = Maker.TextboxEditorName.Text;
             EditorClass.EditorType = "TextEditor";
-            EditorClass.EditorKey = LibraryMan.GenerateKey();
+            EditorClass.EditorKey = PixelWPF.LibraryPixel.GenerateKey();
             //EditorClass.EditorIcon = Maker.DemoEditorImage.Tag as string; for old icon system.
 
 
