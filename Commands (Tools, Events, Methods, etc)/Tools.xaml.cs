@@ -28,12 +28,12 @@ namespace GameEditorStudio
     public partial class ToolsMenu : Window
     {
         public WorkshopData WorkshopData { get; set; } // May eventually be used to check a workshop's Common Events? 
-        public MainMenu SharedMenus { get; set; } //not used, but i might use in the future.
+        public TopMenu SharedMenus { get; set; } //not used, but i might use in the future.
         public string WorkshopName { get; set; } = "";
         public List<DockPanel> dockList { get; set; } = new();
         public string ColorCode { get; set; } = "#090917";
 
-        public ToolsMenu(MainMenu SharedMenus, string TheWorkshopName)
+        public ToolsMenu(TopMenu SharedMenus, string TheWorkshopName)
         {
             InitializeComponent();
 
@@ -147,6 +147,8 @@ namespace GameEditorStudio
                 DockPanel.SetDock(MainPanel, Dock.Top);
                 MainPanel.Margin = new Thickness(10, 8, 10, 0);
                 MainPanel.Height = 34;
+                MainPanel.MinWidth = 700;
+                MainPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
                 MainPanel.MouseEnter += (sender, e) => ToolPanel_MouseEnter(sender, e, ThisTool);
 
                 // Find corresponding TreeViewItem by Tab value and add MainPanel to its DockPanel

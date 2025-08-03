@@ -292,51 +292,7 @@ namespace GameEditorStudio
             ContextMenu contextMenu = new ContextMenu();
             EditorTabButton.ContextMenu = contextMenu;
 
-            MenuItem menuItem1 = new MenuItem();
-            menuItem1.Header = "Delete Editor";
-            menuItem1.Click += MenuItem1_Click; // Event handler for click action
-            contextMenu.Items.Add(menuItem1);
-
-            void MenuItem1_Click(object sender, RoutedEventArgs e)
-            {
-                foreach (KeyValuePair<string, Editor> editor in WorkshopData.GameEditors)
-                {
-                    if (editor.Value == EditorClass)
-                    {
-                        System.Windows.Forms.DialogResult dr = System.Windows.Forms.MessageBox.Show("Are you sure you want to delete this editor?", "Delete Editor", (System.Windows.Forms.MessageBoxButtons)MessageBoxButton.YesNo);
-
-                        if (dr == System.Windows.Forms.DialogResult.Yes)
-                        {
-                            try
-                            {
-                                TheWorkshop.EditorBar.Children.Remove(EditorClass.EditorBarDockPanel);
-
-                                //EditorsTree.Items.Remove(editor.Value.EditorTreeViewitem); //editor.Key
-
-                                WorkshopData.GameEditors.Remove(editor.Key);
-                                TheWorkshop.MidGrid.Children.Remove(editor.Value.EditorBackPanel);
-                                TheWorkshop.EditorBar.Children.Remove(EditorTabButton);
-                                LibraryMan.GotoGeneralHide(TheWorkshop);
-
-                                
-                                //also hide the details panel for entrys / column / row etc?
-
-                                //Directory.Delete(ExePath + "\\Workshops\\" + WorkshopName + "\\Editors\\" + editor.Key, true);
-                                //Returns the view to home should be here.
-
-
-
-                            }
-                            catch (IOException ex)
-                            {
-                                // File is being used, so it cannot be deleted
-                                Console.WriteLine("File is being used: " + ex.Message);
-                            }
-                        }
-
-                    }
-                }
-            }
+            
 
             if (EditorClass.EditorType == "DataTable") 
             {
@@ -422,7 +378,51 @@ namespace GameEditorStudio
 
             }
 
+            MenuItem DeleteEditorItem = new MenuItem();
+            DeleteEditorItem.Header = "Delete Editor";
+            DeleteEditorItem.Click += DeleteEditorClick; // Event handler for click action
+            contextMenu.Items.Add(DeleteEditorItem);
 
+            void DeleteEditorClick(object sender, RoutedEventArgs e)
+            {
+                foreach (KeyValuePair<string, Editor> editor in WorkshopData.GameEditors)
+                {
+                    if (editor.Value == EditorClass)
+                    {
+                        System.Windows.Forms.DialogResult dr = System.Windows.Forms.MessageBox.Show("Are you sure you want to delete this editor?", "Delete Editor", (System.Windows.Forms.MessageBoxButtons)MessageBoxButton.YesNo);
+
+                        if (dr == System.Windows.Forms.DialogResult.Yes)
+                        {
+                            try
+                            {
+                                TheWorkshop.EditorBar.Children.Remove(EditorClass.EditorBarDockPanel);
+
+                                //EditorsTree.Items.Remove(editor.Value.EditorTreeViewitem); //editor.Key
+
+                                WorkshopData.GameEditors.Remove(editor.Key);
+                                TheWorkshop.MidGrid.Children.Remove(editor.Value.EditorBackPanel);
+                                TheWorkshop.EditorBar.Children.Remove(EditorTabButton);
+                                LibraryMan.GotoGeneralHide(TheWorkshop);
+
+
+                                //also hide the details panel for entrys / column / row etc?
+
+                                //Directory.Delete(ExePath + "\\Workshops\\" + WorkshopName + "\\Editors\\" + editor.Key, true);
+                                //Returns the view to home should be here.
+
+
+
+                            }
+                            catch (IOException ex)
+                            {
+                                // File is being used, so it cannot be deleted
+                                Console.WriteLine("File is being used: " + ex.Message);
+                            }
+                        }
+
+                    }
+                }
+            }
 
 
 

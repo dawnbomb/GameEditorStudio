@@ -31,19 +31,8 @@
 
 
 
-        <DockPanel Grid.Column="0" Grid.ColumnSpan="5"  Grid.RowSpan="1" LastChildFill="False" Margin="0,0,0,0" Style="{DynamicResource BorderDock}"  >
-            <local:MainMenu x:Name="MenusForToolsAndEvents"  Margin="10,0,0,0" />
-
-
-            <DockPanel Background="#FF382E4E" Margin="30,4,0,6">
-                <Label Content="Dec:" Margin="0,-2,0,0"/>
-                <TextBox  Width="75" Margin="0,2,5,2" TextChanged="TextBoxDecConvert" Name="DecBox"/>
-                <Label Content="Hex:" Margin="0,-2,0,0"/>
-                <TextBox  Width="75" Margin="5,2,5,2" TextChanged="TextBoxHexConvert" Name="HexBox"/>
-                <Label Content="Calc" Margin="0,-2,0,0"/>
-            </DockPanel>
-
-            <local:TopEastMenu DockPanel.Dock="Right" Margin="0,0,10,0"/>
+        <DockPanel Grid.Column="0" Grid.ColumnSpan="5"  Grid.RowSpan="1"  Margin="0,0,0,0" Style="{DynamicResource BorderDock}"  >
+            <local:TopMenu x:Name="MenusForToolsAndEvents"  Margin="10,0,0,0"  DockPanel.Dock="Right"  Grid.Column="0" Grid.ColumnSpan="5"  Grid.RowSpan="1"/>
         </DockPanel>
 
 
@@ -528,29 +517,29 @@
                                                         </DockPanel>
                                                         <Grid DockPanel.Dock="Top">
                                                             <Label Content="Decimal" HorizontalAlignment="Left" Margin="50,-1,0,0" VerticalAlignment="Top"/>
-                                                            <Label Content="Hex" HorizontalAlignment="Left" Margin="178,-1,0,0" VerticalAlignment="Top"/>
-                                                            <Label Content="D Negatives" HorizontalAlignment="Left" Margin="259,-2,0,0" VerticalAlignment="Top"/>
+                                                            <Label Content="Hex" HorizontalAlignment="Left" Margin="191,-1,0,0" VerticalAlignment="Top"/>
+                                                            <Label Content="D Negatives" HorizontalAlignment="Left" Margin="278,-2,0,0" VerticalAlignment="Top"/>
 
                                                             <Label Content="1" HorizontalAlignment="Left" Margin="4,24,0,0" VerticalAlignment="Top"/>
                                                             <Label Content="2B" HorizontalAlignment="Left" Margin="4,116,0,0" VerticalAlignment="Top"/>
                                                             <Label Content="2L" HorizontalAlignment="Left" Margin="4,55,0,0" VerticalAlignment="Top"/>
                                                             <Label Content="4B" HorizontalAlignment="Left" Margin="4,144,0,0" VerticalAlignment="Top"/>
                                                             <Label Content="4L" HorizontalAlignment="Left" Margin="4,85,0,0" VerticalAlignment="Top"/>
-                                                            <TextBox x:Name="PropertiesEntry1Byte" HorizontalAlignment="Left" Margin="34,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111"/>
-                                                            <TextBox x:Name="PropertiesEntry2ByteB" HorizontalAlignment="Left" Margin="34,118,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="112"/>
-                                                            <TextBox x:Name="PropertiesEntry2ByteL" HorizontalAlignment="Left" Margin="34,59,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="112"/>
-                                                            <TextBox x:Name="PropertiesEntry4ByteB" HorizontalAlignment="Left" Margin="34,148,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="112"/>
-                                                            <TextBox x:Name="PropertiesEntry4ByteL" HorizontalAlignment="Left" Margin="34,89,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="112"/>
-                                                            <TextBox x:Name="PropertiesEntryHex1Byte" HorizontalAlignment="Left" Margin="149,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="110"/>
-                                                            <TextBox x:Name="PropertiesEntryHex2ByteB" HorizontalAlignment="Left" Margin="150,118,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
-                                                            <TextBox x:Name="PropertiesEntryHex2ByteL" HorizontalAlignment="Left" Margin="150,59,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
-                                                            <TextBox x:Name="PropertiesEntryHex4ByteB" HorizontalAlignment="Left" Margin="150,148,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
-                                                            <TextBox x:Name="PropertiesEntryHex4ByteL" HorizontalAlignment="Left" Margin="150,89,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
-                                                            <TextBox x:Name="PropertiesEntry1ByteNegative" HorizontalAlignment="Left" Margin="264,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="122" Foreground="#FFFF8000"/>
-                                                            <TextBox x:Name="PropertiesEntry2ByteBNegative" HorizontalAlignment="Left" Margin="264,118,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="122" Foreground="#FFFF8000"/>
-                                                            <TextBox x:Name="PropertiesEntry2ByteLNegative" HorizontalAlignment="Left" Margin="264,59,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="122" Foreground="#FFFF8000"/>
-                                                            <TextBox x:Name="PropertiesEntry4ByteBNegative" HorizontalAlignment="Left" Margin="264,148,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="122" Foreground="#FFFF8000"/>
-                                                            <TextBox x:Name="PropertiesEntry4ByteLNegative" HorizontalAlignment="Left" Margin="264,89,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="122" Foreground="#FFFF8000"/>
+                                                            <TextBox x:Name="PropertiesEntry1Byte" HorizontalAlignment="Left" Margin="34,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
+                                                            <TextBox x:Name="PropertiesEntry2ByteB" HorizontalAlignment="Left" Margin="34,118,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
+                                                            <TextBox x:Name="PropertiesEntry2ByteL" HorizontalAlignment="Left" Margin="34,59,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
+                                                            <TextBox x:Name="PropertiesEntry4ByteB" HorizontalAlignment="Left" Margin="34,148,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
+                                                            <TextBox x:Name="PropertiesEntry4ByteL" HorizontalAlignment="Left" Margin="34,89,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
+                                                            <TextBox x:Name="PropertiesEntryHex1Byte" HorizontalAlignment="Left" Margin="159,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="110"/>
+                                                            <TextBox x:Name="PropertiesEntryHex2ByteB" HorizontalAlignment="Left" Margin="160,118,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
+                                                            <TextBox x:Name="PropertiesEntryHex2ByteL" HorizontalAlignment="Left" Margin="160,59,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
+                                                            <TextBox x:Name="PropertiesEntryHex4ByteB" HorizontalAlignment="Left" Margin="160,148,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
+                                                            <TextBox x:Name="PropertiesEntryHex4ByteL" HorizontalAlignment="Left" Margin="160,89,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
+                                                            <TextBox x:Name="PropertiesEntry1ByteNegative" HorizontalAlignment="Left" Margin="277,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
+                                                            <TextBox x:Name="PropertiesEntry2ByteBNegative" HorizontalAlignment="Left" Margin="277,118,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
+                                                            <TextBox x:Name="PropertiesEntry2ByteLNegative" HorizontalAlignment="Left" Margin="277,59,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
+                                                            <TextBox x:Name="PropertiesEntry4ByteBNegative" HorizontalAlignment="Left" Margin="277,148,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
+                                                            <TextBox x:Name="PropertiesEntry4ByteLNegative" HorizontalAlignment="Left" Margin="277,89,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
 
                                                         </Grid>
                                                     </DockPanel>

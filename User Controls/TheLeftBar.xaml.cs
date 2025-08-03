@@ -288,14 +288,18 @@ namespace GameEditorStudio
             return null;
         }
 
-        public TheLeftBar(Workshop AWorkshop, WorkshopData ADatabase, Editor AEditor) //
+        public TheLeftBar() //
         {
-            InitializeComponent();
+            InitializeComponent();                  
+            
+        }
 
+        public void LeftBarSetup(Workshop AWorkshop, WorkshopData ADatabase, Editor AEditor) 
+        {
             TheWorkshop = AWorkshop;
             Database = ADatabase;
             EditorClass = AEditor;
-            
+
 
             EditorClass.StandardEditorData.EditorLeftDockPanel.LeftBarDockPanel.Children.Add(this);
             EditorClass.StandardEditorData.EditorLeftDockPanel.SearchBar = SearchBar;
@@ -305,7 +309,7 @@ namespace GameEditorStudio
             EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNotepadTextbox = ItemNotepadTextbox;
 
 
-            if (TheWorkshop.IsPreviewMode == true) 
+            if (TheWorkshop.IsPreviewMode == true)
             {
                 SearchBar.IsEnabled = false;
                 ItemNameTextbox.IsEnabled = false;
@@ -320,7 +324,7 @@ namespace GameEditorStudio
                 {
                     SearchBar.Text = "";
                 }
-            };            
+            };
             SearchBar.LostFocus += (sender, e) =>
             {
                 if (string.IsNullOrEmpty(SearchBar.Text))
@@ -367,9 +371,6 @@ namespace GameEditorStudio
                     item.IsSelected = true;
                 }
             }
-
-               
-            
         }
 
 

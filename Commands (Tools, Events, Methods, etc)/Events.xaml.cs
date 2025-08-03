@@ -29,7 +29,7 @@ namespace GameEditorStudio
 
         public List<Event> Events { get; set; }
         public List<WorkshopResource> EventResources { get; set; }
-        public MainMenu MainMenu { get; set; }
+        public TopMenu MainMenu { get; set; }
 
         public Event CurrentEvent { get; set; }
         //public Dictionary<string, ICommandAction> commandDictionary = new Dictionary<string, ICommandAction>();
@@ -37,7 +37,7 @@ namespace GameEditorStudio
 
         //List<Event> Events;
 
-        public EventsMenu(string TheWorkshopName,  List<Event> TheEvents, List<WorkshopResource> TheEventResources, MainMenu TheMainMenu)
+        public EventsMenu(string TheWorkshopName,  List<Event> TheEvents, List<WorkshopResource> TheEventResources, TopMenu TheMainMenu)
         {
             InitializeComponent();
 
