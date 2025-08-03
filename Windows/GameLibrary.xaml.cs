@@ -84,7 +84,7 @@ namespace GameEditorStudio
 
 
 
-        public MainMenu MainMenu { get; set; }
+        public TopMenu MainMenu { get; set; }
 
         //Order of operations is...
         //1: Window Initalize
@@ -102,7 +102,8 @@ namespace GameEditorStudio
 
             #if DEBUG //The App Location is the folder location of the executable. It's used by other parts of the program to find files.
             //I don't understand (and don't feel like spending the time) setting it up so release is the same as debug mode, so this is a temporary lazy fix.
-            LibraryMan.ApplicationLocation = Path.GetFullPath(Path.Combine(basepath, @"..\..\..\..\..\Release"));
+            //LibraryMan.ApplicationLocation = Path.GetFullPath(Path.Combine(basepath, @"..\..\..\..\..\..\Game Editor Studio\Release"));
+            LibraryMan.ApplicationLocation = "D:\\Game Editor Studio";//
             #else
             //ExePath = basepath; //for published versions of the program to the public.
             LibraryMan.ApplicationLocation = basepath;
@@ -271,6 +272,7 @@ namespace GameEditorStudio
             TextBoxInputDirectory.Text = "You must select something to launch the workshop.";
             TextBoxOutputDirectory.Text = "If not set, defaults to the Input Directory.";
 
+
             if (LibraryTreeOfWorkshops.SelectedItem == null)
             {
                 return;
@@ -411,6 +413,13 @@ namespace GameEditorStudio
 
                 // Optionally, scroll the selected item into view
                 ProjectsSelector.ScrollIntoView(ProjectsSelector.SelectedItem);
+            }
+
+
+            ButtonSelectInputDirectory.ToolTip = "This workshop does not require a specific name for it's input folder. \nCheck the readme document for info on what the input folder is supposed to be.";
+            if (WorkshopProjectsRequireSameFolderName == true)
+            {
+                ButtonSelectInputDirectory.ToolTip = "This workshop is looking for a folder by the name of...\n" + WorkshopInputDirectory;
             }
 
 
@@ -603,16 +612,27 @@ namespace GameEditorStudio
             TextBoxInputDirectory.Text = UserProject.ProjectInputDirectory;
             TextBoxOutputDirectory.Text = UserProject.ProjectOutputDirectory;
 
+            ButtonOpenInputFolder.ToolTip = UserProject.ProjectInputDirectory;
+            ButtonOpenOutputFolder.ToolTip = UserProject.ProjectOutputDirectory;
+            BorderInputFolder.ToolTip = UserProject.ProjectInputDirectory;
+            BorderOutputFolder.ToolTip = UserProject.ProjectOutputDirectory;
+            
+
             if (TextBoxInputDirectory.Text == "") 
             {
                 TextBoxInputDirectory.Text = "Where new projects read files from. :)";
+                ButtonOpenInputFolder.ToolTip = null;
+                BorderInputFolder.ToolTip = null;
             }
             if (TextBoxOutputDirectory.Text == "") 
             {
                 TextBoxOutputDirectory.Text = "Where files will be saved to. :)";
+                ButtonOpenOutputFolder.ToolTip = null;
+                BorderOutputFolder.ToolTip = null;
             }
 
             
+
             //UserProject.ProjectEventResources.Clear(); 
 
             GenerateProjectEventResourceUI(UserProject);

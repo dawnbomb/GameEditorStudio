@@ -30,7 +30,7 @@
                             <Label Content="Name" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="257,10,0,0"/>
                             <TextBox Name="ToolNameTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="190" Margin="320,14,0,0" Text="- - -" />
                             <Label Content="Description" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="257,46,0,0"/>
-                            <TextBox Name="ToolDescriptionTextbox" VerticalAlignment="Top" Margin="257,82,10,0" Height="88" Text="- - -" />
+                            <TextBox Name="ToolDescriptionTextbox" VerticalAlignment="Top" Margin="257,82,10,0" Height="88" Text="- - -"  AcceptsReturn="True"/>
                             <Label Content="Tool .exe Name" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="257,175,0,0"/>
                             <TextBox Name="ToolExeTextbox" VerticalAlignment="Top" Margin="412,178,10,0" Text="- - -" />
                             <Label Content="Download Link" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="256,232,0,0"/>
@@ -42,7 +42,7 @@
                                 <ComboBoxItem Content="Patchers"/>
                             </ComboBox>
                             <Label Content="Notepad" HorizontalAlignment="Left" Margin="257,297,0,0" VerticalAlignment="Top"/>
-                            <TextBox Name="ToolNotepadTextbox" Margin="257,328,7,10" TextWrapping="Wrap" Text="TextBox"/>
+                            <TextBox Name="ToolNotepadTextbox" Margin="257,328,7,10" TextWrapping="Wrap" Text="TextBox" AcceptsReturn="True"/>
                             <Label Content="Key"  HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="528,10,0,0"/>
                             <TextBox x:Name="ToolKeyTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="268" Margin="570,15,0,0" Text="- - -"  IsEnabled="False"/>
 
@@ -72,7 +72,7 @@
                             <Label Content="Name" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="263,6,0,0"/>
                             <TextBox x:Name="CommandNameTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="197" Margin="323,10,0,0" Text="- - -" />
                             <Label Content="Description" HorizontalAlignment="Left" Margin="263,39,0,0" VerticalAlignment="Top"/>
-                            <TextBox x:Name="CommandDescriptionTextbox" Margin="263,75,10,0" TextWrapping="Wrap" Text="- - -" VerticalAlignment="Top" Height="87"/>
+                            <TextBox x:Name="CommandDescriptionTextbox" Margin="263,75,10,0" TextWrapping="Wrap" Text="- - -" VerticalAlignment="Top" Height="87" AcceptsReturn="True"/>
                             <Label Content="Category" HorizontalAlignment="Left" Margin="386,39,0,0" VerticalAlignment="Top"/>
                             <ComboBox Name="CommandTabCombobox" HorizontalAlignment="Left" Margin="481,43,0,0" Text="TextBox" VerticalAlignment="Top" Width="131">
                                 <ComboBoxItem Content="Basic"/>
@@ -89,7 +89,7 @@
                                 <ComboBoxItem Content="Patcher"/>
                             </ComboBox>
                             <Label Content="Notepad" HorizontalAlignment="Left" Margin="258,352,0,0" VerticalAlignment="Top"/>
-                            <TextBox Name="CommandNotepadTextbox" Margin="263,388,10,10" TextWrapping="Wrap" Text="- - -"/>
+                            <TextBox Name="CommandNotepadTextbox" Margin="263,388,10,10" TextWrapping="Wrap" Text="- - -" AcceptsReturn="True"/>
                             <Label Content="Key" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="606,169,0,0"/>
                             <TextBox x:Name="CommandNewKeyTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="190" Margin="655,175,0,0" Text="- - -" IsEnabled="False" />
 
@@ -168,7 +168,7 @@
                             <Label Content="Name" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="262,7,0,0"/>
                             <TextBox Name="CommonEventNameTextbox" HorizontalAlignment="Center" VerticalAlignment="Top" Width="194" Margin="0,11,0,0" Text="- - -" />
                             <Label Content="Description" HorizontalAlignment="Left" Margin="261,40,0,0" VerticalAlignment="Top"/>
-                            <TextBox Name="CommonEventDescriptionTextbox" Margin="261,76,10,0" TextWrapping="Wrap" Text="- - -" VerticalAlignment="Top" Height="81"/>
+                            <TextBox Name="CommonEventDescriptionTextbox" Margin="261,76,10,0" TextWrapping="Wrap" Text="- - -" VerticalAlignment="Top" Height="81" AcceptsReturn="True"/>
 
                             <Label Content="Key" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="536,6,0,0"/>
                             <TextBox Name="CommonEventNewKeyTextbox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="258" Margin="581,11,0,0" Text="- - -" IsEnabled="False"/>
@@ -179,7 +179,7 @@
                                 <ComboBoxItem Content="NDS"/>
                             </ComboBox>
                             <Label Content="Notepad" HorizontalAlignment="Left" Margin="261,343,0,0" VerticalAlignment="Top"/>
-                            <TextBox Name="CommonEventNotepadTextbox" Margin="262,379,10,10" TextWrapping="Wrap" Text="- - -"/>
+                            <TextBox Name="CommonEventNotepadTextbox" Margin="262,379,10,10" TextWrapping="Wrap" Text="- - -" AcceptsReturn="True"/>
 
                             <Border DockPanel.Dock="Top" Margin="262,170,0,0" Height="173" VerticalAlignment="Top" HorizontalAlignment="Left" Width="413">
                                 <DockPanel>

@@ -25,6 +25,7 @@ using System.Xml.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
+using TextBox = System.Windows.Controls.TextBox;
 using Window = System.Windows.Window;
 
 namespace GameEditorStudio
@@ -36,7 +37,7 @@ namespace GameEditorStudio
     // NOTE: The "Workshop" menus, and tool setup screen, directly check load and save to a workshop xml unlike everything else only doing first time checks,
     //to make sure that the program works perfectly fine even with multiple workshops open, or even multiple projects from the same workshop, all at the same time. 
 
-    public partial class MainMenu : System.Windows.Controls.UserControl
+    public partial class TopMenu : System.Windows.Controls.UserControl
     {
 
         
@@ -51,7 +52,7 @@ namespace GameEditorStudio
         public ProjectDataItem ProjectDataItem { get; set; }
 
 
-        public MainMenu()
+        public TopMenu()
         {
             InitializeComponent();
 
@@ -63,6 +64,7 @@ namespace GameEditorStudio
             #else
             ExtrasMenu.Visibility = Visibility.Collapsed; //Show only in debug mode.
             DebugMenu.Visibility = Visibility.Collapsed; //Show only in debug mode.
+            HUDReshade.Visibility = Visibility.Collapsed;  //Show only in debug mode.
             #endif
         }
 
@@ -915,7 +917,188 @@ namespace GameEditorStudio
 
 
 
+        private void TextBoxDecConvert(object sender, TextChangedEventArgs e)
+        {
+            // Save cursor position
+            int caret = DecBox.CaretIndex;
+            string originalText = DecBox.Text;
+
+            if (ulong.TryParse(originalText.Trim(), out ulong value))
+            {
+                // Don't update the box that triggered this
+                if (!DecBox.IsFocused)
+                {
+                    DecBox.Text = value.ToString();
+                    DecBox.CaretIndex = caret;
+                }
+
+                byte[] littleEndian = BitConverter.GetBytes(value);
+                int actualLen = littleEndian.Length;
+                while (actualLen > 1 && littleEndian[actualLen - 1] == 0) actualLen--;
+
+                var trimmedLittle = littleEndian.Take(actualLen).ToArray();
+
+                if (!HexBoxLil.IsFocused)
+                {
+                    HexBoxLil.Text = string.Concat(trimmedLittle.Select(b => b.ToString("X2")));
+                }
+
+                if (!HexBoxBig.IsFocused)
+                {
+                    var big = trimmedLittle.Reverse().ToArray();
+                    HexBoxBig.Text = string.Concat(big.Select(b => b.ToString("X2")));
+                }
+
+                // Clear backgrounds
+                DecBox.ClearValue(TextBox.BackgroundProperty);
+                HexBoxLil.ClearValue(TextBox.BackgroundProperty);
+                HexBoxBig.ClearValue(TextBox.BackgroundProperty);
+            }
+            else
+            {
+                DecBox.Background = Brushes.Red;
+            }
+        }
+
+        private void TextBoxHexLilConvert(object sender, TextChangedEventArgs e)
+        {
+            int caret = HexBoxLil.CaretIndex;
+            string text = HexBoxLil.Text.Trim();
+
+            try
+            {
+                if (text.Length % 2 != 0)
+                    text = "0" + text; // pad odd-length
+
+                byte[] bytes = Enumerable.Range(0, text.Length / 2)
+                    .Select(i => Convert.ToByte(text.Substring(i * 2, 2), 16))
+                    .ToArray();
+
+                if (bytes.Length > 8)
+                    throw new OverflowException();
+
+                byte[] padded = new byte[8];
+                Array.Copy(bytes, padded, bytes.Length);
+                ulong value = BitConverter.ToUInt64(padded, 0);
+
+                if (!DecBox.IsFocused)
+                    DecBox.Text = value.ToString();
+
+                if (!HexBoxBig.IsFocused)
+                {
+                    var big = bytes.Reverse().ToArray();
+                    HexBoxBig.Text = string.Concat(big.Select(b => b.ToString("X2")));
+                }
+
+                DecBox.ClearValue(TextBox.BackgroundProperty);
+                HexBoxLil.ClearValue(TextBox.BackgroundProperty);
+                HexBoxBig.ClearValue(TextBox.BackgroundProperty);
+            }
+            catch
+            {
+                HexBoxLil.Background = Brushes.Red;
+            }
+
+            HexBoxLil.CaretIndex = caret;
+        }
+
+        private void TextBoxHexBigConvert(object sender, TextChangedEventArgs e)
+        {
+            int caret = HexBoxBig.CaretIndex;
+            string text = HexBoxBig.Text.Trim();
+
+            try
+            {
+                if (text.Length % 2 != 0)
+                    text = "0" + text;
+
+                byte[] bytes = Enumerable.Range(0, text.Length / 2)
+                    .Select(i => Convert.ToByte(text.Substring(i * 2, 2), 16))
+                    .ToArray();
+
+                if (bytes.Length > 8)
+                    throw new OverflowException();
+
+                var reversed = bytes.Reverse().ToArray();
+                byte[] padded = new byte[8];
+                Array.Copy(reversed, padded, reversed.Length);
+                ulong value = BitConverter.ToUInt64(padded, 0);
+
+                if (!DecBox.IsFocused)
+                    DecBox.Text = value.ToString();
+
+                if (!HexBoxLil.IsFocused)
+                {
+                    HexBoxLil.Text = string.Concat(reversed.Select(b => b.ToString("X2")));
+                }
+
+                DecBox.ClearValue(TextBox.BackgroundProperty);
+                HexBoxLil.ClearValue(TextBox.BackgroundProperty);
+                HexBoxBig.ClearValue(TextBox.BackgroundProperty);
+            }
+            catch
+            {
+                HexBoxBig.Background = Brushes.Red;
+            }
+
+            HexBoxBig.CaretIndex = caret;
+        }
 
 
+
+        //======================================TopRight================================
+
+        private void OpenReshade(object sender, RoutedEventArgs e)
+        {
+            Reshade f2 = new();
+            f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+            f2.Show();
+        }
+
+        private void OpenWiki(object sender, RoutedEventArgs e)
+        {
+            #if DEBUG
+            Tutorial f2 = new Tutorial();
+            f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+            f2.Show();                                 
+            #endif
+            
+        }
+
+        private void OpenDiscord(object sender, RoutedEventArgs e)
+        {
+            string url = "https://discord.gg/mhrZqjRyKx";
+            System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            };
+            System.Diagnostics.Process.Start(psi);
+        }
+
+        private void WebsiteButton(object sender, RoutedEventArgs e)
+        {
+            string url = "https://www.crystalmods.com/";
+            System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            };
+            System.Diagnostics.Process.Start(psi);
+        
+        }
+
+        private void GithubButton(object sender, RoutedEventArgs e)
+        {
+            string url = "https://github.com/dawnbomb/GameEditorStudio";
+            System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            };
+            System.Diagnostics.Process.Start(psi);
+        }
+
+        
     }
 }

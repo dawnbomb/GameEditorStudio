@@ -18,7 +18,7 @@ namespace GameEditorStudio
     {        
         
         public static string VersionDate { get; set; } = "July 2 2025";
-        public static Version VersionNumber { get; set; } = new Version(0, 1, 1, 0); //Version Numbers (in order) are Major.Minor.Build.Revision
+        public static Version VersionNumber { get; set; } = new Version(0, 1, 1); //Version Numbers (in order) are Major.Minor.Build.Revision
         //Major is big releases.
         //Minor is new features / content.
         //Build is for Bugfixes or small changes.
@@ -313,7 +313,7 @@ namespace GameEditorStudio
         }
 
 
-        public static MethodData TransformKeysToLocations(Dictionary<int, string> ResourceKeys, List<WorkshopResource> EventResources, MainMenu TheMenu, EventCommand myCommand)
+        public static MethodData TransformKeysToLocations(Dictionary<int, string> ResourceKeys, List<WorkshopResource> EventResources, TopMenu TheMenu, EventCommand myCommand)
         {
             MethodData MethodData = new();
             MethodData.WorkshopData = TheMenu.WorkshopData;

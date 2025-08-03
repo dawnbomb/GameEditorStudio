@@ -273,50 +273,7 @@ namespace GameEditorStudio
         //////////////////////////////////////////////////////////HUD//////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private void TextBoxDecConvert(object sender, TextChangedEventArgs e)
-        {
-            if (!(sender is TextBox textBox)) return;
-
-            // Validate and convert decimal to hexadecimal
-            if (int.TryParse(textBox.Text, out int decimalValue))
-            {
-                HexBox.Text = decimalValue.ToString("X");
-                textBox.Background = null; // Reset background color if input is valid
-            }
-            else if (!string.IsNullOrEmpty(textBox.Text))
-            {
-                textBox.Background = Brushes.Red; // Change background color if input is invalid
-            }
-            else
-            {
-                HexBox.Text = ""; // Clear HexBox if DecBox is cleared
-                textBox.Background = null;
-            }
-        }
-
-        private void TextBoxHexConvert(object sender, TextChangedEventArgs e)
-        {
-            if (!(sender is TextBox textBox)) return;
-
-            // Validate and convert hexadecimal to decimal
-            if (int.TryParse(textBox.Text, System.Globalization.NumberStyles.HexNumber, null, out int hexValue))
-            {
-                DecBox.Text = hexValue.ToString();
-                textBox.Background = null; // Reset background color if input is valid
-            }
-            else if (!string.IsNullOrEmpty(textBox.Text))
-            {
-                textBox.Background = Brushes.Red; // Change background color if input is invalid
-            }
-            else
-            {
-                DecBox.Text = ""; // Clear DecBox if HexBox is cleared
-                textBox.Background = null;
-            }
-        }
-
-
-
+        
 
 
 

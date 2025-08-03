@@ -1,0 +1,78 @@
+﻿<UserControl x:Class="GameEditorStudio.TopMenu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d">
+    <DockPanel Background="Transparent" LastChildFill="False">
+        <Menu Name="TheMenu" Height="27" DockPanel.Dock="Left" >
+            <MenuItem x:Name="WorkshopMenu" Header="File" SubmenuOpened="FileMenuOpened" >
+                <MenuItem Header="Save Everything" Click="SaveAll"/>
+                <Separator Style="{DynamicResource KeySeperator}"/>
+                <MenuItem Header="Save Editors" Click="SaveEditors" Name="MenuSaveEditors" ToolTip="This saves ONLY the editors. Good for when you axidentally changes some values but you still really wanna save."/>
+                <MenuItem Header="Save Game Data"   Click="SaveGameData" Name="MenuSaveGameData" ToolTip="Game Data is the actual game files that stuff like enemy stats, items stats, etc are on."/>
+                <MenuItem Header="Save Workshop Documents"  Click="SaveWorkshopDocuments" Name="MenuSaveWorkshopDocuments" ToolTip="These are the documents that people get when a workshop is shared with others."/>
+                <MenuItem Header="Save Project Documents"  Click="SaveProjectDocuments" Name="MenuSaveProjectDocuments" ToolTip="These are text files that only you have access to."/>
+                <MenuItem Header="Save Events" Click="SaveEvents" ToolTip="I wanna improve the event system in the future. Hmmm...."/>
+                <Separator Style="{DynamicResource KeySeperator}"/>
+                <MenuItem Header="Create New Editor"  Click="FileNewEditor" Name="NewEditorItem" ToolTip="Create a new game editor using game files. It also supports getting text from text dumps. "/>
+                <Separator Style="{DynamicResource KeySeperator}"/>
+                <MenuItem Header="Export ALL data table editors to excel files." Click="ExportEditors" Name="ItemExportEditors" ToolTip="Google sheets can import excel files, so you could basically put a datamine infodump of gamedata onto the internet. :D" />
+            </MenuItem>
+            <MenuItem x:Name="ToolsMenu" Header="Tools" SubmenuOpened="ToolsMenuOpened">
+                <MenuItem Header = "Tools Setup" Click = "OpenToolsWindow" />
+                <!--NOTE: toolmanager.xaml.cs i commented out stuff with checkboxes that interacted with menus and made text...red? FIX THIS LATER? (or atleast look into it)-->
+                <MenuItem.ItemTemplate>
+                    <DataTemplate>
+                        <MenuItem Header="{Binding Name}" Command="{Binding DataContext.LaunchToolCommand, RelativeSource={RelativeSource AncestorType=Menu}}" CommandParameter="{Binding}" />
+                    </DataTemplate>
+                </MenuItem.ItemTemplate>
+            </MenuItem>
+            <MenuItem x:Name="EventsMenu" Header="Events" SubmenuOpened="EventsMenu_SubmenuOpened">
+                <MenuItem Header="Events Setup" Click="OpenEventsWindow" Name="ItemEventsSetup" />
+            </MenuItem>
+            <MenuItem Name="ShortcutsMenu" Header="Shortcuts"  >
+                <MenuItem x:Name="MenuInputShortcut" Header="Open Project Input Folder" Click="OpenInputFolder"/>
+                <MenuItem x:Name="MenuOutputShortcut" Header="Open Project Output Folder" Click="OpenOutputFolder"/>
+                <MenuItem Header="Open Workshop Folder" Click="OpenWorkshopFolder"/>
+                <MenuItem Header="Open Downloads Folder" Click="OpenDownloadsFolder"/>
+                <MenuItem Header="Open Game Editor Studio Folder" Click="OpenCrystalEditorFolder"/>
+            </MenuItem>
+            <MenuItem Name="ExtrasMenu" Header="Extras" Visibility="Collapsed" >
+
+                <MenuItem Header="Report a Bug, or Request a Feature" Foreground="#FF2C2C"/>
+                <MenuItem Header="Request support for a new Tool" Foreground="#FF2C2C"/>
+
+            </MenuItem>
+            <MenuItem Name="DebugMenu" Header="Debug" Foreground="#FF2C2C"   >
+                <MenuItem Header="⚙ Settings"  Click="OpenSettingsWindow" Foreground="#FF2C2C"/>
+                <MenuItem Header="Call Notification"  Click="DebugNotification" Foreground="#FF2C2C"/>
+                <MenuItem Header="DevTools"  Click="OpenDevWindow" Foreground="#FF2C2C"/>
+                <MenuItem Header="HexTest"  Click="OpenHexTest" Foreground="#FF2C2C"/>
+                <MenuItem Header="Set 1080P"  Click="Set1080P"/>
+            </MenuItem>
+        </Menu>
+
+        <DockPanel Background="#FF382E4E" Margin="20,3,0,3" DockPanel.Dock="Left">
+            <Label Content="Dec:" Margin="0,-2,0,0"/>
+            <TextBox  Width="110" Margin="0,2,3,2" TextChanged="TextBoxDecConvert" Name="DecBox" ToolTip="A simple Decimal - Hex converter.  &#xD;Googling for a hex calc is really fucking annoying, so i put one right in the HUD."/>
+            <Label Content="HexLil:" Margin="0,-2,0,0"/>
+            <TextBox  Width="110" Margin="5,2,3,2" TextChanged="TextBoxHexLilConvert" Name="HexBoxLil" ToolTip="A simple Decimal - Hex converter.  &#xD;Googling for a hex calc is really fucking annoying, so i put one right in the HUD."/>
+            <Label Content="HexBig:" Margin="0,-2,0,0"/>
+            <TextBox  Width="110" Margin="5,2,3,2" TextChanged="TextBoxHexBigConvert" Name="HexBoxBig" ToolTip="A simple Decimal - Hex converter.  &#xD;Googling for a hex calc is really fucking annoying, so i put one right in the HUD."/>
+        </DockPanel>
+
+        <DockPanel Background="Transparent" DockPanel.Dock="Right" LastChildFill="False">
+            <Button DockPanel.Dock="Left" Content="Reshade"  x:Name="HUDReshade" Width="100" Height="30" Click="OpenReshade"  Margin="4,0,4,0" Style="{DynamicResource ButtonError}" ToolTip="Install a reshade set i made to a game! It's really good!" />
+            <Button DockPanel.Dock="Left" Content="Wiki"  Click="OpenWiki" Height="30" Width="65" Style="{DynamicResource ButtonError}" ToolTip="Open a small wiki i made of game modding info. It's super useful!"/>
+            <Button DockPanel.Dock="Left" Content="Discord :)"  x:Name="HUDButtonDiscord" Width="115" Height="30" Click="OpenDiscord"  Margin="4,0,0,0" ToolTip="Join my discord server! :D"  />
+            <Button DockPanel.Dock="Left" Content="Website"  Click="WebsiteButton"  Width="100" Height="30"  Margin="4,0,4,0" ToolTip="Open my website. :D"/>
+            <Button DockPanel.Dock="Left" Content="Github"  Click="GithubButton"  Width="90" Height="30" ToolTip="Go to the github page for this project. Altho if you wanna help, talking on discord is much easier for me. :>"/>
+        </DockPanel>
+    </DockPanel>
+
+    
+
+    
+</UserControl>

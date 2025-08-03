@@ -153,6 +153,10 @@ namespace GameEditorStudio.Loading
             }
 
             TheWorkshop.UpdateEntryDecorations();
+
+            {   //Generate the Test Dummy Editor 
+                
+            }
         }
 
         //This Method is for creating a new editor while already inside a workshop. IE when going into a workshop and clicking the "New Editor" button.

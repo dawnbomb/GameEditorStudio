@@ -19,7 +19,7 @@ namespace GameEditorStudio
         
         // ========================================= Below this line: Used by very specific methods =========================================
 
-        public MainMenu mainMenu { get; set; } //Only used by Save Commands. User events always add this during click just to be safe. It's also added on click during any File->Save event. Don't touch this.        
+        public TopMenu mainMenu { get; set; } //Only used by Save Commands. User events always add this during click just to be safe. It's also added on click during any File->Save event. Don't touch this.        
 
         public GameLibrary GameLibrary { get; set; } //Only exists if the command is called from the GameLibrary.
         public WorkshopData WorkshopData { get; set; } //Only exists if the command is called from the Workshop. 

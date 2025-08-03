@@ -4,7 +4,7 @@
 	  <ServerGarbageCollection>true</ServerGarbageCollection>
 	  <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
     <RootNamespace>GameEditorStudio</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>

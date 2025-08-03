@@ -161,7 +161,8 @@ namespace GameEditorStudio
             MakeButton MakeEditorButton = new();
             MakeEditorButton.CreateButton(TheWorkshop, Database, EditorClass); //Creates the button a user needs to click to make this editor appear.
 
-            TheLeftBar MakeLeftBar = new(TheWorkshop, Database, EditorClass);//Creates the LeftBar of the editor, the part that has the item collection.
+            TheLeftBar MakeLeftBar = new();//Creates the LeftBar of the editor, the part that has the item collection.
+            MakeLeftBar.LeftBarSetup(TheWorkshop, Database, EditorClass);
             EditorClass.StandardEditorData.EditorLeftDockPanel.UserControl = MakeLeftBar;
                         
 

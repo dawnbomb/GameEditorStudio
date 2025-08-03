@@ -15,9 +15,9 @@ namespace GameEditorStudio
     {
         // GET https://api.github.com/repos/{owner}/{repo}/releases/latest
 
-        Version CurrentVersion = LibraryMan.VersionNumber; 
+        //Version CurrentVersion = LibraryMan.VersionNumber; 
 
-        private static readonly HttpClient client = new();
+        //private static readonly HttpClient client = new();
 
         public static async Task CheckForUpdatesAsync()
         {
@@ -28,10 +28,12 @@ namespace GameEditorStudio
 
             try
             {
+                HttpClient client = new();
+
                 client.DefaultRequestHeaders.UserAgent.Add(
                     new ProductInfoHeaderValue("GameEditorStudio", LibraryMan.VersionNumber.ToString() ));
 
-                var response = await client.GetAsync("https://api.github.com/repos/dawnbomb/Crystal-Editor/releases/latest");
+                var response = await client.GetAsync("https://api.github.com/repos/dawnbomb/GameEditorStudio/releases/latest");
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -40,7 +42,7 @@ namespace GameEditorStudio
                 string tag = doc.RootElement.GetProperty("tag_name").GetString();
 
                 // Remove "v" prefix like "v1.5.2" → "1.5.2"
-                if (tag.StartsWith("v")) tag = tag.Substring(1);
+                if (tag.StartsWith("v") || tag.StartsWith("V")) tag = tag.Substring(1);
 
                 Version latest = Version.Parse(tag);
 
@@ -59,7 +61,7 @@ namespace GameEditorStudio
                     {
                         System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                         {
-                            FileName = "https://github.com/dawnbomb/Crystal-Editor/releases/latest",
+                            FileName = "https://github.com/dawnbomb/GameEditorStudio/releases/latest",
                             UseShellExecute = true
                         });
                     }
