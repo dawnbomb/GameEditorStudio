@@ -7,9 +7,9 @@ Game Editor Studio (GES) is a program that lets you create highly customizable e
 ## [Download Latest Build](https://github.com/dawnbomb/GameEditorStudio/releases/latest)
 > Note that automatic updates are not a thing yet, so for now you will need to manually update every so often.
 
-![Test 1](Graphics/Example Images/Game Editor Studio v0.1.2 Vesperia Workshop.png)
+![The Game Library screen selecting the Vesperia Workshop](Graphics/Examples/GES0.1.5VesperiaWorkshop.png)
 
-![Test 2](Graphics/Example%Images/Game%Editor%Studio%v0.1.2%Vesperia%Workshop.png)
+![The Vesperia Enemy Editor](Graphics/Examples/GES0.1.5VesperiaEnemyEditor.png)
 
 ## Getting Started
 If you want to create mods using existing editors, first select a game from the workshops list on the left side of the window. A readme will open, and it SHOULD tell you how to extract any game files required. Then create a new project for that workshop, set and input and output folder (Input is game files, output is where your modded files will save to), and launch your project! Your good to go!
