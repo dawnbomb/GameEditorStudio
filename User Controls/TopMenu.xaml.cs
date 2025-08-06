@@ -1,5 +1,4 @@
-﻿using Ookii.Dialogs.Wpf;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,6 +21,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Linq;
+using Ookii.Dialogs.Wpf;
+using PixelWPF;
+using Windows.Gaming.Input;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
@@ -1049,10 +1051,18 @@ namespace GameEditorStudio
         //======================================TopRight================================
 
         private void OpenReshade(object sender, RoutedEventArgs e)
-        {
-            Reshade f2 = new();
-            f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-            f2.Show();
+        {  
+            string colorsplash = LibraryGES.ApplicationLocation + "/Other/ColorSplash/Color Splash Installer.exe";
+            Process process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = colorsplash,                    
+                    UseShellExecute = true // Needed if launching .exe directly (not using redirected IO)
+                },
+                EnableRaisingEvents = true
+            };
+            process.Start();  
         }
 
         private void OpenWiki(object sender, RoutedEventArgs e)

@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="750" d:DesignWidth="1100">
     <DockPanel>
-        <DockPanel DockPanel.Dock="Top">
+        <!--<DockPanel DockPanel.Dock="Top">
             <Button Name="ButtonNewEditor" Content="New Editor" Margin="5,0,0,0" Width="120" Height="28" />
             <Button Name="ButtonNewEditor2" Content="Button 2" Margin="5,0,0,0" Width="120" Height="28" />
             <Label Content="Standard Editor" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0"/>
@@ -47,7 +47,7 @@
                 <Label Content="Hai"/>
 
             </Grid>
-        </Grid>
+        </Grid>-->
 
         
 
