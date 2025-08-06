@@ -94,19 +94,23 @@ namespace GameEditorStudio
 
         public GameLibrary()
         {
-            InitializeComponent();
+            InitializeComponent();           
+
             this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             this.Title = "Game Editor Studio     Version: " + LibraryGES.VersionNumber + "   ( " + LibraryGES.VersionDate + " )"; 
 
             string basepath = AppDomain.CurrentDomain.BaseDirectory;
 
-            #if DEBUG //The App Location is the folder location of the executable. It's used by other parts of the program to find files.
+            
+
+            #if DEBUG 
+            //The App Location is the folder location of the executable. It's used by other parts of the program to find files.
             //I don't understand (and don't feel like spending the time) setting it up so release is the same as debug mode, so this is a temporary lazy fix.
             //LibraryMan.ApplicationLocation = Path.GetFullPath(Path.Combine(basepath, @"..\..\..\..\..\..\Game Editor Studio\Release"));
             LibraryGES.ApplicationLocation = "D:\\Game Editor Studio";//
             #else
             //ExePath = basepath; //for published versions of the program to the public.
-            LibraryMan.ApplicationLocation = basepath;
+            LibraryGES.ApplicationLocation = basepath;
             //LibraryMan.ApplicationLocation = Path.GetFullPath(Path.Combine(basepath, @"..\..\..\..\Release"));
 
             //LibraryMan.ApplicationLocation = "D:\\Game Editor Studio\\Release";            
@@ -136,8 +140,8 @@ namespace GameEditorStudio
 
             LoadThemes();
 
-            
-            
+            Dispatcher.InvokeAsync(async () => await PixelWPF.GithubUpdater.CheckForUpdatesAsync("GameEditorStudio", "dawnbomb/GameEditorStudio/releases/latest", LibraryGES.VersionNumber));
+
         }
 
         public void LoadThemes()

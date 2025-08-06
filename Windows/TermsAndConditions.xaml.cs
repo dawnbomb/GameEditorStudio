@@ -26,14 +26,7 @@ namespace GameEditorStudio
             InitializeComponent();
             this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
 
-            //Mouse.OverrideCursor = new Cursor("AsperiteCursor.cur");
-
-            Mouse.OverrideCursor = new Cursor(Application.GetResourceStream(
-                new Uri("pack://application:,,,/AsperiteCursor.cur")).Stream);
-
-
-
-            Dispatcher.InvokeAsync(async () => await GithubUpdater.CheckForUpdatesAsync());
+            
 
             this.Topmost = true;    // Temporarily set topmost to ensure visibility
             this.Activate();        // Try to bring to foreground

@@ -8,7 +8,7 @@
     <RootNamespace>GameEditorStudio</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>Graphics\Game Editor Studio Icon.ico</ApplicationIcon>
+    <ApplicationIcon>Graphics\Game Editor Studio Icon 4.ico</ApplicationIcon>
     <StartupObject></StartupObject>
 	
     <!-- Publish settings -->
@@ -21,9 +21,13 @@
 
   <ItemGroup>
     <Compile Remove="Art\**" />
+    <Compile Remove="Graphics\Example Images\**" />
     <EmbeddedResource Remove="Art\**" />
+    <EmbeddedResource Remove="Graphics\Example Images\**" />
     <None Remove="Art\**" />
+    <None Remove="Graphics\Example Images\**" />
     <Page Remove="Art\**" />
+    <Page Remove="Graphics\Example Images\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,7 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="AsperiteCursor.cur" />
     <None Remove="Other\AsperiteCursor.cur" />
     <None Remove="Other\pixel_button_with_cutout.png" />
     <None Remove="User Controls\Start Address 010.png" />
@@ -59,7 +62,7 @@
     <None Include="AssemblyInfo.cs">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <Content Include="Graphics\Game Editor Studio Icon.ico" />
+    <Content Include="Graphics\Game Editor Studio Icon 4.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -70,9 +73,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="AsperiteCursor.cur">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Other\pixel_button_with_cutout.png" />
     <Resource Include="User Controls\Start Address 010.png" />
     <Resource Include="User Controls\Text Row 010.png" />
@@ -99,7 +99,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Graphics\Example Images\" />
     <Folder Include="Graphics\Examples\" />
     <Folder Include="NewFolder\" />
   </ItemGroup>
