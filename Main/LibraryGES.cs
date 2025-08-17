@@ -17,8 +17,8 @@ namespace GameEditorStudio
     public static class LibraryGES
     {        
         
-        public static string VersionDate { get; set; } = "Augest 6 2025";
-        public static Version VersionNumber { get; set; } = new Version(0, 1, 5); //Version Numbers (in order) are Major.Minor.Build.Revision
+        public static string VersionDate { get; set; } = "Augest 17 2025";
+        public static Version VersionNumber { get; set; } = new Version(0, 2, 0); //Version Numbers (in order) are Major.Minor.Build.Revision
         //Major is big releases.
         //Minor is new features / content.
         //Build is for Bugfixes or small changes.
