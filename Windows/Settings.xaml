@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameEditorStudio"
         mc:Ignorable="d"
-        Title="UserSettings" Height="450" Width="800">
+        Title="UserSettings" Height="450" Width="1000">
     <Grid>
         <TreeView HorizontalAlignment="Left" Width="125">
             <TreeViewItem Header="General"/>
@@ -13,20 +13,24 @@
         </TreeView>
 
         <TabControl Margin="125,29,0,0">
-            
-            
-            
+
+
+
             <TabItem Header="Themes">
                 <Grid>
-                    <Label Content="Color Themes" HorizontalAlignment="Left" Margin="9,3,0,0" VerticalAlignment="Top"/>
-                    <Label Content="Note: This requires restart?" HorizontalAlignment="Left" Margin="310,0,0,0" VerticalAlignment="Top"/>
-                    <TreeView Name="ColorThemeTree" Margin="10,36,0,10" HorizontalAlignment="Left" Width="141" SelectedItemChanged="ColorThemeTreeSelectionChanged">
-                    </TreeView>
+                    <DockPanel HorizontalAlignment="Left" Width="145" Margin="8,0,0,0">
+                        <Label Content="Color Themes" HorizontalAlignment="Left" Margin="9,3,0,0" VerticalAlignment="Top" DockPanel.Dock="Top"/>
+                        <Button Content="Copy Theme" Margin="0,3,0,0" DockPanel.Dock="Bottom" Click="ButtonNewThemeClick"/>
+                        <TreeView Name="ColorThemeTree"  SelectedItemChanged="ColorThemeTreeSelectionChanged" DockPanel.Dock="Top" />
+                    </DockPanel>
+
+                    <Label Content="Note: This requires restart?" HorizontalAlignment="Left" Margin="310,0,0,0" VerticalAlignment="Top" DockPanel.Dock="Top"/>
                     <Border Margin="156,36,10,10">
-                        <DataGrid x:Name="ColorDataTable" AutoGenerateColumns="False">
+                        <DataGrid x:Name="ColorDataTable" AutoGenerateColumns="False" IsReadOnly="True" >
+
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Element Name" Binding="{Binding Name}" Width="150" />
-                                <DataGridTemplateColumn Header="Text" Width="80">
+                                <DataGridTextColumn Header="Element Name" Binding="{Binding Name}" Width="170" />
+                                <DataGridTemplateColumn Header="Text" Width="100">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="{Binding Text, Converter={StaticResource ColorTextConverter}}"
@@ -34,7 +38,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Back" Width="80">
+                                <DataGridTemplateColumn Header="Back" Width="100">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="{Binding Back, Converter={StaticResource ColorTextConverter}}"
@@ -42,7 +46,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Border" Width="80">
+                                <DataGridTemplateColumn Header="Border" Width="100">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="{Binding Border, Converter={StaticResource ColorTextConverter}}"
@@ -50,6 +54,14 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Other" Width="100">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="{Binding Border, Converter={StaticResource ColorTextConverter}}" Background="{Binding Border, Converter={StaticResource StringToBrushConverter}}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Notes" Binding="{Binding Note}" Width="200" />
                             </DataGrid.Columns>
                         </DataGrid>
 

@@ -31,12 +31,12 @@
 
 
 
-        <DockPanel Grid.Column="0" Grid.ColumnSpan="5"  Grid.RowSpan="1"  Margin="0,0,0,0" Style="{DynamicResource BorderDock}"  >
+        <DockPanel Grid.Column="0" Grid.ColumnSpan="5"  Grid.RowSpan="1"  Margin="0,0,0,0" Style="{DynamicResource AppOther}"  >
             <local:TopMenu x:Name="MenusForToolsAndEvents"  Margin="10,0,0,0"  DockPanel.Dock="Right"  Grid.Column="0" Grid.ColumnSpan="5"  Grid.RowSpan="1"/>
         </DockPanel>
 
 
-        <Grid DockPanel.Dock="Top"   Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" Margin="0,0,0,0"  Style="{DynamicResource BorderGrid}" >
+        <Grid DockPanel.Dock="Top"   Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" Margin="0,0,0,0"  Style="{DynamicResource AppOtherGrid}" >
 
 
             <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5" Margin="0,0,0,0" BorderThickness="0,2,0,0"  Grid.RowSpan="1" VerticalAlignment="Bottom" >
@@ -56,31 +56,7 @@
             </DockPanel>
         </Grid>
 
-
-
-        <DockPanel   Grid.Row="3" Grid.Column="0" Grid.RowSpan="1"  Grid.ColumnSpan="5"  DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}" LastChildFill="False" Background="#333333" >
-
-
-            <DockPanel  Background="{x:Null}" Margin="0,4,0,4">
-                <Button Content=" I-ID " DockPanel.Dock="Left" Click="ToggleItemIDNumberVisibility" Margin="10,0,5,0" ToolTip="Toggles item ID numbers. &#xD;&#xA;ID numbers are shown using the real, internal game data order, not the order you arrange them in. &#xD;&#xA;If you didn't know, you can drag items around and reorder them!&#xD;&#xA;Anyway, because the ID numbers can become almost useless, you have the option to turn them off."/>
-                <Button Content="アA" Width="45" DockPanel.Dock="Left" x:Name="TranslationToggle" Style="{DynamicResource ButtonError}"  Click="ToggleTranslationPanel" Margin="2,0,2,0" ToolTip="Toggles the translation panel.&#xD;&#xA;This is an upcoming feature, and will be useful for people making english patches."/>
-
-                <Button Content=" 🔍 " DockPanel.Dock="Left" x:Name="EntryAddressButton2"  Click="ToggleEntrySynbology" Margin="2,0,2,0" ToolTip="Toggles Symbology. &#xD;&#xA;Symbology tries to tell you information useful for discovering what an entry byte actually does. &#xD;&#xA;You can mouseover an entry symbol to learn more detailed information." Width="42"/>
-                <Button Content=" E-ID " Visibility="Collapsed" DockPanel.Dock="Left" x:Name="EntryAddressButton"  Click="EntryAddressToggle" Margin="2,0,2,0" ToolTip="Toggles the display of Entry ID numbers. &#xD;&#xA;The number represents what byte # the entry is, for the row it's in.&#xD;&#xA;For nerds, this is a Byte's Offset Value. " Width="58"/>
-                <Button DockPanel.Dock="Left" x:Name="EntryAddressTypeButton" Content="DEC" Width="50" Click="EntryAddressType" Margin="2,0,2,0" ToolTip="Changes the Entry ID number between displaying... &#xD;&#xA;in Decimal (Numbers 0~9) &#xD;&#xA;and Hex (Numbers 00~FF). "/>
-                <TextBox DockPanel.Dock="Left" x:Name="EntryAddressOffsetTextbox" Text="0" Width="35" Margin="2,1,2,1" KeyDown="EntryOffsetTextboxKeyDown" ToolTip="This textbox value (after pressing enter) will make each entry-ID APPEAR as if it's offset ID was +/- X number. Such as -3 or +5. &#xD;&#xA;It does not actually change the offset of any entrys, only the appearence." />
-                <Button Content="👁"  DockPanel.Dock="Left" x:Name="EntryHiddenToggle"   Click="ToggleHiddenEntrys" Margin="2,0,2,0" ToolTip="Toggles the visibility of hidden entrys. &#xD;&#xA;When visable, a hidden entry will appear red. &#xD;&#xA;Note that any entrys that represent text are forced to hidden when the workshop opens, even if you set them not to be." Width="38"/>
-
-                <Button Content="👁️‍🗨️"  DockPanel.Dock="Left" x:Name="DebugShowALL"   Click="ToggleDebugShowALL" Margin="2,0,2,0" ToolTip="Makes EVERYTHING visable. &#xD;&#xA;This button only exists in debug mode." Width="38"/>
-
-
-
-
-            </DockPanel>
-        </DockPanel>
-
-
-
+       
 
         <GridSplitter Style="{DynamicResource SplitterVertical}" Grid.Column="2" Grid.Row="4" Grid.RowSpan="3" Width="12"  />
 
@@ -96,476 +72,521 @@
             <ContentControl  >
                 <TabControl Name="MainTabControl" BorderThickness="0">
                     <TabItem Name="GeneralTab" Header="General">
-                        <Border>
-                            <DockPanel Name="GeneralPanel" LastChildFill="True" Grid.Row="0" Margin="0,0,0,0" Background="Transparent" >
-                                <!--<DockPanel Style="{DynamicResource HeaderDock}"  DockPanel.Dock="Top">
-                    <Label Content="General" FontWeight="Bold" Name="GeneralLabel" />
-                </DockPanel>-->
-                                <ScrollViewer DockPanel.Dock="Top" Name="WhyDoIHaveABlueBackgroundColor" VerticalScrollBarVisibility="Auto">
-                                    <TabControl Name="TabTest" DockPanel.Dock="Top" BorderThickness="0">
-                                        <TabItem Name="GeneralEditor" Header="Editor" Margin="0,0,0,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
-                                            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,0">
+                        <DockPanel Name="GeneralPanel" LastChildFill="True" Grid.Row="0" Margin="0,0,0,0" Background="Transparent" >
+                            <ScrollViewer DockPanel.Dock="Top" Name="WhyDoIHaveABlueBackgroundColor" VerticalScrollBarVisibility="Auto">
+                                <TabControl Name="TabTest" DockPanel.Dock="Top" BorderThickness="0">
+                                    <TabItem Name="GeneralEditor" Header="Editor" Margin="0,0,0,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
+                                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,0">
 
 
-                                                <!-- Row 1 -->
-                                                <Border DockPanel.Dock="Top"  >
-                                                    <DockPanel Margin="0,0,0,3">
-                                                        <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" Height="23"  MinHeight="0" Margin="0,0,0,5" >
-                                                            <Label Content="Editor" FontWeight="Bold" Margin="5,-5,0,-5"  />
+                                            <!-- Row 1 -->
+                                            <Border DockPanel.Dock="Top"  >
+                                                <DockPanel Margin="0,0,0,3">
+                                                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                        <DockPanel Style="{DynamicResource ContentBar}">
+                                                            <Label Content="Editor" FontWeight="Bold"  Margin="5,0,0,0" />
                                                         </DockPanel>
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="5"/>
-                                                                <ColumnDefinition Width="Auto"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="5"/>
-                                                            </Grid.ColumnDefinitions>
+                                                    </Border>
 
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="5"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="5"/>
+                                                        </Grid.ColumnDefinitions>
 
-                                                            </Grid.RowDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
 
-                                                            <!-- Row 2 -->
-                                                            <Label Content="Name" Grid.Row="0" Grid.Column="1" />
-                                                            <TextBox x:Name="PropertiesTextboxEditorName" Grid.Row="0" Grid.Column="2" Margin="3,3,3,3" TextWrapping="NoWrap"  KeyDown="TextboxChangeEditorName"/>
+                                                        </Grid.RowDefinitions>
 
-                                                            <Label Content="Icon" Grid.Column="1"  Grid.Row="1" Visibility="Collapsed"/>
-                                                            <Button Name="IconManagerButton" Content="Icon Manager" Visibility="Collapsed" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="25" Width="115"  Click="OpenIconManager" HorizontalAlignment="Left"/>
+                                                        <!-- Row 2 -->
+                                                        <Label Content="Name" Grid.Row="0" Grid.Column="1" />
+                                                        <TextBox x:Name="PropertiesTextboxEditorName" Grid.Row="0" Grid.Column="2" Margin="3,3,3,3" TextWrapping="NoWrap"  KeyDown="TextboxChangeEditorName"/>
 
-                                                            <!--<Label Content="Color Theme" Grid.Column="1"  Grid.Row="2"/>
-                                            <Label Content="(Coming Soon)" Grid.Column="2"  Grid.Row="2"/>-->
+                                                        <Label Content="Icon" Grid.Column="1"  Grid.Row="1" Visibility="Collapsed"/>
+                                                        <Button Name="IconManagerButton" Content="Icon Manager" Visibility="Collapsed" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="25" Width="115"  Click="OpenIconManager" HorizontalAlignment="Left"/>
 
-                                                            <!--<Label Content="Secondary Color"  Grid.Row="3" Grid.Column="1" />
-                                            <Label Content="(Coming Soon)"  Grid.Row="3" Grid.Column="2" />-->
+                                                        <!--<Label Content="Color Theme" Grid.Column="1"  Grid.Row="2"/>
+                <Label Content="(Coming Soon)" Grid.Column="2"  Grid.Row="2"/>-->
 
-
-                                                        </Grid>
-                                                    </DockPanel>
-                                                </Border>
+                                                        <!--<Label Content="Secondary Color"  Grid.Row="3" Grid.Column="1" />
+                <Label Content="(Coming Soon)"  Grid.Row="3" Grid.Column="2" />-->
 
 
+                                                    </Grid>
+                                                </DockPanel>
+                                            </Border>
 
-                                                <Border DockPanel.Dock="Top">
-                                                    <DockPanel>
-                                                        <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
+
+
+                                            <Border DockPanel.Dock="Top">
+                                                <DockPanel>
+                                                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                        <DockPanel Style="{DynamicResource ContentBar}" DockPanel.Dock="Top"  >
                                                             <Label Content="Name Table" FontWeight="Bold" Margin="5,0,0,0"  />
                                                         </DockPanel>
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="5"/>
-                                                                <ColumnDefinition Width="Auto"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="5"/>
-                                                            </Grid.ColumnDefinitions>
+                                                    </Border>
 
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                            </Grid.RowDefinitions>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="5"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="5"/>
+                                                        </Grid.ColumnDefinitions>
 
-                                                            <Label Content="File Location" Grid.Column="1" Grid.Row="0"  />
-                                                            <TextBox Grid.Row="0" Grid.Column="2" Margin="3" x:Name="NameTableFileBox"  TextWrapping="NoWrap" IsEnabled="False" />
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
+
+                                                        <Label Content="File Location" Grid.Column="1" Grid.Row="0"  />
+                                                        <TextBox Grid.Row="0" Grid.Column="2" Margin="3" x:Name="NameTableFileBox"  TextWrapping="NoWrap" IsEnabled="False" />
 
 
-                                                            <Label Name="LabelCharacterSet" Content="Character Set" Grid.Row="1" Grid.Column="1" Margin="0"/>
-                                                            <ComboBox x:Name="PropertiesEditorNameTableCharacterSetDropdown" Grid.Row="1" Grid.Column="2" Margin="3" DropDownClosed="EditorCharacterSetDropdownClose">
-                                                                <ComboBoxItem Content="ASCII+ANSI"/>
-                                                                <ComboBoxItem Content="Shift-JIS"/>
-                                                            </ComboBox>
+                                                        <Label Name="LabelCharacterSet" Content="Character Set" Grid.Row="1" Grid.Column="1" Margin="0"/>
+                                                        <ComboBox x:Name="PropertiesEditorNameTableCharacterSetDropdown" Grid.Row="1" Grid.Column="2" Margin="3" DropDownClosed="EditorCharacterSetDropdownClose">
+                                                            <ComboBoxItem Content="ASCII+ANSI"/>
+                                                            <ComboBoxItem Content="Shift-JIS"/>
+                                                        </ComboBox>
 
-                                                            <Label Name="LabelStart" Content="Start Byte" Grid.Row="4" Grid.Column="1" Margin="0"/>
-                                                            <TextBox x:Name="PropertiesEditorNameTableStartByte" Grid.Row="4" Grid.Column="2" Margin="3"  TextWrapping="Wrap" Text="Name Start Byte"  KeyDown="ChangeNameTableStartByte"/>
+                                                        <Label Name="LabelStart" Content="Start Byte" Grid.Row="4" Grid.Column="1" Margin="0"/>
+                                                        <TextBox x:Name="PropertiesEditorNameTableStartByte" Grid.Row="4" Grid.Column="2" Margin="3"  TextWrapping="Wrap" Text="Name Start Byte"  KeyDown="ChangeNameTableStartByte"/>
 
-                                                            <Label Name="LabelRowSize" Content="Row Size" Grid.Row="2" Grid.Column="1" Margin="0"/>
-                                                            <TextBox x:Name="PropertiesEditorNameTableRowSize" Grid.Row="2" Grid.Column="2" Margin="3" TextWrapping="Wrap" Text="Row Size"  KeyDown="ChangeNameTableRowSize"/>
+                                                        <Label Name="LabelRowSize" Content="Row Size" Grid.Row="2" Grid.Column="1" Margin="0"/>
+                                                        <TextBox x:Name="PropertiesEditorNameTableRowSize" Grid.Row="2" Grid.Column="2" Margin="3" TextWrapping="Wrap" Text="Row Size"  KeyDown="ChangeNameTableRowSize"/>
 
-                                                            <Label Name="LabelTextSize" Content="Text Size" Grid.Row="3" Grid.Column="1" Margin="0"/>
-                                                            <TextBox x:Name="PropertiesEditorNameTableTextSize" Grid.Row="3" Grid.Column="2" Margin="3" TextWrapping="Wrap" Text="Text Size" KeyDown="ChangeNameTableTextSize"/>
+                                                        <Label Name="LabelTextSize" Content="Text Size" Grid.Row="3" Grid.Column="1" Margin="0"/>
+                                                        <TextBox x:Name="PropertiesEditorNameTableTextSize" Grid.Row="3" Grid.Column="2" Margin="3" TextWrapping="Wrap" Text="Text Size" KeyDown="ChangeNameTableTextSize"/>
 
-                                                            <Label Content="Name Count" Grid.Row="5" Grid.Column="1" Margin="0"/>
-                                                            <TextBox x:Name="PropertiesEditorNameCount" Grid.Row="5" Grid.Column="2" Margin="3" TextWrapping="Wrap" Text="Item Count"  KeyDown="ChangeNameTableNameCount"/>
-                                                        </Grid>
-                                                    </DockPanel>
-                                                </Border>
+                                                        <Label Content="Name Count" Grid.Row="5" Grid.Column="1" Margin="0"/>
+                                                        <TextBox x:Name="PropertiesEditorNameCount" Grid.Row="5" Grid.Column="2" Margin="3" TextWrapping="Wrap" Text="Item Count"  KeyDown="ChangeNameTableNameCount"/>
 
-                                                <Border DockPanel.Dock="Top">
-                                                    <DockPanel>
-                                                        <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
-                                                            <Label Content="Data Table" FontWeight="Bold" Margin="5,0,0,0"  />
+                                                        <DockPanel Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Margin="3,3,3,3" Background="Transparent">
+                                                            <Button Content="Open with 010" Margin="3,3,10,3" Width="200" DockPanel.Dock="Right" Click="OpenNameTableIn010"/>
+                                                            <Button Content="Open with HxD" Margin="3,3,10,3" Width="200" DockPanel.Dock="Right" Click="OpenNameTableInHxD"/>
                                                         </DockPanel>
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="5"/>
-                                                                <ColumnDefinition Width="Auto"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="5"/>
-                                                            </Grid.ColumnDefinitions>
+                                                    </Grid>
+                                                </DockPanel>
+                                            </Border>
 
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                            </Grid.RowDefinitions>
+                                            <Border DockPanel.Dock="Top">
+                                                <DockPanel>
+                                                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                        <DockPanel Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" LastChildFill="False" >
+                                                            <Label Content="Data Table" FontWeight="Bold" Margin="5,0,0,0" DockPanel.Dock="Left" />
+                                                        </DockPanel>
+                                                    </Border>
 
-                                                            <!-- Row 2 -->
-                                                            <Label Content="File Location" Grid.Column="1" Grid.Row="0"  />
-                                                            <TextBox Grid.Row="0" Grid.Column="2" Margin="3" x:Name="DataTableFileBox" TextWrapping="NoWrap" IsEnabled="False" />
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="5"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="5"/>
+                                                        </Grid.ColumnDefinitions>
 
-                                                            <Label Content="Start Byte" Grid.Column="1" Grid.Row="1" />
-                                                            <TextBox Grid.Row="1" Grid.Column="2" Margin="3" x:Name="PropertiesEditorTableStart" TextWrapping="Wrap" IsEnabled="False"/>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
 
-                                                            <Label Content="Row Size" Grid.Column="1" Grid.Row="2" />
-                                                            <TextBox Grid.Row="2" Grid.Column="2" Margin="3" x:Name="PropertiesEditorTableWidth" TextWrapping="Wrap" IsEnabled="False"/>
+                                                        <!-- Row 2 -->
+                                                        <Label Content="File Location" Grid.Column="1" Grid.Row="0"  />
+                                                        <TextBox Grid.Row="0" Grid.Column="2" Margin="3" x:Name="DataTableFileBox" TextWrapping="NoWrap" IsEnabled="False" />
 
-                                                            <Label Content="Input Folder" Grid.Column="1"  Grid.Row="3"/>
-                                                            <DockPanel Grid.Row="3" Grid.Column="2" Margin="3,3,3,3" Background="Transparent">
-                                                                <Button Name="OpenInputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="30" DockPanel.Dock="Right" Click="OpenWorkshopInputButton" Width="60"/>
-                                                                <TextBox x:Name="PropertiesEditorReadGameDataFrom" Grid.Row="1" Grid.Column="2" Margin="0" TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Input" />
-                                                            </DockPanel>
+                                                        <Label Content="Start Byte" Grid.Column="1" Grid.Row="1" />
+                                                        <TextBox Grid.Row="1" Grid.Column="2" Margin="3" x:Name="PropertiesEditorTableStart" TextWrapping="Wrap" IsEnabled="False"/>
 
-                                                            <Label Content="Output Folder"  Grid.Row="4" Grid.Column="1" />
-                                                            <DockPanel Grid.Row="4" Grid.Column="2" Margin="3,3,3,3" Background="Transparent">
-                                                                <Button Name="OpenOutputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="30" DockPanel.Dock="Right" Click="OpenWorkshopOutputButton" Width="60"/>
-                                                                <TextBox x:Name="EditorOutputLocationTextbox" Grid.Row="2" Grid.Column="2"  TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Output"/>
+                                                        <Label Content="Row Size" Grid.Column="1" Grid.Row="2" />
+                                                        <TextBox Grid.Row="2" Grid.Column="2" Margin="3" x:Name="PropertiesEditorTableWidth" TextWrapping="Wrap" IsEnabled="False"/>
 
-                                                            </DockPanel>
+                                                        <Label Content="Input Folder" Grid.Column="1"  Grid.Row="3"/>
+                                                        <DockPanel Grid.Row="3" Grid.Column="2" Margin="3,3,3,3" Background="Transparent">
+                                                            <Button Name="OpenInputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="30" DockPanel.Dock="Right" Click="OpenWorkshopInputButton" Width="60"/>
+                                                            <TextBox x:Name="PropertiesEditorReadGameDataFrom" Grid.Row="1" Grid.Column="2" Margin="0" TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Input" />
+                                                        </DockPanel>
 
-                                                            <Label Content="Support for changing Data Table data will be&#xA;added in a post-release update." Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2"/>
-                                                        </Grid>
-                                                    </DockPanel>
-                                                </Border>
+                                                        <Label Content="Output Folder"  Grid.Row="4" Grid.Column="1" />
+                                                        <DockPanel Grid.Row="4" Grid.Column="2" Margin="3,3,3,3" Background="Transparent">
+                                                            <Button Name="OpenOutputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="30" DockPanel.Dock="Right" Click="OpenWorkshopOutputButton" Width="60"/>
+                                                            <TextBox x:Name="EditorOutputLocationTextbox" Grid.Row="2" Grid.Column="2"  TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Output"/>
+
+                                                        </DockPanel>
+                                                        <DockPanel Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Margin="3,3,3,3" Background="Transparent">
+                                                            <Button Content="Open with 010" Margin="3,3,10,3" Width="200" DockPanel.Dock="Right" Click="OpenDataTableIn010"/>
+                                                            <Button Content="Open with HxD" Margin="3,3,10,3" Width="200" DockPanel.Dock="Right" Click="OpenDataTableInHxD"/>
+                                                        </DockPanel>
+                                                        <Label Content="Support for changing Data Table data will be&#xA;added in a post-release update." Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="2"/>
+                                                    </Grid>
+                                                </DockPanel>
+                                            </Border>
 
 
 
 
 
 
-                                            </DockPanel>
-                                        </TabItem>
-                                        <TabItem Name="GeneralRow" Header="Row" Margin="0,0,1,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
-                                            <DockPanel  >
-                                                <Border DockPanel.Dock="Top"  >
-                                                    <DockPanel Margin="0,0,0,3">
-                                                        <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" Height="23"  MinHeight="0" Margin="0,0,0,5" >
+                                        </DockPanel>
+                                    </TabItem>
+                                    <TabItem Name="GeneralRow" Header="Row" Margin="0,0,1,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
+                                        <DockPanel  >
+                                            <Border DockPanel.Dock="Top"  >
+                                                <DockPanel Margin="0,0,0,3">
+                                                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                        <DockPanel Style="{DynamicResource ContentBar}" Height="23"  MinHeight="0" Margin="0,0,0,5" >
                                                             <Label Content="Category" FontWeight="Bold" Margin="5,-5,0,-5"  />
                                                         </DockPanel>
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="5"/>
-                                                                <ColumnDefinition Width="Auto"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="5"/>
-                                                            </Grid.ColumnDefinitions>
+                                                    </Border>
 
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="5"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="5"/>
+                                                        </Grid.ColumnDefinitions>
 
-                                                            </Grid.RowDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
 
-                                                            <!-- Row 2 -->
-                                                            <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
-                                                            <TextBox x:Name="PropertiesRowNameBox" Grid.Row="0" Grid.Column="2" Margin="3" Text="New Category" TextWrapping="Wrap"  KeyDown="PropertiesRowNameBox_KeyDownEnter"/>
+                                                        </Grid.RowDefinitions>
 
-                                                            <Label Content="Tooltip" Grid.Row="1" Grid.Column="1" Margin="0"/>
-                                                            <TextBox x:Name="PropertiesRowTooltipBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" MinHeight="100" Margin="3" TextWrapping="Wrap"  TextChanged="PropertiesRowTooltipBox_TextChanged"/>
-                                                        </Grid>
-                                                    </DockPanel>
-                                                </Border>
+                                                        <!-- Row 2 -->
+                                                        <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
+                                                        <TextBox x:Name="PropertiesRowNameBox" Grid.Row="0" Grid.Column="2" Margin="3" Text="New Category" TextWrapping="Wrap"  KeyDown="PropertiesRowNameBox_KeyDownEnter"/>
 
-                                            </DockPanel>
-                                        </TabItem>
-                                        <TabItem Name="GeneralColumn" Header="Column" Margin="0,0,1,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
-                                            <DockPanel  >
-                                                <!--Margin="-2"-->
-                                                <Border DockPanel.Dock="Top"  >
-                                                    <DockPanel Margin="0,0,0,3">
-                                                        <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" Height="23"  MinHeight="0" Margin="0,0,0,5" >
+                                                        <Label Content="Tooltip" Grid.Row="1" Grid.Column="1" Margin="0"/>
+                                                        <TextBox x:Name="PropertiesRowTooltipBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" MinHeight="100" Margin="3" TextWrapping="Wrap"  TextChanged="PropertiesRowTooltipBox_TextChanged"/>
+                                                    </Grid>
+                                                </DockPanel>
+                                            </Border>
+
+                                        </DockPanel>
+                                    </TabItem>
+                                    <TabItem Name="GeneralColumn" Header="Column" Margin="0,0,1,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
+                                        <DockPanel  >
+                                            <!--Margin="-2"-->
+                                            <Border DockPanel.Dock="Top"  >
+                                                <DockPanel Margin="0,0,0,3">
+                                                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                        <DockPanel Style="{DynamicResource ContentBar}" Height="23"  MinHeight="0" Margin="0,0,0,5" >
                                                             <Label Content="Group" FontWeight="Bold" Margin="5,-5,0,-5"  />
                                                         </DockPanel>
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="5"/>
-                                                                <ColumnDefinition Width="Auto"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="5"/>
-                                                            </Grid.ColumnDefinitions>
+                                                    </Border>
 
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="5"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="5"/>
+                                                        </Grid.ColumnDefinitions>
 
-                                                            </Grid.RowDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
 
-                                                            <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
-                                                            <TextBox x:Name="PropertiesColumnNameBox" Grid.Row="0" Grid.Column="2" Margin="3" Text="New Column" TextWrapping="Wrap"  KeyDown="PropertiesColumnNameTextBox_KeyDown"/>
-                                                        </Grid>
-                                                    </DockPanel>
-                                                </Border>
-                                            </DockPanel>
-                                        </TabItem>
-                                        <TabItem Name="GeneralGroup" Header="Group" Margin="0,0,1,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
-                                            <DockPanel  >
-                                                <!--Margin="-2"-->
-                                                <Border DockPanel.Dock="Top"  >
-                                                    <DockPanel Margin="0,0,0,3">
-                                                        <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" Height="23"  MinHeight="0" Margin="0,0,0,5" >
+                                                        </Grid.RowDefinitions>
+
+                                                        <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
+                                                        <TextBox x:Name="PropertiesColumnNameBox" Grid.Row="0" Grid.Column="2" Margin="3" Text="New Column" TextWrapping="Wrap"  KeyDown="PropertiesColumnNameTextBox_KeyDown"/>
+                                                    </Grid>
+                                                </DockPanel>
+                                            </Border>
+                                        </DockPanel>
+                                    </TabItem>
+                                    <TabItem Name="GeneralGroup" Header="Group" Margin="0,0,1,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
+                                        <DockPanel  >
+                                            <!--Margin="-2"-->
+                                            <Border DockPanel.Dock="Top"  >
+                                                <DockPanel Margin="0,0,0,3">
+                                                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                        <DockPanel Style="{DynamicResource ContentBar}" Height="23"  MinHeight="0" Margin="0,0,0,5" >
                                                             <Label Content="Group" FontWeight="Bold" Margin="5,-5,0,-5"  />
                                                         </DockPanel>
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="5"/>
-                                                                <ColumnDefinition Width="Auto"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="5"/>
-                                                            </Grid.ColumnDefinitions>
+                                                    </Border>
 
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="5"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="5"/>
+                                                        </Grid.ColumnDefinitions>
 
-                                                            </Grid.RowDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
 
-                                                            <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
-                                                            <TextBox x:Name="PropertiesGroupNameBox" Grid.Row="0" Grid.Column="2" Margin="3" Text="New Group" TextWrapping="Wrap"  KeyDown="PropertiesGroupNameTextBox_KeyDown"/>
+                                                        </Grid.RowDefinitions>
 
-                                                            <Label Content="Tooltip" Grid.Row="1" Grid.Column="1" Margin="0"/>
-                                                            <TextBox x:Name="PropertiesGroupTooltipBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Height="100" Margin="3" Text="" TextWrapping="Wrap"  TextChanged="PropertiesGroupTooltipTextBox_TextChanged"/>
-                                                        </Grid>
-                                                    </DockPanel>
-                                                </Border>
-                                            </DockPanel>
-                                        </TabItem>
-                                        <TabItem Name="GeneralEntry" Header="Entry" Margin="0,0,0,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
-                                            <DockPanel >
-                                                <Border DockPanel.Dock="Top">
-                                                    <DockPanel>
-                                                        <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
+                                                        <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
+                                                        <TextBox x:Name="PropertiesGroupNameBox" Grid.Row="0" Grid.Column="2" Margin="3" Text="New Group" TextWrapping="Wrap"  KeyDown="PropertiesGroupNameTextBox_KeyDown"/>
+
+                                                        <Label Content="Tooltip" Grid.Row="1" Grid.Column="1" Margin="0"/>
+                                                        <TextBox x:Name="PropertiesGroupTooltipBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Height="100" Margin="3" Text="" TextWrapping="Wrap"  TextChanged="PropertiesGroupTooltipTextBox_TextChanged"/>
+                                                    </Grid>
+                                                </DockPanel>
+                                            </Border>
+                                        </DockPanel>
+                                    </TabItem>
+                                    <TabItem Name="GeneralEntry" Header="Entry" Margin="0,0,0,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
+                                        <DockPanel >
+                                            <Border DockPanel.Dock="Top">
+                                                <DockPanel>
+                                                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                        <DockPanel Style="{DynamicResource ContentBar}"  >
                                                             <Label Content="Entry" FontWeight="Bold" Margin="5,0,0,0"  />
                                                         </DockPanel>
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="5"/>
-                                                                <ColumnDefinition Width="Auto"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="5"/>
-                                                            </Grid.ColumnDefinitions>
+                                                    </Border>
 
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="5"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="5"/>
+                                                        </Grid.ColumnDefinitions>
 
-                                                            </Grid.RowDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
 
-                                                            <!-- Row 2 -->
-                                                            <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
-                                                            <TextBox x:Name="PropertiesNameBox" Grid.Row="0" Grid.Column="2" Margin="3" TextWrapping="Wrap"  KeyDown="PropertiesEntryNameBox_KeyDown"/>
+                                                        </Grid.RowDefinitions>
 
-
-                                                            <!-- Row 2 -->
-                                                            <Label Content="Hide Name" Grid.Row="1" Grid.Column="1" Margin="0"/>
-                                                            <CheckBox Name="HideNameCheckbox" Grid.Row="1" Grid.Column="2" Margin="3" Checked="HideNameCheckboxChecked" Unchecked="HideNameCheckboxUnchecked" >
-                                                                <CheckBox.LayoutTransform>
-                                                                    <ScaleTransform ScaleX="2" ScaleY="2" />
-                                                                </CheckBox.LayoutTransform>
-                                                            </CheckBox>
-                                                            <!--<ComboBox x:Name="PropertiesEntryLabelShow" Grid.Row="2" Grid.Column="1" Margin="3" DropDownClosed="PropertiesEntryLabelShow_DropDownClosed">
-                                                <ComboBoxItem Content="False"/>
-                                                <ComboBoxItem Content="True"/>
-                                            </ComboBox>-->
-
-                                                            <Label Content="Hide Entry" Grid.Row="2" Grid.Column="1" Margin="0"/>
-                                                            <CheckBox Name="HideEntryCheckbox" Grid.Row="2" Grid.Column="2" Margin="3" Checked="HideEntryCheckboxChecked" Unchecked="HideEntryCheckboxUnchecked" >
-                                                                <CheckBox.LayoutTransform>
-                                                                    <ScaleTransform ScaleX="2" ScaleY="2" />
-                                                                </CheckBox.LayoutTransform>
-                                                            </CheckBox>
-                                                            <!--<ComboBox x:Name="PropertiesEntrySaveState" Grid.Row="3" Grid.Column="1" Margin="3" DropDownClosed="PropertiesEntrySaveState_DropDownClosed">
-                                                <ComboBoxItem Content="Saving Enabled"/>
-                                                <ComboBoxItem Content="Saving Disabled"/>
-                                            </ComboBox>-->
-
-                                                            <Label Content="Byte Size" Grid.Row="4" Grid.Column="1" Margin="0"/>
-                                                            <Border Grid.Row="4" Grid.Column="1" Margin="3,0,24,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="Big Endian: 00 on left (0014, 002B). &#xA;Little Endian: 00 on right (1400, 2B00).&#xA;   &#xA;Most consoles use Big Endian."/>
-                                                            <ComboBox x:Name="PropertiesEntryByteSizeComboBox" Grid.Row="4" Grid.Column="2" Margin="3" DropDownClosed="PropertiesEntryByteSizeComboBox_DropDownClosed" >
-                                                                <ComboBoxItem Content="1 Byte"/>
-                                                                <ComboBoxItem Content="2 Bytes Little Endian"/>
-                                                                <ComboBoxItem Content="4 Bytes Little Endian"/>
-                                                                <ComboBoxItem Content="2 Bytes Big Endian"/>
-                                                                <ComboBoxItem Content="4 Bytes Big Endian"/>
-
-                                                            </ComboBox>
-
-                                                            <Label Content="Entry Type" Grid.Row="5" Grid.Column="1" Margin="0"/>
-                                                            <ComboBox x:Name="PropertiesEntryType" Grid.Row="5" Grid.Column="2" Margin="3"  DropDownClosed="PropertiesEntryType_DropDownClosed">
-                                                            </ComboBox>
-
-                                                            <Label Content="Hex Address" Grid.Row="6" Grid.Column="1" Margin="0"/>
-                                                            <TextBox x:Name="PropertiesEntryHexAddressTextbox" Grid.Row="6" Grid.Column="2" Margin="3" TextWrapping="Wrap" IsEnabled="False"/>
-
-                                                        </Grid>
-                                                    </DockPanel>
-                                                </Border>
+                                                        <!-- Row 2 -->
+                                                        <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
+                                                        <TextBox x:Name="PropertiesNameBox" Grid.Row="0" Grid.Column="2" Margin="3" TextWrapping="Wrap"  KeyDown="PropertiesEntryNameBox_KeyDown"/>
 
 
-                                                <Border DockPanel.Dock="Top">
-                                                    <TabControl Name="EntryElementProperties" DockPanel.Dock="Top">
-                                                        <TabItem Header="NumberBox" Name="EntryTab1">
-                                                            <DockPanel >
-                                                                <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
+                                                        <!-- Row 2 -->
+                                                        <Label Content="Hide Name" Grid.Row="1" Grid.Column="1" Margin="0"/>
+                                                        <CheckBox Name="HideNameCheckbox" Grid.Row="1" Grid.Column="2" Margin="3" Checked="HideNameCheckboxChecked" Unchecked="HideNameCheckboxUnchecked" >
+                                                            <CheckBox.LayoutTransform>
+                                                                <ScaleTransform ScaleX="2" ScaleY="2" />
+                                                            </CheckBox.LayoutTransform>
+                                                        </CheckBox>
+                                                        <!--<ComboBox x:Name="PropertiesEntryLabelShow" Grid.Row="2" Grid.Column="1" Margin="3" DropDownClosed="PropertiesEntryLabelShow_DropDownClosed">
+                    <ComboBoxItem Content="False"/>
+                    <ComboBoxItem Content="True"/>
+                </ComboBox>-->
+
+                                                        <Label Content="Hide Entry" Grid.Row="2" Grid.Column="1" Margin="0"/>
+                                                        <CheckBox Name="HideEntryCheckbox" Grid.Row="2" Grid.Column="2" Margin="3" Checked="HideEntryCheckboxChecked" Unchecked="HideEntryCheckboxUnchecked" >
+                                                            <CheckBox.LayoutTransform>
+                                                                <ScaleTransform ScaleX="2" ScaleY="2" />
+                                                            </CheckBox.LayoutTransform>
+                                                        </CheckBox>
+                                                        <!--<ComboBox x:Name="PropertiesEntrySaveState" Grid.Row="3" Grid.Column="1" Margin="3" DropDownClosed="PropertiesEntrySaveState_DropDownClosed">
+                    <ComboBoxItem Content="Saving Enabled"/>
+                    <ComboBoxItem Content="Saving Disabled"/>
+                </ComboBox>-->
+
+                                                        <Label Content="Byte Size" Grid.Row="4" Grid.Column="1" Margin="0"/>
+                                                        <Border Grid.Row="4" Grid.Column="1" Margin="3,0,24,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="Big Endian: 00 on left (0014, 002B). &#xA;Little Endian: 00 on right (1400, 2B00).&#xA;   &#xA;Most consoles use Big Endian."/>
+                                                        <ComboBox x:Name="PropertiesEntryByteSizeComboBox" Grid.Row="4" Grid.Column="2" Margin="3" DropDownClosed="PropertiesEntryByteSizeComboBox_DropDownClosed" >
+                                                            <ComboBoxItem Content="1 Byte"/>
+                                                            <ComboBoxItem Content="2 Bytes Little Endian"/>
+                                                            <ComboBoxItem Content="4 Bytes Little Endian"/>
+                                                            <ComboBoxItem Content="2 Bytes Big Endian"/>
+                                                            <ComboBoxItem Content="4 Bytes Big Endian"/>
+
+                                                        </ComboBox>
+
+                                                        <Label Content="Entry Type" Grid.Row="5" Grid.Column="1" Margin="0"/>
+                                                        <ComboBox x:Name="PropertiesEntryType" Grid.Row="5" Grid.Column="2" Margin="3"  DropDownClosed="PropertiesEntryType_DropDownClosed">
+                                                        </ComboBox>
+
+                                                        <Label Content="Hex Address" Grid.Row="6" Grid.Column="1" Margin="0"/>
+                                                        <TextBox x:Name="PropertiesEntryHexAddressTextbox" Grid.Row="6" Grid.Column="2" Margin="3" TextWrapping="Wrap" IsEnabled="False"/>
+
+                                                    </Grid>
+                                                </DockPanel>
+                                            </Border>
+
+
+                                            <Border DockPanel.Dock="Top">
+                                                <TabControl Name="EntryElementProperties" DockPanel.Dock="Top">
+                                                    <TabItem Header="NumberBox" Name="EntryTab1">
+                                                        <DockPanel >
+                                                            <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                                <DockPanel Style="{DynamicResource ContentBar}" >
                                                                     <Label Content="Numberbox Properties" FontWeight="Bold" />
                                                                 </DockPanel>
-                                                                <Grid DockPanel.Dock="Top">
-                                                                    <Label Content="Accept Negative Values?" Grid.Column="0"  HorizontalAlignment="Left" Width="247" Height="38" VerticalAlignment="Top"/>
-                                                                    <CheckBox Name="NumberboxSignCheckbox"  Margin="247,-26,0,0" Checked="SetNumberboxSigned" Unchecked="SetNumberboxUnsigned" ToolTip="When devs need negative numbers, they make values &#xA;higher then half the max byte size read as a negative. &#xA;So for a 1Byte example (where values are from 0~255)...  &#xA;(1 = +1) (255 = -1) (11 = +11) (245 = -11) (233 = -23) etc.&#xA;You should suspect very high numbers of being negative." Height="46" VerticalAlignment="Top" HorizontalAlignment="Left" Width="259" >
-                                                                        <CheckBox.LayoutTransform>
-                                                                            <ScaleTransform ScaleX="2" ScaleY="2" />
-                                                                        </CheckBox.LayoutTransform>
-                                                                    </CheckBox>
-                                                                    <Label Content="(This is complicated, hover for tooltip)" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top"/>
-                                                                </Grid>
-                                                            </DockPanel>
-                                                        </TabItem>
-                                                        <TabItem Header="CheckBox" Name="EntryTab2" >
-                                                            <DockPanel>
-                                                                <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
+                                                            </Border>
+
+                                                            <Grid DockPanel.Dock="Top">
+                                                                <Label Content="Accept Negative Values?" Grid.Column="0"  HorizontalAlignment="Left" Width="247" Height="38" VerticalAlignment="Top"/>
+                                                                <CheckBox Name="NumberboxSignCheckbox"  Margin="247,-26,0,0" Checked="SetNumberboxSigned" Unchecked="SetNumberboxUnsigned" ToolTip="When devs need negative numbers, they make values &#xA;higher then half the max byte size read as a negative. &#xA;So for a 1Byte example (where values are from 0~255)...  &#xA;(1 = +1) (255 = -1) (11 = +11) (245 = -11) (233 = -23) etc.&#xA;You should suspect very high numbers of being negative." Height="46" VerticalAlignment="Top" HorizontalAlignment="Left" Width="259" >
+                                                                    <CheckBox.LayoutTransform>
+                                                                        <ScaleTransform ScaleX="2" ScaleY="2" />
+                                                                    </CheckBox.LayoutTransform>
+                                                                </CheckBox>
+                                                                <Label Content="(This is complicated, hover for tooltip)" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top"/>
+                                                            </Grid>
+                                                        </DockPanel>
+                                                    </TabItem>
+                                                    <TabItem Header="CheckBox" Name="EntryTab2" >
+                                                        <DockPanel>
+                                                            <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                                <DockPanel Style="{DynamicResource ContentBar}"  >
                                                                     <Label Content="Checkbox Properties" FontWeight="Bold" />
                                                                 </DockPanel>
-                                                                <Grid>
-                                                                    <Label Content="Checked Value" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="9,8,0,0"/>
-                                                                    <TextBox x:Name="PropertiesEntryCheckText" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100" Margin="172,10,0,0" IsEnabled="False"/>
-                                                                    <Label Content="Unchecked Value" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top"/>
-                                                                    <TextBox x:Name="PropertiesEntryUncheckText" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100" Margin="172,41,0,0" IsEnabled="False"/>
-                                                                    <Label Content="Adding later, &#xA;for now its &#xD;&#xA;always 1 &amp; 0" HorizontalAlignment="Left" Margin="278,-8,0,0" VerticalAlignment="Top"/>
+                                                            </Border>
 
-                                                                </Grid>
-                                                            </DockPanel>
-                                                        </TabItem>
-                                                        <TabItem Header="BitFlag" Name="EntryTab3">
-                                                            <DockPanel>
-                                                                <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
+                                                            <Grid>
+                                                                <Label Content="Checked Value" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="9,8,0,0"/>
+                                                                <TextBox x:Name="PropertiesEntryCheckText" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100" Margin="172,10,0,0" IsEnabled="False"/>
+                                                                <Label Content="Unchecked Value" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top"/>
+                                                                <TextBox x:Name="PropertiesEntryUncheckText" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100" Margin="172,41,0,0" IsEnabled="False"/>
+                                                                <Label Content="Adding later, &#xA;for now its &#xD;&#xA;always 1 &amp; 0" HorizontalAlignment="Left" Margin="278,-8,0,0" VerticalAlignment="Top"/>
+
+                                                            </Grid>
+                                                        </DockPanel>
+                                                    </TabItem>
+                                                    <TabItem Header="BitFlag" Name="EntryTab3">
+                                                        <DockPanel>
+                                                            <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                                <DockPanel Style="{DynamicResource ContentBar}"  >
                                                                     <Label Content="Bitflag Properties (Names)" FontWeight="Bold" />
                                                                 </DockPanel>
-                                                                <Grid Margin="0,3,0,7">
+                                                            </Border>
 
-                                                                    <TextBox x:Name="PropertiesEntryBitFlag1Name" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,5,0,0" KeyDown="Bitflag1NameTextboxTextChanged"/>
-                                                                    <TextBox x:Name="PropertiesEntryBitFlag2Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,36,0,0" KeyDown="Bitflag2NameTextboxTextChanged"/>
-                                                                    <TextBox x:Name="PropertiesEntryBitFlag3Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,66,0,0" KeyDown="Bitflag3NameTextboxTextChanged"/>
-                                                                    <TextBox x:Name="PropertiesEntryBitFlag4Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,96,0,0" KeyDown="Bitflag4NameTextboxTextChanged"/>
-                                                                    <TextBox x:Name="PropertiesEntryBitFlag5Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,5,0,0" KeyDown="Bitflag5NameTextboxTextChanged"/>
-                                                                    <TextBox x:Name="PropertiesEntryBitFlag6Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,36,0,0" KeyDown="Bitflag6NameTextboxTextChanged"/>
-                                                                    <TextBox x:Name="PropertiesEntryBitFlag7Name" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,66,0,0" KeyDown="Bitflag7NameTextboxTextChanged"/>
-                                                                    <TextBox x:Name="PropertiesEntryBitFlag8Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,96,0,0" KeyDown="Bitflag8NameTextboxTextChanged"/>
+                                                            <Grid Margin="0,3,0,7">
 
-                                                                </Grid>
-                                                            </DockPanel>
-                                                        </TabItem>
-                                                        <TabItem Header="Menu" Name="EntryTab4">
-                                                            <DockPanel>
-                                                                <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
+                                                                <TextBox x:Name="PropertiesEntryBitFlag1Name" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,5,0,0" KeyDown="Bitflag1NameTextboxTextChanged"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag2Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,36,0,0" KeyDown="Bitflag2NameTextboxTextChanged"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag3Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,66,0,0" KeyDown="Bitflag3NameTextboxTextChanged"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag4Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,96,0,0" KeyDown="Bitflag4NameTextboxTextChanged"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag5Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,5,0,0" KeyDown="Bitflag5NameTextboxTextChanged"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag6Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,36,0,0" KeyDown="Bitflag6NameTextboxTextChanged"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag7Name" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,66,0,0" KeyDown="Bitflag7NameTextboxTextChanged"/>
+                                                                <TextBox x:Name="PropertiesEntryBitFlag8Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,96,0,0" KeyDown="Bitflag8NameTextboxTextChanged"/>
+
+                                                            </Grid>
+                                                        </DockPanel>
+                                                    </TabItem>
+                                                    <TabItem Header="Menu" Name="EntryTab4">
+                                                        <DockPanel>
+                                                            <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                                <DockPanel Style="{DynamicResource ContentBar}" >
                                                                     <Label Content="Menu Properties" FontWeight="Bold" />
                                                                 </DockPanel>
-                                                                <Grid >
-                                                                    <Label Content="Menu Type" HorizontalAlignment="Left" Margin="9,1,0,0" VerticalAlignment="Top"/>
-                                                                    <ComboBox x:Name="DropdownMenuType" HorizontalAlignment="Left" Margin="135,6,0,0" VerticalAlignment="Top"  DropDownClosed="PropertiesMenuType_DropDownClosed" Width="128">
-                                                                        <ComboBoxItem Content="Dropdown" Name="MenuTypeItemDropdown"/>
-                                                                        <ComboBoxItem Content="List" IsSelected="True" Name="MenuTypeItemList"/>
-                                                                    </ComboBox>
+                                                            </Border>
 
-                                                                    <Button Name="ButtonMenuManager" Content="Menu Manager" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Click="DoThing2" Width="253" Height="30" />
+                                                            <Grid >
+                                                                <Label Content="Menu Type" HorizontalAlignment="Left" Margin="9,1,0,0" VerticalAlignment="Top"/>
+                                                                <ComboBox x:Name="DropdownMenuType" HorizontalAlignment="Left" Margin="135,6,0,0" VerticalAlignment="Top"  DropDownClosed="PropertiesMenuType_DropDownClosed" Width="128">
+                                                                    <ComboBoxItem Content="Dropdown" Name="MenuTypeItemDropdown"/>
+                                                                    <ComboBoxItem Content="List" IsSelected="True" Name="MenuTypeItemList"/>
+                                                                </ComboBox>
 
-
-                                                                    <Label Content="Editor link will &#xA;later support &#xD;&#xA;name notes :D" HorizontalAlignment="Left" Margin="263,-6,0,0" VerticalAlignment="Top"/>
-
-                                                                </Grid>
-                                                            </DockPanel>
-                                                        </TabItem>
-
-                                                    </TabControl>
-                                                </Border>
+                                                                <Button Name="ButtonMenuManager" Content="Menu Manager" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Click="DoThing2" Width="253" Height="30" />
 
 
-                                                <Border DockPanel.Dock="Top" Margin="0,0,0,0">
-                                                    <DockPanel>
-                                                        <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" LastChildFill="False" >
+                                                                <Label Content="Editor link will &#xA;later support &#xD;&#xA;name notes :D" HorizontalAlignment="Left" Margin="263,-6,0,0" VerticalAlignment="Top"/>
+
+                                                            </Grid>
+                                                        </DockPanel>
+                                                    </TabItem>
+
+                                                </TabControl>
+                                            </Border>
+
+
+                                            <Border DockPanel.Dock="Top" Margin="0,0,0,0">
+                                                <DockPanel>
+                                                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                        <DockPanel Style="{DynamicResource ContentBar}"  LastChildFill="False" >
                                                             <Label Content="Hex Info" FontWeight="Bold"/>
                                                             <Border Margin="-100,0,0,4" BorderThickness="0,0,0,2" Width="90" BorderBrush="#FFB7B7B7" ToolTip="Big Endian: 00 on left (0014, 002B). &#xA;Little Endian: 00 on right (1400, 2B00).&#xA;   &#xA;Most consoles use Big Endian."/>
                                                         </DockPanel>
-                                                        <Grid DockPanel.Dock="Top">
-                                                            <Label Content="Decimal" HorizontalAlignment="Left" Margin="50,-1,0,0" VerticalAlignment="Top"/>
-                                                            <Label Content="Hex" HorizontalAlignment="Left" Margin="191,-1,0,0" VerticalAlignment="Top"/>
-                                                            <Label Content="D Negatives" HorizontalAlignment="Left" Margin="278,-2,0,0" VerticalAlignment="Top"/>
+                                                    </Border>
 
-                                                            <Label Content="1" HorizontalAlignment="Left" Margin="4,24,0,0" VerticalAlignment="Top"/>
-                                                            <Label Content="2B" HorizontalAlignment="Left" Margin="4,116,0,0" VerticalAlignment="Top"/>
-                                                            <Label Content="2L" HorizontalAlignment="Left" Margin="4,55,0,0" VerticalAlignment="Top"/>
-                                                            <Label Content="4B" HorizontalAlignment="Left" Margin="4,144,0,0" VerticalAlignment="Top"/>
-                                                            <Label Content="4L" HorizontalAlignment="Left" Margin="4,85,0,0" VerticalAlignment="Top"/>
-                                                            <TextBox x:Name="PropertiesEntry1Byte" HorizontalAlignment="Left" Margin="34,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
-                                                            <TextBox x:Name="PropertiesEntry2ByteB" HorizontalAlignment="Left" Margin="34,118,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
-                                                            <TextBox x:Name="PropertiesEntry2ByteL" HorizontalAlignment="Left" Margin="34,59,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
-                                                            <TextBox x:Name="PropertiesEntry4ByteB" HorizontalAlignment="Left" Margin="34,148,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
-                                                            <TextBox x:Name="PropertiesEntry4ByteL" HorizontalAlignment="Left" Margin="34,89,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
-                                                            <TextBox x:Name="PropertiesEntryHex1Byte" HorizontalAlignment="Left" Margin="159,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="110"/>
-                                                            <TextBox x:Name="PropertiesEntryHex2ByteB" HorizontalAlignment="Left" Margin="160,118,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
-                                                            <TextBox x:Name="PropertiesEntryHex2ByteL" HorizontalAlignment="Left" Margin="160,59,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
-                                                            <TextBox x:Name="PropertiesEntryHex4ByteB" HorizontalAlignment="Left" Margin="160,148,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
-                                                            <TextBox x:Name="PropertiesEntryHex4ByteL" HorizontalAlignment="Left" Margin="160,89,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
-                                                            <TextBox x:Name="PropertiesEntry1ByteNegative" HorizontalAlignment="Left" Margin="277,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
-                                                            <TextBox x:Name="PropertiesEntry2ByteBNegative" HorizontalAlignment="Left" Margin="277,118,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
-                                                            <TextBox x:Name="PropertiesEntry2ByteLNegative" HorizontalAlignment="Left" Margin="277,59,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
-                                                            <TextBox x:Name="PropertiesEntry4ByteBNegative" HorizontalAlignment="Left" Margin="277,148,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
-                                                            <TextBox x:Name="PropertiesEntry4ByteLNegative" HorizontalAlignment="Left" Margin="277,89,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
+                                                    <Grid DockPanel.Dock="Top">
+                                                        <Label Content="Decimal" HorizontalAlignment="Left" Margin="50,-1,0,0" VerticalAlignment="Top"/>
+                                                        <Label Content="Hex" HorizontalAlignment="Left" Margin="191,-1,0,0" VerticalAlignment="Top"/>
+                                                        <Label Content="D Negatives" HorizontalAlignment="Left" Margin="278,-2,0,0" VerticalAlignment="Top"/>
 
-                                                        </Grid>
-                                                    </DockPanel>
-                                                </Border>
+                                                        <Label Content="1" HorizontalAlignment="Left" Margin="4,24,0,0" VerticalAlignment="Top"/>
+                                                        <Label Content="2B" HorizontalAlignment="Left" Margin="4,116,0,0" VerticalAlignment="Top"/>
+                                                        <Label Content="2L" HorizontalAlignment="Left" Margin="4,55,0,0" VerticalAlignment="Top"/>
+                                                        <Label Content="4B" HorizontalAlignment="Left" Margin="4,144,0,0" VerticalAlignment="Top"/>
+                                                        <Label Content="4L" HorizontalAlignment="Left" Margin="4,85,0,0" VerticalAlignment="Top"/>
+                                                        <TextBox x:Name="PropertiesEntry1Byte" HorizontalAlignment="Left" Margin="34,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
+                                                        <TextBox x:Name="PropertiesEntry2ByteB" HorizontalAlignment="Left" Margin="34,118,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
+                                                        <TextBox x:Name="PropertiesEntry2ByteL" HorizontalAlignment="Left" Margin="34,59,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
+                                                        <TextBox x:Name="PropertiesEntry4ByteB" HorizontalAlignment="Left" Margin="34,148,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
+                                                        <TextBox x:Name="PropertiesEntry4ByteL" HorizontalAlignment="Left" Margin="34,89,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="119"/>
+                                                        <TextBox x:Name="PropertiesEntryHex1Byte" HorizontalAlignment="Left" Margin="159,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="110"/>
+                                                        <TextBox x:Name="PropertiesEntryHex2ByteB" HorizontalAlignment="Left" Margin="160,118,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
+                                                        <TextBox x:Name="PropertiesEntryHex2ByteL" HorizontalAlignment="Left" Margin="160,59,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
+                                                        <TextBox x:Name="PropertiesEntryHex4ByteB" HorizontalAlignment="Left" Margin="160,148,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
+                                                        <TextBox x:Name="PropertiesEntryHex4ByteL" HorizontalAlignment="Left" Margin="160,89,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109"/>
+                                                        <TextBox x:Name="PropertiesEntry1ByteNegative" HorizontalAlignment="Left" Margin="277,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
+                                                        <TextBox x:Name="PropertiesEntry2ByteBNegative" HorizontalAlignment="Left" Margin="277,118,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
+                                                        <TextBox x:Name="PropertiesEntry2ByteLNegative" HorizontalAlignment="Left" Margin="277,59,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
+                                                        <TextBox x:Name="PropertiesEntry4ByteBNegative" HorizontalAlignment="Left" Margin="277,148,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
+                                                        <TextBox x:Name="PropertiesEntry4ByteLNegative" HorizontalAlignment="Left" Margin="277,89,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="130" Foreground="#FFFF8000"/>
 
-                                                <Border  DockPanel.Dock="Top">
-                                                    <DockPanel>
-                                                        <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
+                                                    </Grid>
+                                                </DockPanel>
+                                            </Border>
+
+                                            <Border  DockPanel.Dock="Top">
+                                                <DockPanel>
+                                                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                        <DockPanel  Style="{DynamicResource ContentBar}">
                                                             <Label Content="Entry Tooltip" FontWeight="Bold"/>
                                                         </DockPanel>
-                                                        <TextBox MinHeight="100" x:Name="EntryNoteTextbox" Margin="10" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextChanged="EntryNoteTextboxTextChanged"/>
-                                                    </DockPanel>
-                                                </Border>
+                                                    </Border>
 
-                                            </DockPanel>
-                                        </TabItem>
+                                                    <TextBox MinHeight="100" x:Name="EntryNoteTextbox" Margin="10" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextChanged="EntryNoteTextboxTextChanged"/>
+                                                </DockPanel>
+                                            </Border>
 
-                                    </TabControl>
-                                </ScrollViewer>
+                                        </DockPanel>
+                                    </TabItem>
+
+                                </TabControl>
+                            </ScrollViewer>
 
 
 
 
 
-                            </DockPanel>
-                        </Border>
+                        </DockPanel>
 
                     </TabItem>
                     <TabItem Header="Documents">
@@ -576,22 +597,27 @@
                         </DockPanel>
                     </TabItem>
                     <TabItem Header="Info">
-                        <DockPanel>
-                            <DockPanel Style="{DynamicResource HeaderDock}"  DockPanel.Dock="Top" LastChildFill="False">
-                                <Label Content="Information" FontWeight="Bold" DockPanel.Dock="Left"/>
-                                <!--<Label Content="See how many times a value appears." DockPanel.Dock="Right"/>-->
+                        <Border>
+                            <DockPanel>
+                                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                    <DockPanel Style="{DynamicResource ContentBar}"  LastChildFill="False">
+                                        <Label Content="Information" FontWeight="Bold" DockPanel.Dock="Left"/>
+                                    </DockPanel>
+                                </Border>
+                                <Label Content="This Info and Entry Symbology only work on 1 byte &#xD;&#xA;entrys. Support for entrys with 2+ bytes &#xD;&#xA;will be added in the future." Margin="5,5,5,5" DockPanel.Dock="Top"/>
+                                <local:UserControlCrossReference Margin="5,5,5,5"/>
                             </DockPanel>
-                            <Label Content="This Info and Entry Symbology only work on 1 byte &#xD;&#xA;entrys. Support for entrys with 2+ bytes &#xD;&#xA;will be added in the future." Margin="5,5,5,5" DockPanel.Dock="Top"/>
-                            <local:UserControlCrossReference Margin="5,5,5,5"/>
-                        </DockPanel>
+                        </Border>                        
                     </TabItem>
                     <TabItem Header="Auto Mod">
                         <Border>
                             <DockPanel>
-                                <DockPanel Style="{DynamicResource HeaderDock}"  DockPanel.Dock="Top" LastChildFill="False">
-                                    <Label Content="Automatically mod the game!" FontWeight="Bold" DockPanel.Dock="Left"/>
-                                    <!--<Label Content="See how many times a value appears." DockPanel.Dock="Right"/>-->
-                                </DockPanel>
+                                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                    <DockPanel Style="{DynamicResource ContentBar}"  LastChildFill="False">
+                                        <Label Content="Automatically mod the game!" FontWeight="Bold" DockPanel.Dock="Left"/>
+                                    </DockPanel>
+                                </Border>
+                                
                                 <Grid  Margin="5">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -655,10 +681,12 @@
                     <TabItem Header="Lists" LostFocus="ListLostFocus" Name="ListTab" Tag="ListTab">
                         <Border>
                             <DockPanel>
-                                <DockPanel Style="{DynamicResource HeaderDock}"  DockPanel.Dock="Top" LastChildFill="False">
-                                    <Label Name="ListLabel" Content="List Name" FontWeight="Bold" DockPanel.Dock="Left"/>
-                                    <!--<Label Content="See how many times a value appears." DockPanel.Dock="Right"/>-->
-                                </DockPanel>
+                                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                    <DockPanel Style="{DynamicResource ContentBar}"  DockPanel.Dock="Top" LastChildFill="False">
+                                        <Label Name="ListLabel" Content="List Name" FontWeight="Bold" DockPanel.Dock="Left"/>
+                                    </DockPanel>
+                                </Border>
+                                
                                 <ScrollViewer x:Name="ListPanel" Margin="0,0,0,0" >
                                     <Grid>
                                         <ListBox x:Name="EntryListBox" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,0,0" BorderThickness="0" SelectionChanged="EntryListBox_SelectionChanged" Background="#FF242527" Foreground="#FFE6E3E3"/>
@@ -677,7 +705,7 @@
         </Grid>
 
 
-        <Grid x:Name="MidGrid"  Grid.Column="1" Grid.Row="4" Background="#FF150303" >
+        <Grid x:Name="MidGrid"  Grid.Column="1" Grid.Row="3" Grid.RowSpan="2" Background="#FF150303" >
             <DockPanel x:Name="DockPanelHome">
                 <Grid x:Name="GridHome"  >
                     <Grid.ColumnDefinitions>
@@ -685,11 +713,126 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <local:FileManager x:Name="FileManager"  Grid.Column="0" />
-                    <GridSplitter Style="{DynamicResource SplitterVertical}" Grid.Column="1"/>
+                    <local:FileManager x:Name="FileManager"  Grid.Column="0" Margin="0,30,0,0"/>
+                    <GridSplitter Style="{DynamicResource SplitterVertical}" Grid.Column="1" Width="15"/>
 
                     <local:Community x:Name="Community2"   Grid.Column="2" Visibility="Collapsed"/>
 
+
+                    <!--<DockPanel  Grid.Column="2" Margin="0,30,0,0" >
+
+                        <ContentControl DockPanel.Dock="Top" MinHeight="100"  >
+                            <DockPanel>
+                                <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
+                                    <Label Content="Projects / Mods" FontWeight="Bold" />
+                                    <Button DockPanel.Dock="Right" Content="New"  Height="30" MinWidth="50" Margin="0,3,10,2" Width="60" ToolTip="Create a new Mod / Project."  />
+                                </DockPanel>
+                                <DataGrid  HeadersVisibility="None" x:Name="ProjectsSelector" AutoGenerateColumns="False" DockPanel.Dock="Right" VerticalAlignment="Stretch" IsReadOnly="True" SelectionChanged="ProjectSelected" FontSize="15"  >
+                                    <DataGrid.Columns >
+                                        <DataGridTextColumn Header="Projects" Binding="{Binding ProjectName}" Width="*" />
+                                    </DataGrid.Columns>
+
+
+                                    <DataGrid.RowStyle>
+                                        <Style TargetType="{x:Type DataGridRow}">
+                                            --><!--<EventSetter Event="MouseDoubleClick" Handler="Row_DoubleClick" />--><!--
+                                        </Style>
+                                    </DataGrid.RowStyle>
+                                    <DataGrid.ContextMenu>
+                                        <ContextMenu>
+                                            --><!--<MenuItem Header="New Project" Click="CreateNewProject" />
+                                            <MenuItem Header="Delete Project" Click="DeleteProject" />
+                                            <MenuItem Header="Open Input Folder" Click="OpenInput" />
+                                            <MenuItem Header="Open Output Folder" Click="OpenOutput" />--><!--
+                                        </ContextMenu>
+                                    </DataGrid.ContextMenu>
+                                </DataGrid>
+                            </DockPanel>
+                        </ContentControl>
+
+                        <ContentControl DockPanel.Dock="Top" Height="300" Margin="0,14,0,0" >
+                            <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,0,0,0">
+                                <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
+                                    <Label Content="Project Info" FontWeight="Bold" />
+                                    <Button DockPanel.Dock="Right" Content="Load Project"  Height="30" MinWidth="140" Margin="0,3,10,2"  Width="100" ToolTip="Launch this workshop loading the selected project's data.  &#xD;Data is loaded using files in the output folder.  &#xD;If a file isn't there, it loads it from the input folder.  &#xD;If a file still isn't there, it probably just crashes :>"  />
+                                </DockPanel>
+
+                                <DockPanel DockPanel.Dock="Top" Background="{x:Null}" >
+
+                                    <DockPanel DockPanel.Dock="Top" Margin="10,3,10,10"  >
+                                        <Label Content="Project Name" DockPanel.Dock="Top" Margin="-3,0,0,0"  />
+                                        <Border CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
+                                            --><!--Background="White"--><!--
+                                            <TextBox x:Name="ProjectNameTextbox" KeyDown="ChangeProjectName" DockPanel.Dock="Top" Margin="0,0,0,0" Text=""  Padding="4"  BorderThickness="0"  ToolTip="The name of your mod / project. &#xD;This is not shared, and can be whatever you want."   />
+                                        </Border>
+
+                                    </DockPanel>
+
+
+
+                                    <DockPanel DockPanel.Dock="Top" Margin="10,3,10,10"  >
+                                        <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                                            <Label Content="Input Folder" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
+                                            <Button Name="ButtonOpenInputFolder" Content=" Open " Click="OpenProjectInput" DockPanel.Dock="Right"  Width="63" Height="30"/>
+                                            <Button x:Name="ButtonSelectInputDirectory" Content="Set Folder" Click="SetProjectInputDirectory"  DockPanel.Dock="Right" Height="30" Width="120" Margin="0,0,3,0"  />
+                                        </DockPanel>
+                                        <DockPanel DockPanel.Dock="Top">
+                                            <Border Name="BorderInputFolder" CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
+                                                <TextBox x:Name="TextBoxInputDirectory" Margin="2,0,2,0" Padding="4"  BorderThickness="0"  DockPanel.Dock="Left" Text="Where new projects read files from. :)"  IsEnabled="False" />
+                                            </Border>
+
+
+                                        </DockPanel>
+
+                                    </DockPanel>
+
+                                    <DockPanel DockPanel.Dock="Top" Margin="10,3,10,0"  >
+                                        <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                                            <Label Content="Output Folder" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
+                                            <Button Name="ButtonOpenOutputFolder" Content=" Open " Click="OpenProjectOutput" DockPanel.Dock="Right"  Width="60" Height="30"/>
+                                            <Button Content="Set Folder" DockPanel.Dock="Right" Click="SetProjectOutputDirectory"  Height="30" Width="120" Margin="0,0,3,0"   ToolTip="The folder where files are saved to. &#xD;When saving, files will save in the same folder structure as the input folder.  &#xD;   &#xD;TIP: If your modding for a 3DS or Switch game,  &#xD;Set the output folder as the emulator/game's mod folder! :D"  />
+                                        </DockPanel>
+                                        <DockPanel DockPanel.Dock="Top">
+                                            <Border Name="BorderOutputFolder" CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
+                                                <TextBox x:Name="TextBoxOutputDirectory" Margin="2,0,2,0" Padding="4"  BorderThickness="0"  DockPanel.Dock="Left" Text="Where files will be saved to. :)"  IsEnabled="False" />
+                                            </Border>
+                                        </DockPanel>
+
+                                    </DockPanel>
+
+
+
+                                </DockPanel>
+                            </DockPanel>
+                        </ContentControl>
+
+                        <ContentControl DockPanel.Dock="Top" MinHeight="200" Margin="0,10,0,0" BorderThickness="2,0,2,2" BorderBrush="#575757">
+                            <DockPanel DockPanel.Dock="Bottom" Background="{x:Null}" >
+
+                                <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
+                                    <Label Content="Project Resources" FontWeight="Bold" />
+                                    <Label Name="LabelForMissingProjectResources" Content="Some last known locations are wrong?" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,0,0,0" />
+                                </DockPanel>
+                                --><!--Note: Only local files/folders appear here, never child ones, because the user doesn't need to actually set them (thats the point of child items).--><!--
+                                <DockPanel>
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto" >
+                                        <DockPanel>
+                                            <DockPanel Name="ProjectEventResourcesPanel"  LastChildFill="False" DockPanel.Dock="Top" Background="{x:Null}" >
+
+                                            </DockPanel>
+                                        </DockPanel>
+
+                                    </ScrollViewer>
+                                </DockPanel>
+
+                            </DockPanel>
+                        </ContentControl>
+
+                        
+
+                        --><!--//Style="{DynamicResource PixelBorder}"--><!--
+                        
+                    </DockPanel>-->
 
                 </Grid>
             </DockPanel>

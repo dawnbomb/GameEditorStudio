@@ -1,0 +1,32 @@
+﻿Eventing is complicated enough that it deserves it's own documentation, for myself, and for others who might join later. 
+
+Honestly i'd like to recode eventing. but i can't think of anyway that doesn't use reflection 
+(thats a system that lets you indirectly run a method by name).
+Another component is needing the events menu to tell the user if they meet the conditions to trigger an event.
+I feel like i want it easier to understand, but oh well.
+
+Anyway.
+
+All commands are collectivly called CommandMethods, and are all located in a CommandMethodsClass partial class (refered to as CM_.cs), that is split between various files.
+Currently they are in the Eventing/CommandMethods folder.
+Also the Eventing/EventingClasses.cs file has all the classes related to events. 
+It also has the MethodData class. 
+
+When an event is called, a new MethodData class is created, it gets packed with the command, and resources required for the command.
+Then the Method is called and the MethodData is sent to it as it's only variable.  
+(In the future i would like to remake this system, where the commands don't need stuff sent to them, but i can't imagine how to use user resources without sending that info.)
+At the very top of the file is also public delegate void PointerToMethod(MethodData MethodData); , i think it is used to check if a event meets the conditions to be triggered.
+I wish i remembered more about eventing and built it in a more understandable way. Ugh. 
+
+To make a new command, 
+- Make a empty method anywhere inside the CommandMethodsClass.
+- In DevEditor create a new command. This is where you set tool requirements, and resources requirements. The system guarentees the event can only run when all commands have all their conditions met. 
+- Back at the method, write it out. 
+
+ON WRITING THE COMMAND METHOD:
+- Note that MethodData.Command has all basic command data, so MethodData.Command.
+- Tool tool0 = MethodData.Command.RequiredToolsList[0]; is how to get the first tool required. With [1] getting the second tool, etc.
+- string resource0 = MethodData.ResourceLocations[0];
+
+
+

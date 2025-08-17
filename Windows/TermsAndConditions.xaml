@@ -1,11 +1,11 @@
-﻿<Window x:Class="GameEditorStudio.TermsAndConditions"
+﻿<UserControl x:Class="GameEditorStudio.TermsAndConditions"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameEditorStudio"
         mc:Ignorable="d"
-        Title="Terms And Conditions" Height="940" Width="880">
+        >
     <Grid Background="#FF1F1F1F">
         <Label Content="WELCOME TO GAME EDITOR STUDIO! :D" HorizontalAlignment="Center"  Margin="0,4,0,0" VerticalAlignment="Top" FontSize="30" >
             <Label.Foreground>
@@ -17,7 +17,7 @@
                 </LinearGradientBrush>
             </Label.Foreground>
         </Label>
-        <Label Content="Hey gamers! :3 This program is my life's work, my masterpiece, fulfilling my &#xA;deep wish for easy game modding. I've devoted countless hours of my life, &#xA;heart, and soul into this. So before you start, i have some things to say. &#xA;&#xA;UNACCETPABLY to many times, i see people make editors and refuse to share them,&#xA;tell others what parts of a game they are &quot;ALLOWED&quot; to mod (especially DLC), &#xA;and act to claim modding spaces and police them with aggression. &gt;:(&#xA;&#xA;If your using this, we are ALL modders, we ALL, NECESSARILY, make editors, &#xA;mods, and otherwise, WITHOUT asking for permission. Don't let people or communities&#xA;pressure you out of modding games! Our releases make the world a more fun place!&#xA;THAT MATTERS A LOT! It's why this is worth dedicating my life to. &#xA; &#xA;AND SO, to fight back in the small way i can, i'm adding a terms and conditions here. " HorizontalAlignment="Left" Margin="26,45,0,0" VerticalAlignment="Top"/>
+        <Label Content="Hey gamers! :3 This program is my life's work, my masterpiece, fulfilling my &#xA;deep wish for easy game modding. I've devoted countless hours of my life, &#xA;heart, and soul into this. So before you start, i have some things to say. &#xA;&#xA;UNACCETPABLY to many times, i see people make editors and refuse to share them,&#xA;tell others what parts of a game they are &quot;ALLOWED&quot; to mod (especially DLC), &#xA;and act to claim modding spaces and police them with aggression. &gt;:(&#xA;&#xA;If your using this, we are ALL modders, we ALL, NECESSARILY, make editors, &#xA;mods, and otherwise, WITHOUT asking for permission. Don't let people or communities&#xA;pressure you out of modding games! Our releases make the world a more fun place!&#xA;THAT MATTERS A LOT! It's why this is worth dedicating my life to. &#xA; &#xA;AND SO, to fight back in the small way i can, i'm adding a terms and conditions here. " HorizontalAlignment="Center" Margin="0,45,0,0" VerticalAlignment="Top"/>
 
 
 
@@ -33,7 +33,7 @@
 
             </DockPanel>
         </Border>
-        <Label Content="PS: If Romhacking.net or some game banana mod won't let you put&#xD;&#xA;your mod there, reach out to me and i'll host it for you. &#xD;&#xA;(Unless it's a cheat mod for a competative game :p )" HorizontalAlignment="Left" Margin="114,816,0,0" VerticalAlignment="Top"/>
+        <Label Content="PS: If Romhacking.net or some game banana mod won't let you put&#xD;&#xA;your mod there, reach out to me and i'll host it for you. &#xD;&#xA;(Unless it's a cheat mod for a competative game :p )" HorizontalAlignment="Center" Margin="0,816,0,0" VerticalAlignment="Top"/>
 
     </Grid>
-</Window>
+</UserControl>

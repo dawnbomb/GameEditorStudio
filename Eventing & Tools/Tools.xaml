@@ -1,0 +1,75 @@
+﻿<Window x:Class="GameEditorStudio.ToolsMenu"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GameEditorStudio"
+        mc:Ignorable="d"
+        Title="Tools Manager" Height="650" Width="1000">
+    <DockPanel Background="#FF373738" >
+        <DockPanel Name="MainDockPanel" LastChildFill="True" Margin="10,10,10,0" Background="{x:Null}" >
+
+            <ContentControl  Height="145"  Margin="0,10,0,10" DockPanel.Dock="Bottom">
+                <DockPanel LastChildFill="False" Background="#FF191919">
+                    <TextBox Name="ToolNameBox" Margin="8,2,0,0" Text="Tool Name" Height="25" FontSize="20" BorderBrush="{x:Null}" DockPanel.Dock="Top" Background="{x:Null}" FontWeight="Bold"/>
+                    <Rectangle Stroke="#FFE0E0E0" Margin="8,6,8,2" DockPanel.Dock="Top"/>
+                    <TextBox Name="ToolDescriptionBox" TextWrapping="Wrap" Margin="8,0,5,0" Text="Tool Description" Height="100" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="White" DockPanel.Dock="Top"/>
+                </DockPanel>
+                
+
+            </ContentControl>
+
+
+
+
+            <DockPanel Margin="0,0,0,10" >
+                <ContentControl DockPanel.Dock="Top">
+                    <DockPanel>
+                        <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">
+                            <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
+                                <Label Content="Tools" FontWeight="Bold" />                                
+                            </DockPanel>
+                        </Border>
+                        <TreeView x:Name="TreeViewTools" SelectedItemChanged="TreeSelectionChanged" MinHeight="100"/>
+                    </DockPanel>
+                </ContentControl>
+                <ContentControl DockPanel.Dock="Top" Margin="0,10,0,0">
+                    <DockPanel>
+                        <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">
+                            <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
+                                <Label Content="Common Events" FontWeight="Bold" />                                
+                            </DockPanel>
+                        </Border>
+                        <TreeView x:Name="TreeViewCommonEvents" SelectedItemChanged="TreeSelectionChanged" MinHeight="100"/>
+                    </DockPanel>
+                </ContentControl>
+            </DockPanel>
+            
+            
+            
+            <ContentControl MinHeight="150"  DockPanel.Dock="Top" Margin="10,0,10,10"   >
+
+                <DockPanel>
+                    <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">
+                        <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
+                            <Label DockPanel.Dock="Top" Content="Tip: Tools inside the GameEditorStudio/Tools folder are automatically used. &#xA;Even if they are inside folders, subfoldes, and even if the folders are renamed!"  VerticalAlignment="Top" Foreground="#FFB1CC78"/>
+
+                        </DockPanel>
+                    </Border>
+                    <ScrollViewer Name="TheScrollViewer" DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
+                        <DockPanel x:Name="TheScrollPanel" Style="{DynamicResource DockList}" LastChildFill="False"/>
+                    </ScrollViewer>
+                </DockPanel>                
+            </ContentControl>
+            
+            
+            
+            
+            
+            
+            
+            
+
+        </DockPanel>
+    </DockPanel>    
+</Window>

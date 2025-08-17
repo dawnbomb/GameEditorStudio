@@ -10,19 +10,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace GameEditorStudio
 {
     /// <summary>
-    /// Interaction logic for StandardEditor.xaml
+    /// Interaction logic for EventingTutorial.xaml
     /// </summary>
-    public partial class StandardEditor : UserControl
+    public partial class EventingTutorial : Window
     {
-
-
-        public StandardEditor()
+        public EventingTutorial()
         {
             InitializeComponent();
         }

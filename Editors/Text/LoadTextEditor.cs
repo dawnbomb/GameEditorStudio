@@ -13,7 +13,7 @@ namespace GameEditorStudio
     {
         public void NewTextEditorIntoDatabase(WorkshopData Database, UserControlEditorCreator Maker) 
         {
-            Workshop TheWorkshop = Database.Workshop;
+            Workshop TheWorkshop = Database.WorkshopXaml;
 
             TheWorkshop.EditorName = Maker.TextboxEditorName.Text;
 

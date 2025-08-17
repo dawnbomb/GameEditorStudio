@@ -23,52 +23,21 @@ namespace GameEditorStudio
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class DevTools : Window
+    public partial class DevEditor : Window
     {        
+        //The commands categorys and groups are auto-generated. They are also just strings and not enums. 
 
-        public enum ToolTabs //No spaces or numbers.  BE CAREFUL CHANGING THESE! The enums are also the raw file names.
-        {
-            Hidden,   //The default value.
-            Tools,
-            Patchers,
-            HexEditors,
-        }
-
-        public enum CommandTabs //No spaces or numbers.  BE CAREFUL CHANGING THESE! The enums are also the raw file names.
-        {
-            Hidden,   //The default value.
-            Basic,
-            Program,
-            NDS,
-            Misc,
-            Expiramental,
-        }
-        //NOTE: These ENUMs were an idea when i was removing google sheet imports, on how to deal with dropdowns.
-        //If i end up not using these, it's totally okay to delete them all and cleanup this part of the code.
-        public enum CommandSubTabs //No spaces or numbers.  BE CAREFUL CHANGING THESE! The enums are also the raw file names.
-        {
-            Hidden,   //The default value.
-            Basic,
-            OpenTool,
-            Emulator,
-            Patcher,
-        }
-
-        public enum CommonEventTabs //No spaces or numbers.  BE CAREFUL CHANGING THESE! The enums are also the raw file names.
-        {
-            Hidden,  //The default value.
-            Basic,
-            Command,
-            NDS,
-        }
-
-        
-
-        public DevTools()
+        public DevEditor()
         {
             InitializeComponent();
 
-            foreach (var tool in TrueDatabase.Tools)
+            List<string> ToolCategoryNames = new();
+            List<string> CommandCategoryNames = new();
+            List<string> CommandGroupNames = new();
+            List<string> CommonCategoryNames = new();
+
+            //ToolTabCombobox
+            foreach (var tool in Database.Tools)
             {
                 var item = new TreeViewItem
                 {
@@ -76,10 +45,23 @@ namespace GameEditorStudio
                     Tag = tool
                 };
                 ToolsTree.Items.Add(item);
-            }
-            
 
-            foreach (var command in TrueDatabase.Commands)
+                if (!ToolCategoryNames.Contains(tool.Category)) 
+                {
+                    ToolCategoryNames.Add(tool.Category);
+                }
+            }
+            foreach (var category in ToolCategoryNames)
+            {
+                var comboItem = new ComboBoxItem
+                {
+                    Content = category
+                };
+                ToolTabCombobox.Items.Add(comboItem);
+            }
+
+
+            foreach (var command in Database.Commands)
             {
                 var item = new TreeViewItem
                 {
@@ -87,10 +69,35 @@ namespace GameEditorStudio
                     Tag = command
                 };
                 CommandsTree.Items.Add(item);
-            }
-            
 
-            foreach (var commonevent in TrueDatabase.CommonEvents)
+                if (!CommandCategoryNames.Contains(command.Category))
+                {
+                    CommandCategoryNames.Add(command.Category);
+                }
+                if (!CommandGroupNames.Contains(command.Group))
+                {
+                    CommandGroupNames.Add(command.Group);
+                }
+            }
+            foreach (var category in CommandCategoryNames)
+            {
+                var comboItem = new ComboBoxItem
+                {
+                    Content = category
+                };
+                CommandTabCombobox.Items.Add(comboItem);
+            }
+            foreach (var group in CommandGroupNames)
+            {
+                var comboItem = new ComboBoxItem
+                {
+                    Content = group
+                };
+                CommandSubCombobox.Items.Add(comboItem);
+            }
+
+
+            foreach (var commonevent in Database.CommonEvents)
             {
                 var item = new TreeViewItem
                 {
@@ -98,37 +105,24 @@ namespace GameEditorStudio
                     Tag = commonevent
                 };
                 CommonEventsTree.Items.Add(item);
+
+                if (!CommonCategoryNames.Contains(commonevent.Category))
+                {
+                    CommonCategoryNames.Add(commonevent.Category);
+                }
+            }
+            foreach (var category in CommonCategoryNames)
+            {
+                var comboItem = new ComboBoxItem
+                {
+                    Content = category
+                };
+                CommonEventTabCombobox.Items.Add(comboItem);
             }
 
-                        
-        }
-
-        private void LoadEvent() 
-        {
-            (ToolsTree.ItemContainerGenerator.ContainerFromIndex(0) as TreeViewItem).IsSelected = true;
-            (CommandsTree.ItemContainerGenerator.ContainerFromIndex(0) as TreeViewItem).IsSelected = true;
-            (CommonEventsTree.ItemContainerGenerator.ContainerFromIndex(0) as TreeViewItem).IsSelected = true;
-        }
-
-        private void SetupTools()
-        {
-            
-        }
-
-        private void SetupCommands()
-        {
 
         }
 
-        private void SetupCommonEvents()
-        {
-
-        }
-
-        private void NewTools(object sender, RoutedEventArgs e)
-        {
-
-        }
 
         private void ToolsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
@@ -147,8 +141,9 @@ namespace GameEditorStudio
             ToolNotepadTextbox.Text = tool.Notepad;
 
             SelectComboBoxItemByContent(ToolTabCombobox, tool.Category);
+            ToolCategoryTextbox.Text = tool.Category;
 
-            
+
 
 
         }
@@ -171,6 +166,10 @@ namespace GameEditorStudio
 
             SelectComboBoxItemByContent(CommandTabCombobox, command.Category);
             SelectComboBoxItemByContent(CommandSubCombobox, command.Group);
+
+            CommandCategoryTextbox.Text = command.Category;
+            CommandGroupTextbox.Text = command.Group;
+
 
             CommandToolsPanel.Children.Clear();
             foreach (Tool RequiredTool in command.RequiredToolsList) 
@@ -201,6 +200,7 @@ namespace GameEditorStudio
             CommonEventNewKeyTextbox.Text = commonevent.Key;
 
             SelectComboBoxItemByContent(CommonEventTabCombobox, commonevent.Category);
+            CommonCategoryTextbox.Text = commonevent.Category;
 
             CommonEventCommandsPanel.Children.Clear();
             foreach (Command command in commonevent.MyCommands) 
@@ -225,7 +225,7 @@ namespace GameEditorStudio
         private void CommandButtonNewTool(object sender, RoutedEventArgs e)
         {
             
-            NewCommandToolPanel(TrueDatabase.Tools[0]);
+            NewCommandToolPanel(Database.Tools[0]);
         }
 
         private void CommandButtonNewResource(object sender, RoutedEventArgs e)
@@ -236,15 +236,20 @@ namespace GameEditorStudio
 
         private void CommonEventButtonNewCommand(object sender, RoutedEventArgs e)
         {
-            NewCommonEventCommandPanel(TrueDatabase.Commands[0]);
+            NewCommonEventCommandPanel(Database.Commands[0]);
         }
 
         private void NewCommandToolPanel(Tool RequiredTool) 
         {
             DockPanel TheDockPanel = new DockPanel();
             DockPanel.SetDock(TheDockPanel, Dock.Top);
-            TheDockPanel.Margin = new Thickness(1, 1, 1, 1);
+            TheDockPanel.Margin = new Thickness(3);
 
+            string numba = CommandToolsPanel.Children.Count.ToString();
+            Label CountLabel = new Label();
+            CountLabel.Content = "Tool " + numba + ":";
+            TheDockPanel.Children.Add(CountLabel);
+            DockPanel.SetDock(CountLabel, Dock.Left);
 
             Button DeleteButton = new Button();
             DeleteButton.Content = " Delete ";
@@ -259,7 +264,7 @@ namespace GameEditorStudio
             TheComboBox.Margin = new Thickness(3);
             TheDockPanel.Children.Add(TheComboBox);
 
-            foreach (var tool in TrueDatabase.Tools)
+            foreach (var tool in Database.Tools)
             {
                 var toolitem = new ComboBoxItem
                 {
@@ -284,7 +289,13 @@ namespace GameEditorStudio
         {
             DockPanel TheDockPanel = new DockPanel();
             DockPanel.SetDock(TheDockPanel, Dock.Top);
-            TheDockPanel.Margin = new Thickness(1, 1, 1, 1);
+            TheDockPanel.Margin = new Thickness(3);
+
+            string numba = CommandEventResourcesPanel.Children.Count.ToString();
+            Label CountLabel = new Label();
+            CountLabel.Content = "Resource " + numba + ":";
+            TheDockPanel.Children.Add(CountLabel);
+            DockPanel.SetDock(CountLabel, Dock.Left);
 
             Button DeleteButton = new Button();
             DeleteButton.Content = " Delete ";
@@ -298,7 +309,7 @@ namespace GameEditorStudio
             TextBox TheTextBox = new TextBox();
             TheTextBox.Margin = new Thickness(3);
             TheTextBox.Text = RequiredResource.Label;
-            TheTextBox.Width = 130;
+            TheTextBox.Width = 150;
             TheDockPanel.Children.Add(TheTextBox);
 
             ComboBox TheComboBox = new ComboBox();
@@ -315,6 +326,10 @@ namespace GameEditorStudio
             ComboBoxItemFolder.Content = "Folder";
             TheComboBox.Items.Add(ComboBoxItemFolder);
 
+            //ComboBoxItem ComboBoxItemText = new ComboBoxItem();
+            //ComboBoxItemText.Content = "Text";
+            //TheComboBox.Items.Add(ComboBoxItemText);
+
             if (RequiredResource.Type == CommandResource.ResourceTypes.File)
             {
                 ComboBoxItemFile.IsSelected = true;
@@ -323,6 +338,10 @@ namespace GameEditorStudio
             {
                 ComboBoxItemFolder.IsSelected = true;
             }
+            //if (RequiredResource.Type == CommandResource.ResourceTypes.Text)
+            //{
+            //    ComboBoxItemText.IsSelected = true;
+            //}
 
 
 
@@ -350,7 +369,7 @@ namespace GameEditorStudio
             TheComboBox.Margin = new Thickness(3);
             TheDockPanel.Children.Add(TheComboBox);
 
-            foreach (var thecommand in TrueDatabase.Commands)
+            foreach (var thecommand in Database.Commands)
             {
                 var commanditem = new ComboBoxItem
                 {
@@ -422,7 +441,7 @@ namespace GameEditorStudio
                         writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
 
                         writer.WriteStartElement("ToolList");
-                        foreach (Tool tool in TrueDatabase.Tools)
+                        foreach (Tool tool in Database.Tools)
                         {
                             writer.WriteStartElement("Tool");
 
@@ -463,7 +482,7 @@ namespace GameEditorStudio
                         writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
 
                         writer.WriteStartElement("CommandsList");
-                        foreach (Command command in TrueDatabase.Commands)
+                        foreach (Command command in Database.Commands)
                         {
                             writer.WriteStartElement("Command");
 
@@ -523,7 +542,7 @@ namespace GameEditorStudio
                         writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
 
                         writer.WriteStartElement("CommonEventList");
-                        foreach (CommonEvent commonevent in TrueDatabase.CommonEvents)
+                        foreach (CommonEvent commonevent in Database.CommonEvents)
                         {
                             writer.WriteStartElement("CommonEvent");
 
@@ -585,7 +604,8 @@ namespace GameEditorStudio
             tool.ExeName = ToolExeTextbox.Text;
             tool.DownloadLink = ToolDownloadLink.Text;
             tool.Notepad = ToolNotepadTextbox.Text;
-            tool.Category = ToolTabCombobox.Text;
+            //tool.Category = ToolTabCombobox.Text;
+            tool.Category = ToolCategoryTextbox.Text;
 
             item.Header = tool.DisplayName;
 
@@ -604,25 +624,30 @@ namespace GameEditorStudio
             command.Key = CommandNewKeyTextbox.Text;
             command.MethodName = CommandMethodNameTextbox.Text;
             command.Notepad = CommandNotepadTextbox.Text;
-            command.Category = CommandTabCombobox.Text;
-            command.Group = CommandSubCombobox.Text;
+            //command.Category = CommandTabCombobox.Text;
+            //command.Group = CommandSubCombobox.Text;
+            command.Category = CommandCategoryTextbox.Text;
+            command.Group = CommandGroupTextbox.Text;
             command.RequiredToolsList.Clear();
+            command.RequiredResourcesList.Clear();
 
             //Copilot did all this, and im gonna actually trust it for a change. 
             foreach (DockPanel TheDockPanel in CommandToolsPanel.Children)
             {
-                ComboBox TheComboBox = (ComboBox)TheDockPanel.Children[1];
+                //This will error if i change the order of the tool panel's children.
+                ComboBox TheComboBox = (ComboBox)TheDockPanel.Children[2];
                 if (TheComboBox.SelectedItem != null)
                 {
                     var tool = (Tool)((ComboBoxItem)TheComboBox.SelectedItem).Tag;
                     command.RequiredToolsList.Add(tool);
                 }
             }
-            command.RequiredResourcesList.Clear();
+            
             foreach (DockPanel TheDockPanel in CommandEventResourcesPanel.Children)
             {
-                TextBox TheTextBox = (TextBox)TheDockPanel.Children[1];
-                ComboBox TheComboBox = (ComboBox)TheDockPanel.Children[2];
+                //This will error if i change the order of the resource panel's children.
+                TextBox TheTextBox = (TextBox)TheDockPanel.Children[2];
+                ComboBox TheComboBox = (ComboBox)TheDockPanel.Children[3];
                 if (TheComboBox.SelectedItem != null)
                 {
                     var resource = new CommandResource
@@ -649,7 +674,8 @@ namespace GameEditorStudio
             commonevent.Description = CommonEventDescriptionTextbox.Text;
             commonevent.Key = CommonEventNewKeyTextbox.Text;
             commonevent.Notepad = CommonEventNotepadTextbox.Text;
-            commonevent.Category = CommonEventTabCombobox.Text;
+            //commonevent.Category = CommonEventTabCombobox.Text;
+            commonevent.Category = CommonCategoryTextbox.Text;
             commonevent.MyCommands.Clear();
             //Copilot did all this, and im gonna actually trust it for a change. 
             foreach (DockPanel TheDockPanel in CommonEventCommandsPanel.Children)
@@ -676,7 +702,7 @@ namespace GameEditorStudio
                 Header = Tool.DisplayName,
             };
             ToolsTree.Items.Add(treeViewItem);
-            TrueDatabase.Tools.Add(Tool); 
+            Database.Tools.Add(Tool); 
         }
 
         private void ButtonNewCommand(object sender, RoutedEventArgs e)
@@ -688,7 +714,7 @@ namespace GameEditorStudio
                 Header = Command.DisplayName,
             };
             CommandsTree.Items.Add(treeViewItem);
-            TrueDatabase.Commands.Add(Command);
+            Database.Commands.Add(Command);
         }
 
         private void ButtonNewCommonEvent(object sender, RoutedEventArgs e)
@@ -700,7 +726,7 @@ namespace GameEditorStudio
                 Header = CommonEvent.DisplayName,
             };
             CommonEventsTree.Items.Add(treeViewItem);
-            TrueDatabase.CommonEvents.Add(CommonEvent);
+            Database.CommonEvents.Add(CommonEvent);
         }
 
         private void ButtonDeleteTool(object sender, RoutedEventArgs e)
@@ -710,7 +736,7 @@ namespace GameEditorStudio
             var tool = (Tool)item.Tag;
             if (tool == null) return;
 
-            TrueDatabase.Tools.Remove(tool);
+            Database.Tools.Remove(tool);
             ToolsTree.Items.Remove(item);
         }
 
@@ -721,7 +747,7 @@ namespace GameEditorStudio
             var command = (Command)item.Tag;
             if (command == null) return;
 
-            TrueDatabase.Commands.Remove(command);
+            Database.Commands.Remove(command);
             CommandsTree.Items.Remove(item);
         }
 
@@ -732,7 +758,7 @@ namespace GameEditorStudio
             var commonevent = (CommonEvent)item.Tag;
             if (commonevent == null) return;
 
-            TrueDatabase.CommonEvents.Remove(commonevent);
+            Database.CommonEvents.Remove(commonevent);
             CommonEventsTree.Items.Remove(item);
         }
 
@@ -743,7 +769,7 @@ namespace GameEditorStudio
             var tool = (Tool)item.Tag;
             if (tool == null) return;
 
-            LibraryGES.MoveListItemUp(TrueDatabase.Tools, tool);
+            LibraryGES.MoveListItemUp(Database.Tools, tool);
             LibraryGES.MoveTreeItemUp(ToolsTree, item);
 
             item.IsSelected = true;
@@ -756,7 +782,7 @@ namespace GameEditorStudio
             var tool = (Tool)item.Tag;
             if (tool == null) return;
 
-            LibraryGES.MoveListItemDown(TrueDatabase.Tools, tool);
+            LibraryGES.MoveListItemDown(Database.Tools, tool);
             LibraryGES.MoveTreeItemDown(ToolsTree, item);
 
             item.IsSelected = true;
@@ -769,7 +795,7 @@ namespace GameEditorStudio
             var command = (Command)item.Tag;
             if (command == null) return;
 
-            LibraryGES.MoveListItemUp(TrueDatabase.Commands, command);
+            LibraryGES.MoveListItemUp(Database.Commands, command);
             LibraryGES.MoveTreeItemUp(CommandsTree, item);
 
             item.IsSelected = true;
@@ -782,7 +808,7 @@ namespace GameEditorStudio
             var command = (Command)item.Tag;
             if (command == null) return;
 
-            LibraryGES.MoveListItemDown(TrueDatabase.Commands, command);
+            LibraryGES.MoveListItemDown(Database.Commands, command);
             LibraryGES.MoveTreeItemDown(CommandsTree, item);
 
             item.IsSelected = true;
@@ -795,7 +821,7 @@ namespace GameEditorStudio
             var common = (CommonEvent)item.Tag;
             if (common == null) return;
 
-            LibraryGES.MoveListItemUp(TrueDatabase.CommonEvents, common);
+            LibraryGES.MoveListItemUp(Database.CommonEvents, common);
             LibraryGES.MoveTreeItemUp(CommonEventsTree, item);
 
             item.IsSelected = true;
@@ -808,10 +834,45 @@ namespace GameEditorStudio
             var common = (CommonEvent)item.Tag;
             if (common == null) return;
 
-            LibraryGES.MoveListItemDown(TrueDatabase.CommonEvents, common);
+            LibraryGES.MoveListItemDown(Database.CommonEvents, common);
             LibraryGES.MoveTreeItemDown(CommonEventsTree, item);
 
             item.IsSelected = true;
+        }
+
+        private void CommandCategoryDropdownClosed(object sender, EventArgs e)
+        {
+            //TreeViewItem item = CommandsTree.SelectedItem as TreeViewItem;
+            //if (item == null) return;
+            //var command = (Command)item.Tag;
+            //if (command == null) return;
+
+            //command.Category = CommandTabCombobox.Text;
+
+            CommandCategoryTextbox.Text = CommandTabCombobox.Text;
+
+        }
+
+        private void CommandGroupDropdownClosed(object sender, EventArgs e)
+        {
+            //TreeViewItem item = CommandsTree.SelectedItem as TreeViewItem;
+            //if (item == null) return;
+            //var command = (Command)item.Tag;
+            //if (command == null) return;
+
+            //command.Group = CommandSubCombobox.Text;
+
+            CommandGroupTextbox.Text = CommandSubCombobox.Text;
+        }
+
+        private void ToolCatDropdownClosed(object sender, EventArgs e)
+        {
+            ToolCategoryTextbox.Text = ToolTabCombobox.Text;
+        }
+
+        private void CommonCatDropdownClosed(object sender, EventArgs e)
+        {
+            CommonCategoryTextbox.Text = CommonEventTabCombobox.Text;
         }
     }
 }

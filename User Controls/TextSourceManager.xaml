@@ -8,19 +8,22 @@
              d:DesignHeight="3700" d:DesignWidth="1100">
     <Border >
         <DockPanel LastChildFill="True">
-            <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}" LastChildFill="False">
-                <Label Content="Text Table Source Manager" FontWeight="Bold" DockPanel.Dock="Left" />
-                <Button Name="ButtonSaveAndExit" Content="  Save and Exit  " DockPanel.Dock="Right" Margin="4" Click="SaveAndExit" />
-                <Button x:Name="ButtonExitWithoutSaving" Content=" Exit without saving " DockPanel.Dock="Right" Margin="4" Click="ExitWithoutSaving"  />
+            <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                <DockPanel Style="{DynamicResource ContentBar}" LastChildFill="False">
+                    <Label Content="Text Table Source Manager" FontWeight="Bold" DockPanel.Dock="Left" />
+                    <Button Name="ButtonSaveAndExit" Content="  Save and Exit  " DockPanel.Dock="Right" Margin="4" Click="SaveAndExit" />
+                    <Button x:Name="ButtonExitWithoutSaving" Content=" Exit without saving " DockPanel.Dock="Right" Margin="4" Click="ExitWithoutSaving"  />
 
-                <ComboBox x:Name="ComboBoxListType" DockPanel.Dock="Right" Margin="4" Width="190" DropDownClosed="TextSourceDropdownClosed">
-                    <ComboBoxItem Content="Link to Data File" />
-                    <ComboBoxItem Content="Link to Text File"/>
-                    <ComboBoxItem Content="Link to Editor" />
-                    <ComboBoxItem Content="Link to Nothing"/>
-                </ComboBox>
-                <Label Content="Text Source:" DockPanel.Dock="Right" />
-            </DockPanel>
+                    <ComboBox x:Name="ComboBoxListType" DockPanel.Dock="Right" Margin="4" Width="190" DropDownClosed="TextSourceDropdownClosed">
+                        <ComboBoxItem Content="Link to Data File" />
+                        <ComboBoxItem Content="Link to Text File"/>
+                        <ComboBoxItem Content="Link to Editor" />
+                        <ComboBoxItem Content="Link to Nothing"/>
+                    </ComboBox>
+                    <Label Content="Text Source:" DockPanel.Dock="Right" />
+                </DockPanel>
+            </Border>
+            
             <Grid DockPanel.Dock="Top">
                 <Grid x:Name="EditorListTableWindow" >
 

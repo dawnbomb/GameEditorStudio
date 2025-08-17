@@ -5,24 +5,25 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WpfHexaEditor.Properties;
 
 namespace GameEditorStudio
 {
     public partial class CommandMethodsClass
     {
-        public static void DoNothing(MethodData ActionPack) 
+        public static void DoNothing(MethodData MethodData) 
         {
+            
             //This is a dummy / debug method that does nothing.
             //Useful for testing the events menu without actually doing anything.
         }
 
         ////////////////////////////////////////////////////////////////////
-        public static void OpenTool(MethodData ActionPack)
+        public static void OpenTool(MethodData MethodData)
         {
             //ADD ABILITY TO SELECT NO FILE TO LAUNCH!
-
-            Command command = ActionPack.Command; //eventCommand.Command;
-            Tool toolOne = command.RequiredToolsList.First();
+            
+            Tool toolOne = MethodData.Command.RequiredToolsList[0];
             ProcessStartInfo startInfo = new ProcessStartInfo()
             {
                 FileName = toolOne.Location, // Path to the executable
@@ -36,13 +37,13 @@ namespace GameEditorStudio
 
         ////////////////////////////////////////////////////////////////////
 
-        public static void Tool1File(MethodData ActionPack)
+        public static void Tool1File(MethodData MethodData)
         {
 
             //ADD ABILITY TO SELECT NO FILE TO LAUNCH!
 
 
-            Command command = ActionPack.Command; //eventCommand.Command;
+            Command command = MethodData.Command; //eventCommand.Command;
             Tool toolOne = command.RequiredToolsList.First();
             ProcessStartInfo startInfo = new ProcessStartInfo()
             {
@@ -50,9 +51,9 @@ namespace GameEditorStudio
                 UseShellExecute = true       // This allows starting a process associated with a file type (when needed)
             };
 
-            if (ActionPack.ResourceLocations.Count > 0)
+            if (MethodData.ResourceLocations.Count > 0)
             {
-                string TheLocation = ActionPack.ResourceLocations.First();
+                string TheLocation = MethodData.ResourceLocations.First();
                 startInfo.Arguments = $"\"{TheLocation}\"";
             }
 
@@ -61,38 +62,27 @@ namespace GameEditorStudio
         }
 
 
-        public static void RunProgram(MethodData ActionPack)
+        public static void RunProgram(MethodData MethodData)
         {
 
             ProcessStartInfo startInfo = new ProcessStartInfo()
             {
-                FileName = ActionPack.ResourceLocations[0],
+                FileName = MethodData.ResourceLocations[0],
                 UseShellExecute = true       // This allows starting a process associated with a file type (when needed)
             };
 
             Process.Start(startInfo);
         }
 
-        public static void RunProgramwithfile(MethodData ActionPack)
+        
+
+
+        public static void MoveFile(MethodData MethodData)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo()
+            if (MethodData.ResourceLocations.Count >= 2 && !string.IsNullOrEmpty(MethodData.ResourceLocations[0]) && !string.IsNullOrEmpty(MethodData.ResourceLocations[1]))
             {
-                FileName = ActionPack.ResourceLocations[0],
-                UseShellExecute = true       // This allows starting a process associated with a file type (when needed)
-            };
-
-            startInfo.Arguments = $"\"{ActionPack.ResourceLocations[1]}\"";
-
-            Process.Start(startInfo);
-        }
-
-
-        public static void MoveFile(MethodData ActionPack)
-        {
-            if (ActionPack.ResourceLocations.Count >= 2 && !string.IsNullOrEmpty(ActionPack.ResourceLocations[0]) && !string.IsNullOrEmpty(ActionPack.ResourceLocations[1]))
-            {
-                string sourceFile = ActionPack.ResourceLocations[0];
-                string destinationFolder = ActionPack.ResourceLocations[1];
+                string sourceFile = MethodData.ResourceLocations[0];
+                string destinationFolder = MethodData.ResourceLocations[1];
                 string destinationFile = Path.Combine(destinationFolder, Path.GetFileName(sourceFile));
                 try
                 {
@@ -110,12 +100,12 @@ namespace GameEditorStudio
             }
         }
 
-        public static void MoveFolder(MethodData ActionPack)
+        public static void MoveFolder(MethodData MethodData)
         {
-            if (ActionPack.ResourceLocations.Count >= 2 && !string.IsNullOrEmpty(ActionPack.ResourceLocations[0]) && !string.IsNullOrEmpty(ActionPack.ResourceLocations[1]))
+            if (MethodData.ResourceLocations.Count >= 2 && !string.IsNullOrEmpty(MethodData.ResourceLocations[0]) && !string.IsNullOrEmpty(MethodData.ResourceLocations[1]))
             {
-                string sourceFolder = ActionPack.ResourceLocations[0];
-                string destinationFolder = Path.Combine(ActionPack.ResourceLocations[1], new DirectoryInfo(sourceFolder).Name);
+                string sourceFolder = MethodData.ResourceLocations[0];
+                string destinationFolder = Path.Combine(MethodData.ResourceLocations[1], new DirectoryInfo(sourceFolder).Name);
                 try
                 {
                     System.IO.Directory.Move(sourceFolder, destinationFolder);
@@ -132,12 +122,12 @@ namespace GameEditorStudio
             }
         }
 
-        public static void CopyFile(MethodData ActionPack)
+        public static void CopyFile(MethodData MethodData)
         {
-            if (ActionPack.ResourceLocations.Count >= 2 && !string.IsNullOrEmpty(ActionPack.ResourceLocations[0]) && !string.IsNullOrEmpty(ActionPack.ResourceLocations[1]))
+            if (MethodData.ResourceLocations.Count >= 2 && !string.IsNullOrEmpty(MethodData.ResourceLocations[0]) && !string.IsNullOrEmpty(MethodData.ResourceLocations[1]))
             {
-                string sourceFile = ActionPack.ResourceLocations[0];
-                string destinationFolder = ActionPack.ResourceLocations[1];
+                string sourceFile = MethodData.ResourceLocations[0];
+                string destinationFolder = MethodData.ResourceLocations[1];
                 string destinationFile = Path.Combine(destinationFolder, Path.GetFileName(sourceFile));
                 try
                 {
@@ -155,12 +145,13 @@ namespace GameEditorStudio
             }
         }
 
-        public static void CopyFolder(MethodData ActionPack)
+        public static void CopyFolder(MethodData MethodData)
         {
-            if (ActionPack.ResourceLocations.Count >= 2 && !string.IsNullOrEmpty(ActionPack.ResourceLocations[0]) && !string.IsNullOrEmpty(ActionPack.ResourceLocations[1]))
+            if (MethodData.ResourceLocations.Count >= 2 && !string.IsNullOrEmpty(MethodData.ResourceLocations[0]) && !string.IsNullOrEmpty(MethodData.ResourceLocations[1]))
             {
-                string sourceFolder = ActionPack.ResourceLocations[0];
-                string destinationFolder = Path.Combine(ActionPack.ResourceLocations[1], new DirectoryInfo(sourceFolder).Name);
+                string resource0 = MethodData.ResourceLocations[0];
+                string sourceFolder = MethodData.ResourceLocations[0];
+                string destinationFolder = Path.Combine(MethodData.ResourceLocations[1], new DirectoryInfo(sourceFolder).Name);
                 try
                 {
                     CopyDirectory(sourceFolder, destinationFolder);
@@ -204,11 +195,11 @@ namespace GameEditorStudio
             }
         }
 
-        public static void DeleteFile(MethodData ActionPack)
+        public static void DeleteFile(MethodData MethodData)
         {
-            if (ActionPack.ResourceLocations.Count > 0 && !string.IsNullOrEmpty(ActionPack.ResourceLocations[0]))
+            if (MethodData.ResourceLocations.Count > 0 && !string.IsNullOrEmpty(MethodData.ResourceLocations[0]))
             {
-                string filePath = ActionPack.ResourceLocations[0];
+                string filePath = MethodData.ResourceLocations[0];
                 try
                 {
                     System.IO.File.Delete(filePath);  // Use System.IO.File.Delete to delete the file
@@ -225,12 +216,12 @@ namespace GameEditorStudio
             }
         }
 
-        public static void DeleteFolder(MethodData ActionPack)
+        public static void DeleteFolder(MethodData MethodData)
         {
             // Check if there are any locations specified and the first location is not empty
-            if (ActionPack.ResourceLocations.Count > 0 && !string.IsNullOrEmpty(ActionPack.ResourceLocations[0]))
+            if (MethodData.ResourceLocations.Count > 0 && !string.IsNullOrEmpty(MethodData.ResourceLocations[0]))
             {
-                string directoryPath = ActionPack.ResourceLocations[0];
+                string directoryPath = MethodData.ResourceLocations[0];
                 try
                 {
                     System.IO.Directory.Delete(directoryPath, true);  // Deletes the directory and all subdirectories and files
@@ -245,6 +236,72 @@ namespace GameEditorStudio
             {
                 Console.WriteLine("No directory path is available to delete.");
             }
+        }
+
+        public static void OpenFolder(MethodData MethodData)
+        {
+            string resource0 = MethodData.ResourceLocations[0];
+            if (resource0 == "") { return; }
+
+            LibraryGES.OpenFolder(resource0);
+
+        }
+
+
+        public static void RunProgramwithfile(MethodData MethodData)
+        {
+            string resource0 = MethodData.ResourceLocations[0];
+            string resource1 = MethodData.ResourceLocations[1];
+
+            string FINAL1 = resource0 + resource1;
+
+            string FINAL2 = resource0 + resource1;
+
+            ProcessStartInfo startInfo = new ProcessStartInfo()
+            {
+                FileName = MethodData.ResourceLocations[0],
+                UseShellExecute = true       // This allows starting a process associated with a file type (when needed)
+            };
+
+            startInfo.Arguments = $"\"{MethodData.ResourceLocations[1]}\"";
+
+            Process.Start(startInfo);
+        }
+
+        public static void CommandPrompt(MethodData MethodData) 
+        {
+            //ProcessStartInfo startInfo = new ProcessStartInfo()
+            //{
+            //    FileName = "cmd.exe",  //MethodData.ResourceLocations[0],
+            //    UseShellExecute = true       // This allows starting a process associated with a file type (when needed)
+            //};
+
+            string FINAL = "";
+
+            foreach (string resource in MethodData.ResourceLocations)
+            {
+                if (!string.IsNullOrEmpty(resource))
+                {
+                    FINAL = FINAL + resource;
+                }
+            }
+
+            string truefinal = FINAL;
+
+            string resource0 = MethodData.ResourceLocations[0];
+            string resource1 = MethodData.ResourceLocations[1];
+            //string resource2 = MethodData.ResourceLocations[2];
+            //string resource3 = MethodData.ResourceLocations[3];
+
+            string FINAL1 = resource0 + resource1;
+            //string FINAL2 = resource0 + resource1 + resource2;
+            //string FINAL3 = resource0 + resource1 + resource2 + resource3;
+            //string FINAL4 = resource0 + resource1 + resource2 + resource3 + resource4;
+
+            //File.WriteAllText(resource0, resource1);
+            //File.WriteAllText(@"C:\\Users\\Dawnbomb\\Downloads\\UnitiaText Tool\\F One\\MyFile.txt", resource3 + "\n" + FINAL2);
+
+            //Process.Start(startInfo);
         }
 
     }

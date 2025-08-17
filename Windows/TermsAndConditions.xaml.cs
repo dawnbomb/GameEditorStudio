@@ -19,40 +19,18 @@ namespace GameEditorStudio
     /// <summary>
     /// Interaction logic for TermsAndConditions.xaml
     /// </summary>
-    public partial class TermsAndConditions : Window
+    public partial class TermsAndConditions : UserControl
     {
         public TermsAndConditions()
         {
             InitializeComponent();
-            this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-
-            
-
-            this.Topmost = true;    // Temporarily set topmost to ensure visibility
-            this.Activate();        // Try to bring to foreground
-            this.Focus();           // Set keyboard focus
-            this.Topmost = false;   // Reset topmost if undesired permanently
         }
 
         private void ButtonIAgreeToToS(object sender, RoutedEventArgs e)
         {
-            OpenCrystalEditor();
+            this.Visibility = Visibility.Collapsed;
         }
 
-        public void OpenCrystalEditor()
-        {
-            GameLibrary GameLibrary = new GameLibrary();
-            GameLibrary.Show();
-
-            this.Close();
-
-            //foreach (TreeViewItem item in GameLibrary.LibraryTreeOfWorkshops.Items) //Select the last workshop used, if it exists.
-            //{                
-            //    if (item.Header as string == Properties.Settings.Default.LastWorkshop)
-            //    {
-            //        item.IsSelected = true;
-            //    }
-            //}
-        }
+        
     }
 }

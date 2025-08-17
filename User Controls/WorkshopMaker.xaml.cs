@@ -27,14 +27,16 @@ namespace GameEditorStudio
     /// This is for the workshop data editing inside the game library. its not a part of a workshop itself!
     public partial class WorkshopMaker : UserControl
     {
-        GameLibrary Library;
-        string TheMode;
+        GameLibrary Library { get; set; }
+        string TheMode { get; set; }
+        WorkshopData workshopData { get; set; }
 
-        public WorkshopMaker(string TheModee)
+        public WorkshopMaker(string TheModee, WorkshopData workshopData2)
         {
             InitializeComponent();
 
             TheMode = TheModee;
+            workshopData = workshopData2;
             this.Loaded += new RoutedEventHandler(LoadEvent);
 
             
@@ -46,11 +48,6 @@ namespace GameEditorStudio
             if (parentWindow is GameLibrary GameLibraryWindow)
             {
                 Library = GameLibraryWindow;
-                //Tools = GameLibraryWindow.Tools;
-                //Commands = GameLibraryWindow.Commands;
-                //CommonEvents = GameLibraryWindow.CommonEvents;
-                //GameLibrary.MainMenu = this;
-                //EventResources = GameLibrary.EventResources;
             }
 
             if (TheMode == "New" ) 
@@ -63,16 +60,16 @@ namespace GameEditorStudio
             if (TheMode == "Edit") 
             {
                 ButtonCreateNewWorkshop.Content = "Save Workshop";
-                TextBoxGameName.Text = Library.WorkshopName;                                                               
-                WorkshopTextboxExampleInputFolder.Text = Library.WorkshopInputDirectory; //System.IO.File.ReadAllText(ExePath + "\\Workshops\\" + WorkshopName + "\\Input Directory.txt");
-                WorkshopCheckboxSameFolderName.IsChecked = Library.WorkshopProjectsRequireSameFolderName;
+                TextBoxGameName.Text = workshopData.WorkshopName;                                                               
+                WorkshopTextboxExampleInputFolder.Text = workshopData.WorkshopInputDirectory; //System.IO.File.ReadAllText(ExePath + "\\Workshops\\" + WorkshopName + "\\Input Directory.txt");
+                WorkshopCheckboxSameFolderName.IsChecked = workshopData.ProjectsRequireSameFolderName;
 
 
-                ResourcePanel.Children.Clear();
-                foreach (WorkshopResource EventResource in Library.WorkshopEventResources) 
-                {
-                    GenerateWEventResourceUI(EventResource); 
-                }
+                //ResourcePanel.Children.Clear();
+                //foreach (WorkshopResource EventResource in workshopData.WorkshopEventResources) 
+                //{
+                //    GenerateWEventResourceUI(EventResource); 
+                //}
             }
 
 
@@ -92,124 +89,96 @@ namespace GameEditorStudio
 
         private void ButtonCreateNewWorkshop_Click(object sender, RoutedEventArgs e)
         {
-            if (ButtonCreateNewWorkshop.Content.ToString() == "Create Workshop")
+            if (TextBoxGameName.Text == null && TextBoxGameName.Text == "" && WorkshopTextboxExampleInputFolder.Text == null && WorkshopTextboxExampleInputFolder.Text == "")
             {
-                if (TextBoxGameName.Text != null && TextBoxGameName.Text != "" && WorkshopTextboxExampleInputFolder.Text != null && WorkshopTextboxExampleInputFolder.Text != "")
-                {
-                    
-                    {
-                        //Set selected workshop to none, because otherwise, if the last selected workshop has workshop resources, the new one inherits them. X.X
-                        //Its easy to miss this bug because selecting a workshop doesn't make workshop resources appear, only selecting a project does,
-                        //and because new workshops have no projects, this doesn't show up visually. 
-                        TreeViewItem theitem = Library.LibraryTreeOfWorkshops.SelectedItem as TreeViewItem; //This sets the selected workshop to none, so the new workshop doesn't inherit the last selected workshop's resources.
-                        if (theitem != null) { theitem.IsSelected = false; }
-                        
-                    }
+                PixelWPF.LibraryPixel.NotificationNegative("Warning: Something is Missing!",
+                    "Either the workshop name is empty, or the Input Folder is blank."
+                );
+                return;
+            }
+            
 
-                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text);
-                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents");
-                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Editors");
-                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Tools");
+            if (ButtonCreateNewWorkshop.Content.ToString() == "Create Workshop")
+            {   
+                Database.Workshops.Add(workshopData);
 
-                    
-                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\LoadOrder.txt", " "); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
-                    SaveWorkshopLibrary();
+                //These can't be placed outside this IF or the later move command in save workshop will fail because folder already exists.
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text);
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents");
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Editors");
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Tools");
+                System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\LoadOrder.txt", " "); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
+                
 
-                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\READ ME");
-                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\READ ME\\Text.txt", "" +
-                        "The READ ME is always the first loaded document, so fill it out with useful info! " +
-                        "Here are some examples :3" +
-                        "\n- How to extract the game files (If required)." +
-                        "\n- What tools are needed (If any). " +
-                        "\n- What folder is the input folder, and where it's located." +
-                        "\n- What game platform? (PC, Switch, PS2, etc)" +
-                        "\n- What game region? (USA, JP, EU, etc)" +
-                        "\n- What game patch number? (patch v1.1, expansion name, etc)" +
-                        "\n- What discord communities, forumns, wikis, exist?" +
-                        "");
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\READ ME");
+                System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\READ ME\\Text.txt", "" +
+                    "The READ ME is always the first loaded document, so fill it out with useful info! " +
+                    "Here are some examples :3" +
+                    "\n- How to extract the game files (If required)." +
+                    "\n- What tools are needed (If any). " +
+                    "\n- What folder is the input folder, and where it's located." +
+                    "\n- What game platform? (PC, Switch, PS2, etc)" +
+                    "\n- What game region? (USA, JP, EU, etc)" +
+                    "\n- What game patch number? (patch v1.1, expansion name, etc)" +
+                    "\n- What discord communities, forumns, wikis, exist?" +
+                    ""
+                );
 
-
-                    var parentContainer = this.Parent as Grid;
-                    if (parentContainer != null)
-                    {
-                        Library.Projects.Clear();
-                        CollectionViewSource.GetDefaultView(Library.ProjectsSelector.ItemsSource).Refresh();
-                        Library.ProjectEventResourcesPanel.Children.Clear();
-                        Library.ProjectNameTextbox.Text = "";
-                        Library.LibraryDocumentsTree.Items.Clear();
-                        Library.EditorsTree.Items.Clear();
-                        Library.TextBoxWorkshopReadMe.Text = "";
-                        Library.TextBoxInputDirectory.Text = "";
-                        Library.TextBoxOutputDirectory.Text = "";
-
-                        parentContainer.Children.Remove(this);
-                    }
-
-                }
-                else
-                {
-                    PixelWPF.LibraryPixel.NotificationNegative("Error: Workshop creation failed.",
-                        "Either you did not name the game / workshop, or you forgot to give it an Input Folder." 
-                    );
-                }
-
+                
             }
             if (ButtonCreateNewWorkshop.Content.ToString() == "Save Workshop")
             {
-                if (TextBoxGameName.Text != null && TextBoxGameName.Text != "" && WorkshopTextboxExampleInputFolder.Text != null && WorkshopTextboxExampleInputFolder.Text != "")
+                string OldWorkshopName = LibraryGES.ApplicationLocation + "\\Workshops\\" + Library.SelectedWorkshop.WorkshopName;
+                string NewWorkshopName = LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text;
+                string OldProjectsName = LibraryGES.ApplicationLocation + "\\Projects\\" + Library.SelectedWorkshop.WorkshopName;
+                string NewProjectsName = LibraryGES.ApplicationLocation + "\\Projects\\" + TextBoxGameName.Text;
+                try
                 {
-                    string OldWorkshopName = LibraryGES.ApplicationLocation + "\\Workshops\\" + Library.WorkshopName;
-                    string NewWorkshopName = LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text;
-                    string OldProjectsName = LibraryGES.ApplicationLocation + "\\Projects\\" + Library.WorkshopName;
-                    string NewProjectsName = LibraryGES.ApplicationLocation + "\\Projects\\" + TextBoxGameName.Text;
-                    try
-                    {
-                        Directory.Move(OldWorkshopName, NewWorkshopName);
-                        Directory.Move(OldProjectsName, NewProjectsName);
-                    }
-                    catch (IOException exp)
-                    {
-                        Console.WriteLine(exp.Message);
-                    }
-
-                    SaveWorkshopLibrary();
-
-                    var parentContainer = this.Parent as Grid;
-                    if (parentContainer != null)
-                    {
-                        Library.Projects.Clear();
-                        CollectionViewSource.GetDefaultView(Library.ProjectsSelector.ItemsSource).Refresh();
-                        Library.ProjectEventResourcesPanel.Children.Clear();
-                        Library.ProjectNameTextbox.Text = "";
-                        Library.LibraryDocumentsTree.Items.Clear();
-                        Library.EditorsTree.Items.Clear();
-                        Library.TextBoxWorkshopReadMe.Text = "";
-                        Library.TextBoxInputDirectory.Text = "";
-                        Library.TextBoxOutputDirectory.Text = "";
-
-                        parentContainer.Children.Remove(this);
-                    }
-
+                    Directory.Move(OldWorkshopName, NewWorkshopName);
+                    Directory.Move(OldProjectsName, NewProjectsName);
                 }
-                else
+                catch (IOException exp)
                 {
-                    PixelWPF.LibraryPixel.NotificationNegative("Error: Workshop saving failed.",
-                        "Either you are trying to save the game without a name, or you somehow deleted the Input Directory."
-                    );
-                }
+                    Console.WriteLine(exp.Message);
+                }                                
 
             }
 
-            
+            workshopData.WorkshopName = TextBoxGameName.Text;
+            workshopData.WorkshopInputDirectory = WorkshopTextboxExampleInputFolder.Text;
+            workshopData.ProjectsRequireSameFolderName = WorkshopCheckboxSameFolderName.IsChecked == true ? true : false;
+
+            SaveWorkshopLibrary();
+
+            //Exit this and reselect the workshop in the library.
+            var parentContainer = this.Parent as Grid;
+            if (parentContainer != null)
+            {
+                if (Library.ProjectsSelector.ItemsSource != null) 
+                {
+                    CollectionViewSource.GetDefaultView(Library.ProjectsSelector.ItemsSource).Refresh();
+                }
+               
+                foreach (TreeViewItem item in Library.LibraryTreeOfWorkshops.Items)
+                {
+                    if (item.Tag as WorkshopData == workshopData) 
+                    { 
+                        item.IsSelected = true; 
+                    }
+                }
+
+                parentContainer.Children.Remove(this);
+            }
 
 
         }
 
 
+
         private void SaveWorkshopLibrary()
-        {            
-            string LibraryXmlPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\" + "LibraryTestSave.xml";   
-            
+        {          
+            //Save a test example. If this fails, the real file is not corrupted. 
+            string LibraryXmlPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\" + "LibraryTestSave.xml";               
             SaveIt();
             try
             {
@@ -218,10 +187,10 @@ namespace GameEditorStudio
             catch 
             {
             
-            }            
+            }
 
+            //Save over the real workshop file. The test didn't fail, so this should be fine.
             LibraryXmlPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\" + "Workshop.xml";  
-
             SaveIt();
 
             void SaveIt()
@@ -238,47 +207,44 @@ namespace GameEditorStudio
                         writer.WriteStartElement("Workshop");
                         writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
                         writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
-                        writer.WriteElementString("WorkshopName", TextBoxGameName.Text); //Note: This is for reference only, so i can tell what workshop a file is for when it's open in notepad. This isn't actually used anywhere. 
-                        writer.WriteElementString("InputLocation", WorkshopTextboxExampleInputFolder.Text);
-                        writer.WriteElementString("ProjectsRequireSameInputFolderName", WorkshopCheckboxSameFolderName.IsChecked == true ? "true" : "false");
+                        writer.WriteElementString("WorkshopName", workshopData.WorkshopName); //Note: This is for reference only, so i can tell what workshop a file is for when it's open in notepad. This isn't actually used anywhere. 
+                        writer.WriteElementString("InputLocation", workshopData.WorkshopInputDirectory);
+                        writer.WriteElementString("ProjectsRequireSameInputFolderName", workshopData.ProjectsRequireSameFolderName == true ? "true" : "false");
 
                         writer.WriteStartElement("ResourceList");
-                        foreach (WorkshopResource WorkshopEventResource in Library.WorkshopEventResources)
+                        foreach (EventResource WorkshopEventResource in workshopData.WorkshopEventResources)
                         {
                             //when xml loads, variables WILL be null, even if they have a default value, if it's not written to begin with. this is very annoying. 
                             writer.WriteStartElement("Resource");
                             writer.WriteElementString("Name", WorkshopEventResource.Name);
-                            writer.WriteElementString("Key", WorkshopEventResource.WorkshopResourceKey);
+                            writer.WriteElementString("Key", WorkshopEventResource.Key);
 
-                            if (WorkshopEventResource.ResourceType == "LocalFile") 
+                            if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File)
                             {
                                 writer.WriteElementString("ResourceType", "File");
-                                writer.WriteElementString("PathType", "FullPath");
                             }
-                            if (WorkshopEventResource.ResourceType == "LocalFolder") 
+                            if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder)
                             {
                                 writer.WriteElementString("ResourceType", "Folder");
-                                writer.WriteElementString("PathType", "FullPath"); 
                             }
-                            if (WorkshopEventResource.ResourceType == "RelativeFile")
+                            if (WorkshopEventResource.IsChild == false)
                             {
-                                writer.WriteElementString("ResourceType", "File"); 
-                                writer.WriteElementString("PathType", "PartialPath"); 
+                                writer.WriteElementString("IsChild", "False");
                             }
-                            if (WorkshopEventResource.ResourceType == "RelativeFolder")
+                            if (WorkshopEventResource.IsChild == true)
                             {
-                                writer.WriteElementString("ResourceType", "Folder");
-                                writer.WriteElementString("PathType", "PartialPath");
+                                writer.WriteElementString("IsChild", "True");
                             }
 
                             writer.WriteElementString("RequiredName", WorkshopEventResource.RequiredName.ToString());  //if full path (local)
                             writer.WriteElementString("Location", WorkshopEventResource.Location);  //if partial path
-                            writer.WriteElementString("TargetKey", WorkshopEventResource.TargetKey); //if partial path                    
+                            writer.WriteElementString("TargetKey", WorkshopEventResource.ParentKey); //if partial path                    
 
 
                             writer.WriteEndElement(); //End File
                         }
-                        writer.WriteEndElement(); //End ResourceList                 
+                        writer.WriteEndElement(); //End ResourceList 
+
 
                         writer.WriteEndElement(); //End Root (Library)
                         writer.Flush(); //Ends the XML Library file                                
@@ -299,16 +265,8 @@ namespace GameEditorStudio
             }
             
 
-            Library.ScanForWorkshops();
+            Library.RefreshWorkshopTree();
         }
-
-
-
-
-
-
-
-
 
 
 
@@ -321,379 +279,9 @@ namespace GameEditorStudio
             }
         }
 
-        private void NewEventResourceLocalFile(object sender, RoutedEventArgs e)
-        {
-            WorkshopResource EventResource = new();
-            Library.WorkshopEventResources.Add(EventResource);
-            EventResource.Name = "New File";
-            EventResource.ResourceType = "LocalFile";
-            EventResource.WorkshopResourceKey = PixelWPF.LibraryPixel.GenerateKey();
-            GenerateWEventResourceUI(EventResource);
-        }
-
-        private void NewEventResourceLocalFolder(object sender, RoutedEventArgs e)
-        {
-            WorkshopResource EventResource = new();
-            Library.WorkshopEventResources.Add(EventResource);
-            EventResource.Name = "New Folder";
-            EventResource.ResourceType = "LocalFolder";
-            EventResource.WorkshopResourceKey = PixelWPF.LibraryPixel.GenerateKey();
-            GenerateWEventResourceUI(EventResource);
-        }
-
-        private void NewEventResourceRelativeFile(object sender, RoutedEventArgs e)
-        {
-            WorkshopResource EventResource = new();
-            Library.WorkshopEventResources.Add(EventResource);
-            EventResource.Name = "New Relative File";
-            EventResource.ResourceType = "RelativeFile";
-            EventResource.WorkshopResourceKey = PixelWPF.LibraryPixel.GenerateKey();
-            GenerateWEventResourceUI(EventResource);
-        }
-
-        private void NewEventResourceRelativeFolder(object sender, RoutedEventArgs e)
-        {
-            PixelWPF.LibraryPixel.Notification("Notice: Upcoming feature.",
-                "Being able to add a folder that is relative to another folder resource's location is an upcoming feature. " +
-                "I'll add support soon enough, i just really wanna release the damn program already! x3 " +
-                "If you want it on priority for something, let me know on discord." 
-                );
-            return;
-
-            WorkshopResource EventResource = new();
-            Library.WorkshopEventResources.Add(EventResource);
-            EventResource.Name = "New Relative Folder";
-            EventResource.ResourceType = "RelativeFolder";
-            EventResource.WorkshopResourceKey = PixelWPF.LibraryPixel.GenerateKey();
-            GenerateWEventResourceUI(EventResource);
-        }
+        
 
 
-        public void GenerateWEventResourceUI(WorkshopResource EventResource)
-        {
-            System.Windows.Media.Brush TheBrush = null;//(SolidColorBrush)(new BrushConverter().ConvertFrom("#131824")); //System.Windows.Media.Brushes.DarkSlateGray; //System.Windows.Media.Brushes.DarkSlateGray
-
-            DockPanel MainPanel = new();
-            ResourcePanel.Children.Add(MainPanel);
-            DockPanel.SetDock(MainPanel, Dock.Top);
-            MainPanel.Margin = new Thickness(4, 3, 4, 20);            
-            MainPanel.Background = TheBrush;
-
-            DockPanel TopPanel = new();
-            DockPanel.SetDock(TopPanel, Dock.Top);
-            MainPanel.Children.Add(TopPanel);
-            TopPanel.Height = 25;
-            TopPanel.Margin = new Thickness(0, 3, 0, 2);
-            TopPanel.LastChildFill = false;
-            TopPanel.Background = TheBrush;
-
-            DockPanel BottomPanel = new();
-            DockPanel.SetDock(BottomPanel, Dock.Top);
-            MainPanel.Children.Add(BottomPanel);
-            BottomPanel.Margin = new Thickness(0, 0, 0, 3);
-            BottomPanel.Background = TheBrush;
-
-            Button DeleteButton = new();
-            TopPanel.Children.Add(DeleteButton);
-            DockPanel.SetDock(DeleteButton, Dock.Right);
-            DeleteButton.Width = 70;
-            DeleteButton.Content = "Delete";
-            DeleteButton.Click += (sender, e) =>
-            {
-                if (MainPanel.Parent is Panel parentPanel)
-                {
-                    parentPanel.Children.Remove(MainPanel);
-                    Library.WorkshopEventResources.Remove(EventResource);
-                }
-            };
-
-
-            
-
-            Label Label = new();
-            TopPanel.Children.Add(Label);
-            DockPanel.SetDock(Label, Dock.Left);
-            Label.Content = "Name:";
-            Label.Margin = new Thickness(0, -4, 0, 0);
-
-
-            TextBox NameBox = new TextBox();
-            TopPanel.Children.Add(NameBox);
-            DockPanel.SetDock(NameBox, Dock.Left);
-            NameBox.Width = 170;
-            NameBox.Text = EventResource.Name;
-            NameBox.ToolTip = "This is not asking for the actual name, but for you to give this resource a name. \nInstead of game.exe, you can say totally say \"The game's .exe file\", or whatever.\nIE somewhere between a name, and a detailed instruction. Like \"The game exe's folder\".";
-            NameBox.TextChanged += (sender, e) =>
-            {
-                EventResource.Name = NameBox.Text;
-            };
-
-            Label TypeLabel = new();
-            TopPanel.Children.Add(TypeLabel);
-            DockPanel.SetDock(TypeLabel, Dock.Left);            
-            TypeLabel.Margin = new Thickness(0, -4, 0, 0);
-            TypeLabel.Content = "   Type: ";
-            if (EventResource.ResourceType == "LocalFile")      { TypeLabel.Content = "   Type: File"; } //TYPE IF
-            if (EventResource.ResourceType == "LocalFolder")    { TypeLabel.Content = "   Type: Folder"; }  //TYPE IF
-            if (EventResource.ResourceType == "RelativeFile")   { TypeLabel.Content = "   Type: File (Child)"; } //TYPE IF
-            if (EventResource.ResourceType == "RelativeFolder") { TypeLabel.Content = "   Type: Folder (Child)"; }  //TYPE IF
-
-            //ComboBox TypeComboBox = new ComboBox();
-            //TopPanel.Children.Add(TypeComboBox);
-            //TypeComboBox.Width = 140;
-            //ComboBoxItem FileItem = new ComboBoxItem();
-            //ComboBoxItem FolderItem = new ComboBoxItem();
-            //ComboBoxItem ChildFileItem = new ComboBoxItem();
-            //ComboBoxItem ChildFolderItem = new ComboBoxItem();            
-            //FileItem.Content = "File";
-            //FolderItem.Content = "Folder";
-            //ChildFileItem.Content = "File (Child)";
-            //ChildFolderItem.Content = "Folder (Child)";
-            //TypeComboBox.Items.Add(FileItem);
-            //TypeComboBox.Items.Add(FolderItem);
-            //TypeComboBox.Items.Add(ChildFileItem);
-            //TypeComboBox.Items.Add(ChildFolderItem);
-            //if (EventResource.ResourceType == "LocalFile") { FileItem.IsSelected = true; } //TYPE IF
-            //if (EventResource.ResourceType == "LocalFolder") { FolderItem.IsSelected = true; }  //TYPE IF
-            //if (EventResource.ResourceType == "RelativeFile") { ChildFileItem.IsSelected = true; } //TYPE IF
-            //if (EventResource.ResourceType == "RelativeFolder") { ChildFolderItem.IsSelected = true; }  //TYPE IF
-            //string TypeTooltip = "Child Files/Folders are locations that are subfolders from an already set event resource folder. \nUsers don't need to set their location when starting a project, so use these when possible) ";
-            //FileItem.ToolTip = TypeTooltip;
-            //FolderItem.ToolTip = TypeTooltip;
-            //ChildFileItem.ToolTip = TypeTooltip;
-            //ChildFolderItem.ToolTip = TypeTooltip;
-            //TypeComboBox.ToolTip = TypeTooltip;
-
-
-            if (EventResource.ResourceType == "RelativeFile" || EventResource.ResourceType == "RelativeFolder")
-            {
-                ComboBox ComboBox = new();
-                TopPanel.Children.Add(ComboBox);
-                DockPanel.SetDock(ComboBox, Dock.Left);
-                ComboBox.Width = 150;
-                ComboBox.Margin = new Thickness(5, 0, 0, 0);
-
-                // Populate the ComboBox initially and set selection based on RelativeKey
-                ComboBoxItem initiallySelectedItem = null;
-                foreach (WorkshopResource EventResourceX in Library.WorkshopEventResources)
-                {
-                    if (EventResourceX.ResourceType == "LocalFolder")
-                    {
-                        ComboBoxItem ComboBoxItem = new ComboBoxItem
-                        {
-                            Content = EventResourceX.Name,
-                            Tag = EventResourceX
-                        };
-                        ComboBox.Items.Add(ComboBoxItem);
-
-                        // Check if this item should be selected
-                        if (EventResource.TargetKey == EventResourceX.WorkshopResourceKey)
-                        {
-                            initiallySelectedItem = ComboBoxItem;
-                        }
-                    }
-                }
-
-                if (initiallySelectedItem != null)
-                {
-                    ComboBox.SelectedItem = initiallySelectedItem;
-                }
-
-                ComboBox.DropDownOpened += (sender, e) =>
-                {
-                    var currentlySelected = ComboBox.SelectedItem as ComboBoxItem;
-                    string selectedResourceKey = (currentlySelected?.Tag as WorkshopResource)?.WorkshopResourceKey;
-
-                    ComboBox.Items.Clear();
-                    ComboBoxItem newItemToSelect = null;
-
-                    foreach (WorkshopResource EventResourceX in Library.WorkshopEventResources)
-                    {
-                        if (EventResourceX.ResourceType == "LocalFolder")
-                        {
-                            ComboBoxItem ComboBoxItem = new ComboBoxItem
-                            {
-                                Content = EventResourceX.Name,
-                                Tag = EventResourceX
-                            };
-                            ComboBox.Items.Add(ComboBoxItem);
-
-                            if (EventResourceX.WorkshopResourceKey == selectedResourceKey)
-                            {
-                                newItemToSelect = ComboBoxItem;
-                            }
-                        }
-                    }
-
-                    if (newItemToSelect != null)
-                    {
-                        ComboBox.SelectedItem = newItemToSelect;
-                    }
-                };
-
-                ComboBox.DropDownClosed += (sender, e) =>
-                {
-                    if (ComboBox.SelectedItem is ComboBoxItem comboBoxItem && comboBoxItem.Tag is WorkshopResource eventResource)
-                    {
-                        // Update the reference key when an item is selected
-                        EventResource.TargetKey = eventResource.WorkshopResourceKey;
-                    }
-                    else
-                    {
-                        // Handle the case when no item is selected
-                        EventResource.TargetKey = null;  // or some default value or behavior
-                    }
-                };
-            }
-
-
-            Button BrowseButton = new();
-            TopPanel.Children.Add(BrowseButton);
-            DockPanel.SetDock(BrowseButton, Dock.Right);
-            BrowseButton.Width = 70;
-            BrowseButton.Content = "Browse...";
-
-            Button ButtonMoveUp = new();
-            TopPanel.Children.Add(ButtonMoveUp);
-            DockPanel.SetDock(ButtonMoveUp, Dock.Right);
-            ButtonMoveUp.Width = 85;
-            ButtonMoveUp.Content = "Move Up";
-            ButtonMoveUp.Margin = new Thickness(0, 0, 10, 0);
-            ButtonMoveUp.Click += (sender, e) =>
-            {
-                if (MainPanel.Parent is DockPanel Parent) 
-                {
-                    LibraryGES.MoveListItemUp(Library.WorkshopEventResources, EventResource);
-                    LibraryGES.MoveDockElementUp(Parent, MainPanel);
-                }
-                
-            };
-
-            Button ButtonMoveDown = new();
-            TopPanel.Children.Add(ButtonMoveDown);
-            DockPanel.SetDock(ButtonMoveDown, Dock.Right);
-            ButtonMoveDown.Width = 95;
-            ButtonMoveDown.Content = "Move Down";            
-            ButtonMoveDown.Click += (sender, e) =>
-            {
-                if (MainPanel.Parent is DockPanel Parent)
-                {
-                    LibraryGES.MoveListItemDown(Library.WorkshopEventResources, EventResource);
-                    LibraryGES.MoveDockElementDown(Parent, MainPanel);
-                }
-                
-            };
-
-
-            DockPanel BrowsePanel = new();
-            DockPanel.SetDock(BrowsePanel, Dock.Left);
-            BottomPanel.Children.Add(BrowsePanel);
-            BrowsePanel.Background = TheBrush;
-
-            CheckBox CheckBox = new();
-            if (EventResource.ResourceType == "LocalFile" || EventResource.ResourceType == "LocalFolder")
-            {
-                TopPanel.Children.Add(CheckBox);
-                DockPanel.SetDock(CheckBox, Dock.Left);
-                CheckBox.Content = "Require Exact Name";
-                CheckBox.Width = 150;
-                CheckBox.Margin = new Thickness(5, 0, 0, 0);
-                CheckBox.Background = TheBrush;
-                if (EventResource.RequiredName == true) { CheckBox.IsChecked = true; BrowsePanel.Visibility = Visibility.Visible; BrowseButton.Visibility = Visibility.Visible; }
-                if (EventResource.RequiredName == false) { CheckBox.IsChecked = false; BrowsePanel.Visibility = Visibility.Collapsed; BrowseButton.Visibility = Visibility.Collapsed; }
-                CheckBox.Checked += (sender, e) =>
-                {
-                    BrowsePanel.Visibility = Visibility.Visible;
-                    BrowseButton.Visibility = Visibility.Visible;
-                    EventResource.RequiredName = true;
-                };
-                CheckBox.Unchecked += (sender, e) =>
-                {
-                    BrowsePanel.Visibility = Visibility.Collapsed;
-                    BrowseButton.Visibility = Visibility.Collapsed;
-                    EventResource.RequiredName = false;
-                };// this is here because if it doesn't require an exact name, there is no need to show the path. 
-            }
-
-
-
-
-
-
-            Border TextBorder = new Border();
-            BrowsePanel.Children.Add(TextBorder);
-            //BottomPanel.Children.Add(TextBorder);
-            TextBorder.CornerRadius = new CornerRadius(8);
-            TextBorder.BorderBrush = System.Windows.Media.Brushes.Black;
-            TextBorder.BorderThickness = new Thickness(1.5);
-            TextBorder.Padding = new Thickness(2);
-            TextBorder.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#FF18191B"));
-
-            
-
-            TextBox Textbox = new TextBox();
-            //BrowsePanel.Children.Add(Textbox);
-            TextBorder.Child = Textbox;
-            Textbox.Padding = new Thickness(4);
-            Textbox.BorderThickness = new Thickness(0);
-            Textbox.Margin = new Thickness(0);
-            DockPanel.SetDock(Textbox, Dock.Left);
-            Textbox.IsEnabled = false;
-            Textbox.Text = EventResource.Location;
-
-            BrowseButton.Click += (sender, e) =>
-            {
-                string LocationString = ""; //The string that gets put into the box & saved.
-                string FolderStartPath = ""; //Where a relative file/folder starts it's search.
-
-                //error checking
-                ProjectDataItem UserProject = Library.Projects[Library.ProjectsSelector.SelectedIndex];
-                if (UserProject == null) { return; }
-                if (EventResource.ResourceType == "RelativeFile" || EventResource.ResourceType == "RelativeFolder")
-                {
-                    if (EventResource.TargetKey == "" || EventResource.TargetKey == null)
-                    {
-                        MessageBox.Show("First, use the dropdown to select a local folder. Afterwards you can browse for something with a location relative to that folder.", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
-                        return;
-                    }
-                    if (Library.ProjectsSelector.SelectedIndex < 0 || Library.LibraryTreeOfWorkshops.SelectedItem == null)
-                    {
-                        MessageBox.Show("Sorry, but you have to select a project first. Theres better ways i could code this, but i'm feeling lazy.", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
-                        return;
-                    }
-
-                }
-
-
-                foreach (ProjectEventResource ProjectResourceData in UserProject.ProjectEventResources)
-                {
-                    if (EventResource.TargetKey == ProjectResourceData.ResourceKey) { FolderStartPath = ProjectResourceData.Location; }
-                }
-
-
-                if (EventResource.ResourceType == "LocalFile") { LocationString = LibraryGES.GetSelectFileName("Select a File"); }  //TYPE IF
-                if (EventResource.ResourceType == "LocalFolder") { LocationString = LibraryGES.GetSelectFolderName("Select a Folder"); }  //TYPE IF                
-                if (EventResource.ResourceType == "RelativeFile") { LocationString = LibraryGES.GetSelectedRelativeFilePath("Select a File", FolderStartPath); }  //TYPE IF
-                if (EventResource.ResourceType == "RelativeFolder") { LocationString = LibraryGES.GetSelectedRelativeFolderPath("Select a Folder", FolderStartPath); }  //TYPE IF
-                //i can fix this problem by using the project path's current local folder path.
-
-                //if (CheckBox.IsChecked == true) 
-                //{
-                //    if (LocationString != null || LocationString != "")
-                //    {
-                //        Textbox.Text = LocationString;
-                //        EventResource.RequiredName = LocationString;
-                //    }
-                //}
-                else if (LocationString != null || LocationString != "")
-                {
-                    Textbox.Text = LocationString;
-                    EventResource.Location = LocationString;
-                }
-                //UpdateProjectXML(); //This is just to link me to this, i never intend to call this method here, but this file is getting big and its hard to find v.v
-                //SaveWorkshopLibrary(); //same as above
-            };
-
-        }
+        
     }
 }

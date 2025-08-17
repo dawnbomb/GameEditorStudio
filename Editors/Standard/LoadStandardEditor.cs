@@ -18,7 +18,7 @@ namespace GameEditorStudio
 
         public void NewStandardEditorIntoDatabase(Workshop TheWorkshop, UserControlEditorCreator Maker) //This triggers when the user creates a new editor.
         {
-            WorkshopData Database = TheWorkshop.MyDatabase;
+            WorkshopData Database = TheWorkshop.WorkshopData;
 
             TheWorkshop.EditorName = Maker.TextboxEditorName.Text;
 
@@ -299,7 +299,7 @@ namespace GameEditorStudio
 
         public void LoadDataTableFromFilePart2(Workshop TheWorkshop, WorkshopData Database, Editor EditorClass) 
         {
-            string TargetXML = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopName, "Editors", EditorClass.EditorName, "Editor.xml");
+            string TargetXML = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors", EditorClass.EditorName, "Editor.xml");
 
             XElement xml = XElement.Load(TargetXML);
 

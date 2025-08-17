@@ -14,23 +14,27 @@
         </Grid.RowDefinitions>
         <ContentControl Grid.Row="0">
             <DockPanel>
-                <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
-                    <Label Name="ItemsLabel" Content="Workshop" FontWeight="Bold"/>
-                    <Button Name="AddFileButton" Content="Add File" DockPanel.Dock="Right" Click="ButtonAddFileToWorkshop" Width="100" HorizontalAlignment="Right" Margin="3" Height="30" ToolTip="Tip: You can just drag and drop files onto the file tree and they will be added. :)"/>
+                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                    <DockPanel Style="{DynamicResource ContentBar}">
+                        <Label Name="ItemsLabel" Content="Workshop" FontWeight="Bold"/>
+                        <Button Name="AddFileButton" Content="Add File" DockPanel.Dock="Right" Click="ButtonAddFileToWorkshop" Width="100" HorizontalAlignment="Right" Margin="3" Height="30" ToolTip="Tip: You can just drag and drop files onto the file tree and they will be added. :)"/>
 
-                </DockPanel>
+                    </DockPanel>
+                </Border>
+                
                 <TreeView x:Name="TreeGameFiles" SelectedItemChanged="SelectedTreeItemChanged" Drop="TreeGameFilesDrop" AllowDrop="True"/>
             </DockPanel>
         </ContentControl>
         <GridSplitter Style="{DynamicResource SplitterHorizontal}" Height="12" Grid.Row="1"   />
         <ContentControl Grid.Row="2">
             <DockPanel>
-                <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
-                    <Label Content="File" FontWeight="Bold"/>
-                    
+                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                    <DockPanel Style="{DynamicResource ContentBar}">
+                        <Label Content="File" FontWeight="Bold"/>
+                    </DockPanel>
 
-                </DockPanel>
-
+                </Border>
+                
                 <Grid Margin="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />

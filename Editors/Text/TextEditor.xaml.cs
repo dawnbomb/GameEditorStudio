@@ -25,14 +25,14 @@ namespace GameEditorStudio
             InitializeComponent();
                         
             Editor.EditorBackPanel = BackPanel;
-            Database.Workshop.MidGrid.Children.Add(this);
+            Database.WorkshopXaml.MidGrid.Children.Add(this);
 
             TextFileManager.IsTextEditor = true;
             TextFileManager.ThisEditor = Editor;
             Editor.TextEditorData.TextFileManager = TextFileManager;
 
             MakeButton MyButton = new();
-            MyButton.CreateButton(Database.Workshop, Database, Editor);
+            MyButton.CreateButton(Database.WorkshopXaml, Database, Editor);
 
             Editor.TextEditorData.MainGrid = MainGrid;
 
@@ -75,6 +75,18 @@ namespace GameEditorStudio
 
 
             //TheTextBox.Text;
+        }
+
+        private void ToggleLineID(object sender, RoutedEventArgs e)
+        {
+            if (TheLineBox.Visibility == Visibility.Visible) 
+            {
+                TheLineBox.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                TheLineBox.Visibility = Visibility.Visible;
+            }
         }
     }
 }

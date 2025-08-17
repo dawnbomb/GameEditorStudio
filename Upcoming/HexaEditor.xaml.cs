@@ -20,15 +20,13 @@ namespace GameEditorStudio
     /// </summary>
     public partial class HexaEditor : UserControl
     {
+        public string FileNamePath { get; set; } = "D:\\Game Editor Studio\\Dummy\\en.bin";
+
         public HexaEditor()
         {
             InitializeComponent();
-        
-            string filePath = @"D:\Crystal Editor\Release\Other\HexB\skill.bin";
-            if (System.IO.File.Exists(filePath))
-            {
-                HexControl.FileName = filePath;
-            }
+            DataContext = this;
+
         }
     }
 }

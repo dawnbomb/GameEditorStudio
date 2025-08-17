@@ -300,8 +300,7 @@ namespace GameEditorStudio
             Database = ADatabase;
             EditorClass = AEditor;
 
-
-            EditorClass.StandardEditorData.EditorLeftDockPanel.LeftBarDockPanel.Children.Add(this);
+            EditorClass.StandardEditorData.EditorLeftDockPanel.UserControl = this;
             EditorClass.StandardEditorData.EditorLeftDockPanel.SearchBar = SearchBar;
             EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView = ItemsTree;
             EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNameTextBox = ItemNameTextbox;
@@ -609,66 +608,66 @@ namespace GameEditorStudio
         }
 
         private async void ItemsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) //When the selected item is changed, we save the current item entry info, and load the new items info.
-        {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            //I disable selection effects sometimes when modifying items in the collection while it is open.
-            if (TheWorkshop.TreeViewSelectionEnabled)
+        {             
+            if (TheWorkshop.TreeViewSelectionEnabled == false) //I disable selection effects sometimes when modifying items in the collection while it is open.
             {
-                var selectedItem = e.NewValue as TreeViewItem;
-                ItemInfo data = selectedItem.Tag as ItemInfo;
-                EntryManager EManager = new();
+                return;
+            } 
 
-                
-                
-                EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNameTextBox.Text = data.ItemName.TrimEnd('\0');
-                EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNoteTextbox.Text = data.ItemNote;
-                EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNotepadTextbox.Text = data.ItemWorkshopTooltip;
-                UpdateNameCharacterCount();
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
-                if (EditorClass.StandardEditorData.DescriptionTableList.Count > 0)
+            var selectedItem = e.NewValue as TreeViewItem;
+            ItemInfo data = selectedItem.Tag as ItemInfo;
+            EntryManager EManager = new();
+
+
+
+            EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNameTextBox.Text = data.ItemName.TrimEnd('\0');
+            EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNoteTextbox.Text = data.ItemNote;
+            EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNotepadTextbox.Text = data.ItemWorkshopTooltip;
+            UpdateNameCharacterCount();
+
+            if (EditorClass.StandardEditorData.DescriptionTableList.Count > 0)
+            {
+                CharacterSetManager CharacterSetManager = new();
+                CharacterSetManager.DecodeDescriptions(TheWorkshop, EditorClass);
+            }
+
+            if (selectedItem.Items.Count == 0) //This might cause bugs later with 0 child folders.
+            {
+                EditorClass.StandardEditorData.TableRowIndex = data.ItemIndex;
+
+                for (int i = 0; i < EditorClass.StandardEditorData.MasterEntryList.Count; i++) //Changed from a foreach to a for loop, it reduced vesperia items load time from 6700ms to 6300ms. 
                 {
-                    CharacterSetManager CharacterSetManager = new();
-                    CharacterSetManager.DecodeDescriptions(TheWorkshop, EditorClass);
-                }
+                    Entry entry = EditorClass.StandardEditorData.MasterEntryList[i];
 
-                if (selectedItem.Items.Count == 0) //This might cause bugs later with 0 child folders.
-                {
-                    EditorClass.StandardEditorData.TableRowIndex = data.ItemIndex;
-
-                    for (int i = 0; i < EditorClass.StandardEditorData.MasterEntryList.Count; i++) //Changed from a foreach to a for loop, it reduced vesperia items load time from 6700ms to 6300ms. 
+                    if (entry.NewSubType == Entry.EntrySubTypes.NumberBox)
                     {
-                        Entry entry = EditorClass.StandardEditorData.MasterEntryList[i];
-
-                        if (entry.NewSubType == Entry.EntrySubTypes.NumberBox)
-                        {
-                            entry.EntryTypeNumberBox.NumberBoxCanSave = false;
-                        }
-                        
-                        EManager.LoadEntry(TheWorkshop, EditorClass, entry);
-
-                        if (FirstTime == false)
-                        {
-                            //EManager.UpdateEntryProperties(TheWorkshop, EditorClass);
-                            EManager.UpdateEntryHexProperties(TheWorkshop, EditorClass);
-                        }
-
-                        if (entry.NewSubType == Entry.EntrySubTypes.NumberBox)
-                        {
-                            entry.EntryTypeNumberBox.NumberBoxCanSave = true;
-                        }
+                        entry.EntryTypeNumberBox.NumberBoxCanSave = false;
                     }
-                    
 
-                    //TheWorkshop.EntryProperties.Visibility = Visibility.Collapsed;
-                    //TheWorkshop.ItemProperties.Visibility = Visibility.Visible;
-                    FirstTime = false;
+                    EManager.LoadEntry(TheWorkshop, EditorClass, entry);
+
+                    if (FirstTime == false)
+                    {
+                        //EManager.UpdateEntryProperties(TheWorkshop, EditorClass);
+                        EManager.UpdateEntryHexProperties(TheWorkshop, EditorClass);
+                    }
+
+                    if (entry.NewSubType == Entry.EntrySubTypes.NumberBox)
+                    {
+                        entry.EntryTypeNumberBox.NumberBoxCanSave = true;
+                    }
                 }
-                
-                //TranslationsPanel translationsPanel = this.TranslationsPanel;
-                //await translationsPanel.UpdateTranslationsPanel(data);
-                                
 
-            } //End of If selection is enabled.
+
+                //TheWorkshop.EntryProperties.Visibility = Visibility.Collapsed;
+                //TheWorkshop.ItemProperties.Visibility = Visibility.Visible;
+                FirstTime = false;
+            }
+
+            //TranslationsPanel translationsPanel = this.TranslationsPanel;
+            //await translationsPanel.UpdateTranslationsPanel(data);
 
             stopwatch.Stop();
             Debug.WriteLine($"[Timer] Item Select took {stopwatch.ElapsedMilliseconds} ms");

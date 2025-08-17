@@ -29,18 +29,18 @@ namespace GameEditorStudio
     {
         public WorkshopData WorkshopData { get; set; } // May eventually be used to check a workshop's Common Events? 
         public TopMenu SharedMenus { get; set; } //not used, but i might use in the future.
-        public string WorkshopName { get; set; } = "";
         public List<DockPanel> dockList { get; set; } = new();
         public string ColorCode { get; set; } = "#090917";
 
-        public ToolsMenu(TopMenu SharedMenus, string TheWorkshopName)
+        public ToolsMenu(TopMenu SharedMenus, WorkshopData WorkshopData)
         {
             InitializeComponent();
 
-            WorkshopName = TheWorkshopName;   
-            this.Title = "Current Workshop: " + WorkshopName;
-            if (WorkshopName == null || WorkshopName == "") { this.Title = "Current Workshop: None"; }   
+            this.WorkshopData = WorkshopData;  
             
+            //if (WorkshopData == null ) { this.Title = "Current Workshop: None"; }   
+            if (WorkshopData != null) { this.Title = "Current Workshop: " + WorkshopData.WorkshopName; }
+
             SetupToolsTree(dockList);
             SetupCommonEventTree(dockList);
             SetupTools();
@@ -53,7 +53,7 @@ namespace GameEditorStudio
         {
             HashSet<string> createdTabs = new HashSet<string>();  // To track which tabs have already been created
 
-            foreach (Tool tool in TrueDatabase.Tools)
+            foreach (Tool tool in Database.Tools)
             {
                 if (createdTabs.Contains(tool.Category)) continue;
 
@@ -71,8 +71,8 @@ namespace GameEditorStudio
                     LastChildFill = false,
                     Visibility = Visibility.Collapsed,  // Initially hidden
                     Name = $"Panel{tool.Category.Replace(" ", "")}",  // Remove spaces for a valid name
-                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ColorCode))
                 };
+                panelForTab.Style = (Style)FindResource("DockList");
 
                 dockList.Add(panelForTab);
                 TheScrollPanel.Children.Add(panelForTab);
@@ -97,7 +97,7 @@ namespace GameEditorStudio
         {
             HashSet<string> createdTabs = new HashSet<string>();  // To track which tabs have already been created
 
-            foreach (CommonEvent commonEvent in TrueDatabase.CommonEvents)
+            foreach (CommonEvent commonEvent in Database.CommonEvents)
             {
                 if (createdTabs.Contains(commonEvent.Category)) continue;
 
@@ -117,8 +117,8 @@ namespace GameEditorStudio
                     LastChildFill = false,
                     Visibility = Visibility.Collapsed,  // Initially hidden
                     Name = $"Panel{commonEvent.Category.Replace(" ", "")}",  // Create a valid name by removing spaces
-                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ColorCode))
                 };
+                panelForTab.Style = (Style)FindResource("DockList");
 
                 dockList.Add(panelForTab);  // Add to the list for management
                 TheScrollPanel.Children.Add(panelForTab);  // Add to the ScrollViewer (assuming a common ScrollViewer is used)
@@ -141,28 +141,34 @@ namespace GameEditorStudio
 
         public void SetupTools()
         {
-            foreach (Tool ThisTool in TrueDatabase.Tools)
+            foreach (Tool ThisTool in Database.Tools)
             {
-                DockPanel MainPanel = new DockPanel();
-                DockPanel.SetDock(MainPanel, Dock.Top);
-                MainPanel.Margin = new Thickness(10, 8, 10, 0);
-                MainPanel.Height = 34;
-                MainPanel.MinWidth = 700;
-                MainPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
-                MainPanel.MouseEnter += (sender, e) => ToolPanel_MouseEnter(sender, e, ThisTool);
+                Border border = new();
+                border.BorderBrush = Brushes.Black; //new SolidColorBrush((Color)ColorConverter.ConvertFromString("#101010"))
+                border.Margin = new Thickness(10, 8, 10, 0);
+                border.Height = 36;
+                border.MinWidth = 700;
+                DockPanel.SetDock(border, Dock.Top);
+
+                DockPanel ToolPanel = new DockPanel();
+                border.Child = ToolPanel;
+                
+                
+                ToolPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
+                ToolPanel.MouseEnter += (sender, e) => ToolPanel_MouseEnter(sender, e, ThisTool);
 
                 // Find corresponding TreeViewItem by Tab value and add MainPanel to its DockPanel
                 foreach (TreeViewItem treeItem in TreeViewTools.Items)
                 {
                     if (treeItem.Header.ToString() == ThisTool.Category)
                     {
-                        DockPanel dockPanel = treeItem.Tag as DockPanel;
-                        dockPanel.Children.Add(MainPanel);
+                        DockPanel CategoryPanel = treeItem.Tag as DockPanel;
+                        CategoryPanel.Children.Add(border);
                         break;
                     }
                 }
 
-                SetupToolPanel(MainPanel, ThisTool);
+                SetupToolPanel(ToolPanel, ThisTool);
             }
         }
 
@@ -242,29 +248,32 @@ namespace GameEditorStudio
 
         public void SetupCommonEvents()
         {
-            foreach (CommonEvent commonEvent in TrueDatabase.CommonEvents)
+            foreach (CommonEvent commonEvent in Database.CommonEvents)
             {
+                Border border = new();
+                border.BorderBrush = Brushes.Black; //new SolidColorBrush((Color)ColorConverter.ConvertFromString("#101010"))
+                border.Margin = new Thickness(10, 8, 10, 0);
+                border.Height = 36;
+                border.MinWidth = 700;
+                DockPanel.SetDock(border, Dock.Top);
+
+                
+
                 DockPanel commandPanel = new DockPanel();
-                commandPanel.Margin = new Thickness(10, 8, 10, 0);
-                commandPanel.Height = 32;
-                DockPanel.SetDock(commandPanel, Dock.Top);
+                border.Child = commandPanel;
+
                 commandPanel.MouseEnter += (sender, e) => EventPanel_MouseEnter(sender, e, commonEvent);
 
-                // Find the DockPanel for the tab associated with the CommonEvent
-                var correspondingDockPanel = dockList.FirstOrDefault(dp => dp.Name == $"Panel{commonEvent.Category.Replace(" ", "")}");
-                if (correspondingDockPanel != null)
-                {
-                    correspondingDockPanel.Children.Add(commandPanel);
-                }
 
-                // Setup common event controls
-                Label commandLabel = new Label
+                foreach (TreeViewItem treeItem in TreeViewCommonEvents.Items)
                 {
-                    Content = commonEvent.DisplayName,
-                    FontSize = 20,
-                    Width = 200
-                };
-                commandPanel.Children.Add(commandLabel);
+                    if (treeItem.Header.ToString() == commonEvent.Category)
+                    {
+                        DockPanel CategoryPanel = treeItem.Tag as DockPanel;
+                        CategoryPanel.Children.Add(border);
+                        break;
+                    }
+                }                
 
                 SetupEventControls(commandPanel, commonEvent);
             }
@@ -272,6 +281,14 @@ namespace GameEditorStudio
 
         private void SetupEventControls(DockPanel commandPanel, CommonEvent commonEvent)
         {
+            Label commandLabel = new Label
+            {
+                Content = commonEvent.DisplayName,
+                FontSize = 20,
+                Width = 200
+            };
+            commandPanel.Children.Add(commandLabel);
+
             CheckBox checkBoxLocal = new CheckBox
             {
                 Foreground = Brushes.White,
@@ -290,7 +307,7 @@ namespace GameEditorStudio
             };
             commandPanel.Children.Add(labelLocal);
 
-            if (!string.IsNullOrWhiteSpace(WorkshopName))
+            if (WorkshopData != null)  //!string.IsNullOrWhiteSpace(WorkshopData.WorkshopName)
             {
                 CheckBox checkBoxWorkshop = new CheckBox
                 {
@@ -299,8 +316,18 @@ namespace GameEditorStudio
                     Margin = new Thickness(5, 0, 0, 0),
                     IsChecked = commonEvent.Workshop
                 };
-                checkBoxWorkshop.Checked += (sender, e) => { commonEvent.Workshop = true; SaveCommonEventsWorkshop(); };
-                checkBoxWorkshop.Unchecked += (sender, e) => { commonEvent.Workshop = false; SaveCommonEventsWorkshop(); };
+                checkBoxWorkshop.Checked += (sender, e) => //IF CHECKED
+                { 
+                    commonEvent.Workshop = true; 
+                    WorkshopData.WorkshopCommonEvents.Add(commonEvent);
+                    SaveCommonEventsWorkshop(); 
+                };
+                checkBoxWorkshop.Unchecked += (sender, e) => //IF UNCHECKED
+                { 
+                    commonEvent.Workshop = false; 
+                    WorkshopData.WorkshopCommonEvents.RemoveAll(ce => ce.Key == commonEvent.Key);
+                    SaveCommonEventsWorkshop(); 
+                };
                 commandPanel.Children.Add(checkBoxWorkshop);
 
                 Label labelWorkshop = new Label
@@ -394,7 +421,7 @@ namespace GameEditorStudio
                 writer.WriteStartElement("Tools"); //This is the root of the XML   
                 writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
                 writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
-                foreach (Tool tool in TrueDatabase.Tools)
+                foreach (Tool tool in Database.Tools)
                 {
                     writer.WriteStartElement("Tool");
                     writer.WriteElementString("Name", tool.DisplayName.ToString());
@@ -431,7 +458,7 @@ namespace GameEditorStudio
                     "\n(even if i move it, it'll be in there somewhere.)");
 
 
-                foreach (CommonEvent commonevent in TrueDatabase.CommonEvents)
+                foreach (CommonEvent commonevent in Database.CommonEvents)
                 {
                     if (commonevent.Local == true)
                     {
@@ -459,7 +486,7 @@ namespace GameEditorStudio
             settings.IndentChars = ("    ");
             settings.CloseOutput = true;
             settings.OmitXmlDeclaration = true;
-            using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Common Events.xml", settings))
+            using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Common Events.xml", settings))
             {
 
                 writer.WriteStartElement("CommonEvents"); //This is the root of the XML   
@@ -469,7 +496,7 @@ namespace GameEditorStudio
                     "\nEven if a user doesn't have a common event locally enabled it will appear anyway, and even if they are missing a tool or something the common event will still appear, but gray.");
 
 
-                foreach (CommonEvent Event in TrueDatabase.CommonEvents)
+                foreach (CommonEvent Event in Database.CommonEvents)
                 {
                     if (Event.Workshop == true)
                     {

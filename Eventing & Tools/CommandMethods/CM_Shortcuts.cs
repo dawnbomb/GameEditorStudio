@@ -10,22 +10,69 @@ namespace GameEditorStudio
 {
     public partial class CommandMethodsClass //This file contains shortcut actions, they open folders on a users PC. They are always accessable via the shortcuts menu.
     {
-        
+        public static void OpenGameEditorStudioFolder(MethodData MethodData)
+        {
+            LibraryGES.OpenFolder(LibraryGES.ApplicationLocation);
+            
+        }
+
+        public static void OpenProjectFolder(MethodData MethodData)
+        {
+            
+            ProjectData project = null;
+
+
+            if (MethodData.GameLibrary != null) //If Library
+            {
+                project = MethodData.GameLibrary.ProjectsSelector.SelectedItem as ProjectData;
+            }
+            else if (MethodData.WorkshopData != null) //If Workshop  //Note this is first so the existance of a workshop gets priority!!!
+            {
+                project = MethodData.WorkshopData.ProjectDataItem;
+            }
+
+
+            if (project == null) { return; }
+
+            try
+            {
+                if (Directory.Exists(LibraryGES.ApplicationLocation + "\\Projects\\" + MethodData.WorkshopData.WorkshopName + "\\" + project.ProjectName))
+                {
+                    LibraryGES.OpenFolder(LibraryGES.ApplicationLocation + "\\Projects\\" + MethodData.WorkshopData.WorkshopName + "\\" + project.ProjectName);
+                }
+                else
+                {
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Project Folder not found.",
+                        "This is actually a pretty serious error, so you should probably look into fixing it."
+                        );
+                    //Note that if your looking at the workshop in preview mode, you will always get this error and can ignore it.
+                    //^ I removed that line because really, it should be my job to make sure thats not even possible to begin with. 
+
+                }
+            }
+            catch
+            {
+
+            }
+
+
+        }
 
         public static void OpenInputFolder(MethodData MethodData)
         {
-            ProjectDataItem project = null;
-
-            if (MethodData.WorkshopData != null) //If Workshop  //Note this is first so the existance of a workshop gets priority!!!
-            {
-                project = MethodData.WorkshopData.Workshop.ProjectDataItem;
-            }
-            else if (MethodData.GameLibrary != null) //If Library
-            {
-                project = MethodData.GameLibrary.ProjectsSelector.SelectedItem as ProjectDataItem;
-            }
+            ProjectData project = null;
 
             
+            if (MethodData.GameLibrary != null) //If Library
+            {
+                project = MethodData.GameLibrary.ProjectsSelector.SelectedItem as ProjectData;
+            }
+            else if (MethodData.WorkshopData != null) //If Workshop  //Note this is first so the existance of a workshop gets priority!!!
+            {
+                project = MethodData.WorkshopData.ProjectDataItem;
+            }
+
+
             if ( project == null) { return; }
 
             try
@@ -56,16 +103,18 @@ namespace GameEditorStudio
 
         public static void OpenOutputFolder(MethodData MethodData)
         {
-            ProjectDataItem project = null;
+            ProjectData project = null;
+            
+            if (MethodData.GameLibrary != null) //If Library
+            {
+                project = MethodData.GameLibrary.ProjectsSelector.SelectedItem as ProjectData;
+            }
+            else if (MethodData.WorkshopData != null) //If Workshop   //Note this is first so the existance of a workshop gets priority!!!
+            {
+                project = MethodData.WorkshopData.ProjectDataItem;
+            }
+            
 
-            if (MethodData.WorkshopData != null) //If Workshop   //Note this is first so the existance of a workshop gets priority!!!
-            {
-                project = MethodData.WorkshopData.Workshop.ProjectDataItem;
-            }
-            else if (MethodData.GameLibrary != null) //If Library
-            {
-                project = MethodData.GameLibrary.ProjectsSelector.SelectedItem as ProjectDataItem;
-            }
             if (project == null) { return; }
 
             try
@@ -101,16 +150,16 @@ namespace GameEditorStudio
             {
                 string folderPath = "";
 
-                if (MethodData.WorkshopData != null) //If Workshop
+                
+                if (MethodData.GameLibrary != null) //If Library
                 {
-                    folderPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + MethodData.WorkshopData.Workshop.WorkshopName + "\\";
+                    folderPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + MethodData.GameLibrary.SelectedWorkshop.WorkshopName + "\\";
                 }
-                else if (MethodData.GameLibrary != null) //If Library
+                else if (MethodData.WorkshopData != null) //If Workshop
                 {
-                    folderPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + MethodData.GameLibrary.WorkshopName + "\\";
+                    folderPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + MethodData.WorkshopData.WorkshopName + "\\";
                 }
 
-                
 
                 if (Directory.Exists(folderPath))
                 {

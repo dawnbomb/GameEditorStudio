@@ -17,7 +17,7 @@ namespace GameEditorStudio
 
         public void ExportAllDataTables(Workshop TheWorkshop)
         {
-            foreach (Editor Editor in TheWorkshop.MyDatabase.GameEditors.Values)
+            foreach (Editor Editor in TheWorkshop.WorkshopData.GameEditors.Values)
             {
                 if (Editor.EditorType == "DataTable") 
                 {
@@ -145,20 +145,20 @@ namespace GameEditorStudio
 
 
             //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
-            Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Decimal (Editor Order)");
-            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Decimal (Editor Order)\\" + EditorClass.EditorName + ".csv", EditorDataDecimalCurrent);
+            Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Decimal (Editor Order)");
+            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Decimal (Editor Order)\\" + EditorClass.EditorName + ".csv", EditorDataDecimalCurrent);
 
-            Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Hex (Editor Order)");
-            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Hex (Editor Order)\\" + EditorClass.EditorName + ".csv", EditorDataHexCurrent);
+            Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Hex (Editor Order)");
+            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Hex (Editor Order)\\" + EditorClass.EditorName + ".csv", EditorDataHexCurrent);
 
-            Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Decimal (Origonal Order)");
-            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Decimal (Origonal Order)\\" + EditorClass.EditorName + ".csv", EditorDataDecimalOrigonal);
+            Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Decimal (Origonal Order)");
+            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Decimal (Origonal Order)\\" + EditorClass.EditorName + ".csv", EditorDataDecimalOrigonal);
 
-            Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Hex (Origonal Order)");
-            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Hex (Origonal Order)\\" + EditorClass.EditorName + ".csv", EditorDataHexOrigonal);
+            Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Hex (Origonal Order)");
+            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Hex (Origonal Order)\\" + EditorClass.EditorName + ".csv", EditorDataHexOrigonal);
 
-            File.Create(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName + "\\Exported " + DateTime.Now.ToString("MMMM d yyyy h;mmtt") + ".txt").Dispose(); ;
-            LibraryGES.OpenFolder(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopName);
+            File.Create(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Exported " + DateTime.Now.ToString("MMMM d yyyy h;mmtt") + ".txt").Dispose(); ;
+            LibraryGES.OpenFolder(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName);
 
         }
 

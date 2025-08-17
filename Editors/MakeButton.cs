@@ -219,18 +219,18 @@ namespace GameEditorStudio
 
                     if (TheWorkshop.IsPreviewMode == false)
                     {
-                        if (TheWorkshop.ProjectDataItem.ProjectInputDirectory != "")
+                        if (TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory != "")
                         {
-                            TheWorkshop.PropertiesEditorReadGameDataFrom.Text = TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + TheEditorClass.StandardEditorData.FileDataTable.FileLocation;
+                            TheWorkshop.PropertiesEditorReadGameDataFrom.Text = TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + TheEditorClass.StandardEditorData.FileDataTable.FileLocation;
                         }
                         else
                         {
                             TheWorkshop.PropertiesEditorReadGameDataFrom.Text = "You didn't set a project input folder, or it nolonger exists. :(";
                         }
 
-                        if (TheWorkshop.ProjectDataItem.ProjectOutputDirectory != "")
+                        if (TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory != "")
                         {
-                            TheWorkshop.EditorOutputLocationTextbox.Text = TheWorkshop.ProjectDataItem.ProjectOutputDirectory + "\\" + TheEditorClass.StandardEditorData.FileDataTable.FileLocation;
+                            TheWorkshop.EditorOutputLocationTextbox.Text = TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\" + TheEditorClass.StandardEditorData.FileDataTable.FileLocation;
                         }
                         else
                         {
@@ -272,19 +272,22 @@ namespace GameEditorStudio
 
                     //var UC = TheEditorClass.SWData.EditorLeftDockPanel.UserControl as TheLeftBar;
                     //UC.LabelCharsMax.Content = TheEditorClass.SWData.NameTableTextSize.ToString();
+
+                    //this is 2x and was moved here from below. 
+                    TheWorkshop.EntryClass = TheEditorClass.StandardEditorData.SelectedEntry; //This is the entry that is currently selected in the editor.
+                    TheWorkshop.ColumnClass = TheWorkshop.EntryClass.EntryColumn;
+                    TheWorkshop.CategoryClass = TheWorkshop.ColumnClass.ColumnRow; //This is the category that is currently selected in the editor.
+                    if (TheWorkshop.EntryClass.EntryGroup != null)
+                    {
+                        TheWorkshop.GroupClass = TheWorkshop.EntryClass.EntryGroup; //This is the group that is currently selected in the editor.
+                    }
                 }
 
 
                 TheWorkshop.EditorClass = TheEditorClass; //this used to be EditorClass = TheEditorClass; and i changed it because i might have meant this, but also maybe not and i made a new bug?
-                TheWorkshop.EntryClass = TheEditorClass.StandardEditorData.SelectedEntry; //This is the entry that is currently selected in the editor.
-                TheWorkshop.ColumnClass = TheWorkshop.EntryClass.EntryColumn;
-                TheWorkshop.CategoryClass = TheWorkshop.ColumnClass.ColumnRow; //This is the category that is currently selected in the editor.
-                if (TheWorkshop.EntryClass.EntryGroup != null) 
-                {
-                    TheWorkshop.GroupClass = TheWorkshop.EntryClass.EntryGroup; //This is the group that is currently selected in the editor.
-                }
                 
-
+                
+                //2x was moved from here to above.
 
 
             };
@@ -302,7 +305,7 @@ namespace GameEditorStudio
                 contextMenu.Items.Add(OpenEditor);
                 void OpenEditorFolder_Click(object sender, RoutedEventArgs e)
                 {
-                    string EditorFolderPath = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopName, "Editors", EditorClass.EditorName);
+                    string EditorFolderPath = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors", EditorClass.EditorName);
                     LibraryGES.OpenFolder(EditorFolderPath);
                 }
 
@@ -312,7 +315,7 @@ namespace GameEditorStudio
                 contextMenu.Items.Add(OpenNTFile);
                 void OpenNTFile_Click(object sender, RoutedEventArgs e)
                 {
-                    LibraryGES.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.FileNameTable.FileLocation);
+                    LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.FileNameTable.FileLocation);
                 }
                 if (EditorClass.StandardEditorData.NameTableLinkType == StandardEditorData.NameTableLinkTypes.Nothing) { OpenNTFile.IsEnabled = false; }
 
@@ -322,7 +325,7 @@ namespace GameEditorStudio
                 contextMenu.Items.Add(OpenDTFile);
                 void OpenDTFile_Click(object sender, RoutedEventArgs e)
                 {                    
-                    LibraryGES.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\"+ EditorClass.StandardEditorData.FileDataTable.FileLocation);
+                    LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\"+ EditorClass.StandardEditorData.FileDataTable.FileLocation);
                 }
 
 
@@ -344,7 +347,7 @@ namespace GameEditorStudio
                                     OpenDescriptionFolder.Click += OpenDTFolder_Click; // Event handler for click action                                   
                                     void OpenDTFolder_Click(object sender, RoutedEventArgs e)
                                     {
-                                        LibraryGES.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable.FileLocation);
+                                        LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable.FileLocation);
                                     }
                                     OpenDescriptionFolder.IsEnabled = true;
                                 }

@@ -17,10 +17,13 @@
 
         <ContentControl Grid.Row="0">
             <DockPanel>
-                <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
-                    <Label Content="Items" FontWeight="Bold"/>
-                    <TextBox Name="SearchBar" Margin="15,4,4,4" Text="🔎 Search....." TextChanged="SearchBarTextChanged"/>
-                </DockPanel>
+                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                    <DockPanel Style="{DynamicResource ContentBar}">
+                        <Label Content="Items" FontWeight="Bold"/>
+                        <TextBox Name="SearchBar" Margin="15,4,4,4" Text="🔎 Search....." TextChanged="SearchBarTextChanged"/>
+                    </DockPanel>
+                </Border>
+                
                 <TreeView Name="ItemsTree"  SelectedItemChanged="ItemsTreeSelectedItemChanged" />
             </DockPanel>
         </ContentControl>
@@ -29,11 +32,13 @@
 
         <ContentControl Grid.Row="2" >
             <DockPanel>
-                <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
-                    <Label Content="Info" FontWeight="Bold"/>
+                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                    <DockPanel Style="{DynamicResource ContentBar}">
+                        <Label Content="Info" FontWeight="Bold"/>
 
-                    <Label Content="Chars: XX / YY" Name="LabelCharacterCount" FontWeight="Bold" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
-                </DockPanel>
+                        <Label Content="Chars: XX / YY" Name="LabelCharacterCount" FontWeight="Bold" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+                    </DockPanel>
+                </Border>                
                 <Grid Margin="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
