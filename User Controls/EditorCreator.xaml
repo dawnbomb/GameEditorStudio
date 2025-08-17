@@ -8,26 +8,32 @@
              d:DesignHeight="810" d:DesignWidth="1100"
              BorderThickness="0"
              Background="Transparent">
-    <Grid Style="{DynamicResource BorderGrid}"  >
+    <Grid Style="{DynamicResource GridList}" >
         <Border Margin="20,30,20,30" BorderThickness="2" Background="Transparent">
             <DockPanel Background="Transparent">
-                <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
-                    <Label Content="Editor Creator" FontWeight="Bold"/>
-                    <Button Content=" Exit Editor Creator " Margin="4" HorizontalAlignment="Right"  Click="CancelEditorCreation" />
-                </DockPanel>
+                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                    <DockPanel  Style="{DynamicResource ContentBar}">
+                        <Label Content="Editor Creator" FontWeight="Bold"/>
+                        <Button Content=" Exit Editor Creator " Margin="4" HorizontalAlignment="Right"  Click="CancelEditorCreation" />
+                    </DockPanel>
+                </Border>
+
                 <Grid  >
                     <TabControl x:Name="TabMaker"  >
                         <TabItem Header="Select Editor Type" Name="TabEditorType">
-                            <Grid Style="{DynamicResource BorderGrid}">
+                            <Grid Style="{DynamicResource GridList}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="387*"/>
                                     <ColumnDefinition Width="712*"/>
                                 </Grid.ColumnDefinitions>
                                 <Border Margin="0,8,0,0" Grid.ColumnSpan="2">
                                     <DockPanel>
-                                        <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
-                                            <Label Content="Editor Info" FontWeight="Bold"/>
-                                        </DockPanel>
+                                        <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                            <DockPanel Style="{DynamicResource ContentBar}">
+                                                <Label Content="Editor Info" FontWeight="Bold"/>
+                                            </DockPanel>
+                                        </Border>
+
                                         <Grid>
                                             <Label Content="Editor Name:" FontSize="20" HorizontalAlignment="Left" Margin="10,13,0,0" VerticalAlignment="Top"/>
                                             <TextBox x:Name="TextboxEditorName" HorizontalAlignment="Left" Margin="139,17,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160" FontSize="20" TextChanged="EditorNameTextboxTextChanged"/>
@@ -59,6 +65,7 @@
                                                         <Label Content="It will look like an editor, but triggers an event.&#xA;Set it to open third party editors! :D &#xA;(Graphics editor, Music, 3D Maps, etc)  " HorizontalAlignment="Left" Margin="249,346,0,0" VerticalAlignment="Top"/>
                                                         <Button Content="XML Editor" HorizontalAlignment="Left" Margin="10,440,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
                                                         <Button Content="JSON Editor" HorizontalAlignment="Left" Margin="10,523,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
+                                                        <Label Content="PS: YES I KNOW THE REST OF THE EDITOR MAKER IS UGLY&#xD;&#xA;AND I WILL REDESIGN THEM LATER." HorizontalAlignment="Left" Margin="249,6,0,0" VerticalAlignment="Top" Background="#FF001E31" Foreground="#FF83FFF1"/>
 
                                                     </Grid>
                                                 </ScrollViewer>
@@ -75,13 +82,13 @@
                             </Grid>
                         </TabItem>
                         <TabItem Header="Text Source" Name="TabTextSource">
-                            <DockPanel  Style="{DynamicResource BorderDock}">
+                            <DockPanel  Style="{DynamicResource DockList}">
                                 <Border Margin="0,8,0,0" DockPanel.Dock="Top">
                                     <DockPanel Background="Transparent" LastChildFill="True" >
                                         <DockPanel Background="#FF301E3C" DockPanel.Dock="Top"  LastChildFill="False">
                                             <DockPanel Background="Transparent" DockPanel.Dock="Bottom" LastChildFill="False" HorizontalAlignment="Center" >
-                                                <Button x:Name="CreateEditorPart3ButtonPrevious_Copy2" Content="Back: Table Size"  Height="33" Width="148" Click="ButtonBackToWidth" />
-                                                <Button x:Name="CreateEditorPart3ButtonNext_Copy1" Content="Next: Data Table"  Height="33" Width="158" Click="ButtonNextToFinalFILE" Margin="35,0,0,0" />
+                                                <Button x:Name="CreateEditorPart3ButtonPrevious_Copy2" Content="Back: Table Size"  Height="33" Width="175" Click="ButtonBackToWidth" />
+                                                <Button x:Name="CreateEditorPart3ButtonNext_Copy1" Content="Next: Data Table"  Height="33" Width="181" Click="ButtonNextToFinalFILE" Margin="35,0,0,0" />
                                             </DockPanel>
                                         </DockPanel>
 
@@ -103,10 +110,13 @@
 
                                 <Border Margin="0,8,0,10" DockPanel.Dock="Top">
                                     <DockPanel>
-                                        <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
-                                            <Label Content="Editor Info    (Standard width only, variable width coming later)" FontWeight="Bold"/>
-                                            <Button Content="Debug" Name="DataTableDebugButton" Click="DebugButtonClick" Margin="3"/>
-                                        </DockPanel>
+                                        <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                            <DockPanel Style="{DynamicResource ContentBar}">
+                                                <Label Content="Editor Info    (Standard width only, variable width coming later)" FontWeight="Bold"/>
+                                                <Button Content="Debug" Name="DataTableDebugButton" Click="DebugButtonClick" Margin="3"/>
+                                            </DockPanel>
+                                        </Border>
+
                                         <Grid>
                                             <Label Content="Base Address" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top"/>
                                             <TextBox x:Name="TextBoxDataTableBaseAddress" HorizontalAlignment="Left" Margin="164,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
@@ -126,9 +136,12 @@
 
                                 <Border Margin="0,0,0,0">
                                     <DockPanel>
-                                        <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
-                                            <Label Content="Helpful Info!" FontWeight="Bold"/>
-                                        </DockPanel>
+                                        <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                            <DockPanel  Style="{DynamicResource ContentBar}">
+                                                <Label Content="Helpful Info!" FontWeight="Bold"/>
+                                            </DockPanel>
+                                        </Border>
+
                                         <ScrollViewer>
                                             <Grid>
                                                 <Label Content="Table Base Address Help:&#xA;To find the base address in 010 editor,   &#xA;(1) highlight the start byte of the table, then &#xA;(2) you can see it at the bottom right.   &#xA;Note: This program wants it in DECIMAL, NOT HEX! &#xA;So the correct Base Address in this&#xD;&#xA;example is 128, not 80h." HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
@@ -148,12 +161,15 @@
                         </TabItem>
 
                         <TabItem Header="Final Review" Name="StandardWidthPartF">
-                            <Grid x:Name="CreateEditorPartReview" Grid.Column="1" Grid.Row="1" Style="{DynamicResource BorderGrid}">
+                            <Grid x:Name="CreateEditorPartReview" Grid.Column="1" Grid.Row="1" Style="{DynamicResource GridList}">
                                 <Border Margin="0,8,0,0" DockPanel.Dock="Top">
                                     <DockPanel>
-                                        <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
-                                            <Label Content="Final Review" FontWeight="Bold"/>
-                                        </DockPanel>
+                                        <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                            <DockPanel Style="{DynamicResource ContentBar}">
+                                                <Label Content="Final Review" FontWeight="Bold"/>
+                                            </DockPanel>
+                                        </Border>
+
                                         <Grid>
                                             <Button x:Name="CreateNewEditor" Content="Create New Editor! :D" HorizontalAlignment="Left" Margin="416,542,0,0" VerticalAlignment="Top" Height="40" Width="264" Click="ButtonCreateStandardWidthEditor"/>
                                             <Button Content="Back" HorizontalAlignment="Left" Margin="166,542,0,0" VerticalAlignment="Top" Height="40" Width="180" Click="ButtonBackToNameList"/>

@@ -85,21 +85,21 @@ namespace GameEditorStudio
                 }
 
 
-                Database = workshopWindow.MyDatabase;
-                WorkshopName = workshopWindow.WorkshopName;
+                Database = workshopWindow.WorkshopData;
+                WorkshopName = workshopWindow.WorkshopData.WorkshopName;
                 TheWorkshop = workshopWindow;
 
-                Database.Workshop.TheDocumentsUserControl = this;
+                Database.WorkshopXaml.TheDocumentsUserControl = this;
 
                 
 
-                string[] WorkshopDocumentOrder = File.ReadLines(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Documents\\" + "LoadOrder.txt").ToArray();
-                string[] WorkshopDocumentFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
+                string[] WorkshopDocumentOrder = File.ReadLines(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents\\" + "LoadOrder.txt").ToArray();
+                string[] WorkshopDocumentFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
                 foreach (string name in WorkshopDocumentOrder)
                 {
                     if (WorkshopDocumentFolderNames.Contains(name))
                     {
-                        Document TheDocument = new Document { Name = name, Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Documents\\" + name + "\\Text.txt") };
+                        Document TheDocument = new Document { Name = name, Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents\\" + name + "\\Text.txt") };
                         DocumentsWorkshop.Add(TheDocument); // Adding the document object to the list
                     }
                 }
@@ -107,7 +107,7 @@ namespace GameEditorStudio
                 {
                     if (!WorkshopDocumentOrder.Contains(name))
                     {
-                        Document TheDocument = new Document { Name = name, Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Documents\\" + name + "\\Text.txt") };
+                        Document TheDocument = new Document { Name = name, Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents\\" + name + "\\Text.txt") };
                         DocumentsWorkshop.Add(TheDocument); // Adding the document object to the list                 
 
                     }
@@ -120,13 +120,13 @@ namespace GameEditorStudio
 
                 if (workshopWindow.IsPreviewMode == true) { return; }
 
-                string[] ProjectDocumentOrder = File.ReadLines(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\Documents\\" + "LoadOrder.txt").ToArray();
-                string[] ProjectDocumentFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
+                string[] ProjectDocumentOrder = File.ReadLines(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents\\" + "LoadOrder.txt").ToArray();
+                string[] ProjectDocumentFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
                 foreach (string name in ProjectDocumentOrder)//The last known list of documents for this workshop, in the order they were saved in.
                 {
                     if (ProjectDocumentFolderNames.Contains(name))
                     {
-                        Document TheDocument = new Document { Name = name, Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\Documents\\" + name + "\\Text.txt") };
+                        Document TheDocument = new Document { Name = name, Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents\\" + name + "\\Text.txt") };
                         DocumentsProject.Add(TheDocument); // Adding the document object to the list
 
                     }
@@ -135,7 +135,7 @@ namespace GameEditorStudio
                 {
                     if (!ProjectDocumentOrder.Contains(name))
                     {
-                        Document TheDocument = new Document { Name = name, Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\Documents\\" + name + "\\Text.txt") };
+                        Document TheDocument = new Document { Name = name, Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents\\" + name + "\\Text.txt") };
                         DocumentsProject.Add(TheDocument); // Adding the document object to the list
 
                     }
@@ -308,34 +308,34 @@ namespace GameEditorStudio
             SaveDocumentToMemory();
             try
             {
-                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\DOCocumentationFolderTest");
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\DOCocumentationFolderTest");
                 foreach (Document Document in DocumentsWorkshop)
                 {
-                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\DOCocumentationFolderTest\\" + Document.Name);
-                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\DOCocumentationFolderTest\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\DOCocumentationFolderTest\\" + Document.Name);
+                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\DOCocumentationFolderTest\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
 
                 }
-                Directory.Delete(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\DOCocumentationFolderTest", true);
+                Directory.Delete(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\DOCocumentationFolderTest", true);
 
                 //Assuming there was no errors, the next chunk actually saves the documents.
                 //Instead of trying to properly deal with the logistics of renamed document folders, we just blow up the entire Documents folder and recreate it.       
 
-                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Documents");
+                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents");
 
                 string DocumentOrder = "";
                 foreach (Document Document in DocumentsWorkshop)
                 {
-                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Documents\\" + Document.Name);
-                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Documents\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents\\" + Document.Name);
+                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
                     DocumentOrder = DocumentOrder + Document.Name + "\n";
                 }
-                System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Documents\\" + "LoadOrder.txt", DocumentOrder);
+                System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents\\" + "LoadOrder.txt", DocumentOrder);
 
 
             }
             catch
             {
-                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\DOCocumentationFolderTest");
+                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\DOCocumentationFolderTest");
 
                 PixelWPF.LibraryPixel.NotificationNegative("Error: WORKSHOP Documentation not saved.",
                     "An error occured during the \"Saving Documentation\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +
@@ -364,16 +364,16 @@ namespace GameEditorStudio
             try
             {
 
-                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave");
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave");
                 foreach (Document Document in DocumentsProject)
                 {
-                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave\\" + Document.Name);
-                    File.WriteAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave\\" + Document.Name);
+                    File.WriteAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
 
                 }
 
-                Directory.Delete(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave", true);
-                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\Documents");
+                Directory.Delete(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave", true);
+                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents");
                 //Assuming there was no errors, the next chunk actually saves the documents.
                 //Instead of trying to properly deal with the logistics of renamed document folders, we just blow up the entire Documents folder and recreate it.       
 
@@ -382,12 +382,12 @@ namespace GameEditorStudio
                 string DocumentOrder = "";
                 foreach (Document Document in DocumentsProject)
                 {
-                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\Documents\\" + Document.Name);
-                    File.WriteAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\Documents\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents\\" + Document.Name);
+                    File.WriteAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
                     DocumentOrder = DocumentOrder + Document.Name + "\n";
 
                 }
-                File.WriteAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\Documents\\" + "LoadOrder.txt", DocumentOrder);
+                File.WriteAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents\\" + "LoadOrder.txt", DocumentOrder);
 
 
 
@@ -395,7 +395,7 @@ namespace GameEditorStudio
             }
             catch
             {
-                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopName + "\\" + TheWorkshop.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave");
+                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave");
 
                 PixelWPF.LibraryPixel.NotificationNegative("Error: PROJECT Documentation not saved.",
                     "An error occured during the \"Saving Documentation\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +

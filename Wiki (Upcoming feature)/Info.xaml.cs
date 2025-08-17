@@ -41,7 +41,53 @@ namespace GameEditorStudio
 
         public Tutorial()
         {            
-            InitializeComponent();            
+            InitializeComponent();
+
+            CategoryNameBox.Visibility = Visibility.Collapsed;
+            DocumentNameBox.Visibility = Visibility.Collapsed;
+            ButtonNewCategory.Visibility = Visibility.Collapsed;
+            ButtonNewDocument.Visibility = Visibility.Collapsed;
+        }
+
+        private void GenerateCategory(WikiCategory Category)
+        {
+            TreeViewItem Categoryitem = new();
+            Categoryitem.Header = Category.Name;
+            Categoryitem.Tag = Category;
+            TreeOfCategorys.Items.Add(Categoryitem);
+            ContextMenu contextMenu = new();
+            Categoryitem.ContextMenu = contextMenu;
+            MenuItem favoriteMenuitem = new();
+            favoriteMenuitem.Header = "Favorite";
+            contextMenu.Items.Add(favoriteMenuitem);
+            MenuItem deleteMenuitem = new();
+            deleteMenuitem.Header = "Delete";
+            contextMenu.Items.Add(deleteMenuitem);
+        }
+        private void GenerateDocument(WikiDocument Document)
+        {
+            //if () { } //If category tree isn't selecting anything, then return.
+
+
+            TreeViewItem Documentitem = new();
+            Documentitem.Header = Document.Name;
+            Documentitem.Tag = Document;
+            TreeOfDocuments.Items.Add(Documentitem);
+
+
+            ContextMenu contextMenu = new();
+            Documentitem.ContextMenu = contextMenu;
+
+
+            MenuItem favoriteMenuitem = new();
+            favoriteMenuitem.Header = "Favorite";
+            contextMenu.Items.Add(favoriteMenuitem);
+
+            MenuItem deleteMenuitem = new();
+            deleteMenuitem.Header = "Delete";
+            contextMenu.Items.Add(deleteMenuitem);
+
+
         }
 
         private void NewWikiCategory(object sender, RoutedEventArgs e)
@@ -63,14 +109,14 @@ namespace GameEditorStudio
 
                 WikiDocument Document = new();
                 category.Documents.Add(Document);
-                TreeViewItem Ditem = new();
-                Ditem.Tag = Document;
-                Ditem.Header = Document.Name;
-                TreeOfDocuments.Items.Add(Ditem);
+
+                GenerateDocument(Document);
             }
 
             
         }
+
+        
 
         private void CategoryNameBoxKeyDown(object sender, KeyEventArgs e)
         {
@@ -120,11 +166,8 @@ namespace GameEditorStudio
             
 
             foreach (WikiDocument Document in category.Documents) 
-            {                
-                TreeViewItem Ditem = new();
-                Ditem.Tag = Document;
-                Ditem.Header = Document.Name;
-                TreeOfDocuments.Items.Add(Ditem);
+            {
+                GenerateDocument(Document);
             }
 
             if (TreeOfDocuments.Items.Count > 0)
@@ -164,5 +207,28 @@ namespace GameEditorStudio
             WikiDocument document = item.Tag as WikiDocument;
             document.Text = DocumentTextbox.Text;
         }
+
+        private void ButtonEditModeClick(object sender, RoutedEventArgs e)
+        {
+            ButtonEditMode.Visibility = Visibility.Collapsed;
+            ButtonWriteMode.Visibility = Visibility.Visible;
+
+            CategoryNameBox.Visibility = Visibility.Visible;
+            DocumentNameBox.Visibility = Visibility.Visible;
+            ButtonNewCategory.Visibility = Visibility.Visible;
+            ButtonNewDocument.Visibility = Visibility.Visible;
+        }
+        private void ButtonWriteModeClick(object sender, RoutedEventArgs e)
+        {
+            ButtonWriteMode.Visibility = Visibility.Collapsed;
+            ButtonReadMode.Visibility = Visibility.Visible;
+        }
+        private void ButtonReadModeClick(object sender, RoutedEventArgs e)
+        {
+            ButtonReadMode.Visibility = Visibility.Collapsed;
+            ButtonWriteMode.Visibility = Visibility.Visible;
+        }
+
+        
     }
 }

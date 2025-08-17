@@ -9,12 +9,15 @@
              VerticalAlignment="Stretch" >
     <Border Grid.Row="2">
         <DockPanel>
-            <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
-                <Label Content="Icon Manager" FontWeight="Bold" DockPanel.Dock="Left"/>
-                
-                <Button x:Name="ExitButton" Content=" Exit Icon Manager " Margin="4" HorizontalAlignment="Right" Click="ToggleMyTabControl"  DockPanel.Dock="Right"/>
-                <Button Content=" Import Icon " Margin="4" HorizontalAlignment="Right" Style="{DynamicResource ButtonError}"  DockPanel.Dock="Right"/>
-            </DockPanel>
+            <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                <DockPanel Style="{DynamicResource ContentBar}">
+                    <Label Content="Icon Manager" FontWeight="Bold" DockPanel.Dock="Left"/>
+
+                    <Button x:Name="ExitButton" Content=" Exit Icon Manager " Margin="4" HorizontalAlignment="Right" Click="ToggleMyTabControl"  DockPanel.Dock="Right"/>
+                    <Button Content=" Import Icon " Margin="4" HorizontalAlignment="Right" Style="{DynamicResource ButtonError}"  DockPanel.Dock="Right"/>
+                </DockPanel>
+            </Border>
+            
             <DockPanel>
                 <TabControl Name="GraphicsTabber" TabStripPlacement="Left" MinHeight="400" DockPanel.Dock="Top">
 

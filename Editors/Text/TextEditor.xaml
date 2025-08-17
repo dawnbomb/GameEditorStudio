@@ -7,13 +7,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="750" d:DesignWidth="900">
     <DockPanel Name="BackPanel">
-        <Grid x:Name="MainGrid">
+        <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,3,0,2" Height="30">
+            <Button Content="L-ID" Width="70" Margin="264,0,0,0" Click="ToggleLineID"/>
+        </DockPanel>
+        <Grid x:Name="MainGrid" DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <local:FileManager x:Name="TextFileManager"  Grid.Column="0"    />
+            <local:FileManager x:Name="TextFileManager"  Grid.Column="0"  />
 
             <GridSplitter Style="{DynamicResource SplitterVertical}" Grid.Column="1" Width="12" Background="Transparent"  />
 

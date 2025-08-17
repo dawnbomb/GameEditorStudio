@@ -15,13 +15,18 @@ namespace GameEditorStudio
     // More specificly, it works a workshop into editors, then stores everything about every single editor.
 
 
-    public static class TrueDatabase 
+    public static class Database 
     {
+
         public static List<Tool> Tools { get; set; } = new();
         public static List<Command> Commands { get; set; } = new();
-        public static List<CommonEvent> CommonEvents { get; set; } = new();
+        public static List<CommonEvent> CommonEvents { get; set; } = new(); //WORKSHOP COMMONS?
 
         public static List<CommonEvent> CommonEventsLocal { get; set; } = new(); //A list of every common event the user has enabled locally. 
+
+        public static List<WorkshopData> Workshops { get; set; } = new(); //A list of all workshops that exist. This is used to load the workshop list in the main menu.
+
+        public static GameLibrary GameLibrary { get; set; } //I just wanted a easy reference here. I can see problems with this later, but thats a problem for future me. HI FUTURE ME! :D
 
         //Maybe a dictionary of Workshops? More then a list, something i can ID (With workshop name?)
         //I can move WorkshopName from Workshop to WorkshopData as a workshop holds it's data file anyway, and then now i can check name ID? It's an idea anyway...for making a dictionary...maybe?
@@ -34,32 +39,43 @@ namespace GameEditorStudio
         //Also Project data might be relevant to...
     }
 
-    public class WorkshopData //When i later make this a list in true database, remember to make sure workshop common events still load / save / use properly
+    public class ProjectData //The root project data itself. 
     {
-        
-        //List of (Editor names as strings) (but actually the strings will be...lists or dictionaries?)
-
-
-
-        public List<CommonEvent> CommonEventsWorkshop { get; set; } = new();
-        public EntryManager EntryManager { get; set; } = new(); //This doesn't even need to be here. Remove it later. xd
-
-
-        //Starting here is why Database isn't static yet, but i need to eventually fix this and just make the database be static... 
-        //When i first made this program, a workshop held a database. 
-        //Right before release i changed it that THE database is created when the program opens, but Now instead, a database exists
-        public Workshop Workshop { get; set; } //Set when a workshop is opened.
-        //Workshop is set when a workshop is actually opened. 
-        public Dictionary<string, GameFile>? GameFiles { get; set; } = new(); //the term "File" prevents File.Read from working because it thinks "File" is a class. So i Needed another name.    
-        public Dictionary<string, Editor>? GameEditors { get; set; } = new(); //Note that "Editors" is a folder name. So this is called "GameEditors".
-        public List<Document> Documents { get; set; } = new();
-
-
-        
-
+        /*public ICommand ButtonCommand { get; set; }*/
+        public string ProjectName { get; set; } = "New Project";
+        public string ProjectInputDirectory { get; set; }
+        public string ProjectOutputDirectory { get; set; }
+        public List<ProjectEventResource> ProjectEventResources { get; set; }
     }
 
-       
+    public class WorkshopData //When i later make this a list in true database, remember to make sure workshop common events still load / save / use properly
+    {
+
+        ///////////////////////////////GAME LIBRARY INFO AKA BASICS///////////////////////////////////////////////////////////////////
+        public string WorkshopName { get; set; } = ""; //The name of the workshop (IE name of whats selected in Game Library)
+        public string WorkshopInputDirectory { get; set; } = ""; //The intended InputDirectory (Folder name) for modding this game. This helps make sure end users aren't guessing what the correct one is.
+        public bool ProjectsRequireSameFolderName { get; set; } = true; //If true the project input folder must have the same name as WorkshopInputDirectory.
+        public List<EventResource> WorkshopEventResources { get; set; } = new();
+        public List<ProjectData> ProjectsList { get; set; } = new();
+        public List<CommonEvent> WorkshopCommonEvents { get; set; } = new(); //WORKSHOP COMMONS?
+        public List<Event> WorkshopEvents { get; set; } = new();
+
+
+        //////////////////////////////ADVANCED INFO AFTER OPENING WORKSHOP/////////////////////////////////////////////////////////////
+        public Workshop WorkshopXaml { get; set; } //Set when a workshop is actually opened.
+        public Dictionary<string, GameFile> GameFiles { get; set; } = new(); //the term "File" prevents File.Read from working because it thinks "File" is a class. So i Needed another name.    
+        public Dictionary<string, Editor> GameEditors { get; set; } = new(); //Note that "Editors" is a folder name. So this is called "GameEditors".   
+        public EntryManager EntryManager { get; set; } = new(); //This doesn't even need to be here. Remove it later. xd
+
+        public ProjectData ProjectDataItem { get; set; }
+
+
+        //////////////////////////////FOR LATER/////////////////////////////////////////////////////////////
+        public List<Document> Documents { get; set; } = new();
+        //List of (Editor names as strings) (but actually the strings will be...lists or dictionaries?)
+    }
+
+
 
     public class GameFile //aka Database.GameEditors[X].
     {

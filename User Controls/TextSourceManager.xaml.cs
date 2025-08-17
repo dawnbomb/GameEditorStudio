@@ -90,7 +90,7 @@ namespace GameEditorStudio
 
             if (parentWindow is Workshop workshopWindow)
             {
-                Database = workshopWindow.MyDatabase;
+                Database = workshopWindow.WorkshopData;
 
 
                 EditorsTreeView.Items.Clear();
@@ -160,13 +160,13 @@ namespace GameEditorStudio
 
             if (parentWindow is Workshop workshopWindow)
             {
-                Database = workshopWindow.MyDatabase;
+                Database = workshopWindow.WorkshopData;
 
             }
 
-            if (Database.Workshop.EditorClass.StandardEditorData.DescriptionTableList.Count != 0)
+            if (Database.WorkshopXaml.EditorClass.StandardEditorData.DescriptionTableList.Count != 0)
             {
-                DescriptionTable TextTable = Database.Workshop.EditorClass.StandardEditorData.DescriptionTableList[0];
+                DescriptionTable TextTable = Database.WorkshopXaml.EditorClass.StandardEditorData.DescriptionTableList[0];
                 FileStartTextBox.Text = TextTable.Start.ToString();
                 FileTextSizeTextBox.Text = TextTable.TextSize.ToString();
                 FileFullRowSizeTextBox.Text = TextTable.RowSize.ToString();
@@ -174,7 +174,7 @@ namespace GameEditorStudio
 
                 
 
-                if (Database.Workshop.EditorClass.StandardEditorData.DescriptionTableList[0].LinkType == DescriptionTable.LinkTypes.TextFile)
+                if (Database.WorkshopXaml.EditorClass.StandardEditorData.DescriptionTableList[0].LinkType == DescriptionTable.LinkTypes.TextFile)
                 {
                     ComboBoxListType.Text = "Link to Text File";
                     TabControlListType.SelectedIndex = 1;
@@ -189,7 +189,7 @@ namespace GameEditorStudio
         {
             foreach (TreeViewItem Item3 in DataFileManager.TreeGameFiles.Items) //FileTreeExtraTable.Items
             {
-                if (Item3.Tag == Database.Workshop.EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable)
+                if (Item3.Tag == Database.WorkshopXaml.EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable)
                 {
                     Item3.IsSelected = true;
                     break;
@@ -197,7 +197,7 @@ namespace GameEditorStudio
             }
             foreach (TreeViewItem Item3 in FileManagerForTextFiles.TreeGameFiles.Items) //FileTreeExtraTable.Items
             {
-                if (Item3.Tag == Database.Workshop.EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable)
+                if (Item3.Tag == Database.WorkshopXaml.EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable)
                 {
                     Item3.IsSelected = true;
                     break;
@@ -327,7 +327,7 @@ namespace GameEditorStudio
         {
             foreach (TreeViewItem Item3 in DataFileManager.TreeGameFiles.Items) //FileTreeExtraTable.Items
             {
-                if (Item3.Tag == Database.Workshop.EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable)
+                if (Item3.Tag == Database.WorkshopXaml.EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable)
                 {
                     Item3.IsSelected = true;
                     break;
@@ -348,10 +348,10 @@ namespace GameEditorStudio
         {
             if (DescriptionMode == false && MenuMode == false) { return; }
 
-            if (Database.Workshop.EditorClass.StandardEditorData.DescriptionTableList.Count == 0)
+            if (Database.WorkshopXaml.EditorClass.StandardEditorData.DescriptionTableList.Count == 0)
             {
                 DescriptionTable NEW_DescriptionTable = new();
-                Database.Workshop.EditorClass.StandardEditorData.DescriptionTableList.Add(NEW_DescriptionTable);
+                Database.WorkshopXaml.EditorClass.StandardEditorData.DescriptionTableList.Add(NEW_DescriptionTable);
 
             }
 
@@ -365,10 +365,10 @@ namespace GameEditorStudio
             }
 
             //This part updates the current description, and i made select retrigger decoding and moved description textbox creation to decoding, so it also creates the textbox instantly if the user just added a new description.
-            Database.Workshop.TreeViewSelectionEnabled = false;
-            TreeViewItem TheItem = Database.Workshop.EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.SelectedItem as TreeViewItem;
+            Database.WorkshopXaml.TreeViewSelectionEnabled = false;
+            TreeViewItem TheItem = Database.WorkshopXaml.EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.SelectedItem as TreeViewItem;
             TheItem.IsSelected = false;
-            Database.Workshop.TreeViewSelectionEnabled = true;
+            Database.WorkshopXaml.TreeViewSelectionEnabled = true;
             TheItem.IsSelected = true;
 
             var parentPanel = this.Parent as Panel;
@@ -383,7 +383,7 @@ namespace GameEditorStudio
         private void SaveDescriptions()
         {
             
-            DescriptionTable DescriptionTable = Database.Workshop.EditorClass.StandardEditorData.DescriptionTableList[0];
+            DescriptionTable DescriptionTable = Database.WorkshopXaml.EditorClass.StandardEditorData.DescriptionTableList[0];
 
 
             if (ComboBoxListType.Text == "Link to Data File") 

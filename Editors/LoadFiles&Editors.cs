@@ -31,7 +31,7 @@ namespace GameEditorStudio.Loading
         public void LoadGameFilesIntoDatabase(Workshop TheWorkshop, WorkshopData Database) //Triggers when the workshop is launched.
         {
             //This doesn't happen in preview mode. 
-            string EditorsFolder = LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors\\";             
+            string EditorsFolder = LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\";             
             
             foreach (string Editor in Directory.GetDirectories(EditorsFolder))
             {
@@ -62,13 +62,13 @@ namespace GameEditorStudio.Loading
 
             foreach (GameFile GameFile in Database.GameFiles.Values)
             {    
-                if (TheWorkshop.ProjectDataItem.ProjectOutputDirectory != "" && File.Exists(Path.Combine(TheWorkshop.ProjectDataItem.ProjectOutputDirectory, GameFile.FileLocation)))
+                if (TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory != "" && File.Exists(Path.Combine(TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory, GameFile.FileLocation)))
                 {
-                    GameFile.FileBytes = File.ReadAllBytes(TheWorkshop.ProjectDataItem.ProjectOutputDirectory + "\\" + GameFile.FileLocation);
+                    GameFile.FileBytes = File.ReadAllBytes(TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\" + GameFile.FileLocation);
                 }
-                else if (TheWorkshop.ProjectDataItem.ProjectInputDirectory != "")
+                else if (TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory != "")
                 {
-                    GameFile.FileBytes = File.ReadAllBytes(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + GameFile.FileLocation);
+                    GameFile.FileBytes = File.ReadAllBytes(TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + GameFile.FileLocation);
                 }
                 else
                 {
@@ -89,7 +89,7 @@ namespace GameEditorStudio.Loading
         {
 
             List<string> EditorsList = new();
-            string EditorsText = LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors\\" + "LoadOrder.txt";
+            string EditorsText = LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + "LoadOrder.txt";
 
             if (File.Exists(EditorsText))
             {
@@ -108,7 +108,7 @@ namespace GameEditorStudio.Loading
 
             foreach (string EditorName in EditorsList)
             {
-                string TargetXML = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopName, "Editors", EditorName, "Editor.xml");
+                string TargetXML = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors", EditorName, "Editor.xml");
                 if (File.Exists(TargetXML))
                 {
                     LoadTheEditor(TheWorkshop, Database, TargetXML);
@@ -116,12 +116,12 @@ namespace GameEditorStudio.Loading
                 }
             }
 
-            string[] EditorFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors").Select(Path.GetFileName).ToArray();
+            string[] EditorFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors").Select(Path.GetFileName).ToArray();
             foreach (string FolderName in EditorFolderNames)
             {
                 if (!EditorsList.Contains(FolderName))
                 {
-                    string TargetXML = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopName, "Editors", FolderName, "Editor.xml");
+                    string TargetXML = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors", FolderName, "Editor.xml");
                     LoadTheEditor(TheWorkshop, Database, TargetXML);
                 }
                 //CreateButton(TheWorkshop);

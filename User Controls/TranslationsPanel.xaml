@@ -9,11 +9,13 @@
     
     
     <DockPanel>
-        <DockPanel DockPanel.Dock="Top" Style="{DynamicResource HeaderDock}">
-            <Label Content="Translation Panel" FontWeight="Bold"/>
-
-            <Label Content="Dummy "  FontWeight="Bold" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
-        </DockPanel>
+        <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+            <DockPanel Style="{DynamicResource ContentBar}">
+                <Label Content="Translation Panel" FontWeight="Bold"/>
+                <Label Content="Dummy "  FontWeight="Bold" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+            </DockPanel>
+        </Border>
+        
         <Grid Margin="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />

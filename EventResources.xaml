@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="GameEditorStudio.EventResources"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="1000">
+    <DockPanel Margin="0,0,0,0" Style="{DynamicResource DockList}" MinHeight="200">
+        <Border  Height="42" DockPanel.Dock="Top">
+            <DockPanel >
+                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                    <DockPanel Style="{DynamicResource ContentBar}" >
+                        <Label Content="Event Resources" FontWeight="Bold" DockPanel.Dock="Left" />
+                        <DockPanel DockPanel.Dock="Left" LastChildFill="False"  Margin="0,0,0,0" Background="Transparent">
+                            <!--NOTE: these 4 buttons exist seperatly for a reason!
+I dont want to allow uses to swap a resources type!
+If a event says use resource X, and it swaps from a file to a folder, i can see lots of problems, crashes, etc.
+Like trying to run a folder as a file for a emulator, because the resource was previously a file, and some users already setup that files location, before the updated workshop changed the resource type.-->
+                            <Button Content="New File" Click="NewResourceFile" Width="115" Height="30" />
+                            <Button Content="New Folder" Click="NewResourceFolder" Width="135" Height="30" Margin="0,0,0,0"/>
+                            <Button Content="New Child File" Click="NewResourceChildFile" Width="170" Height="30" />
+                            <Button Content="New Child Folder" Click="NewResourceChildFolder" Width="190" Height="30" />
+                            <Button Content="Child Readme" Width="140" Height="30" Margin="10,0,0,0" Click="ChildResourceHelp"/>
+                        </DockPanel>
+                        <!--<Label Content="(skipuntil your ready for the eventing system)" DockPanel.Dock="Right" HorizontalAlignment="Right"/>-->
+                    </DockPanel>
+                </Border>
+                
+            </DockPanel>
+        </Border>
+
+        <DockPanel Style="{DynamicResource ContentBar}"   DockPanel.Dock="Bottom" Background="#FF1D0303">
+            <Label Content="Reminder: Events using resources need you to also set the PROJECT'S resource locations!" FontWeight="Bold" DockPanel.Dock="Bottom" Foreground="#FFFFAAAA" />
+            <DockPanel DockPanel.Dock="Left" LastChildFill="False"  Margin="0,0,0,0" Background="Transparent">
+            </DockPanel>
+            <!--<Label Content="(skipuntil your ready for the eventing system)" DockPanel.Dock="Right" HorizontalAlignment="Right"/>-->
+        </DockPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Top" >
+            <DockPanel Name="ResourcePanel" DockPanel.Dock="Top" LastChildFill="False" Background="Transparent">
+
+            </DockPanel>
+        </ScrollViewer>
+        
+    </DockPanel>
+</UserControl>

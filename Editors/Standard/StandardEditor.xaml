@@ -1,0 +1,78 @@
+﻿<UserControl x:Class="GameEditorStudio.StandardEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d" 
+             d:DesignHeight="750" d:DesignWidth="1100">
+    <DockPanel>
+
+        <DockPanel Name="Hotbar" Margin="0,2,0,0" DockPanel.Dock="Top" >
+            <DockPanel LastChildFill="False">
+                <Button Content=" I-ID " DockPanel.Dock="Left" Click="ToggleItemIDNumberVisibility" Margin="1,0,5,0" ToolTip="Toggles item ID numbers. &#xD;&#xA;ID numbers are shown using the real, internal game data order, not the order you arrange them in. &#xD;&#xA;If you didn't know, you can drag items around and reorder them!&#xD;&#xA;Anyway, because the ID numbers can become almost useless, you have the option to turn them off."/>
+                <Button Content="アA" Width="45" DockPanel.Dock="Left" x:Name="TranslationToggle" Style="{DynamicResource ButtonError}"  Click="ToggleTranslationPanel" Margin="0,0,2,0" ToolTip="Toggles the translation panel.&#xD;&#xA;This is an upcoming feature, and will be useful for people making english patches."/>
+
+                
+            </DockPanel>
+            <DockPanel LastChildFill="False" Margin="151,0,0,0">
+                <Button Content=" 🔍 " DockPanel.Dock="Left" x:Name="EntryAddressButton2"  Click="ToggleEntrySynbology" Margin="2,0,2,0" ToolTip="Toggles Symbology. &#xD;&#xA;Symbology tries to tell you information useful for discovering what an entry byte actually does. &#xD;&#xA;You can mouseover an entry symbol to learn more detailed information." Width="42"/>
+                <Button Content=" E-ID " Visibility="Collapsed" DockPanel.Dock="Left" x:Name="EntryAddressButton"  Click="EntryAddressToggle" Margin="2,0,2,0" ToolTip="Toggles the display of Entry ID numbers. &#xD;&#xA;The number represents what byte # the entry is, for the row it's in.&#xD;&#xA;For nerds, this is a Byte's Offset Value. " Width="58"/>
+                <Button DockPanel.Dock="Left" x:Name="EntryAddressTypeButton" Content="DEC" Width="50" Click="EntryAddressType" Margin="2,0,2,0" ToolTip="Changes the Entry ID number between displaying... &#xD;&#xA;in Decimal (Numbers 0~9) &#xD;&#xA;and Hex (Numbers 00~FF). "/>
+                <TextBox DockPanel.Dock="Left" x:Name="EntryAddressOffsetTextbox" Text="0" Width="35" Margin="2,1,2,1" KeyDown="EntryOffsetTextboxKeyDown" ToolTip="This textbox value (after pressing enter) will make each entry-ID APPEAR &#xD;as if it's offset ID was +/- X number. Such as -3 or +5. &#xA;&#xA;It does not actually change the offset of any entrys, only the appearence." />
+                <Button Content="👁"  DockPanel.Dock="Left" x:Name="EntryHiddenToggle"   Click="ToggleHiddenEntrys" Margin="2,0,2,0" ToolTip="Toggles the visibility of hidden entrys. &#xD;&#xA;When visable, a hidden entry will appear red. &#xA;&#xA;Note that entrys that represent text are forced to hidden &#xA;when the workshop opens, even if you set them not to be." Width="38"/>
+
+                <Button Content="👁️‍🗨️"  DockPanel.Dock="Left" x:Name="DebugShowALL"   Click="ToggleDebugShowALL" Margin="2,0,2,0" ToolTip="Makes EVERYTHING visable. &#xD;&#xA;This button only exists in debug mode.&#xA;Mostly it just shows merged entrys." Width="38"/>
+                
+            </DockPanel>
+        </DockPanel>
+        
+
+        <Grid x:Name="MainGrid" DockPanel.Dock="Top">
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Name="LeftGrid" Grid.Column="0" HorizontalAlignment="Left" Width="250" >
+                <local:TheLeftBar x:Name="LeftBar"  Grid.Column="0" />
+            </Grid>
+            
+            
+            <GridSplitter Style="{DynamicResource SplitterVertical}" Grid.Column="1" Width="10"/>
+            
+            <Grid Grid.Column="2"  >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" MinHeight="60"/>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <ContentControl Grid.Row="0">
+                    <ScrollViewer Name="TheScrollviewer">
+                        <DockPanel Name="EditorsPanel" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Style="{DynamicResource BorderDock}">
+
+                        </DockPanel>
+                    </ScrollViewer>
+                </ContentControl>
+
+                <ContentControl Grid.Row="1" Margin="0,10,0,0">
+                    <DockPanel x:Name="DescriptionsPanel">
+                        <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                            <DockPanel Style="{DynamicResource ContentBar}">
+                                <Label Content="Description" FontWeight="Bold" Margin="5,0,0,0" />
+                                <Button Content="Description Manager" HorizontalAlignment="Right" Margin="0,2,5,2" VerticalAlignment="Top"  Width="220" Height="30"/>
+                            </DockPanel>
+                        </Border>
+                        
+                    </DockPanel>
+                </ContentControl>
+
+            </Grid>
+        </Grid>
+
+        
+
+    </DockPanel>
+</UserControl>

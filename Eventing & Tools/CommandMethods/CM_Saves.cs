@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,13 +15,13 @@ using static Microsoft.IO.RecyclableMemoryStreamManager;
 namespace GameEditorStudio
 {
     
-    public partial class CommandMethodsClass //This file contains saving actions. These save XML data to the users computer. They can also be accessed fia the File menu.
+    public static partial class CommandMethodsClass //This file contains saving actions. These save XML data to the users computer. They can also be accessed fia the File menu.
     {
 
         public static void SaveAll(MethodData MethodData)
         {                   
 
-            foreach (Command Command in TrueDatabase.Commands)
+            foreach (Command Command in Database.Commands)
             {
                 if (Command.Key == "638835921950407398-717630473-427782251") //SaveEditors
                 {
@@ -35,7 +36,7 @@ namespace GameEditorStudio
 
             //CommandMethodsClass.SaveGameData(MethodData);
 
-            foreach (Command Command in TrueDatabase.Commands)
+            foreach (Command Command in Database.Commands)
             {
                 if (Command.Key == "638835921950407433-13988325-250675840") //SaveGameData
                 {
@@ -48,7 +49,7 @@ namespace GameEditorStudio
                 }
             }
 
-            foreach (Command Command in TrueDatabase.Commands)
+            foreach (Command Command in Database.Commands)
             {
                 if (Command.Key == "638835921950407461-756556716-682593786") //SaveDocumentsWorkshop
                 {
@@ -61,7 +62,7 @@ namespace GameEditorStudio
                 }
             }
 
-            foreach (Command Command in TrueDatabase.Commands)
+            foreach (Command Command in Database.Commands)
             {
                 if (Command.Key == "638835921950407528-367118138-951819106") //SaveDocumentsProject
                 {
@@ -79,7 +80,7 @@ namespace GameEditorStudio
 
 
 
-            foreach (Command Command in TrueDatabase.Commands)
+            foreach (Command Command in Database.Commands)
             {
                 if (Command.Key == "638835921950407554-64869249-237672364") //SaveEvents
                 {
@@ -94,15 +95,15 @@ namespace GameEditorStudio
         }
 
 
-        public static void SaveEditors(MethodData ActionPack)
+        public static void SaveEditors(MethodData MethodData)
         {
-            if (ActionPack.Command.WorkshopData == null)  //think about this more before adding it
+            if (MethodData.Command.WorkshopData == null)  //think about this more before adding it
             {
                 return;
             }
 
-            WorkshopData Database = ActionPack.mainMenu.WorkshopData;
-            Workshop TheWorkshop = Database.Workshop;
+            WorkshopData Database = MethodData.mainMenu.WorkshopData;
+            Workshop TheWorkshop = Database.WorkshopXaml;
 
             if (TheWorkshop.IsPreviewMode == true) { return; }
 
@@ -116,7 +117,7 @@ namespace GameEditorStudio
                 ExtraPath = "\\Other\\Dummy Workshops"; //This extra string causes stuff to be saved to a path variant of the normal location, letting us test if a problem would occur, before actually saving to the right location.
                 
 
-                Directory.CreateDirectory(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName);
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName);
                 SaveAllEditors(Database, TheWorkshop, ExtraPath);
 
                 //Step 2: Delete everything in the example location.
@@ -124,7 +125,7 @@ namespace GameEditorStudio
 
                 //Step 3: Delete everything in the REAL location.
                 ExtraPath = "";
-                string FolderPath = LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors";
+                string FolderPath = LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors";
                 DirectoryInfo DummyDirectory = new DirectoryInfo(FolderPath);
 
                 foreach (FileInfo file in DummyDirectory.GetFiles())
@@ -146,7 +147,7 @@ namespace GameEditorStudio
                     
                     List<string> EditorsToDelete = new List<string>(); //Used to delete aka rename old folders. Currently causes a access forbidden crash.
 
-                    string LoadOrderFile = LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors\\" + "LoadOrder.txt"; //causes weird errors if outside this
+                    string LoadOrderFile = LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + "LoadOrder.txt"; //causes weird errors if outside this
 
                     string LoadOrderContent = "";   
 
@@ -166,14 +167,14 @@ namespace GameEditorStudio
                         LoadOrderContent += editor.Key + Environment.NewLine; //for load order text
 
                         EditorsToDelete.Add(editor.Key);//Add editor string to name list
-                        Directory.CreateDirectory(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors\\" + editor.Key);
+                        Directory.CreateDirectory(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + editor.Key);
 
                         XmlWriterSettings settings = new XmlWriterSettings();
                         settings.Indent = true;
                         settings.IndentChars = ("    ");
                         settings.CloseOutput = true;
                         settings.OmitXmlDeclaration = true;
-                        using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors\\" + editor.Key + "\\" + "\\Editor.xml", settings))
+                        using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + editor.Key + "\\" + "\\Editor.xml", settings))
                         {
 
                             writer.WriteStartElement("Editor"); //This is the root of the XML
@@ -485,7 +486,7 @@ namespace GameEditorStudio
 
                         } //End of using XmlWriter
 
-                        using (XmlWriter FileWriter = XmlWriter.Create(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Editors\\" + editor.Key + "\\" + "\\Files.xml", settings))
+                        using (XmlWriter FileWriter = XmlWriter.Create(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + editor.Key + "\\" + "\\Files.xml", settings))
                         {                            
 
                             List<GameFile> SomeGameFiles = new();
@@ -644,26 +645,26 @@ namespace GameEditorStudio
         }
 
 
-        public static void SaveGameData(MethodData ActionPack)//Database Database, Workshop TheWorkshop
+        public static void SaveGameData(MethodData MethodData)//Database Database, Workshop TheWorkshop
         {
             //I need to make it so for the entrys of the currently selected item, if a entry is edited, that it is saved.
             //Currently the user can just swap items back and forth to save to MemoryFile, and then here MemoryFile saves to your PC.
 
-            if (ActionPack.Command.WorkshopData == null)  //think about this more before adding it
+            if (MethodData.Command.WorkshopData == null)  //think about this more before adding it
             {
                 return;
             }
 
             string SavePath = "";
 
-            if (ActionPack.Command.WorkshopData.Workshop.ProjectDataItem.ProjectOutputDirectory != "")
+            if (MethodData.Command.WorkshopData.ProjectDataItem.ProjectOutputDirectory != "")
             {
                 //Make sure this actually exists!
-                SavePath = ActionPack.Command.WorkshopData.Workshop.ProjectDataItem.ProjectOutputDirectory;
+                SavePath = MethodData.Command.WorkshopData.ProjectDataItem.ProjectOutputDirectory;
             }
-            else if (ActionPack.Command.WorkshopData.Workshop.ProjectDataItem.ProjectInputDirectory != "")
+            else if (MethodData.Command.WorkshopData.ProjectDataItem.ProjectInputDirectory != "")
             {
-                SavePath = ActionPack.Command.WorkshopData.Workshop.ProjectDataItem.ProjectInputDirectory;
+                SavePath = MethodData.Command.WorkshopData.ProjectDataItem.ProjectInputDirectory;
             }
             else 
             {
@@ -672,7 +673,7 @@ namespace GameEditorStudio
 
             //add a check for if SavePath location exists
 
-            foreach (KeyValuePair<string, GameFile> HFile in ActionPack.Command.WorkshopData.GameFiles)
+            foreach (KeyValuePair<string, GameFile> HFile in MethodData.Command.WorkshopData.GameFiles)
             {
                 File.WriteAllBytes(SavePath + "\\" + HFile.Value.FileLocation, HFile.Value.FileBytes); //saves to the path i set, everything in the array.
             }
@@ -687,7 +688,7 @@ namespace GameEditorStudio
                 return;
             }
 
-            ActionPack.mainMenu.WorkshopData.Workshop.TheDocumentsUserControl.SaveAllDocumentsWorkshop();
+            ActionPack.mainMenu.WorkshopData.WorkshopXaml.TheDocumentsUserControl.SaveAllDocumentsWorkshop();
         }
 
         public static void SaveDocumentsProject(MethodData ActionPack)
@@ -696,13 +697,13 @@ namespace GameEditorStudio
             {
                 return;
             }
-            ActionPack.mainMenu.WorkshopData.Workshop.TheDocumentsUserControl.SaveAllDocumentsProject();
+            ActionPack.mainMenu.WorkshopData.WorkshopXaml.TheDocumentsUserControl.SaveAllDocumentsProject();
         }
 
 
         public static void SaveEvents(MethodData MethodData) 
         {
-            string WorkshopName = MethodData.mainMenu.WorkshopName;
+            string WorkshopName = MethodData.mainMenu.WorkshopData.WorkshopName;
             
             //Step 1: Make sure everything can save to a Example location, letting us test if a problem (crash) would occur, before actually saving to the right location.
             string ExtraPath = "\\Lab"; //This extra string causes stuff to be saved to a path variant of the normal location, 
@@ -715,8 +716,10 @@ namespace GameEditorStudio
             //Step 2: Delete everything in the example location.
             Directory.Delete(LibraryGES.ApplicationLocation + ExtraPath + "\\", true);
 
-            bool Failed = false;
+
+            bool Failed = false; //yes this is used. WAY down below in the catch part of try catch.
             if (Failed == true) { return; }
+
 
             //Step 3: Delete everything in the REAL location.
             ExtraPath = "";
@@ -734,6 +737,7 @@ namespace GameEditorStudio
             
             //Step 4: Save everything for real.            
             SaveEventsToXML(ExtraPath);
+            SaveWorkshopXml(MethodData.mainMenu.WorkshopData);
 
 
             void SaveEventsToXML(string ExtraPath)
@@ -743,7 +747,7 @@ namespace GameEditorStudio
                     string LoadOrderFile = LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events\\" + "LoadOrder.txt"; //causes weird errors if outside this
                     string LoadOrderContent = "";
 
-                    foreach (Event Event in MethodData.mainMenu.Events)
+                    foreach (Event Event in MethodData.mainMenu.WorkshopData.WorkshopEvents)
                     {
                         Directory.CreateDirectory(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events\\" + Event.DisplayName + "\\");
 
@@ -765,31 +769,145 @@ namespace GameEditorStudio
                             writer.WriteElementString("Seperator", "================================================================================");
                             writer.WriteElementString("Name", Event.DisplayName);
                             writer.WriteElementString("Note", Event.Note);
-                            writer.WriteElementString("Notepad", Event.Notepad);
+                            writer.WriteElementString("Tooltip", Event.Tooltip);
 
                             writer.WriteStartElement("CommandList");
                             foreach (EventCommand AnEventCommand in Event.CommandList)
                             {
                                 writer.WriteStartElement("Command");
-
+                                
                                 writer.WriteElementString("Name", AnEventCommand.Command.DisplayName);
                                 writer.WriteElementString("Key", AnEventCommand.Command.Key);                                
                                 writer.WriteStartElement("ResourceList");                                
                                 foreach (string thekey in AnEventCommand.ResourceKeys.Values)
                                 {
-                                    if (thekey == "") { continue; }
+                                    //if (thekey == "") { continue; }
                                     writer.WriteStartElement("Resource");
-                                    writer.WriteElementString("Name", MethodData.mainMenu.EventResources.Find(thing => thing.WorkshopResourceKey == thekey).Name );
-                                    writer.WriteElementString("Key", thekey); 
+                                    EventResource eventResource = MethodData.mainMenu.WorkshopData.WorkshopEventResources.Find(thing => thing.Key == thekey);
+                                    writer.WriteElementString("Name", eventResource?.Name);
+                                    writer.WriteElementString("Key", thekey);  
                                     writer.WriteEndElement(); //End Command
-                                }
+                                }                                
                                 writer.WriteEndElement(); //End Resources
+
+                                {   //SAVE SOME SPECIAL STUFF IF THIS IS THE COMMAND PROMPT COMMAND.                                    
+                                    if (AnEventCommand.Command.Key == "638907232781932877-460670541-291625304") 
+                                    {
+                                        writer.WriteElementString("CMD", "True");
+
+                                        writer.WriteStartElement("CMDResourceList");
+                                        foreach (CommandResource cmdResource in AnEventCommand.CMDList)
+                                        {
+                                            writer.WriteStartElement("CMDResource");
+                                            writer.WriteElementString("CMDType", cmdResource.Type.ToString());
+                                            writer.WriteElementString("CMDTextKey", cmdResource.CMDTextKey);                                            
+                                            writer.WriteEndElement(); //End Command
+                                        }
+                                        writer.WriteEndElement(); //End CMDResourceList
+                                    }
+                                }
+                                
+
                                 writer.WriteEndElement(); //End Command
                             }
                             writer.WriteEndElement(); //End Commands
 
                             writer.WriteEndElement(); //End Event
                             writer.Flush(); //Ends the XML GameFile
+                        }
+                    }
+                    File.WriteAllText(LoadOrderFile, LoadOrderContent);
+
+
+
+
+
+
+
+
+
+
+                    //Save the Resources.xml
+                    foreach (Event Event in MethodData.mainMenu.WorkshopData.WorkshopEvents)
+                    {    
+                        XmlWriterSettings settings = new XmlWriterSettings();
+                        settings.Indent = true;
+                        settings.IndentChars = ("    ");
+                        settings.CloseOutput = true;
+                        settings.OmitXmlDeclaration = true;
+                        using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events\\" + Event.DisplayName + "\\Resources.xml", settings))
+                        {
+                            writer.WriteStartElement("Resources");
+                            writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                            writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
+                            writer.WriteElementString("Seperator", "================================================================================");
+
+                            writer.WriteStartElement("ResourceList");
+                            List<EventResource> savedresources = new();
+                            List<EventResource> savedresourceparents = new();
+                            foreach (EventCommand AnEventCommand in Event.CommandList)
+                            {                                
+                                foreach (string thekey in AnEventCommand.ResourceKeys.Values) //first save used resources only.
+                                {
+                                    EventResource eventResource = MethodData.mainMenu.WorkshopData.WorkshopEventResources.Find(thing => thing.Key == thekey);
+                                    if (thekey == "") { continue; }
+                                    SaveResource(eventResource);
+                                    savedresources.Add(eventResource);
+                                }
+                                foreach (EventResource resource in savedresources) //then save any parent resources that the used resources rely on.
+                                {
+                                    if (resource.ParentKey != "") 
+                                    {
+                                        EventResource eventResource = MethodData.mainMenu.WorkshopData.WorkshopEventResources.Find(thing => thing.Key == resource.ParentKey);
+
+                                        if (!savedresourceparents.Contains(eventResource)) 
+                                        {
+                                            SaveResource(eventResource);
+                                            savedresourceparents.Add(eventResource);
+                                        }
+                                        
+                                    }
+                                    
+                                }
+                            }
+                            writer.WriteEndElement(); //End ResoueceList
+
+                            writer.WriteEndElement(); //End Event
+                            writer.Flush(); //Ends the XML GameFile
+
+                            void SaveResource(EventResource eventResource) 
+                            {
+                                writer.WriteStartElement("Resource");                               
+                                
+                                writer.WriteElementString("Name", eventResource.Name);
+                                writer.WriteElementString("Key", eventResource.Key);
+
+                                if (eventResource.ResourceType == EventResource.ResourceTypes.File)
+                                {
+                                    writer.WriteElementString("ResourceType", "File");
+                                }
+                                if (eventResource.ResourceType == EventResource.ResourceTypes.Folder)
+                                {
+                                    writer.WriteElementString("ResourceType", "Folder");
+                                }
+                                if (eventResource.ResourceType == EventResource.ResourceTypes.CMDText)
+                                {
+                                    writer.WriteElementString("ResourceType", "CMDText");
+                                }
+                                if (eventResource.IsChild == false)
+                                {
+                                    writer.WriteElementString("IsChild", "False");
+                                }
+                                if (eventResource.IsChild == true)
+                                {
+                                    writer.WriteElementString("IsChild", "True");
+                                }
+
+                                writer.WriteElementString("RequiredName", eventResource.RequiredName.ToString());  //if full path (local)
+                                writer.WriteElementString("Location", eventResource.Location);  //if partial path
+                                writer.WriteElementString("ParentKey", eventResource.ParentKey); //if partial path  
+                                writer.WriteEndElement(); //End Resource
+                            }
                         }
                     }
                     File.WriteAllText(LoadOrderFile, LoadOrderContent);
@@ -812,6 +930,187 @@ namespace GameEditorStudio
             }
         }
 
-        
+        // To fix the CS0120 error, the method `SaveWorkshopXml` must either be made static or called on an instance of `CommandMethodsClass`.
+        // Since the method is being called from a static context, the simplest fix is to make `SaveWorkshopXml` static.
+
+        private static void SaveWorkshopXml(WorkshopData workshopData) //Not a command method i just wanted it in the save .cs file as the other xml saves.
+        {
+            //Save a test example. If this fails, the real file is not corrupted. 
+            string LibraryXmlPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\" + "LibraryTestSave.xml";
+            SaveIt();
+            try
+            {
+                if (File.Exists(LibraryXmlPath)) { File.Delete(LibraryXmlPath); }
+            }
+            catch
+            {
+
+            }
+
+            //Save over the real workshop file. The test didn't fail, so this should be fine.
+            LibraryXmlPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\" + "Workshop.xml";
+            SaveIt();
+
+            void SaveIt()
+            {
+                try
+                {
+                    XmlWriterSettings settings = new XmlWriterSettings();
+                    settings.Indent = true;
+                    settings.IndentChars = ("    ");
+                    settings.CloseOutput = true;
+                    settings.OmitXmlDeclaration = true;
+                    using (XmlWriter writer = XmlWriter.Create(LibraryXmlPath, settings))
+                    {
+                        writer.WriteStartElement("Workshop");
+                        writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                        writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
+                        writer.WriteElementString("WorkshopName", workshopData.WorkshopName); //Note: This is for reference only, so i can tell what workshop a file is for when it's open in notepad. This isn't actually used anywhere. 
+                        writer.WriteElementString("InputLocation", workshopData.WorkshopInputDirectory);
+                        writer.WriteElementString("ProjectsRequireSameInputFolderName", workshopData.ProjectsRequireSameFolderName == true ? "true" : "false");
+
+                        writer.WriteStartElement("ResourceList");
+                        foreach (EventResource WorkshopEventResource in workshopData.WorkshopEventResources)
+                        {
+                            //when xml loads, variables WILL be null, even if they have a default value, if it's not written to begin with. this is very annoying. 
+                            writer.WriteStartElement("Resource");
+                            writer.WriteElementString("Name", WorkshopEventResource.Name);
+                            writer.WriteElementString("Key", WorkshopEventResource.Key);
+
+                            if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File)
+                            {
+                                writer.WriteElementString("ResourceType", "File");
+                            }
+                            if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder)
+                            {
+                                writer.WriteElementString("ResourceType", "Folder");
+                            }
+                            if (WorkshopEventResource.IsChild == false)
+                            {
+                                writer.WriteElementString("IsChild", "False");
+                            }
+                            if (WorkshopEventResource.IsChild == true)
+                            {
+                                writer.WriteElementString("IsChild", "True");
+                            }
+
+                            writer.WriteElementString("RequiredName", WorkshopEventResource.RequiredName.ToString());  //if full path (local)
+                            writer.WriteElementString("Location", WorkshopEventResource.Location);  //if partial path
+                            writer.WriteElementString("ParentKey", WorkshopEventResource.ParentKey); //if partial path                    
+
+
+                            writer.WriteEndElement(); //End File
+                        }
+                        writer.WriteEndElement(); //End ResourceList 
+
+
+                        writer.WriteEndElement(); //End Root (Library)
+                        writer.Flush(); //Ends the XML Library file                                
+
+                    }
+                }
+                catch
+                {
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Workshop.xml failed to save properly.",
+                        "All saves (are supposed to be) simulated in this program, so pre-existing data should be fine... " +
+                        "but...this is really weird! This one especially should never crash! What the hell did you do?!?" +
+                        "\n\n" +
+                        "You should DEFINATLY restart the program."
+                        );
+                    return;
+                }
+
+            }
+
+
+            //Library.RefreshWorkshopTree();
+        }
+
+
+        public static void SaveProjectXML(ProjectData ProjectData, WorkshopData workshopData) //Not a command method i just wanted it in the save .cs file as the other xml saves.
+        {
+            if (ProjectData.ProjectEventResources == null) { ProjectData.ProjectEventResources = new(); }
+
+            string TestLocation = LibraryGES.ApplicationLocation + "\\Projects\\" + "GESDummyProject" + "\\" + ProjectData.ProjectName + "\\" + "Project.xml";
+            string RealLocation = LibraryGES.ApplicationLocation + "\\Projects\\" + workshopData.WorkshopName + "\\" + ProjectData.ProjectName + "\\" + "Project.xml";
+
+            try
+            {
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + "GESDummyProject" + "\\" + ProjectData.ProjectName + "\\");
+                SavePXML(TestLocation);
+                SavePXML(RealLocation);
+                Directory.Delete(LibraryGES.ApplicationLocation + "\\Projects\\GESDummyProject\\", true);
+
+            }
+            catch
+            {
+                PixelWPF.LibraryPixel.NotificationNegative("Error: Failed to save project.",
+                        "First off don't panic, your project files are fine / not corrupted. When project saving fails it doesn't even attempt to save (this way i can make absolutly sure your files will be safe)." +
+                        "\n\nThe project.xml file only contains the basic project info (Name, Input/Output folder locations, and any project resource locations). Everything else is saved seperatly (To reduce the impact of any failed to save errors). This error isn't even a bad one, just uh, restart the program and you will be fine. " +
+                        "\n\nThat said, the saving process did crash, so please write down everything you remember doing before this happened and report it. Thank you! :3"
+                        );
+            }
+
+            void SavePXML(string theLocation)
+            {
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.Indent = true;
+                settings.IndentChars = ("    ");
+                settings.CloseOutput = true;
+                settings.OmitXmlDeclaration = true;
+                using (XmlWriter writer = XmlWriter.Create(theLocation, settings))
+                {
+                    writer.WriteStartElement("Project"); //This is the root of the XML
+                    writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+                    writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
+                    writer.WriteElementString("NOTE", "The resources are (Project Event Resources) with a key matching (Workshop Event Resources).");
+                    writer.WriteElementString("Seperator", "====================================================================================");
+                    writer.WriteElementString("Name", ProjectData.ProjectName);
+                    writer.WriteElementString("InputLocation", ProjectData.ProjectInputDirectory);
+                    writer.WriteElementString("OutputLocation", ProjectData.ProjectOutputDirectory);
+
+                    writer.WriteStartElement("ResourceList");
+                    foreach (ProjectEventResource ProjectEventData in ProjectData.ProjectEventResources)
+                    {
+                        writer.WriteStartElement("Resource");
+                        writer.WriteElementString("Name", workshopData.WorkshopEventResources.Find(thing => thing.Key == ProjectEventData.Key).Name);
+                        writer.WriteElementString("Key", ProjectEventData.Key);
+                        writer.WriteElementString("Location", ProjectEventData.Location);
+                        writer.WriteEndElement(); //End Event Resources
+                    }
+                    writer.WriteEndElement(); //End Event Resources
+
+                    writer.WriteEndElement(); //End Project  AKA the Root of the XML   
+                    writer.Flush(); //Ends the XML
+                }
+            }
+
+
+
+            //DataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
+            string TheProjectFolder = LibraryGES.ApplicationLocation + "\\Projects\\" + workshopData.WorkshopName + "\\" + ProjectData.ProjectName + "\\";
+
+            if (Directory.Exists(TheProjectFolder + "\\" + "Documents" + "\\"))  //Documents Folder
+            {
+            }
+            else
+            {
+                Directory.CreateDirectory(TheProjectFolder + "\\" + "Documents" + "\\");
+            }
+
+            if (Directory.Exists(TheProjectFolder + "\\" + "\\Documents\\LoadOrder.txt")) //LoadOrder.txt file
+            {
+
+            }
+            else
+            {
+                System.IO.File.WriteAllText(TheProjectFolder + "\\" + "\\Documents\\LoadOrder.txt", " ");
+            }
+
+
+
+        }
+
+
     }
 }

@@ -38,7 +38,7 @@ namespace GameEditorStudio
 
     public partial class CommandMethodsClass
     {
-        public static void DummyCommand(MethodData ActionPack)
+        public static void DummyCommand(MethodData MethodData)
         {
 
         }
@@ -49,11 +49,11 @@ namespace GameEditorStudio
 
         ////////////////////////////////////////////////////////////////////
 
-        public static void DSNitroPack(MethodData ActionPack)
+        public static void DSNitroPack(MethodData MethodData)
         {
             string GameFile = "";            
 
-            if (ActionPack.ResourceLocations.Count == 0)
+            if (MethodData.ResourceLocations.Count == 0)
             {
                 VistaOpenFileDialog UserSelection = new VistaOpenFileDialog();
                 UserSelection.Title = "Please select the GAME.xml file in the NDS rom that will be repacked";
@@ -69,7 +69,7 @@ namespace GameEditorStudio
             }
             else 
             {
-                GameFile = ActionPack.ResourceLocations[0];
+                GameFile = MethodData.ResourceLocations[0];
             }
 
             if (Path.GetFileName(GameFile) != "GAME.xml")
@@ -81,7 +81,7 @@ namespace GameEditorStudio
 
             DirectoryInfo OutputFolder = new DirectoryInfo(Path.GetDirectoryName(GameFile)).Parent;
 
-            string NitroLocation = TrueDatabase.Tools.Find(thing => thing.Key == "638835886790069140-900000195-379288847").Location;
+            string NitroLocation = Database.Tools.Find(thing => thing.Key == "638835886790069140-900000195-379288847").Location;
             string NitroFolder = Path.GetDirectoryName(NitroLocation);
 
 
@@ -105,11 +105,11 @@ namespace GameEditorStudio
         
 
 
-        public static void DSNitroUnpack(MethodData ActionPack) //tool free version
+        public static void DSNitroUnpack(MethodData MethodData) //tool free version
         {
             string NDSRom = "";
 
-            if (ActionPack.ResourceLocations.Count == 0)
+            if (MethodData.ResourceLocations.Count == 0)
             {
                 VistaOpenFileDialog fileDialog = new VistaOpenFileDialog();
                 fileDialog.Title = "Select a file"; // Set the dialog title
@@ -123,7 +123,7 @@ namespace GameEditorStudio
             }
             else 
             {
-                NDSRom = ActionPack.ResourceLocations[0];
+                NDSRom = MethodData.ResourceLocations[0];
             }
 
             //Check if actually a .nds file
@@ -132,7 +132,7 @@ namespace GameEditorStudio
             
             string RomFolder = Path.GetDirectoryName(NDSRom); // Get the directory path of the selected file
             string OutputFolder = RomFolder + "\\Unpacked " + Path.GetFileNameWithoutExtension(NDSRom);
-            string NitroLocation = TrueDatabase.Tools.Find(thing => thing.Key == "638835886790069140-900000195-379288847").Location; //Nitropacker
+            string NitroLocation = Database.Tools.Find(thing => thing.Key == "638835886790069140-900000195-379288847").Location; //Nitropacker
             string NitroFolder = Path.GetDirectoryName(NitroLocation);
 
             string UnpackCommand = $"\"{NitroLocation}\" unpack -r \"{NDSRom}\" -o \"{OutputFolder}\" -p GAME";

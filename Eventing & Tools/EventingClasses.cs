@@ -9,6 +9,8 @@ using System.Windows.Controls;
 
 namespace GameEditorStudio
 {
+
+    public delegate void PointerToMethod(MethodData MethodData);
     public class MethodData //Aka this is the data the pointer is sending to the method that is being run. 
     {
         //Method data only has it's variables filled if it's part of an event. 
@@ -21,16 +23,13 @@ namespace GameEditorStudio
 
         public TopMenu mainMenu { get; set; } //Only used by Save Commands. User events always add this during click just to be safe. It's also added on click during any File->Save event. Don't touch this.        
 
-        public GameLibrary GameLibrary { get; set; } //Only exists if the command is called from the GameLibrary.
-        public WorkshopData WorkshopData { get; set; } //Only exists if the command is called from the Workshop. 
+        public GameLibrary GameLibrary { get; set; } //Only exists if the command is called from the GameLibrary. Although i probably want to remove this. 
+        public WorkshopData WorkshopData { get; set; } //Used to only exist if called from the Workshop, but now it always exists. So legacy code assuming this didn't exist might cause issues.
 
 
         //Function Key (
 
     }
-
-    public delegate void PointerToMethod(MethodData MethodData); 
-
 
 
     public class Tool //i should make the tools list static?
@@ -63,8 +62,8 @@ namespace GameEditorStudio
         //Yeah, i need a way to directly call a command without a action pack. 
         //Only ShortcutOpenDownloadsFolder doesn't use the action pack, even the other shortcuts do...Ughhh this will be...complicated. 
 
-        public string Category { get; set; } = "Basic"; //Decides what Tab the command appears in. 
-        public string Group { get; set; } = "Basic"; //Decides what grouping the command appears in, inside a given tab. 
+        public string Category { get; set; } = "Upcoming"; //Decides what Tab the command appears in. 
+        public string Group { get; set; } = "Basics"; //Decides what grouping the command appears in, inside a given tab. 
 
         public string MethodName { get; set; } = ""; //The name of the method that runs when this command is called. 
 
@@ -100,21 +99,10 @@ namespace GameEditorStudio
         public bool Workshop { get; set; } = false; //If the Event is Common, this declares it Workshop Important, so it's available.   (This is loaded from XML)      
     }
 
-
-
-    public class ProjectDataItem //The root project data itself. 
-    {
-        /*public ICommand ButtonCommand { get; set; }*/
-        public string ProjectName { get; set; }
-        public string ProjectInputDirectory { get; set; }
-        public string ProjectOutputDirectory { get; set; }
-        public List<ProjectEventResource> ProjectEventResources { get; set; }
-    }
-
     public class ProjectEventResource //The resources the user has set for their project. A Workshop decides how many of these exists.
     {
         //Save,,,
-        public string ResourceKey { get; set; } //XML
+        public string Key { get; set; } //XML
         public string Location { get; set; } //XML  Used to store the path to a file/folder for a project. 
     }
 
@@ -122,7 +110,7 @@ namespace GameEditorStudio
     {
         public string DisplayName { get; set; } = "New Event";
         public string Note { get; set; } = "";
-        public string Notepad { get; set; } = "";
+        public string Tooltip { get; set; } = "";
         public List<EventCommand> CommandList { get; set; } = new();        
         
     }
@@ -131,25 +119,31 @@ namespace GameEditorStudio
     {
         //oh my fucking god the naming scheme is getting horrible @_@
         public Command ?Command { get; set; }
-        public Dictionary<int, string> ResourceKeys { get; set; } = new(); //Because methoddatapack protects commands from structure changes, this can be changed to a list AFTER RELEASE.
-        //Resource 1's Key, Resource 2's Key, etc. These keys match the ones in WorkshopEventResource (right below this)
-        
+        public Dictionary<int, string> ResourceKeys 
+        { get; 
+            set; }
+            = new(); //Because methoddatapack protects commands from structure changes, this can be changed to a list AFTER RELEASE.
+        //Resource 1's Key, Resource 2's Key, etc. These keys match the ones in EventResource (right below this)
+
+        public List<CommandResource> CMDList { get; set; } = new();
+
     }
 
-    public class WorkshopResource //A workshop can define any number of these resources, and events can use them to automate tasks. Some of these make a projecteventresource as well. saves to XML. Not a child of anything?
+    public class EventResource //A workshop can define any number of these resources, and events can use them to automate tasks. Some of these make a projecteventresource as well. saves to XML. Not a child of anything?
     {
-        public enum RType { File, Folder }
-        public enum PType { FullPath, PartialPath }
-
+        //As a reminder this is NOT a project event resource.
 
         public string Name { get; set; } = ""; //A Display name for the Event Resource. This is not the name of the actual thing being targeted. For organization purposes only / never referenced to do anything.
         public string Location { get; set; } = ""; //The name of actual target File or Folder itself. IE Location. Sometimes this is only a name, and somethings it's the full location path. 
         public bool RequiredName { get; set; } = false; //Decides if the exact Local file / folder name is explicitly required or now. true or false.
-        public string WorkshopResourceKey { get; set; } = ""; //a completly unique identifier.
-        public string TargetKey { get; set; } = ""; //If this is a relative resource type, this is the reference to what it's based on.
-        public string ResourceType { get; set; } = ""; //LocalFile, LocalFolder, RelativeFile, RelativeFolder
-        public RType ResType { get; set; } = RType.File; 
-        public PType PathType { get; set; } = PType.FullPath;
+        public string Key { get; set; } = ""; //a completly unique identifier.          
+        public ResourceTypes ResourceType { get; set; } = ResourceTypes.File; 
+        public bool IsChild { get; set; } = false; //If true, this is a child of another resource. If false, this is a root resource.
+        public string ParentKey { get; set; } = ""; //IF CHILD: this is the key of the parent.     
+
+
+
+        public enum ResourceTypes { File, Folder, WTools, CMDText }
     }
 
     
@@ -161,9 +155,10 @@ namespace GameEditorStudio
     {
         public string Label { get; set; } = "Name";
         public ResourceTypes Type { get; set; } = ResourceTypes.File;
-        public bool IsOptional { get; set; } = false;
+        public bool IsOptional { get; set; } = false; //Technically unused, i'm only checking if it's optional, but i never actually set any to optional. 
+        public enum ResourceTypes { File, Folder, WTools, CMDText }
 
-        public enum ResourceTypes { File, Folder }
+        public string CMDTextKey { get; set; } = ""; //The key of the resource this is filling in for. Matches EventResource Key.
     }
 
 

@@ -5,13 +5,22 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameEditorStudio"
              xmlns:hex="clr-namespace:WpfHexaEditor;assembly=WPFHexaEditor"
+             xmlns:control="clr-namespace:WpfHexaEditor;assembly=WPFHexaEditor"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="900" d:DesignWidth="1400">
 
     <Grid>
+        <!--<control:HexEditor Height="504" VerticalAlignment="Top" HorizontalAlignment="Left" Width="638"/>
+        <control:HexEditor Width="NaN" Height="397" Margin="700,20,50,0" VerticalAlignment="Top"/>
+        <control:HexEditor Width="638" Height="Auto" Margin="0,541,0,0" HorizontalAlignment="Left"/>
+        <control:HexEditor FileName="{Binding FileNamePath}" Width="Auto" Height="Auto" Margin="718,476,0,0"/>-->
+
         <hex:HexEditor x:Name="HexControl"
                        Margin="0"
                        BorderThickness="0"
-                       BorderBrush="Gray"/>
+                       BorderBrush="Gray"
+                       Foreground="Gray"
+                       Background="#202520"
+                       FileName="{Binding FileNamePath}"/>
     </Grid>
 </UserControl>

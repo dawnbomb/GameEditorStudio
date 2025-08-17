@@ -96,7 +96,7 @@ namespace GameEditorStudio
 
             if (IsTextEditor == false)
             {
-                foreach (GameFile GameFile in TheWorkshop.MyDatabase.GameFiles.Values)//Database.GameFiles) // Update the FileTree with the current File List.
+                foreach (GameFile GameFile in TheWorkshop.WorkshopData.GameFiles.Values)//Database.GameFiles) // Update the FileTree with the current File List.
                 {
                     TreeViewItem TreeViewItem = new TreeViewItem();
 
@@ -151,7 +151,7 @@ namespace GameEditorStudio
             OpenInputFileLocation.Click += new RoutedEventHandler(OpenFileInputLocationFunction);
             void OpenFileInputLocationFunction(object sender, RoutedEventArgs e)
             {
-                LibraryGES.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + GameFile.FileLocation);
+                LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + GameFile.FileLocation);
             }
 
             MenuItem OpenOutputFileLocation = new MenuItem();
@@ -160,9 +160,9 @@ namespace GameEditorStudio
             OpenOutputFileLocation.Click += new RoutedEventHandler(OpenFileOutputLocationFunction);
             void OpenFileOutputLocationFunction(object sender, RoutedEventArgs e)
             {
-                LibraryGES.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectOutputDirectory + "\\" + GameFile.FileLocation);
+                LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\" + GameFile.FileLocation);
             }
-            string TheOutputPath = Path.Combine(TheWorkshop.ProjectDataItem.ProjectOutputDirectory, GameFile.FileLocation);
+            string TheOutputPath = Path.Combine(TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory, GameFile.FileLocation);
             if (File.Exists(TheOutputPath))
             {
 
@@ -304,11 +304,11 @@ namespace GameEditorStudio
 
         private void ButtonAddFileToWorkshop(object sender, RoutedEventArgs e)
         {
-            if (TheWorkshop.MyDatabase == null) { return; }
+            if (TheWorkshop.WorkshopData == null) { return; }
 
             //VistaOpenFileDialog
             OpenFileDialog openFileDialog = new();
-            string inputDir = TheWorkshop.ProjectDataItem.ProjectInputDirectory;
+            string inputDir = TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory;
             if (Directory.Exists(inputDir))
             {
                 openFileDialog.InitialDirectory = inputDir;
@@ -328,7 +328,7 @@ namespace GameEditorStudio
 
         private void AddWorkshopFile(string fullPath, OpenFileDialog openFileDialog)
         {
-            string inputDir = TheWorkshop.ProjectDataItem.ProjectInputDirectory;
+            string inputDir = TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory;
 
             // Make sure the dropped file is inside the input directory
             if (!fullPath.StartsWith(inputDir, StringComparison.OrdinalIgnoreCase))
@@ -342,7 +342,7 @@ namespace GameEditorStudio
 
             string relativePath = fullPath.Substring(inputDir.Length).TrimStart('\\');
 
-            foreach (KeyValuePair<string, GameFile> gamefile in TheWorkshop.MyDatabase.GameFiles)
+            foreach (KeyValuePair<string, GameFile> gamefile in TheWorkshop.WorkshopData.GameFiles)
             {
                 if (gamefile.Key == relativePath)
                 {
@@ -372,7 +372,7 @@ namespace GameEditorStudio
                     FileBytes = File.ReadAllBytes(fullPath)
                 };
 
-                TheWorkshop.MyDatabase.GameFiles.Add(FileInfo.FileLocation, FileInfo);
+                TheWorkshop.WorkshopData.GameFiles.Add(FileInfo.FileLocation, FileInfo);
             }
             catch
             {
@@ -492,10 +492,10 @@ namespace GameEditorStudio
                 "\n" + FileLocationTextbox.Text +
                 "\n\n" +
                 "From Project Input: " +
-                "\n" + TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\"+ FileLocationTextbox.Text  +
+                "\n" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\"+ FileLocationTextbox.Text  +
                 "\n\n" +
                 "From Project Output: " +
-                "\n" + TheWorkshop.ProjectDataItem.ProjectOutputDirectory + "\\"+ FileLocationTextbox.Text; // Update the tooltip to show the file location text
+                "\n" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\"+ FileLocationTextbox.Text; // Update the tooltip to show the file location text
         }
 
         

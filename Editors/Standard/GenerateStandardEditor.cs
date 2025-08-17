@@ -40,62 +40,7 @@ namespace GameEditorStudio
 {
     public class GenerateStandardEditor
     {
-        ScrollViewer ScrollViewer = new(); //This is the scrollviewer that allows the user to scroll through the editor.
-
-        bool isMiddleMouseDragging = false;
-        Point mouseDragStartPoint;
-        Point scrollStartOffset;
-
-
-        private void ScrollViewer_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Middle)
-            {
-                isMiddleMouseDragging = true;
-                mouseDragStartPoint = e.GetPosition(ScrollViewer);
-                scrollStartOffset = new Point(ScrollViewer.HorizontalOffset, ScrollViewer.VerticalOffset);
-                ScrollViewer.CaptureMouse();
-                ScrollViewer.Cursor = Cursors.ScrollAll;
-                e.Handled = true;
-            }
-        }
-
-        private void ScrollViewer_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Middle)
-            {
-                isMiddleMouseDragging = false;
-                ScrollViewer.ReleaseMouseCapture();
-                ScrollViewer.Cursor = Cursors.Arrow;
-                e.Handled = true;
-            }
-        }
-
-        private void ScrollViewer_PreviewMouseMove(object sender, MouseEventArgs e)
-        {
-            if (isMiddleMouseDragging)
-            {
-                Point currentMousePosition = e.GetPosition(ScrollViewer);
-                Vector delta = currentMousePosition - mouseDragStartPoint;
-
-                ScrollViewer.ScrollToHorizontalOffset(scrollStartOffset.X - delta.X);
-                ScrollViewer.ScrollToVerticalOffset(scrollStartOffset.Y - delta.Y);
-            }
-        }
-
-        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            var scrollViewer = sender as ScrollViewer;
-            if (scrollViewer == null) return;
-
-            // Adjust scrolling speed here
-            double scrollAmount = e.Delta > 0 ? -30 : 30;
-
-            scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset + scrollAmount);
-
-            // Mark event as handled so other controls don't block it
-            e.Handled = true;
-        }
+        
 
 
 
@@ -160,11 +105,8 @@ namespace GameEditorStudio
 
             MakeButton MakeEditorButton = new();
             MakeEditorButton.CreateButton(TheWorkshop, Database, EditorClass); //Creates the button a user needs to click to make this editor appear.
-
-            TheLeftBar MakeLeftBar = new();//Creates the LeftBar of the editor, the part that has the item collection.
-            MakeLeftBar.LeftBarSetup(TheWorkshop, Database, EditorClass);
-            EditorClass.StandardEditorData.EditorLeftDockPanel.UserControl = MakeLeftBar;
                         
+
 
             //This creates the entire core part of the editor.
             foreach (Category CatClass in EditorClass.StandardEditorData.CategoryList)
@@ -217,7 +159,7 @@ namespace GameEditorStudio
         {
             //This grid is the very back of the entire editor. Everything else is a child of this grid, and those things are all GUI.
             DockPanel EditorDockPanel = new();
-            EditorDockPanel.Background = Brushes.Purple; //If the user ever SEES this grid, it's a bug. So it gets a obvious ugly color.    /////////////////COLOR/////////////////////////////         
+            EditorDockPanel.Background = Brushes.Purple; //If the user ever SEES this grid, it's a bug. So it gets a obvious ugly color.    ////////////COLOR/////////////////         
             TheWorkshop.MidGrid.Children.Add(EditorDockPanel);
 
             EditorClass.EditorBackPanel = new();
@@ -226,172 +168,16 @@ namespace GameEditorStudio
 
 
             Grid mainGrid = new Grid(); //A grid is needed to make a grid splitter work (annoyingly). Previously i just docked a left and right dockpanel directly into editordockpanel.
-            ColumnDefinition leftColumn = new ColumnDefinition { Width = new GridLength(250) };
-            ColumnDefinition splitterColumn = new ColumnDefinition { Width = GridLength.Auto };
-            ColumnDefinition rightColumn = new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) };
-            mainGrid.ColumnDefinitions.Add(leftColumn);
-            mainGrid.ColumnDefinitions.Add(splitterColumn);
-            mainGrid.ColumnDefinitions.Add(rightColumn);
             EditorDockPanel.Children.Add(mainGrid);
 
 
-            DockPanel LeftBarDockPanel = new DockPanel();
-            Grid.SetColumn(LeftBarDockPanel, 0);
-            mainGrid.Children.Add(LeftBarDockPanel);
-            EditorClass.StandardEditorData.EditorLeftDockPanel.LeftBarDockPanel = LeftBarDockPanel;
-
-
-
-            GridSplitter GridSplitter = new GridSplitter
-            {
-                Style = (Style)Application.Current.FindResource("SplitterVertical"),
-                Width = 10,
-                //HorizontalAlignment = HorizontalAlignment.Stretch,
-                //Background = (SolidColorBrush)Application.Current.Resources["NewColorThing"], // Assuming NewColorThing is a SolidColorBrush
-                //BorderThickness = new Thickness(1, 0, 2, 0),
-                //BorderBrush = (SolidColorBrush)Application.Current.Resources["GridSplitterBorder"]
-            };
-            Grid.SetColumn(GridSplitter, 1);
-            mainGrid.Children.Add(GridSplitter);
-
-
-
-            DockPanel RightDock = new();
-            //RightDock.Background = Brushes.Yellow; /////////////////////////////////////COLOR/////////////////////////////////////
-            //RightDock.Background = Brushes.Black;
-            //RightDock.Style = (Style)Application.Current.Resources["BorderDock"]; 
-            RightDock.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#333333"));
-            Grid.SetColumn(RightDock, 2);
-            mainGrid.Children.Add(RightDock);
-
-            
-
-            ContentControl EditorBorder = new();
-            DockPanel.SetDock(EditorBorder, Dock.Top);
-            //EditorBorder.BorderBrush = Brushes.LightBlue;
-
-
-            DockPanel EditorPanel = new();
-            EditorBorder.Content = EditorPanel;
-
-            {
-                //Note when i removed this, at the time a editors category made space above it, and not it doesn't, so i'd maybe wanna rework the margins if i re-add this ever. 
-
-                //DockPanel EditorHeader = new();
-                //DockPanel.SetDock(EditorHeader, Dock.Top);
-                //EditorPanel.Children.Add(EditorHeader);
-                //EditorHeader.Style = EditorHeader.TryFindResource("HeaderDock") as Style;
-
-
-                //Label EditorHeaderLabel = new();
-                //EditorHeaderLabel.Content = "Editor";
-                //EditorHeaderLabel.FontWeight = FontWeights.Bold;
-                //EditorHeader.Children.Add(EditorHeaderLabel);
-
-
-
-
-                //Button IconButton = new();
-                //IconButton.Content = " Icon Editor ";
-                //IconButton.Click += delegate
-                //{
-                //    TheWorkshop.HIDEMOST();
-                //    UserControlEditorIcons TheUserControl = new UserControlEditorIcons();
-                //    TheWorkshop.MidGrid.Children.Add(TheUserControl);
-                //    TheWorkshop.UCGraphicsEditor = TheUserControl;
-                //};
-                //EditorHeader.Children.Add(IconButton);
-                //IconButton.HorizontalAlignment = HorizontalAlignment.Right;
-                //IconButton.Margin = new Thickness(4);
-                //if (TheWorkshop.IsPreviewMode == true) { IconButton.IsEnabled = false; }
-
-            }
-
-
-
-            {
-                ContentControl DescriptionsBorder = new();
-                DockPanel.SetDock(DescriptionsBorder, Dock.Bottom);
-                RightDock.Children.Add(DescriptionsBorder);
-                DescriptionsBorder.Margin = new Thickness(0, 12, 0, 0);
-
-
-                DockPanel DescriptionsPanel = new();
-                DockPanel.SetDock(DescriptionsPanel, Dock.Bottom);
-                //DescriptionsPanel.VerticalAlignment = VerticalAlignment.Top;
-                DescriptionsBorder.Content = DescriptionsPanel;
-                //DescriptionsPanel.Height = 198;
-
-
-                EditorClass.StandardEditorData.EditorDescriptionsPanel = new();
-                EditorClass.StandardEditorData.EditorDescriptionsPanel.TopPanel = DescriptionsPanel;
-
-                DockPanel DescriptionsHeader = new();
-                DockPanel.SetDock(DescriptionsHeader, Dock.Top);
-                DescriptionsPanel.Children.Add(DescriptionsHeader);
-                DescriptionsHeader.Style = DescriptionsHeader.TryFindResource("HeaderDock") as Style;
-                DescriptionsHeader.Height = 34;
-                DescriptionsHeader.VerticalAlignment = VerticalAlignment.Top;
-                
-                Button ButtonDescriptionManager = new();
-                ButtonDescriptionManager.Height = 30;
-                ButtonDescriptionManager.Content = "  Description Manager  ";
-                ButtonDescriptionManager.Margin = new Thickness(4,2,4,2);
-                DescriptionsHeader.Children.Add(ButtonDescriptionManager);
-                DockPanel.SetDock(ButtonDescriptionManager, Dock.Right);
-                ButtonDescriptionManager.Click += delegate //When clicking this button, hide the previous page, and show the selected page.
-                {
-                    TheWorkshop.HIDEMOST();
-                    TextSourceManager NewDescriptionManager = new TextSourceManager();
-                    TheWorkshop.MidGrid.Children.Add(NewDescriptionManager);
-                    NewDescriptionManager.SetupForDescription();
-                    //TheWorkshop.NEWUCExtraEditor = NewDescriptionManager;
-                };
-                if (TheWorkshop.IsPreviewMode == true) { ButtonDescriptionManager.IsEnabled = false; }
-
-
-
-                Label HeaderLabel = new();
-                HeaderLabel.Content = "Description";
-                HeaderLabel.FontWeight = FontWeights.Bold;
-                DescriptionsHeader.Children.Add(HeaderLabel);
-            }
-
-
-
-
-
-
-
-
-
-            //I cant find where the fuck the scrollviewer is being created, so i'll just do this here... 
-            //ScrollViewer.BorderThickness = new Thickness(0);
-
-            DockPanel.SetDock(ScrollViewer, Dock.Top);
-            EditorPanel.Children.Add(ScrollViewer);
-            ScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-
-            ScrollViewer.PreviewMouseWheel += ScrollViewer_PreviewMouseWheel;
-            ScrollViewer.PreviewMouseDown += ScrollViewer_PreviewMouseDown;
-            ScrollViewer.PreviewMouseUp += ScrollViewer_PreviewMouseUp;
-            ScrollViewer.PreviewMouseMove += ScrollViewer_PreviewMouseMove;
-
-
-
-            DockPanel ScrollPanel = new();
-            ScrollPanel.Style = (Style)Application.Current.Resources["BorderDock"];
-            DockPanel.SetDock(ScrollPanel, Dock.Top);
-            ScrollPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
-            ScrollPanel.VerticalAlignment = VerticalAlignment.Stretch;
-            ScrollViewer.Content = ScrollPanel;
-            EditorClass.StandardEditorData.MainDockPanel = ScrollPanel;
-            //ScrollPanel.Background = Brushes.DarkRed;
-            
-            ScrollPanel.Background = Brushes.Black;
-            //ScrollPanel.Background = Brushes.Green;
-            ScrollPanel.LastChildFill = true;
-
+            //RightDock.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#333333"));
+            /////////////////////////// HEY - DESCRIPTION TEXT BOX CODE WAS MOVED TO THE LEFTBAR, AND KIND OF THE CHARACTER SET MANAGER. (I may move it again later)
+            /////////////////////////// I now generate a new textbox every time the item in the item list changes, although, i may move it back here in the future.
+            StandardEditor standardEditor = new StandardEditor(TheWorkshop, Database, EditorClass);
+            EditorClass.StandardEditorData.TheXaml = standardEditor;
+            Grid.SetColumnSpan(standardEditor, 3); //This makes the standard editor take up all three columns of the main grid.
+            mainGrid.Children.Add(standardEditor);
 
             for (int i = 0; i < EditorClass.StandardEditorData.DescriptionTableList.Count; i++) //a foreach loop but using for explicitly so i can remove itself if it's invalid a little later here. 
             {
@@ -406,7 +192,7 @@ namespace GameEditorStudio
                         continue;
                     }
                 }
-                if (DescriptionTable.LinkType == DescriptionTable.LinkTypes.TextFile) 
+                if (DescriptionTable.LinkType == DescriptionTable.LinkTypes.TextFile)
                 {
                     if (DescriptionTable.FileTextTable == null || DescriptionTable.FileTextTable.FileLocation == null)
                     {
@@ -415,79 +201,13 @@ namespace GameEditorStudio
                         continue;
                     }
                 }
-
-                
-                /////////////////////////// HEY - DESCRIPTION TEXT BOX CODE WAS MOVED TO THE LEFTBAR, AND KIND OF THE CHARACTER SET MANAGER. (I may move it again later)
-                /////////////////////////// I now generate a new textbox every time the item in the item list changes, although, i may move it back here in the future.
-
-                //TextBox DescriptionTextBox = new();
-                //DescriptionTextBox.AcceptsReturn = true;
-                //DescriptionTextBox.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-                //DescriptionTextBox.TextWrapping = TextWrapping.NoWrap;
-                //DescriptionTextBox.Margin = new Thickness(5);
-                //DockPanel.SetDock(DescriptionTextBox, Dock.Top);
-                //EditorClass.StandardEditorData.EditorDescriptionsPanel.TopPanel.Children.Add(DescriptionTextBox);
-                //DescriptionTextBox.Height = 67;
-                //DescriptionTable.ExtraTableTextBox = DescriptionTextBox;
-                //DescriptionTable.ExtraTableEncodeIsEnabled = true;
-                //DescriptionTextBox.VerticalAlignment = VerticalAlignment.Top;
-                //if (TheWorkshop.IsPreviewMode == true) { DescriptionTextBox.IsEnabled = false; }
-
-                //DescriptionTextBox.PreviewKeyDown += (sender, e) =>
-                //{
-                //    if (e.Key == Key.Enter)
-                //    {
-                //        e.Handled = true;
-
-                //        if (DescriptionTable.TextSize == DescriptionTable.ExtraTableTextBox.Text.Length) { return; }
-
-                //        TextBox textBox = sender as TextBox;
-
-                //        int caretIndex = textBox.CaretIndex;
-                //        textBox.Text = textBox.Text.Insert(caretIndex, "\n");
-                //        textBox.CaretIndex = caretIndex + 1;
-                //    }
-                //};
-
-                //DescriptionTextBox.PreviewTextInput += (sender, e) =>
-                //{
-                //    string NewText = DescriptionTable.ExtraTableTextBox.Text + e.Text;
-
-                //    Encoding encoding;
-                //    if (DescriptionTable.CharacterSet == "ASCII+ANSI") { encoding = Encoding.ASCII; }
-                //    else if (DescriptionTable.CharacterSet == "Shift-JIS") { encoding = Encoding.GetEncoding("shift_jis"); }
-                //    else { return; }
-                //    int NewByteSize = encoding.GetByteCount(NewText);
-
-                //    if (NewByteSize > DescriptionTable.TextSize)
-                //    {
-                //        e.Handled = true;  // Mark the event as handled so the input is ignored
-                //    }
-                //    //else { TheWorkshop.DebugBox2.Text = "Current NameBox Text Length\n" + (NameBox.Text.Length + 1).ToString(); }
-
-                //};
-
-                //DescriptionTextBox.TextChanged += (sender, e) =>
-                //{
-                //    TreeViewItem selectedItem = EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.SelectedItem as TreeViewItem;
-                //    ItemInfo ItemInfo = selectedItem.Tag as ItemInfo;
-                //    if (selectedItem == null || selectedItem.Tag == null || ItemInfo.IsFolder == true || DescriptionTable.ExtraTableEncodeIsEnabled == false)
-                //    {
-                //        return;
-                //    }
-
-                //    CharacterSetManager CharacterSetManager = new();
-                //    CharacterSetManager.EncodeDescription(TheWorkshop, EditorClass, DescriptionTable);
-
-                //};
-
-
-
             }
-            RightDock.Children.Add(EditorBorder);
+            return;
 
 
+            
 
+            
         }
         
 
@@ -497,7 +217,7 @@ namespace GameEditorStudio
         {
             StandardEditorData SWData = CatClass.SWData; //This is the StandardEditorData that contains all the information about the editor, such as the categories and columns.
             Workshop TheWorkshop = CatClass.SWData.TheEditor.Workshop; //This is the workshop that contains the editor, and is used to access the main grid and other workshop related information.
-            WorkshopData Database = CatClass.SWData.TheEditor.Workshop.MyDatabase; //This is the database that contains all the information about the game, such as the entries and columns.
+            WorkshopData Database = CatClass.SWData.TheEditor.Workshop.WorkshopData; //This is the database that contains all the information about the game, such as the entries and columns.
 
             if (SWData == null || TheWorkshop == null || Database == null) { PixelWPF.LibraryPixel.NotificationNegative("Critical Error!", "Create Category error, will crash soon. Report this D:"); }
                         
@@ -1123,7 +843,7 @@ namespace GameEditorStudio
             Category CatClass = EntryClass.EntryRow;
             Column ColumnClass = EntryClass.EntryColumn;
             Workshop TheWorkshop = EntryClass.EntryEditor.Workshop;
-            WorkshopData Database = EntryClass.EntryEditor.Workshop.MyDatabase;
+            WorkshopData Database = EntryClass.EntryEditor.Workshop.WorkshopData;
 
 
             Border EntryBorder = EntryClass.EntryBorder;
@@ -1469,7 +1189,7 @@ namespace GameEditorStudio
             if (LibraryGES.ShowEntryAddress == false) { PrefixEID.Visibility = Visibility.Collapsed; }
             if (LibraryGES.ShowEntryAddress == true) { PrefixEID.Visibility = Visibility.Visible; }
             if (LibraryGES.EntryAddressType == "Decimal") { PrefixEID.Content = EntryClass.RowOffset; }
-            if (LibraryGES.EntryAddressType == "Hex") { PrefixEID.Content = (EntryClass.RowOffset + int.Parse(TheWorkshop.EntryAddressOffsetTextbox.Text)).ToString("X"); }
+            //if (LibraryGES.EntryAddressType == "Hex") { PrefixEID.Content = (EntryClass.RowOffset + int.Parse(TheWorkshop.EntryAddressOffsetTextbox.Text)).ToString("X"); }
             EntryDockPanel.Children.Add(PrefixEID);
             EntryClass.EntryPrefix = PrefixEID;
 

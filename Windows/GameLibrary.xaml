@@ -12,7 +12,7 @@
     <Window.Resources>
         <local:LocationToColorConverter x:Key="LocationToColorConverter" />
     </Window.Resources>
-    <Grid Name="LibraryGrid" Style="{DynamicResource BorderGrid}" Background="#333333">
+    <Grid Name="LibraryGrid" >
         <Grid.RowDefinitions>
             <RowDefinition Height="33"/>
             <RowDefinition Height="33"/>
@@ -32,7 +32,7 @@
         <!--Below should equal the width of it's column-->
         <!--<GridSplitter  Grid.Column="2" Grid.Row="3" Grid.RowSpan="2" Style="{DynamicResource SplitterVertical}" Width="4"   />-->
 
-        <DockPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="7" Style="{DynamicResource BorderDock}" >
+        <DockPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="7" Style="{DynamicResource AppOther}" >
             <DockPanel Margin="15,0,15,0" Grid.Column="1" Grid.ColumnSpan="5"  Grid.Row="0" Grid.RowSpan="1" Background="Transparent" DockPanel.Dock="Top">
                 <local:TopMenu x:Name="MenusForToolsAndEvents" DockPanel.Dock="Top" />
 
@@ -50,15 +50,21 @@
 
             <ContentControl DockPanel.Dock="Bottom" Height="300" Margin="0,14,0,0" >
                 <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,0,0,0">
-                    <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
-                        <Label Content="Project Info" FontWeight="Bold" />
-                        <Button DockPanel.Dock="Right" Content="Launch"  Height="30" MinWidth="80" Margin="0,3,10,2" Click="ButtonLaunchWorkshop_Click" Width="100" ToolTip="Launch this workshop loading the selected project's data.  &#xD;Data is loaded using files in the output folder.  &#xD;If a file isn't there, it loads it from the input folder.  &#xD;If a file still isn't there, it probably just crashes :>"  />
-                    </DockPanel>
+                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                        <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" >
+                            <Label Content="Project Info" FontWeight="Bold" />
+                            <Button DockPanel.Dock="Right" Content="Launch"  Height="30" MinWidth="80" Margin="0,3,10,2" Click="ButtonLaunchWorkshop_Click" Width="100" ToolTip="Launch this workshop loading the selected project's data.  &#xD;Data is loaded using files in the output folder.  &#xD;If a file isn't there, it loads it from the input folder.  &#xD;If a file still isn't there, it probably just crashes :>"  />
+                        </DockPanel>
+                    </Border>
+                    
 
                     <DockPanel DockPanel.Dock="Top" Background="{x:Null}" >
 
                         <DockPanel DockPanel.Dock="Top" Margin="10,3,10,10"  >
-                            <Label Content="Project Name" DockPanel.Dock="Top" Margin="-3,0,0,0"  />
+                            <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                                <Label Content="Project Name" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
+                                <Button Name="ButtonOpenInputFolder2" Content=" Open " DockPanel.Dock="Right" Click="OpenProjectFolder" Width="63" Height="30"/>
+                            </DockPanel>                           
                             <Border CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
                                 <!--Background="White"-->
                                 <TextBox x:Name="ProjectNameTextbox" DockPanel.Dock="Top" Margin="0,0,0,0" Text="" KeyDown="ChangeProjectName" Padding="4"  BorderThickness="0"  ToolTip="The name of your mod / project. &#xD;This is not shared, and can be whatever you want."   />
@@ -71,8 +77,9 @@
                         <DockPanel DockPanel.Dock="Top" Margin="10,3,10,10"  >
                             <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                                 <Label Content="Input Folder" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
+                                <Label Name="LabelForMissingProjectInput" Content="Missing!" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,3,0,0" />
                                 <Button Name="ButtonOpenInputFolder" Content=" Open " DockPanel.Dock="Right" Click="OpenInput" Width="63" Height="30"/>
-                                <Button x:Name="ButtonSelectInputDirectory" Content="Set Folder" DockPanel.Dock="Right" Height="30" Width="120" Margin="0,0,3,0" Click="ButtonSelectInputDirectory_Click"  />
+                                <Button x:Name="ButtonSelectInputDirectory" Content="Browse..." DockPanel.Dock="Right" Height="30" Width="100" Margin="0,0,3,0" Click="ButtonSelectInputDirectory_Click"  />
                             </DockPanel>
                             <DockPanel DockPanel.Dock="Top">
                                 <Border Name="BorderInputFolder" CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
@@ -87,8 +94,9 @@
                         <DockPanel DockPanel.Dock="Top" Margin="10,3,10,0"  >
                             <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                                 <Label Content="Output Folder" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
+                                <Label Name="LabelForMissingProjectOutput" Content="Missing!" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,3,0,0" />
                                 <Button Name="ButtonOpenOutputFolder" Content=" Open " DockPanel.Dock="Right" Click="OpenOutput" Width="60" Height="30"/>
-                                <Button Content="Set Folder" DockPanel.Dock="Right" Height="30" Width="120" Margin="0,0,3,0" Click="ButtonSelectOutputDirectory_Click"  ToolTip="The folder where files are saved to. &#xD;When saving, files will save in the same folder structure as the input folder.  &#xD;   &#xD;TIP: If your modding for a 3DS or Switch game,  &#xD;Set the output folder as the emulator/game's mod folder! :D"  />
+                                <Button Content="Browse..." DockPanel.Dock="Right" Height="30" Width="100" Margin="0,0,3,0" Click="ButtonSelectOutputDirectory_Click"  ToolTip="The folder where files are saved to. &#xD;When saving, files will save in the same folder structure as the input folder.  &#xD;   &#xD;TIP: If your modding for a 3DS or Switch game,  &#xD;Set the output folder as the emulator/game's mod folder! :D"  />
                             </DockPanel>
                             <DockPanel DockPanel.Dock="Top">
                                 <Border Name="BorderOutputFolder" CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
@@ -106,12 +114,14 @@
 
             <!--//Style="{DynamicResource PixelBorder}"-->
             <ContentControl DockPanel.Dock="Bottom" Height="150" Margin="0,14,0,0"  >
-                <DockPanel>
-                    <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
-                        <Label Content="Projects / Mods" FontWeight="Bold" />
-                        <Button DockPanel.Dock="Right" Content="New"  Height="30" MinWidth="50" Margin="0,3,10,2" Click="CreateNewProject" Width="60" ToolTip="Create a new Mod / Project."  />
-                    </DockPanel>
-                    <DataGrid  HeadersVisibility="None" x:Name="ProjectsSelector" AutoGenerateColumns="False" DockPanel.Dock="Right" VerticalAlignment="Stretch" IsReadOnly="True" SelectionChanged="ProjectSelected" FontSize="15"  >
+                <DockPanel Background="Green">
+                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                        <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" >
+                            <Label Content="Projects / Mods" FontWeight="Bold" />
+                            <Button DockPanel.Dock="Right" Content="New"  Height="30" MinWidth="50" Margin="0,3,10,2" Click="CreateNewProject" Width="60" ToolTip="Create a new Mod / Project."  />
+                        </DockPanel>
+                    </Border>                    
+                    <DataGrid  Background="Green" HeadersVisibility="None" x:Name="ProjectsSelector" AutoGenerateColumns="False" DockPanel.Dock="Right" VerticalAlignment="Stretch" IsReadOnly="True" SelectionChanged="ProjectSelected" FontSize="15"  >
                         <DataGrid.Columns >
                             <DataGridTextColumn Header="Projects" Binding="{Binding ProjectName}" Width="*" />
                         </DataGrid.Columns>
@@ -125,9 +135,10 @@
                         <DataGrid.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="New Project" Click="CreateNewProject" />
-                                <MenuItem Header="Delete Project" Click="DeleteProject" />
+                                <MenuItem Header="Open Project Folder" Click="OpenProjectFolder" />
                                 <MenuItem Header="Open Input Folder" Click="OpenInput" />
                                 <MenuItem Header="Open Output Folder" Click="OpenOutput" />
+                                <MenuItem Header="Delete Project" Click="DeleteProject" />
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                     </DataGrid>
@@ -136,15 +147,18 @@
             
 
             
-            <ContentControl DockPanel.Dock="Top" BorderThickness="2,0,2,2" BorderBrush="#575757" >
+            <ContentControl DockPanel.Dock="Top" >
                 <DockPanel>
-                    <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
-                        <Label Content="Workshops" FontWeight="Bold" />
+                    <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">
+                        <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
+                            <Label Content="Workshops" FontWeight="Bold" />
 
-                        <Button DockPanel.Dock="Right" x:Name="ButtonCreateWorkshop" Content="New" Width="55" Click="ButtonCreateWorkshop2" FontSize="20" Margin="3,3,10,3" ToolTip="Create a new workshop.  &#xD;A Workshop, name inspired by the steam workshop, is where a game's editors are located.  &#xD;So basically, enemy editor, item editor, etc, they all exist inside a game's workshop. " />
-                        <Button DockPanel.Dock="Right" x:Name="ButtonEditWorkshop" Content="Edit"  Width="60" Click="ButtonEditWorkshop2" FontSize="20" Margin="3"   ToolTip="Edit the selected workshop's info.   &#xD;You can cancel out so just click, it's easier to understand by seeing the screen iteself." />
-                        <Button DockPanel.Dock="Right" x:Name="ButtonLaunchPreview"   Content="Preview"  Click="LaunchWorkshopPreviewMode"  Width="90"  FontSize="20" Margin="3"  ToolTip="This lets you load a workshop WITHOUT LOADING A PROJECT / THE GAME FILES.  &#xD;This lets you see what using the editors would look like,  &#xD;similuar to seeing example screenshots for a game editor. &#xD;  &#xD;It's extremely useful!" />
-                    </DockPanel>
+                            <Button DockPanel.Dock="Right" x:Name="ButtonLaunchPreview"   Content="Preview"  Click="LaunchWorkshopPreviewMode"  Width="90"  FontSize="20" Margin="3,3,10,3"  ToolTip="This lets you load a workshop WITHOUT LOADING A PROJECT / THE GAME FILES.  &#xD;This lets you see what using the editors would look like,  &#xD;similuar to seeing example screenshots for a game editor. &#xD;  &#xD;It's extremely useful!" />
+                            <Button DockPanel.Dock="Right" x:Name="ButtonEditWorkshop" Content="Edit"  Width="60" Click="ButtonEditWorkshop2" FontSize="20" Margin="3"   ToolTip="Edit the selected workshop's info.   &#xD;You can cancel out so just click, it's easier to understand by seeing the screen iteself." />
+                            <Button DockPanel.Dock="Right" x:Name="ButtonCreateWorkshop" Content="New" Width="55" Click="ButtonCreateWorkshop2" FontSize="20" Margin="3,3,3,3" ToolTip="Create a new workshop.  &#xD;A Workshop, name inspired by the steam workshop, is where a game's editors are located.  &#xD;So basically, enemy editor, item editor, etc, they all exist inside a game's workshop. " />
+                        </DockPanel>
+                    </Border>
+                    
 
                     <TreeView  x:Name="LibraryTreeOfWorkshops"  SelectedItemChanged="LibraryTreeOfWorkshops_SelectedItemChanged" DockPanel.Dock="Top" />
                 </DockPanel>
@@ -170,10 +184,13 @@
             <ContentControl DockPanel.Dock="Bottom" Height="300" Margin="0,14,0,0" BorderThickness="2,0,2,2" BorderBrush="#575757">
                 <DockPanel DockPanel.Dock="Bottom" Background="{x:Null}" >
 
-                    <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
-                        <Label Content="Project Resources" FontWeight="Bold" />
-                        <Label Name="LabelForMissingProjectResources" Content="Some last known locations are wrong?" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,0,0,0" />
-                    </DockPanel>
+                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                        <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" >
+                            <Label Content="Project Resources" FontWeight="Bold" />
+                            <Label Name="LabelForMissingProjectResources" Content="Some last known locations are wrong?" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,0,0,0" />
+                        </DockPanel>
+                    </Border>
+                    
                     <!--Note: Only local files/folders appear here, never child ones, because the user doesn't need to actually set them (thats the point of child items).-->
                     <DockPanel>
                         <ScrollViewer VerticalScrollBarVisibility="Auto" >
@@ -191,10 +208,12 @@
             
             <ContentControl BorderThickness="2,0,2,2" BorderBrush="#575757">
                 <DockPanel>
-                    <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
-                        <Label Name="DocumentNameLabel" Content="Welcome to Game Editor Studio!" FontWeight="Bold" HorizontalAlignment="Center" DockPanel.Dock="Top" />
-
-                    </DockPanel>
+                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                        <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" >
+                            <Label Name="DocumentNameLabel" Content="Welcome to Game Editor Studio!" FontWeight="Bold" HorizontalAlignment="Center" DockPanel.Dock="Top" />
+                        </DockPanel>
+                    </Border>
+                    
                     <ScrollViewer Background="Transparent" VerticalScrollBarVisibility="Auto">
                         <TextBox x:Name="TextBoxWorkshopReadMe"  TextWrapping="Wrap" Text="Welcome to the first public release of Game Editor Studio!&#xD;&#xA; &#xA;This program generates game editors without any coding knowledge! It also has easy access to romhacking tools, and&#xD;&#xA;great features for people using these editors! &#xA;&#xD;&#xA;Save often in case of crashes or bugs D: and report any you come across on the discord.&#xD;&#xA;&#xA;PS: Many things in the program have right click options.&#xA; &#xA;Want to help development? reach out to me on discord! (Link in the top right)  Made in C# / WPF / .Net 9&#xA; &#xA;Lets make game modding simple, easy, and fun! :)" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"    />
 
@@ -214,20 +233,24 @@
             
             <ContentControl DockPanel.Dock="Top" MinHeight="200" BorderThickness="2,0,2,2" BorderBrush="#575757" >
                 <DockPanel LastChildFill="True">
-                    <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" ToolTip="You can read the documents of this workshop right from this launcher window! &#xD;   &#xD;Actually pretty useful when your new and first starting out.">
-                        <Label Content="📄📝 Documents" FontWeight="Bold" />
-                    </DockPanel>
+                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                        <DockPanel Style="{DynamicResource ContentBar}"  ToolTip="You can read the documents of this workshop right from this launcher window! &#xD;   &#xD;Actually pretty useful when your new and first starting out.">
+                            <Label Content="📄📝 Documents" FontWeight="Bold" />
+                        </DockPanel>
+                    </Border>                    
                     <TreeView x:Name="LibraryDocumentsTree" DockPanel.Dock="Left" SelectedItemChanged="DocumentsTreeSelectedItemChanged" />
                 </DockPanel>
             </ContentControl>
 
             
-            <ContentControl DockPanel.Dock="Top" MinHeight="200" Margin="0,14,0,0" BorderThickness="2,0,2,2" BorderBrush="#575757">
+            <ContentControl DockPanel.Dock="Top" MinHeight="200" Margin="0,14,0,0" BorderThickness="2,0,2,2">
                 <DockPanel>
-                    <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" ToolTip="Lets you see what editors are in this workshop. &#xD;To use them, create a project/mod and launch the workshop." >
-                        <Label Content="⚙️ Editors" FontWeight="Bold" />
-
-                    </DockPanel>
+                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                        <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" ToolTip="Lets you see what editors are in this workshop. &#xD;To use them, create a project/mod and launch the workshop." >
+                            <Label Content="⚙️ Editors" FontWeight="Bold" />
+                        </DockPanel>
+                    </Border>
+                    
                     <Grid DockPanel.Dock="Top" Background="#FF3C3C3C">
                         <TreeView x:Name="EditorsTree"/>
 

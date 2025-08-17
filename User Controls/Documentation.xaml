@@ -10,15 +10,18 @@
     <Grid Background="{x:Null}" >
         <Grid.RowDefinitions>
             <RowDefinition Height="130*"/>
-            <RowDefinition Height="3"/>
+            <!--<RowDefinition Height="3"/>-->
             <RowDefinition Height="200*"/>
         </Grid.RowDefinitions>
 
         <Border >
             <DockPanel>
-                <DockPanel MinHeight="25" DockPanel.Dock="Top"  LastChildFill="True" Style="{DynamicResource HeaderDock}">
-                    <Label Content="Your Documents" FontWeight="Bold"/>
-                </DockPanel>
+                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                    <DockPanel MinHeight="25" LastChildFill="True" Style="{DynamicResource ContentBar}">
+                        <Label Content="Your Documents" FontWeight="Bold"/>
+                    </DockPanel>
+                </Border>
+                
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -42,13 +45,16 @@
         
 
         
-        <GridSplitter Style="{DynamicResource SplitterHorizontal}" Grid.Row="1" Grid.Column="0" Grid.RowSpan="1" Grid.ColumnSpan="1"/>
+        <!--<GridSplitter Style="{DynamicResource SplitterHorizontal}" Grid.Row="1" Grid.Column="0" Grid.RowSpan="1" Grid.ColumnSpan="1"/>-->
         <Border  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
             <DockPanel>
-                <DockPanel MinHeight="25" DockPanel.Dock="Top" LastChildFill="True" Style="{DynamicResource HeaderDock}">
-                    <Label Content="Document" FontWeight="Bold"/>
-                    <TextBox x:Name="DocumentNameBox" Text="Document Name" Margin="4" Width="200" HorizontalAlignment="Right" KeyDown="DocumentNameBox_KeyDown" DockPanel.Dock="Right" ToolTip="You have to press enter to actually change the document name. &#xD;&#xA;Document names are the file name when saved to your PC, so dont give them the same name, and don't use special characters like \ / @ - % etc. "  />
-                </DockPanel>
+                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                    <DockPanel MinHeight="25"  LastChildFill="True" Style="{DynamicResource ContentBar}">
+                        <Label Content="Document" FontWeight="Bold"/>
+                        <TextBox x:Name="DocumentNameBox" Text="Document Name" Margin="4" Width="200" HorizontalAlignment="Right" KeyDown="DocumentNameBox_KeyDown" DockPanel.Dock="Right" ToolTip="You have to press enter to actually change the document name. &#xD;&#xA;Document names are the file name when saved to your PC, so dont give them the same name, and don't use special characters like \ / @ - % etc. "  />
+                    </DockPanel>
+                </Border>
+                
                 <ScrollViewer Margin="5">
                     <TextBox x:Name="DocumentTextBox" TextWrapping="Wrap" Text="No note selected."  AcceptsReturn="True" DockPanel.Dock="Top"  />
                 </ScrollViewer>

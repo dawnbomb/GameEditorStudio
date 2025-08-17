@@ -10,9 +10,12 @@
 
         <Border DockPanel.Dock="Top" Margin="0,0,0,0">
             <DockPanel>
-                <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
-                    <Label Content="Text Editor File Manager" FontWeight="Bold" />
-                </DockPanel>
+                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                    <DockPanel Style="{DynamicResource ContentBar}" >
+                        <Label Content="Text Editor File Manager" FontWeight="Bold" />
+                    </DockPanel>
+                </Border>
+                
                 <Grid DockPanel.Dock="Top">
                     <local:FileManager x:Name="TextFileManager"  Grid.Column="0" HorizontalAlignment="Left" Width="264" Margin="10,10,0,10" />
                     <local:FileManager x:Name="AllFileManager"  Grid.Column="0" Margin="512,10,0,10" HorizontalAlignment="Left" Width="278" />

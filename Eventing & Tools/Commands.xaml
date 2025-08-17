@@ -1,0 +1,47 @@
+﻿<Window x:Class="GameEditorStudio.CommandsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GameEditorStudio"
+        mc:Ignorable="d"
+        Title="Event Commands" Height="610" Width="750">
+    <DockPanel >
+
+        <ContentControl Height="125" Margin="10,10,10,10"  DockPanel.Dock="Bottom">
+            <DockPanel LastChildFill="False" Background="#FF191919"   >
+                <TextBox Name="ToolNameBox" Margin="8,2,0,0" Text="Tool Name" Height="26" FontSize="20" BorderBrush="{x:Null}" DockPanel.Dock="Top" Background="{x:Null}" FontWeight="Bold"/>
+                <Rectangle Stroke="#FFE0E0E0" Margin="8,4,8,2" DockPanel.Dock="Top"/>
+                <TextBox Name="ToolDescriptionBox" TextWrapping="Wrap" Margin="8,0,5,0" Text="Tool Description" Height="90" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="White" DockPanel.Dock="Top"/>
+            </DockPanel>
+        </ContentControl>
+
+        <DockPanel DockPanel.Dock="Top" Margin="10,10,10,0" >
+            <ContentControl >
+                <DockPanel>
+                    <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">
+                        <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
+                            <Label Content="Categorys" FontWeight="Bold" />
+                        </DockPanel>
+                    </Border>
+                    <TreeView Name="CategoryTree" MinHeight="100" SelectedItemChanged="CategoryTreeSelectionChanged" >
+
+                    </TreeView>
+                </DockPanel>
+            </ContentControl>
+
+            <ContentControl Margin="10,0,0,0">
+                <ScrollViewer >
+                    <Grid  x:Name="MainDockPanel" Background="{DynamicResource ListBack}" >
+
+                    </Grid>
+                </ScrollViewer>
+            </ContentControl>
+           
+            
+        </DockPanel>        
+
+        
+
+    </DockPanel>
+</Window>

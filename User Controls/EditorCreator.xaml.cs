@@ -275,7 +275,7 @@ namespace GameEditorStudio
 
         public void StartNewTextEditor()
         {
-            WorkshopData Database = TheWorkshop.MyDatabase;
+            WorkshopData Database = TheWorkshop.WorkshopData;
 
             LoadTextEditor EditorMaker = new LoadTextEditor();
             EditorMaker.NewTextEditorIntoDatabase(Database, this);

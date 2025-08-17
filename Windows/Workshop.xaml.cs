@@ -56,21 +56,17 @@ namespace GameEditorStudio
 
     public partial class Workshop : Window
     {
-        //This is a pertial class.
-        //Every file inside the Workshop folder SHOULD be a part of this partial class.
-                
-        public string WorkshopName { get; set; } //The name of the workshop (IE name of whats selected in Game Library)
-
-        //I haven't decided if i want all saving here yet, or in multiple methods.
-        public WorkshopData MyDatabase { get; set; } = new(); //The database of....everything to do with an editor.       
+        //This is a pertial class.              
+        
+        public WorkshopData WorkshopData { get; set; } //The database of....everything to do with an editor.       
 
         public DocumentsUserControl TheDocumentsUserControl { get; set; } //Moved here from Database, but maybe later on, make sure this is even a needed variable?
 
-        public string EditorName = "Blank";
+        public string EditorName { get; set; } = "Blank";
 
         //Project Info
         public bool IsPreviewMode { get; set; } //VS preview mode. In preview mode, a project folder and input directory are not used, to allow users to preview a workshop. 
-        public ProjectDataItem ProjectDataItem { get; set; }
+        
 
         public TextSourceManager TextSourceManager { get; set; }
         public UserControlEditorIcons UCGraphicsEditor { get; set; }
@@ -82,33 +78,34 @@ namespace GameEditorStudio
         public Entry EntryClass { get; set; }
 
         public List<Entry> EntryMoveList  {  get; set; } = new();
-        public Entry MoveEntry { get; set; }
 
 
-        public string PreviousTabName = ""; //right bar tab to return to when unfocusing listview.
+        public string PreviousTabName { get; set; } = ""; //right bar tab to return to when unfocusing listview.
 
         public UserControlCrossReference TheCrossReference { get; set; }
 
-        public Workshop(string TheWorkshopName, ProjectDataItem Project, bool IsWorkshopPreviewModeActive = false) //GameLibrary GameLibrary
+        public List<ProjectData> Projects { get; set; } = new(); //for selecting projects in the workshop.
+
+        public Workshop(WorkshopData mydata, ProjectData Project, bool IsWorkshopPreviewModeActive = false) //GameLibrary GameLibrary
         {
             InitializeComponent();
             this.Title = "Game Editor Studio     Version: " + LibraryGES.VersionNumber + "   ( " + LibraryGES.VersionDate + " )";
 
-            WorkshopName = TheWorkshopName;
-            IsPreviewMode = IsWorkshopPreviewModeActive;
-            ProjectDataItem = Project;  
+            WorkshopData = mydata;            
+            WorkshopData.ProjectDataItem = Project;  
+            WorkshopData.WorkshopXaml = this;
 
-            MyDatabase.Workshop = this;
+            IsPreviewMode = IsWorkshopPreviewModeActive;
 
             #if DEBUG
 
             #else
-            DebugShowALL.Visibility = Visibility.Collapsed; //DebugShowALL is only visible in debug mode.
+
             #endif
 
-            foreach (Command command in TrueDatabase.Commands)
+            foreach (Command command in Database.Commands)
             {
-                command.WorkshopData = MyDatabase;
+                command.WorkshopData = WorkshopData;
             }
             //var sharedMenusControl = this.FindName("MenusForToolsAndEvents") as SharedMenus;
             //sharedMenusControl.Tools = this.Tools;
@@ -130,9 +127,7 @@ namespace GameEditorStudio
                 EntryTab4.Visibility = Visibility.Collapsed;
             }
 
-            //This is all just making sure the current user settings are displayed.
-            if (LibraryGES.EntryAddressType == "Decimal") { EntryAddressTypeButton.Content = "Dec"; }
-            if (LibraryGES.EntryAddressType == "Hex") { EntryAddressTypeButton.Content = "Hex"; }
+            
 
 
             //<ComboBoxItem Content="NumberBox"/>
@@ -151,7 +146,7 @@ namespace GameEditorStudio
             {
                 if (IsPreviewMode == false)
                 {
-                    LoadDatabase.LoadGameFilesIntoDatabase(this, MyDatabase); //First we load workshop files into the database. }
+                    LoadDatabase.LoadGameFilesIntoDatabase(this, WorkshopData); //First we load workshop files into the database. }
                 };
             }
             catch
@@ -172,7 +167,7 @@ namespace GameEditorStudio
                 Application.Current.Shutdown();
                 return;
             }            
-            LoadDatabase.LoadEditors(this, MyDatabase); //Then we load the editor info into the database.
+            LoadDatabase.LoadEditors(this, WorkshopData); //Then we load the editor info into the database.
             //The above method triggers CreateEditor in a loop, creating every editor using the database information.
                        
             
@@ -180,7 +175,7 @@ namespace GameEditorStudio
             
 
             //Finally we make sure everything is hidden. This is mostly so i don't have to make sure vision is collapsed all the time when developing the program.
-            foreach (KeyValuePair<string, Editor> editor in MyDatabase.GameEditors)
+            foreach (KeyValuePair<string, Editor> editor in WorkshopData.GameEditors)
             {
                 editor.Value.EditorBackPanel.Visibility = Visibility.Collapsed;
             }
@@ -194,7 +189,7 @@ namespace GameEditorStudio
                 //FileManager.RefreshFileTree(); //commented out because it causes a crash for some reason
                 HIDEALL();
                 DockPanelHome.Visibility = Visibility.Visible;
-                foreach (Editor editor in MyDatabase.GameEditors.Values)
+                foreach (Editor editor in WorkshopData.GameEditors.Values)
                 {
                     editor.EditorButton.Style = (Style)Application.Current.FindResource("ButtonEditorTab");
 
@@ -250,17 +245,81 @@ namespace GameEditorStudio
 
             }
 
-            if (LibraryGES.ShowHiddenEntrys == true)
-            {
-                EntryHiddenToggle.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FC1E40"));
-            }
-            else 
-            {
-                EntryHiddenToggle.Foreground = Brushes.Gray;
-            }
 
-            
-                
+            ////For Projects Stuff
+            //ProjectsSelector.ItemsSource = Projects;
+            //string ProjectsFolder = LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\"; //"\\LibraryBannerArt.png";   
+            //if (Directory.Exists(ProjectsFolder))
+            //{
+            //    foreach (string TheProjectFolder in Directory.GetDirectories(ProjectsFolder))
+            //    {
+
+            //        using (FileStream fs = new FileStream(TheProjectFolder + "\\Project.xml", FileMode.Open, FileAccess.Read))
+            //        {
+            //            XElement xml = XElement.Load(fs);
+            //            string PName = xml.Element("Name")?.Value;
+            //            string PInput = xml.Element("InputLocation")?.Value;
+            //            string POutput = xml.Element("OutputLocation")?.Value;
+
+            //            List<ProjectEventResource> ProjectEventResources = new();
+            //            var xmlEventResources = xml.Element("ResourceList");
+
+            //            if (xmlEventResources != null)
+            //            {
+            //                //This oIf its empty to begin with, it blanks.
+
+
+            //                //foreach (WorkshopResource EventResource in WorkshopEventResources)
+            //                //{
+            //                //    if (EventResource.ResourceType == "RelativeFile" || EventResource.ResourceType == "RelativeFolder") { continue; }
+
+            //                //    ProjectEventResource projectEventData = new ProjectEventResource
+            //                //    {
+            //                //        ResourceKey = EventResource.WorkshopResourceKey,
+            //                //    };
+            //                //    ProjectEventResources.Add(projectEventData);
+            //                //}
+
+            //                foreach (XElement xmlEventResource in xmlEventResources.Elements("Resource"))
+            //                {
+            //                    string resourceKey = xmlEventResource.Element("Key")?.Value;
+            //                    string location = xmlEventResource.Element("Location")?.Value;
+
+            //                    foreach (ProjectEventResource ProjectResourceData in ProjectEventResources)
+            //                    {
+            //                        if (resourceKey == ProjectResourceData.ResourceKey)
+            //                        {
+            //                            ProjectResourceData.Location = location;
+            //                        }
+            //                    }
+            //                }
+            //            }
+
+            //            Projects.Add(new ProjectDataItem
+            //            {
+            //                ProjectName = PName,
+            //                ProjectInputDirectory = PInput,
+            //                ProjectOutputDirectory = POutput,
+            //                //ProjectEventResources = ProjectEventResources
+            //            });
+            //        }
+
+            //    }
+
+
+
+            //}
+            //CollectionViewSource.GetDefaultView(ProjectsSelector.ItemsSource).Refresh();
+            //if (ProjectsSelector.Items.Count > 0)
+            //{
+            //    // Select the first item
+            //    ProjectsSelector.SelectedItem = ProjectsSelector.Items[0];
+
+            //    // Optionally, scroll the selected item into view
+            //    ProjectsSelector.ScrollIntoView(ProjectsSelector.SelectedItem);
+            //}
+
+
 
         }
 
@@ -285,7 +344,7 @@ namespace GameEditorStudio
             HIDEALL();
             DockPanelHome.Visibility = Visibility.Visible;
 
-            foreach (Editor editor in MyDatabase.GameEditors.Values)
+            foreach (Editor editor in WorkshopData.GameEditors.Values)
             {
                 editor.EditorButton.Style = (Style)Application.Current.FindResource("ButtonEditorTab");
 
@@ -294,130 +353,13 @@ namespace GameEditorStudio
 
         }
 
-        private void ToggleTranslationPanel(object sender, RoutedEventArgs e)
-        {   
-#if DEBUG
-            if (LibraryGES.ShowTranslationPanel == true)
-            {
-                LibraryGES.ShowTranslationPanel = false;
-            }
-            else if (LibraryGES.ShowTranslationPanel == false)
-            {
-                LibraryGES.ShowTranslationPanel = true;
-            }               
-#endif
-            
-            UpdateLeftBars();
-        }
-        private void ToggleEntrySynbology(object sender, RoutedEventArgs e)
-        {
-            if (LibraryGES.ShowSymbology == true)
-            {
-                LibraryGES.ShowSymbology = false;
-            }
-            else if (LibraryGES.ShowSymbology == false)
-            {
-                LibraryGES.ShowSymbology = true;
-            }
-
-            {   //This is the Entry ID toggle. I'm merging it into the symbology toggle because it makes sense to have them together.
-                if (LibraryGES.ShowEntryAddress == true)
-                {
-                    LibraryGES.ShowEntryAddress = false;
-                }
-                else if (LibraryGES.ShowEntryAddress == false)
-                {
-                    LibraryGES.ShowEntryAddress = true;                    
-                }
-            }            
-            UpdateEntryDecorations();
-        }
-
-        private void EntryAddressToggle(object sender, RoutedEventArgs e)
-        {
-            if (LibraryGES.ShowEntryAddress == true)
-            {
-                LibraryGES.ShowEntryAddress = false;
-            }
-            else if (LibraryGES.ShowEntryAddress == false)
-            {
-                LibraryGES.ShowEntryAddress = true;
-            }            
-            UpdateEntryDecorations();
-        }
-        private void EntryAddressType(object sender, RoutedEventArgs e)
-        {
-            if (LibraryGES.EntryAddressType == "Decimal")
-            {
-                LibraryGES.EntryAddressType = "Hex";
-                EntryAddressTypeButton.Content = "Hex";
-            }
-            else if (LibraryGES.EntryAddressType == "Hex")
-            {
-                LibraryGES.EntryAddressType = "Decimal";
-                EntryAddressTypeButton.Content = "Dec";
-            }
-            else
-            {
-                LibraryGES.EntryAddressType = "Decimal";
-                EntryAddressTypeButton.Content = "Dec";
-            }
-            UpdateEntryDecorations();
-
-        }
-
-        private void EntryOffsetTextboxKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                UpdateEntryDecorations();
-            }
-            
-        }
-
-        private void ToggleHiddenEntrys(object sender, RoutedEventArgs e)
-        {            
-
-            if (LibraryGES.ShowHiddenEntrys == true)
-            {
-                LibraryGES.ShowHiddenEntrys = false;
-                EntryHiddenToggle.Foreground = Brushes.Gray;
-            }
-            else if (LibraryGES.ShowHiddenEntrys == false)
-            {
-                LibraryGES.ShowHiddenEntrys = true;
-                EntryHiddenToggle.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FC1E40"));
-            }
-            UpdateEntryDecorations();
-
-            if (IsPreviewMode == true) {
-                PixelWPF.LibraryPixel.Notification("Heyo~", "I didn't bother programming preview mode to " +
-                "properly hide entrys / bytes that are in use by text. I will figure it out some other time. " +
-                "Just be aware the workshop owner probably intends some of the entrys to be hidden. Sorry~"); }
-        }
-
-        private void ToggleDebugShowALL(object sender, RoutedEventArgs e)
-        {
-            if (LibraryGES.DebugShowALL == true)
-            {
-                LibraryGES.DebugShowALL = false;
-                DebugShowALL.Foreground = Brushes.Gray;
-            }
-            else if (LibraryGES.DebugShowALL == false)
-            {
-                LibraryGES.DebugShowALL = true;
-                DebugShowALL.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E70EC"));
-            }
-            UpdateEntryDecorations();
-
-            
-        }
+        
 
 
 
         public void UpdateEntryDecorations() 
         {
-            foreach (var editor in MyDatabase.GameEditors.Values)
+            foreach (var editor in WorkshopData.GameEditors.Values)
             {
                 if (editor.EditorType != "DataTable") { continue; }
 
@@ -459,11 +401,11 @@ namespace GameEditorStudio
                     {
                         if (LibraryGES.EntryAddressType == "Decimal") //Properties.Settings.Default.EntryPrefix = "Row Offset - Decimal Starting at 0";
                         {
-                            entry.EntryPrefix.Content = entry.RowOffset + int.Parse(EntryAddressOffsetTextbox.Text);
+                            entry.EntryPrefix.Content = entry.RowOffset + int.Parse(editor.StandardEditorData.TheXaml.EntryAddressOffsetTextbox.Text);
                         }
                         else if (LibraryGES.EntryAddressType == "Hex") //Properties.Settings.Default.EntryPrefix = "Row Offset - Hex Starting at 0x00";
                         {
-                            entry.EntryPrefix.Content = (entry.RowOffset + int.Parse(EntryAddressOffsetTextbox.Text)).ToString("X");
+                            entry.EntryPrefix.Content = (entry.RowOffset + int.Parse(editor.StandardEditorData.TheXaml.EntryAddressOffsetTextbox.Text)).ToString("X");   //.ToString("X")); // + int.Parse(EntryAddressOffsetTextbox.Text)).ToString("X");
                         }
                     }
                     catch
@@ -532,7 +474,7 @@ namespace GameEditorStudio
 
         public void DEBUGSHOWALL() 
         {
-            foreach (var editor in MyDatabase.GameEditors.Values) 
+            foreach (var editor in WorkshopData.GameEditors.Values) 
             {
                 if (editor.EditorType != "DataTable") { continue; }
 
@@ -563,7 +505,7 @@ namespace GameEditorStudio
         {
             
 
-            foreach (var editor in MyDatabase.GameEditors) 
+            foreach (var editor in WorkshopData.GameEditors) 
             {
                 if (editor.Value.EditorType != "DataTable") { continue; }
 
@@ -599,7 +541,285 @@ namespace GameEditorStudio
 
 
 
+        private void ProjectSelected(object sender, SelectionChangedEventArgs e)
+        {
+            //if (ProjectsSelector.SelectedIndex < 0 )
+            //{
+            //    ProjectNameTextbox.Text = "";
+            //    TextBoxInputDirectory.Text = "";
+            //    TextBoxOutputDirectory.Text = "";
+            //    //GenerateProjectEventResourceUI(null);
+            //    return;
+            //}
 
+
+            //ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
+            ////MainMenu.ProjectDataItem = UserProject;
+
+            //ProjectNameTextbox.Text = UserProject.ProjectName;
+            //TextBoxInputDirectory.Text = UserProject.ProjectInputDirectory;
+            //TextBoxOutputDirectory.Text = UserProject.ProjectOutputDirectory;
+
+            //ButtonOpenInputFolder.ToolTip = UserProject.ProjectInputDirectory;
+            //ButtonOpenOutputFolder.ToolTip = UserProject.ProjectOutputDirectory;
+            //BorderInputFolder.ToolTip = UserProject.ProjectInputDirectory;
+            //BorderOutputFolder.ToolTip = UserProject.ProjectOutputDirectory;
+
+
+            //if (TextBoxInputDirectory.Text == "")
+            //{
+            //    TextBoxInputDirectory.Text = "Where new projects read files from. :)";
+            //    ButtonOpenInputFolder.ToolTip = null;
+            //    BorderInputFolder.ToolTip = null;
+            //}
+            //if (TextBoxOutputDirectory.Text == "")
+            //{
+            //    TextBoxOutputDirectory.Text = "Where files will be saved to. :)";
+            //    ButtonOpenOutputFolder.ToolTip = null;
+            //    BorderOutputFolder.ToolTip = null;
+            //}
+
+
+            
+
+            ////GenerateProjectEventResourceUI(UserProject);
+            
+
+        }
+
+        private void UpdateProjectXML(ProjectData ProjectData)
+        {
+            //if (ProjectData.ProjectEventResources == null) { ProjectData.ProjectEventResources = new(); }
+
+            //try
+            //{
+            //    XmlWriterSettings settings = new XmlWriterSettings();
+            //    settings.Indent = true;
+            //    settings.IndentChars = ("    ");
+            //    settings.CloseOutput = true;
+            //    settings.OmitXmlDeclaration = true;
+            //    using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + ProjectData.ProjectName + "\\" + "Project.xml", settings))
+            //    {
+            //        writer.WriteStartElement("Project"); //This is the root of the XML
+            //        writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
+            //        writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
+            //        writer.WriteElementString("NOTE", "The resources are (Project Event Resources) with a key matching (Workshop Event Resources).");
+            //        writer.WriteElementString("Seperator", "====================================================================================");
+            //        writer.WriteElementString("Name", ProjectData.ProjectName);
+            //        writer.WriteElementString("InputLocation", ProjectData.ProjectInputDirectory);
+            //        writer.WriteElementString("OutputLocation", ProjectData.ProjectOutputDirectory);
+
+            //        writer.WriteStartElement("ResourceList");
+            //        foreach (ProjectEventResource ProjectEventData in ProjectData.ProjectEventResources)
+            //        {
+            //            writer.WriteStartElement("Resource");
+            //            writer.WriteElementString("Name", WorkshopEventResources.Find(thing => thing.WorkshopResourceKey == ProjectEventData.ResourceKey).Name);
+            //            writer.WriteElementString("Key", ProjectEventData.ResourceKey);
+            //            writer.WriteElementString("Location", ProjectEventData.Location);
+            //            writer.WriteEndElement(); //End Event Resources
+            //        }
+            //        writer.WriteEndElement(); //End Event Resources
+
+            //        writer.WriteEndElement(); //End Project  AKA the Root of the XML   
+            //        writer.Flush(); //Ends the XML
+            //    }
+            //}
+            //catch
+            //{
+
+            //}
+
+            ////DataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
+            //string TheProjectFolder = LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + ProjectData.ProjectName + "\\";
+
+            //if (Directory.Exists(TheProjectFolder + "\\" + "Documents" + "\\"))  //Documents Folder
+            //{
+            //}
+            //else
+            //{
+            //    Directory.CreateDirectory(TheProjectFolder + "\\" + "Documents" + "\\");
+            //}
+
+            //if (Directory.Exists(TheProjectFolder + "\\" + "\\Documents\\LoadOrder.txt")) //LoadOrder.txt file
+            //{
+
+            //}
+            //else
+            //{
+            //    System.IO.File.WriteAllText(TheProjectFolder + "\\" + "\\Documents\\LoadOrder.txt", " ");
+            //}
+
+
+
+        }
+
+        private void ChangeProjectName(object sender, KeyEventArgs e)
+        {
+            //if (e.Key == Key.Enter)
+            //{
+
+            //    if (ProjectsSelector.SelectedIndex < 0 || ProjectNameTextbox.Text == "") { return; } //|| LibraryTreeOfWorkshops.SelectedItem == null
+
+            //    ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
+            //    string oldFolderPath = LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + UserProject.ProjectName;
+            //    string newFolderPath = LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + ProjectNameTextbox.Text;
+
+            //    if (oldFolderPath == newFolderPath) { return; }
+
+            //    Directory.Move(oldFolderPath, newFolderPath);// Rename the folder at the old path to the new path
+
+            //    UserProject.ProjectName = ProjectNameTextbox.Text;
+
+            //    UpdateProjectXML(UserProject);
+
+
+
+
+            //    TreeViewItem selectedItem = LibraryTreeOfWorkshops.ItemContainerGenerator.ContainerFromItem(LibraryTreeOfWorkshops.SelectedItem) as TreeViewItem;
+            //    if (selectedItem != null) //This stuff makes it so the data grid updates.
+            //    {
+            //        selectedItem.IsSelected = false;
+            //        selectedItem.IsSelected = true;
+            //    }
+
+
+            //    foreach (var item in ProjectsSelector.Items)
+            //    {
+            //        if (item is ProjectDataItem dataItem && dataItem.ProjectName.Equals(ProjectNameTextbox.Text, StringComparison.OrdinalIgnoreCase))
+            //        {
+            //            // Found the project, select the row
+            //            ProjectsSelector.SelectedItem = item;
+            //            ProjectsSelector.ScrollIntoView(item); // Optional: Scroll to the item if it's not visible
+            //            break; // Stop the loop as we found the item
+            //        }
+            //    }
+            //}
+        }
+
+        private void OpenProjectInput(object sender, RoutedEventArgs e)
+        {
+            MethodData MethodData = new();
+            MethodData.WorkshopData = WorkshopData;
+            CommandMethodsClass.OpenInputFolder(MethodData);
+        }
+
+        private void OpenProjectOutput(object sender, RoutedEventArgs e)
+        {
+            MethodData MethodData = new();
+            MethodData.WorkshopData = WorkshopData;
+            CommandMethodsClass.OpenOutputFolder(MethodData);
+        }
+
+        
+
+        private void SetProjectInputDirectory(object sender, RoutedEventArgs e)
+        {
+            //if (ProjectsSelector.SelectedIndex < 0) //|| LibraryTreeOfWorkshops.SelectedItem == null
+            //{
+            //    return;
+            //}
+
+            //VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog();//This starts folder selection using Ookii.Dialogs.WPF NuGet Package
+            //FolderSelect.Description = "Please select the folder named " + WorkshopInputDirectory; //This sets a description to help remind the user what their looking for.
+            //FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.
+            //{   //Smart seleting the folder to start in.
+            //    string inputPath = TextBoxInputDirectory.Text + "\\";
+            //    DirectoryInfo? current = new DirectoryInfo(inputPath);
+            //    while (current != null && !current.Exists)
+            //    {
+            //        current = current.Parent;
+            //    }
+            //    if (current != null)
+            //    {
+            //        FolderSelect.SelectedPath = current.FullName + "\\";
+            //    }
+            //}
+
+            //if ((bool)FolderSelect.ShowDialog(this)) //This triggers the folder selection screen, and if the user does not cancel out...
+            //{
+
+            //    //if (System.IO.File.ReadAllText(ExePath + "\\Workshops\\" + WorkshopName + "\\" +  WorkshopInputDirectory) == Path.GetFileName(FolderSelect.SelectedPath))
+            //    if (WorkshopProjectsRequireSameFolderName == false)
+            //    {
+            //        PixelWPF.LibraryPixel.NotificationPositive("You MAYBE selected the correct folder?",
+            //            "This workshop doesn't require a specific folder name to be selected. " +
+            //            "This is usually set when the input folder is one that users commonly want to be able to rename. " +
+            //            "\n\n" +
+            //            "If your not sure, I STRONGLY recommend checking the readme, as well as asking around. Well, i mean, you'll know if something is wrong if you launch your project and get a ton of errors. >_>;"
+            //        );
+
+            //        ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
+            //        UserProject.ProjectInputDirectory = FolderSelect.SelectedPath;
+            //        TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
+
+            //        UpdateProjectXML(UserProject);//ProjectName, Input, Output
+
+            //    }
+            //    else if (WorkshopInputDirectory == Path.GetFileName(FolderSelect.SelectedPath) && WorkshopProjectsRequireSameFolderName == true)
+            //    {
+            //        PixelWPF.LibraryPixel.NotificationPositive("You selected the correct folder!",
+            //            "The folder name you selected is the same as the one this workshop is looking for. " +
+            //            "This can only be wrong if you selected a folder with the exact same name, but a diffrent location."
+            //        );
+
+            //        ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
+            //        UserProject.ProjectInputDirectory = FolderSelect.SelectedPath;
+            //        TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
+
+            //        UpdateProjectXML(UserProject);//ProjectName, Input, Output
+
+
+            //    }
+            //    else
+            //    {
+            //        PixelWPF.LibraryPixel.NotificationNegative("Error: Wrong folder selected!",
+            //            "This workshop is looking for you to select a folder named \"" + WorkshopInputDirectory + "\"." +
+            //            "\n\n" +
+            //            "If your confused, check the README, or see if there are any helpful discords.");
+
+
+            //    }
+
+
+
+
+            //}
+        }
+
+        private void SetProjectOutputDirectory(object sender, RoutedEventArgs e)
+        {
+            //if (ProjectsSelector.SelectedIndex < 0) //|| LibraryTreeOfWorkshops.SelectedItem == null
+            //{
+            //    return;
+            //}
+
+
+            //VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog(); //This starts folder selection using Ookii.Dialogs.WPF NuGet Package
+            //FolderSelect.Description = "Please select where files will save to."; //This sets a description to help remind the user what their looking for.
+            //FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.        
+            //{   //Smart seleting the folder to start in.
+            //    string outputPath = TextBoxOutputDirectory.Text + "\\";
+            //    DirectoryInfo? current = new DirectoryInfo(outputPath);
+            //    while (current != null && !current.Exists)
+            //    {
+            //        current = current.Parent;
+            //    }
+            //    if (current != null)
+            //    {
+            //        FolderSelect.SelectedPath = current.FullName + "\\";
+            //    }
+            //}
+            //if ((bool)FolderSelect.ShowDialog(this)) //This triggers the folder selection screen, and if the user does not cancel out...
+            //{
+            //    ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
+            //    UserProject.ProjectOutputDirectory = FolderSelect.SelectedPath;
+            //    TextBoxOutputDirectory.Text = FolderSelect.SelectedPath;
+
+            //    UpdateProjectXML(UserProject);//ProjectName, Input, Output                
+
+
+            //}
+        }
 
 
 
@@ -626,10 +846,10 @@ namespace GameEditorStudio
                     return; //If the user tries to set the editor name to nothing, just return.
                 }
 
-                MyDatabase.GameEditors.Remove(EditorClass.EditorName);
+                WorkshopData.GameEditors.Remove(EditorClass.EditorName);
                 EditorClass.EditorName = PropertiesTextboxEditorName.Text;
                 EditorClass.EditorNameLabel.Content = EditorClass.EditorName;
-                MyDatabase.GameEditors.Add(EditorClass.EditorName, EditorClass);
+                WorkshopData.GameEditors.Add(EditorClass.EditorName, EditorClass);
                 
                 UpdateEditorButton(EditorClass);
             }
@@ -802,7 +1022,7 @@ namespace GameEditorStudio
                     if (entry.RowOffset > EditorClass.StandardEditorData.DataTableRowSize - 1) { entry.RowOffset = entry.RowOffset - EditorClass.StandardEditorData.DataTableRowSize; }
                     entry.EntryPrefix.Content = entry.RowOffset.ToString();
 
-                    MyDatabase.EntryManager.LoadEntry(this, EditorClass, entry);
+                    WorkshopData.EntryManager.LoadEntry(this, EditorClass, entry);
                 }
                 
             }
@@ -1242,7 +1462,7 @@ namespace GameEditorStudio
 
             TreeItem.Header = TextBlockItem;
 
-            foreach (Editor TheEditor in MyDatabase.GameEditors.Values) //Super quick and dirty way to update entrys from other editors that are using this editors names. (Menu Link To Editor)
+            foreach (Editor TheEditor in WorkshopData.GameEditors.Values) //Super quick and dirty way to update entrys from other editors that are using this editors names. (Menu Link To Editor)
             {
                 if (TheEditor.EditorType == "DataTable") 
                 {
@@ -1255,7 +1475,7 @@ namespace GameEditorStudio
                                 if (entry.EntryByteDecimal == null) { return; } //This stops a blank from being created for a dropdown because its loading before the ByteDecimal is loaded, but also probably other misc problems.
                                                                                    //IE i should totally not have this code chunk here, but im still to lazy to impliment this properly, so here goes this ultra bad answer i will regret later! :D
 
-                                MyDatabase.EntryManager.EntryChange(MyDatabase, EntrySubTypes.Menu, this, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
+                                WorkshopData.EntryManager.EntryChange(WorkshopData, EntrySubTypes.Menu, this, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
                             }
                         }
                     }
@@ -1561,7 +1781,7 @@ namespace GameEditorStudio
         {           
 
 
-            MyDatabase.EntryManager.LoadEntry(this, EditorClass, EntryClass);
+            WorkshopData.EntryManager.LoadEntry(this, EditorClass, EntryClass);
 
             StandardEditorMethods.UpdateEntryName(EntryClass);
 
@@ -1592,7 +1812,7 @@ namespace GameEditorStudio
 
             EntryClass.IsEntryHidden = true;            
             EditorClass.StandardEditorData.SelectedEntry.EntryBorder.Style = (Style)Application.Current.Resources["HiddenSelectedEntryStyle"];
-            MyDatabase.EntryManager.EntryChange(MyDatabase, EntryClass.NewSubType, this, EntryClass);
+            WorkshopData.EntryManager.EntryChange(WorkshopData, EntryClass.NewSubType, this, EntryClass);
             
             //NOTE: These also trigger when a entry is selected, because the checkbox is updated.
         }
@@ -1605,7 +1825,7 @@ namespace GameEditorStudio
             {
                 EditorClass.StandardEditorData.SelectedEntry.EntryBorder.Style = (Style)Application.Current.Resources["SelectedEntryStyle"]; 
             }            
-            MyDatabase.EntryManager.EntryChange(MyDatabase, EntryClass.NewSubType, this, EntryClass);
+            WorkshopData.EntryManager.EntryChange(WorkshopData, EntryClass.NewSubType, this, EntryClass);
         }
 
         
@@ -1635,7 +1855,7 @@ namespace GameEditorStudio
             }
             
 
-            MyDatabase.EntryManager.EntryChange(MyDatabase, NewEntryType, this, EntryClass);
+            WorkshopData.EntryManager.EntryChange(WorkshopData, NewEntryType, this, EntryClass);
 
             EntryManager EManager = new();
             EManager.EntryBecomeActive(EntryClass);
@@ -1818,7 +2038,7 @@ namespace GameEditorStudio
 
 
                     //EntryData.ReloadEntry(Database, EditorClass, EntryClass);
-                    MyDatabase.EntryManager.LoadEntry(this, EditorClass, EntryClass);
+                    WorkshopData.EntryManager.LoadEntry(this, EditorClass, EntryClass);
 
 
 
@@ -1848,7 +2068,7 @@ namespace GameEditorStudio
                                 {
                                     entry.Endianness = "0";
                                     entry.Bytes = 0;
-                                    MyDatabase.EntryManager.LoadEntry(this, EditorClass, entry);
+                                    WorkshopData.EntryManager.LoadEntry(this, EditorClass, entry);
                                     entry.EntryBorder.Visibility = Visibility.Collapsed;
 
                                     targets.Add(entry);
@@ -1876,7 +2096,7 @@ namespace GameEditorStudio
                                 {
                                     entry.Endianness = "1";
                                     entry.Bytes = 1;
-                                    MyDatabase.EntryManager.LoadEntry(this, EditorClass, entry);
+                                    WorkshopData.EntryManager.LoadEntry(this, EditorClass, entry);
                                     //EntryData.ReloadEntry(Database, EditorClass, entry);
                                     entry.EntryBorder.Visibility = Visibility.Visible;
 
@@ -2009,7 +2229,7 @@ namespace GameEditorStudio
 
         public void HIDEALL() 
         {
-            foreach (KeyValuePair<string, Editor> editor in MyDatabase.GameEditors)
+            foreach (KeyValuePair<string, Editor> editor in WorkshopData.GameEditors)
             {
                 editor.Value.EditorBackPanel.Visibility = Visibility.Collapsed;
             }
@@ -2265,8 +2485,8 @@ namespace GameEditorStudio
             EntryClass.EntryByteDecimal = number; // Console.WriteLine(number); // Output: 24
 
 
-            MyDatabase.EntryManager.SaveEntry(EntryClass.EntryEditor, EntryClass);
-            MyDatabase.EntryManager.UpdateEntryProperties(EditorClass.StandardEditorData.SelectedEntry);
+            WorkshopData.EntryManager.SaveEntry(EntryClass.EntryEditor, EntryClass);
+            WorkshopData.EntryManager.UpdateEntryProperties(EditorClass.StandardEditorData.SelectedEntry);
 
 
             foreach (TabItem tabItem in MainTabControl.Items)
@@ -2287,7 +2507,7 @@ namespace GameEditorStudio
             HIDEMOST();
             TextSourceManager TheUserControl = new TextSourceManager();
             MidGrid.Children.Add(TheUserControl);
-            TheUserControl.SetupForMenu(EntryClass, EntryListBox, MyDatabase, this);
+            TheUserControl.SetupForMenu(EntryClass, EntryListBox, WorkshopData, this);
             TextSourceManager = TheUserControl;
         }
 
@@ -2303,7 +2523,7 @@ namespace GameEditorStudio
                 LibraryGES.ShowItemIndex = false;  
             }
             
-            foreach (var editor in MyDatabase.GameEditors)
+            foreach (var editor in WorkshopData.GameEditors)
             {
                 if (editor.Value.EditorType == "DataTable")
                 {
@@ -2329,7 +2549,7 @@ namespace GameEditorStudio
             if (DropdownMenuType.Text == "Dropdown") { EntryClass.EntryTypeMenu.MenuType = EntryTypeMenu.MenuTypes.Dropdown; }
             else if (DropdownMenuType.Text == "List") { EntryClass.EntryTypeMenu.MenuType = EntryTypeMenu.MenuTypes.List; }
               
-            MyDatabase.EntryManager.EntryChange(MyDatabase, EntrySubTypes.Menu, this, EntryClass);
+            WorkshopData.EntryManager.EntryChange(WorkshopData, EntrySubTypes.Menu, this, EntryClass);
         }
 
         private void ListLostFocus(object sender, RoutedEventArgs e)
@@ -2773,6 +2993,135 @@ namespace GameEditorStudio
                 UpdateEntryName(EntryClass);
             }
         }
+
+        private void OpenNameTableInHxD(object sender, RoutedEventArgs e)
+        {
+            foreach (Tool tool in Database.Tools)
+            {
+                if (tool.Key == "638835886790069008-583706364-23567425")
+                {
+                    if (EditorClass.StandardEditorData.FileNameTable == null)
+                    {
+                        return;
+                    }
+
+                    string filelocation = WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\" + EditorClass.StandardEditorData.FileNameTable.FileLocation;
+                    if (!File.Exists(filelocation))
+                    {
+                        filelocation = WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.FileNameTable.FileLocation;
+                    }
+
+                    if (!File.Exists(filelocation) || !File.Exists(tool.Location) || EditorClass.StandardEditorData.FileNameTable.FileLocation == null)
+                    {
+                        return;
+                    }
+
+                    MethodData methodData = new MethodData();
+                    methodData.ResourceLocations.Add(tool.Location);
+                    methodData.ResourceLocations.Add(filelocation);
+                    CommandMethodsClass.RunProgramwithfile(methodData);
+
+                    break;
+                }
+            }
+        }
+
+        private void OpenNameTableIn010(object sender, RoutedEventArgs e)
+        {
+            foreach (Tool tool in Database.Tools)
+            {
+                if (tool.Key == "638835886790068999-832829574-642210583")
+                {
+                    if (EditorClass.StandardEditorData.FileNameTable == null)
+                    {
+                        return;
+                    }
+
+                    string filelocation = WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\" + EditorClass.StandardEditorData.FileNameTable.FileLocation;
+                    if (!File.Exists(filelocation))
+                    {
+                        filelocation = WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.FileNameTable.FileLocation;
+                    }
+
+                    if (!File.Exists(filelocation) || !File.Exists(tool.Location))
+                    {
+                        return;
+                    }
+
+                    MethodData methodData = new MethodData();
+                    methodData.ResourceLocations.Add(tool.Location);
+                    methodData.ResourceLocations.Add(filelocation);
+                    CommandMethodsClass.RunProgramwithfile(methodData);
+
+                    break;
+                }
+            }
+        }
+        private void OpenDataTableInHxD(object sender, RoutedEventArgs e)
+        {
+            foreach (Tool tool in Database.Tools)
+            {
+                if (tool.Key == "638835886790069008-583706364-23567425")
+                {
+                    if (EditorClass.StandardEditorData.FileDataTable == null)
+                    {
+                        return;
+                    }
+
+                    string filelocation = WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\" + EditorClass.StandardEditorData.FileDataTable.FileLocation;
+                    if (!File.Exists(filelocation))
+                    {
+                        filelocation = WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.FileDataTable.FileLocation;
+                    }
+
+                    if (!File.Exists(filelocation) || !File.Exists(tool.Location))
+                    {
+                        return;
+                    }
+
+                    MethodData methodData = new MethodData();
+                    methodData.ResourceLocations.Add(tool.Location);
+                    methodData.ResourceLocations.Add(filelocation);
+                    CommandMethodsClass.RunProgramwithfile(methodData);
+
+                    break;
+                }
+            }
+        }
+        private void OpenDataTableIn010(object sender, RoutedEventArgs e)
+        {                        
+            foreach (Tool tool in Database.Tools) 
+            {
+                if (tool.Key == "638835886790068999-832829574-642210583") 
+                {
+                    if (EditorClass.StandardEditorData.FileDataTable == null)
+                    {
+                        return;
+                    }
+
+                    string filelocation = WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\" + EditorClass.StandardEditorData.FileDataTable.FileLocation;
+                    if (!File.Exists(filelocation) )
+                    {
+                        filelocation = WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.FileDataTable.FileLocation;
+                    }
+
+                    if (!File.Exists(filelocation) || !File.Exists(tool.Location)) 
+                    {
+                        return;
+                    }
+
+                    MethodData methodData = new MethodData();
+                    methodData.ResourceLocations.Add(tool.Location);
+                    methodData.ResourceLocations.Add(filelocation);
+                    CommandMethodsClass.RunProgramwithfile(methodData);
+
+                    break;
+                }
+            }            
+            
+        }
+
+        
 
         
     }

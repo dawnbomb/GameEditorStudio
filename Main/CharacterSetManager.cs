@@ -104,7 +104,7 @@ namespace GameEditorStudio
         {
             if (TheWorkshop.IsPreviewMode == true) { return; }
 
-            EditorClass.StandardEditorData.EditorDescriptionsPanel.TopPanel.Children.OfType<TextBox>().ToList().ForEach(tb => EditorClass.StandardEditorData.EditorDescriptionsPanel.TopPanel.Children.Remove(tb)); //Remove all old textboxes.
+            EditorClass.StandardEditorData.EditorDescriptionsPanel.Children.OfType<TextBox>().ToList().ForEach(tb => EditorClass.StandardEditorData.EditorDescriptionsPanel.Children.Remove(tb)); //Remove all old textboxes.
             for (int i = 0; i < EditorClass.StandardEditorData.DescriptionTableList.Count; i++) //Delete any invalid description tables. A foreach loop but using for explicitly so i can remove the tables. 
             {
                 DescriptionTable ExtraTable = EditorClass.StandardEditorData.DescriptionTableList[i];
@@ -203,7 +203,7 @@ namespace GameEditorStudio
                 DescriptionTextBox.TextWrapping = TextWrapping.NoWrap;
                 DescriptionTextBox.Margin = new Thickness(5);
                 DockPanel.SetDock(DescriptionTextBox, Dock.Top);
-                EditorClass.StandardEditorData.EditorDescriptionsPanel.TopPanel.Children.Add(DescriptionTextBox);
+                EditorClass.StandardEditorData.EditorDescriptionsPanel.Children.Add(DescriptionTextBox);
                 DescriptionTextBox.MinHeight = 76;
                 DescriptionTable.ExtraTableTextBox = DescriptionTextBox;
                 DescriptionTable.ExtraTableEncodeIsEnabled = true;

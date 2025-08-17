@@ -42,9 +42,10 @@ namespace GameEditorStudio
         
 
         //The rest of the class
+        public StandardEditor TheXaml { get; set; } //The actual XAML user control of the editor. Used to access stuff in the XAML.
 
         public LeftBar? EditorLeftDockPanel { get; set; } = new(); //The left bar of an editor, the item tree, search bar, etc.
-        public TopBar? EditorDescriptionsPanel { get; set; }
+        public DockPanel? EditorDescriptionsPanel { get; set; } = new();
         public List<Category>? CategoryList { get; set; } = new();
 
 
@@ -120,12 +121,9 @@ namespace GameEditorStudio
 
     }
 
-    public class TopBar //WHAT IS THIS? I FORGET D:
+    public class DescriptionPanel //WHAT IS THIS? I FORGET D:   something to do with descriptions?
     {
-        public DockPanel TopPanel { get; set; }
-        public DockPanel PageBar { get; set; }
-
-        public TextBox EntryNoteBox { get; set; }
+        public DockPanel DescriptionsPanel { get; set; }
 
     }
 
