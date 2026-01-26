@@ -93,7 +93,6 @@ namespace GameEditorStudio
     public class LeftBar
     {
         public UserControl UserControl { get; set; }
-        public DockPanel? LeftBarDockPanel { get; set; }
         public TreeView TreeView { get; set; } //The tree view itself of the editor. As a reminder every editor has its own tree view.
         public List<ItemInfo> ItemList { get; set; } = new(); //i kinda forget.
         public TextBox ItemNameTextBox { get; set; } //The textbox for editing the item's name.

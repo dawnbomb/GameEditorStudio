@@ -34,32 +34,34 @@ namespace GameEditorStudio
 
         public void LoadEvent(object sender, RoutedEventArgs e) 
         {
-            DependencyObject? current = this;
-            while (current != null && current is not UserControlEditorCreator)
-            {
-                current = VisualTreeHelper.GetParent(current);
-            }
+            //DISABLED UNTIL THIS CONTROL IS ACTUALLY USED AGAIN. 
 
-            if (current is UserControlEditorCreator)
-            {
-                TheEditorCreator = (UserControlEditorCreator)current;
-                ExitButton.Visibility = Visibility.Collapsed;
-                ExitButton.IsEnabled = false;
+            //DependencyObject? current = this;
+            //while (current != null && current is not UserControlEditorCreator)
+            //{
+            //    current = VisualTreeHelper.GetParent(current);
+            //}
 
-            }
+            //if (current is UserControlEditorCreator)
+            //{
+            //    TheEditorCreator = (UserControlEditorCreator)current;
+            //    ExitButton.Visibility = Visibility.Collapsed;
+            //    ExitButton.IsEnabled = false;
+
+            //}
 
 
-            var parentWindow = Window.GetWindow(this);
-            if (parentWindow is Workshop workshopWindow)
-            {
-                TheWorkshop = workshopWindow;
+            //var parentWindow = Window.GetWindow(this);
+            //if (parentWindow is Workshop workshopWindow)
+            //{
+            //    TheWorkshop = workshopWindow;
 
-                if (IAMSETUP == false)
-                {
-                    Setup();
-                    IAMSETUP = true;
-                }
-            }
+            //    if (IAMSETUP == false)
+            //    {
+            //        Setup();
+            //        IAMSETUP = true;
+            //    }
+            //}
 
         }
 

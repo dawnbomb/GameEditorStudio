@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 using Windows.Graphics;
+using WpfHexaEditor;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Header;
 
 namespace GameEditorStudio
@@ -18,23 +20,27 @@ namespace GameEditorStudio
 
         public void NewStandardEditorIntoDatabase(Workshop TheWorkshop, UserControlEditorCreator Maker) //This triggers when the user creates a new editor.
         {
-            WorkshopData Database = TheWorkshop.WorkshopData;
+            WorkshopData database = TheWorkshop.WorkshopData;
 
             TheWorkshop.EditorName = Maker.TextboxEditorName.Text;
 
             
 
-            Editor EditorClass = new(); //Creates the base class of the editor. Everything else becomes a child of this class, including other classes.
-            EditorClass.StandardEditorData.TheEditor = EditorClass;
-            EditorClass.EditorName = Maker.TextboxEditorName.Text;
-            EditorClass.EditorKey = PixelWPF.LibraryPixel.GenerateKey();
-            EditorClass.EditorType = "DataTable";
+            Editor editor = new(); //Creates the base class of the editor. Everything else becomes a child of this class, including other classes.
+            editor.Workshop = TheWorkshop;
+            editor.StandardEditorData.TheEditor = editor;
+            editor.EditorName = Maker.TextboxEditorName.Text;
+            editor.EditorKey = PixelWPF.LibraryPixel.GenerateKey();
+            editor.EditorType = "DataTable";
             //EditorClass.EditorIcon = Maker.DemoEditorImage.Tag as string; //For old editor icon system. 
+            
+            editor.CreatedDate = DateTime.Now.ToString("MMM dd yyyy");
+            editor.CreatedVersion = LibraryGES.VersionNumber;
 
 
-            EditorClass.StandardEditorData.DataTableStart = int.Parse(Maker.TextBoxDataTableBaseAddress.Text);
-            EditorClass.StandardEditorData.DataTableRowSize = int.Parse(Maker.TextBoxDataTableRowSize.Text);
-            EditorClass.StandardEditorData.TableKey = PixelWPF.LibraryPixel.GenerateKey();
+            editor.StandardEditorData.DataTableStart = int.Parse(Maker.TextBoxDataTableBaseAddress.Text);
+            editor.StandardEditorData.DataTableRowSize = int.Parse(Maker.TextBoxDataTableRowSize.Text);
+            editor.StandardEditorData.TableKey = PixelWPF.LibraryPixel.GenerateKey();
             
             var selectedItem = Maker.FileManager.TreeGameFiles.SelectedItem as TreeViewItem; //The file the user wants to make an editor for.
             GameFile HexFile = selectedItem.Tag as GameFile;
@@ -42,7 +48,7 @@ namespace GameEditorStudio
 
 
             //EditorClass.SWData.EditorLocation = Database.GameFiles[Key].FileLocation;
-            EditorClass.StandardEditorData.FileDataTable = HexFile;
+            editor.StandardEditorData.FileDataTable = HexFile;
             int itemIndex = 0;
 
             //This part determines how the list of item names is gotten.
@@ -50,57 +56,57 @@ namespace GameEditorStudio
             //Type 2: The user points to a file to get them directly. It users more user info + needs to convert the bytes via character encoding.
             if (Maker.Names == "DataFile")
             {
-                EditorClass.StandardEditorData.NameTableLinkType = StandardEditorData.NameTableLinkTypes.DataFile;
+                editor.StandardEditorData.NameTableLinkType = StandardEditorData.NameTableLinkTypes.DataFile;
 
                 TreeViewItem TreeItem = Maker.TextSourceManager.DataFileManager.TreeGameFiles.SelectedItem as TreeViewItem;
                 GameFile NameFile = TreeItem.Tag as GameFile;
 
-                EditorClass.StandardEditorData.FileNameTable = NameFile;
-                EditorClass.StandardEditorData.NameTableCharacterSet = Maker.TextSourceManager.CharacterSetComboBox.Text;
-                EditorClass.StandardEditorData.NameTableStart = int.Parse(Maker.TextSourceManager.FileStartTextBox.Text);
-                EditorClass.StandardEditorData.NameTableTextSize = int.Parse(Maker.TextSourceManager.FileTextSizeTextBox.Text);
-                EditorClass.StandardEditorData.NameTableRowSize = int.Parse(Maker.TextSourceManager.FileFullRowSizeTextBox.Text);
-                EditorClass.StandardEditorData.NameTableItemCount = int.Parse(Maker.TextSourceManager.FileNameCountTextBox.Text) + 1; //The +1 is to account for line 0
+                editor.StandardEditorData.FileNameTable = NameFile;
+                editor.StandardEditorData.NameTableCharacterSet = Maker.TextSourceManager.CharacterSetComboBox.Text;
+                editor.StandardEditorData.NameTableStart = int.Parse(Maker.TextSourceManager.FileStartTextBox.Text);
+                editor.StandardEditorData.NameTableTextSize = int.Parse(Maker.TextSourceManager.FileTextSizeTextBox.Text);
+                editor.StandardEditorData.NameTableRowSize = int.Parse(Maker.TextSourceManager.FileFullRowSizeTextBox.Text);
+                editor.StandardEditorData.NameTableItemCount = int.Parse(Maker.TextSourceManager.FileNameCountTextBox.Text) + 1; //The +1 is to account for line 0
 
 
-                for (int i = 0; i < EditorClass.StandardEditorData.NameTableItemCount; i++)
+                for (int i = 0; i < editor.StandardEditorData.NameTableItemCount; i++)
                 {
                     ItemInfo ItemInfo = new();
                     ItemInfo.ItemIndex = i;
-                    EditorClass.StandardEditorData.EditorLeftDockPanel.ItemList.Add(ItemInfo);
+                    editor.StandardEditorData.EditorLeftDockPanel.ItemList.Add(ItemInfo);
                 }
 
                 CharacterSetManager CharacterManager = new();
-                CharacterManager.Decode(TheWorkshop, EditorClass, "Items");
+                CharacterManager.Decode(TheWorkshop, editor, "Items");
 
             }
             if (Maker.Names == "TextFile")
             {
-                EditorClass.StandardEditorData.NameTableLinkType = StandardEditorData.NameTableLinkTypes.TextFile;
+                editor.StandardEditorData.NameTableLinkType = StandardEditorData.NameTableLinkTypes.TextFile;
 
                 TreeViewItem TreeItem = Maker.TextSourceManager.FileManagerForTextFiles.TreeGameFiles.SelectedItem as TreeViewItem;
                 GameFile NameFile = TreeItem.Tag as GameFile;
 
-                EditorClass.StandardEditorData.FileNameTable = NameFile;
-                EditorClass.StandardEditorData.NameTableStart = int.Parse(Maker.TextSourceManager.TextFirstLineTextBox.Text);
-                EditorClass.StandardEditorData.NameTableItemCount = int.Parse(Maker.TextSourceManager.TextLastLineTextBox.Text) - int.Parse(Maker.TextSourceManager.TextFirstLineTextBox.Text) +1;
+                editor.StandardEditorData.FileNameTable = NameFile;
+                editor.StandardEditorData.NameTableStart = int.Parse(Maker.TextSourceManager.TextFirstLineTextBox.Text);
+                editor.StandardEditorData.NameTableItemCount = int.Parse(Maker.TextSourceManager.TextLastLineTextBox.Text) - int.Parse(Maker.TextSourceManager.TextFirstLineTextBox.Text) +1;
                 
 
-                for (int i = 0; i < EditorClass.StandardEditorData.NameTableItemCount; i++)
+                for (int i = 0; i < editor.StandardEditorData.NameTableItemCount; i++)
                 {
                     ItemInfo ItemInfo = new();
                     ItemInfo.ItemIndex = i;
-                    EditorClass.StandardEditorData.EditorLeftDockPanel.ItemList.Add(ItemInfo);
+                    editor.StandardEditorData.EditorLeftDockPanel.ItemList.Add(ItemInfo);
                 }
                 
                 
 
                 CharacterSetManager CharacterManager = new();
-                CharacterManager.Decode(TheWorkshop, EditorClass, "Items");
+                CharacterManager.Decode(TheWorkshop, editor, "Items");
             }
             if (Maker.Names == "Editor")
             {
-                EditorClass.StandardEditorData.NameTableLinkType = StandardEditorData.NameTableLinkTypes.Editor;
+                editor.StandardEditorData.NameTableLinkType = StandardEditorData.NameTableLinkTypes.Editor;
 
                 PixelWPF.LibraryPixel.NotificationNegative("Error: How did you even trigger this?",
                     "I didn't actually make any code for getting Editor text from another editor. Huh. Also now your gonna crash, and you should definatly report this!!! "
@@ -110,7 +116,7 @@ namespace GameEditorStudio
             }
             if (Maker.Names == "Nothing")
             {
-                EditorClass.StandardEditorData.NameTableLinkType = StandardEditorData.NameTableLinkTypes.Nothing;
+                editor.StandardEditorData.NameTableLinkType = StandardEditorData.NameTableLinkTypes.Nothing;
 
                 foreach (string line in Maker.TextSourceManager.ItemsEditBox.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None))
                 {
@@ -118,17 +124,17 @@ namespace GameEditorStudio
                     IInfo.ItemName = line;
                     IInfo.ItemIndex = itemIndex;
                     itemIndex++;
-                    EditorClass.StandardEditorData.EditorLeftDockPanel.ItemList.Add(IInfo);
+                    editor.StandardEditorData.EditorLeftDockPanel.ItemList.Add(IInfo);
                 }
-                EditorClass.StandardEditorData.NameTableItemCount = itemIndex; //this might fix symbology not working for custom name lists. Revisit if its still broken.
+                editor.StandardEditorData.NameTableItemCount = itemIndex; //this might fix symbology not working for custom name lists. Revisit if its still broken.
                 
             }
             
           
 
             Category RowClass = new();
-            EditorClass.StandardEditorData.CategoryList.Add(RowClass);
-            RowClass.SWData = EditorClass.StandardEditorData;
+            editor.StandardEditorData.CategoryList.Add(RowClass);
+            RowClass.SWData = editor.StandardEditorData;
 
             Column ColumnClass = new();
             ColumnClass.ColumnRow = RowClass; 
@@ -146,27 +152,29 @@ namespace GameEditorStudio
                 Entry EntryClass = new();
                 EntryClass.EntryColumn = ColumnClass; //This is the column this entry belongs to.
                 EntryClass.EntryRow = RowClass; //This is the row this entry belongs to.
-                EntryClass.EntryEditor = EditorClass; //This is the editor this entry belongs to.
+                EntryClass.EntryEditor = editor; //This is the editor this entry belongs to.
 
                 ColumnClass.ItemBaseList.Add(EntryClass);
-                EditorClass.StandardEditorData.MasterEntryList.Add(EntryClass); 
+                editor.StandardEditorData.MasterEntryList.Add(EntryClass); 
 
                 EntryClass.DataTableRowSize = Int32.Parse(Maker.TextBoxDataTableRowSize.Text);
                 EntryClass.RowOffset = i;
-                EntryClass.TableKey = EditorClass.StandardEditorData.TableKey;
+                EntryClass.TableKey = editor.StandardEditorData.TableKey;
 
                 //Reminder this method is for creating a NEW editor, not loading one from a file. 
             }
 
 
 
-            Database.GameEditors.Add(TheWorkshop.EditorName, EditorClass);
+            database.GameEditors.Add(TheWorkshop.EditorName, editor);
 
-            GenerateStandardEditor EditorMaker = new GenerateStandardEditor();
-            EditorMaker.GenerateNormalEditor(TheWorkshop, Database, EditorClass); //Create a editor with this information.
-            //This is not inside any loop, so it really just makes an editor.
+            TabButtonMaker MakeEditorButton = new();
+            MakeEditorButton.CreateTabButton(database, editor);
 
-            EditorClass.EditorButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            StandardEditor standardEditor = new(database, editor);
+            
+
+            editor.EditorButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 
            
 
@@ -175,22 +183,29 @@ namespace GameEditorStudio
 
         
 
-        public void LoadDataTableFromFile(Workshop TheWorkshop, WorkshopData Database, string TargetXML)
-        {
-
-
+        public void LoadDataTableXMLIntoDatabasePART1(Workshop TheWorkshop, WorkshopData Database, string TargetXML)
+        {   
             XElement xml = XElement.Load(TargetXML);
 
-            TheWorkshop.EditorName = xml.Element("Name")?.Value; //Sets the name of the editor were working with from the name stored in XML.
+            //TheWorkshop.EditorName = xml.Element("Name")?.Value; //Sets the name of the editor were working with from the name stored in XML.
+            TheWorkshop.EditorName = Path.GetFileName(Path.GetDirectoryName(TargetXML)); //Sets the name of the editor were working with from the name editor's folder name.
 
 
             Editor EditorClass = new();          //Creates a EditorClass
             EditorClass.StandardEditorData.TheEditor = EditorClass; 
             EditorClass.Workshop = TheWorkshop;
-            EditorClass.EditorName = xml.Element("Name")?.Value;
+            //EditorClass.EditorName = xml.Element("Name")?.Value;
+            //EditorClass.EditorName = EditorName;
+            EditorClass.EditorName = Path.GetFileName(Path.GetDirectoryName(TargetXML));
             EditorClass.EditorType = xml.Element("Type")?.Value;
             EditorClass.EditorIcon = xml.Element("Icon")?.Value;
             EditorClass.EditorKey = xml.Element("Key")?.Value;
+
+            EditorClass.CreatedDate = xml.Element("CreatedDate")?.Value ?? "";
+            EditorClass.CreatedVersion = Version.TryParse(xml.Element("CreatedVersion")?.Value, out var vx1) ? vx1 : new Version(0, 0);
+            EditorClass.SavedDate = xml.Element("SavedDate")?.Value ?? "";
+            EditorClass.SavedVersion = Version.TryParse(xml.Element("SavedVersion")?.Value, out var vx2) ? vx2 : new Version(0, 0);
+
 
             foreach (XElement item in xml.Descendants("NameTable"))
             {
@@ -284,9 +299,28 @@ namespace GameEditorStudio
 
 
 
-            
-            Database.GameEditors.Add(TheWorkshop.EditorName, EditorClass); //Adds a core (aka the value) with the Key (New editor name from textbox) to the database dictionary.
+            try 
+            {
+                Database.GameEditors.Add(TheWorkshop.EditorName, EditorClass); //Adds a core (aka the value) with the Key (New editor name from textbox) to the database dictionary.
 
+            }
+            catch 
+            {
+                PixelWPF.LibraryPixel.NotificationNegative("Error: Editor Key Conflict!",
+                    "Editor 1: " + TheWorkshop.EditorName +
+                    "\nEditor 2: " + EditorClass.EditorName +
+                    "\n" +
+                    "\nYou got this error because your trying to load a copy of an existing editor. Every editor has a unique key, and renaming a copy of an editor doesn't change that key. " +
+                    "\n" +
+                    "\nI'll add a way to duplicate an editor in the future, for now if you REALLY want both of them, just open the editor.xml of your copy and give it a random key yourself. " +
+                    "\n" +
+                    "\nPS: You CAN rename copys of workshops. " +
+                    "\nPPS: The program will now crash :("
+                    );
+
+                Process.GetCurrentProcess().Kill(); //Force crash.
+            }
+            
 
 
 
@@ -297,7 +331,7 @@ namespace GameEditorStudio
 
         }
 
-        public void LoadDataTableFromFilePart2(Workshop TheWorkshop, WorkshopData Database, Editor EditorClass) 
+        public void LoadDataTableXMLIntoDatabasePART2(Workshop TheWorkshop, WorkshopData Database, Editor EditorClass) 
         {
             string TargetXML = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors", EditorClass.EditorName, "Editor.xml");
 

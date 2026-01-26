@@ -23,16 +23,19 @@ namespace GameEditorStudio
         public TextEditor(WorkshopData Database, Editor Editor)
         {
             InitializeComponent();
-                        
+
+            if (Editor.EditorBackPanel != null) 
+            {
+                Database.WorkshopXaml.MidGrid.Children.Remove(Editor.EditorBackPanel);                
+            }
+
             Editor.EditorBackPanel = BackPanel;
             Database.WorkshopXaml.MidGrid.Children.Add(this);
 
             TextFileManager.IsTextEditor = true;
             TextFileManager.ThisEditor = Editor;
             Editor.TextEditorData.TextFileManager = TextFileManager;
-
-            MakeButton MyButton = new();
-            MyButton.CreateButton(Database.WorkshopXaml, Database, Editor);
+            
 
             Editor.TextEditorData.MainGrid = MainGrid;
 

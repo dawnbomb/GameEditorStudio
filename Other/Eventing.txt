@@ -26,7 +26,8 @@ To make a new command,
 ON WRITING THE COMMAND METHOD:
 - Note that MethodData.Command has all basic command data, so MethodData.Command.
 - Tool tool0 = MethodData.Command.RequiredToolsList[0]; is how to get the first tool required. With [1] getting the second tool, etc.
-- string resource0 = MethodData.ResourceLocations[0];
+- string resource0 = MethodData.ResourceLocations[0]; is how you get the location of the first file/folder resource path. With [1] getting the second resource, etc.
+
 
 
 

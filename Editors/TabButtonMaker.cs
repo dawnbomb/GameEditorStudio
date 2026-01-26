@@ -4,21 +4,23 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using System.Windows.Media;
-using System.Windows;
+using System.Windows.Media.Imaging;
+using WpfHexaEditor;
 
 namespace GameEditorStudio
 {
-    internal class MakeButton
+    internal class TabButtonMaker
     {
 
 
 
-        public async Task CreateButton(Workshop TheWorkshop, WorkshopData WorkshopData, Editor EditorClass) //This is the editor button at the top
-        {            
+        public async Task CreateTabButton(WorkshopData WorkshopData, Editor EditorClass) //This is the editor button at the top
+        {
+            Workshop TheWorkshop = WorkshopData.WorkshopXaml;
 
             EditorClass.EditorImage = new();
 
@@ -295,7 +297,25 @@ namespace GameEditorStudio
             ContextMenu contextMenu = new ContextMenu();
             EditorTabButton.ContextMenu = contextMenu;
 
-            
+            MenuItem ReloadEditor = new MenuItem(); //Upcoming, but disabled for now. 
+            ReloadEditor.Header = "Reload Editor";
+            ReloadEditor.Click += ReloadEditor_Click; // Event handler for click action
+            //contextMenu.Items.Add(ReloadEditor);
+            void ReloadEditor_Click(object sender, RoutedEventArgs e)
+            {
+                FileLoading fileLoading = new();
+                fileLoading.ReloadAllEditorFiles(EditorClass);
+
+
+
+                StandardEditor standardEditor = new(WorkshopData, EditorClass);
+
+                //???
+                //Trigger ReloadFile in a FileManager.cs for every File in use by a editor...
+                //Trigger ReloadEditor in some kind of EditorManager.cs file?
+                //Be mindful about linked menus...
+            }
+
 
             if (EditorClass.EditorType == "DataTable") 
             {

@@ -103,7 +103,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PixelWPF\PixelWPF.csproj" />
+    <ProjectReference Include="..\PixelWPF\PixelWPF.csproj" />  <!-- <ProjectReference Include="..\..\PixelWPF\PixelWPF\PixelWPF.csproj" />  if at reo's. This needs to point to pixelWPF or the program wont launch and say it doesn't know where it is. -->
   </ItemGroup>
 
   

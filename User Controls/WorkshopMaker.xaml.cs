@@ -44,23 +44,25 @@ namespace GameEditorStudio
 
         public void LoadEvent(object sender, RoutedEventArgs e) 
         {
-            var parentWindow = Window.GetWindow(this);
-            if (parentWindow is GameLibrary GameLibraryWindow)
-            {
-                Library = GameLibraryWindow;
-            }
+            Library = Database.GameLibrary;
 
-            if (TheMode == "New" ) 
+            //var parentWindow = Window.GetWindow(this);
+            //if (parentWindow is GameLibrary GameLibraryWindow)
+            //{
+            //    Library = GameLibraryWindow;
+            //}
+
+            if (TheMode == "New")
             {
                 ButtonCreateNewWorkshop.Content = "Create Workshop";
                 WorkshopTextboxExampleInputFolder.Text = "";
                 WorkshopCheckboxSameFolderName.IsChecked = true;
             }
 
-            if (TheMode == "Edit") 
+            if (TheMode == "Edit")
             {
                 ButtonCreateNewWorkshop.Content = "Save Workshop";
-                TextBoxGameName.Text = workshopData.WorkshopName;                                                               
+                TextBoxGameName.Text = workshopData.WorkshopName;
                 WorkshopTextboxExampleInputFolder.Text = workshopData.WorkshopInputDirectory; //System.IO.File.ReadAllText(ExePath + "\\Workshops\\" + WorkshopName + "\\Input Directory.txt");
                 WorkshopCheckboxSameFolderName.IsChecked = workshopData.ProjectsRequireSameFolderName;
 
@@ -73,7 +75,7 @@ namespace GameEditorStudio
             }
 
 
-            
+
         }
 
         private void ButtonSetWorkshopInputFolder_Click(object sender, RoutedEventArgs e)
@@ -81,7 +83,7 @@ namespace GameEditorStudio
             VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog(); //This starts folder selection using Ookii.Dialogs.WPF NuGet Package
             FolderSelect.Description = "Select the root / base folder. This folder should contain all game files. For example, a rom's unpacked folder, or game install folder."; //This sets a description to help remind the user what their looking for.
             FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.  
-            if ((bool)FolderSelect.ShowDialog(Library)) //This triggers the folder selection screen, and if the user does not cancel out...
+            if ((bool)FolderSelect.ShowDialog(Window.GetWindow(Library))) //This triggers the folder selection screen, and if the user does not cancel out...
             {
                 WorkshopTextboxExampleInputFolder.Text = Path.GetFileName(FolderSelect.SelectedPath);
             }
@@ -101,6 +103,9 @@ namespace GameEditorStudio
             if (ButtonCreateNewWorkshop.Content.ToString() == "Create Workshop")
             {   
                 Database.Workshops.Add(workshopData);
+
+                workshopData.CreatedDate = DateTime.Now.ToString("MMM dd yyyy");
+                workshopData.CreatedVersion = LibraryGES.VersionNumber;
 
                 //These can't be placed outside this IF or the later move command in save workshop will fail because folder already exists.
                 Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text);
@@ -148,7 +153,8 @@ namespace GameEditorStudio
             workshopData.WorkshopInputDirectory = WorkshopTextboxExampleInputFolder.Text;
             workshopData.ProjectsRequireSameFolderName = WorkshopCheckboxSameFolderName.IsChecked == true ? true : false;
 
-            SaveWorkshopLibrary();
+            CommandMethodsClass.SaveWorkshopXml(workshopData);
+            Library.RefreshWorkshopTree();
 
             //Exit this and reselect the workshop in the library.
             var parentContainer = this.Parent as Grid;
@@ -171,101 +177,6 @@ namespace GameEditorStudio
             }
 
 
-        }
-
-
-
-        private void SaveWorkshopLibrary()
-        {          
-            //Save a test example. If this fails, the real file is not corrupted. 
-            string LibraryXmlPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\" + "LibraryTestSave.xml";               
-            SaveIt();
-            try
-            {
-                if (File.Exists(LibraryXmlPath)) { File.Delete(LibraryXmlPath); }
-            } 
-            catch 
-            {
-            
-            }
-
-            //Save over the real workshop file. The test didn't fail, so this should be fine.
-            LibraryXmlPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\" + "Workshop.xml";  
-            SaveIt();
-
-            void SaveIt()
-            {
-                try 
-                {
-                    XmlWriterSettings settings = new XmlWriterSettings();
-                    settings.Indent = true;
-                    settings.IndentChars = ("    ");
-                    settings.CloseOutput = true;
-                    settings.OmitXmlDeclaration = true;
-                    using (XmlWriter writer = XmlWriter.Create(LibraryXmlPath, settings))
-                    {
-                        writer.WriteStartElement("Workshop");
-                        writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
-                        writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
-                        writer.WriteElementString("WorkshopName", workshopData.WorkshopName); //Note: This is for reference only, so i can tell what workshop a file is for when it's open in notepad. This isn't actually used anywhere. 
-                        writer.WriteElementString("InputLocation", workshopData.WorkshopInputDirectory);
-                        writer.WriteElementString("ProjectsRequireSameInputFolderName", workshopData.ProjectsRequireSameFolderName == true ? "true" : "false");
-
-                        writer.WriteStartElement("ResourceList");
-                        foreach (EventResource WorkshopEventResource in workshopData.WorkshopEventResources)
-                        {
-                            //when xml loads, variables WILL be null, even if they have a default value, if it's not written to begin with. this is very annoying. 
-                            writer.WriteStartElement("Resource");
-                            writer.WriteElementString("Name", WorkshopEventResource.Name);
-                            writer.WriteElementString("Key", WorkshopEventResource.Key);
-
-                            if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File)
-                            {
-                                writer.WriteElementString("ResourceType", "File");
-                            }
-                            if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder)
-                            {
-                                writer.WriteElementString("ResourceType", "Folder");
-                            }
-                            if (WorkshopEventResource.IsChild == false)
-                            {
-                                writer.WriteElementString("IsChild", "False");
-                            }
-                            if (WorkshopEventResource.IsChild == true)
-                            {
-                                writer.WriteElementString("IsChild", "True");
-                            }
-
-                            writer.WriteElementString("RequiredName", WorkshopEventResource.RequiredName.ToString());  //if full path (local)
-                            writer.WriteElementString("Location", WorkshopEventResource.Location);  //if partial path
-                            writer.WriteElementString("TargetKey", WorkshopEventResource.ParentKey); //if partial path                    
-
-
-                            writer.WriteEndElement(); //End File
-                        }
-                        writer.WriteEndElement(); //End ResourceList 
-
-
-                        writer.WriteEndElement(); //End Root (Library)
-                        writer.Flush(); //Ends the XML Library file                                
-
-                    }
-                }
-                catch 
-                {
-                    PixelWPF.LibraryPixel.NotificationNegative("Error: Workshop.xml failed to save properly.",
-                        "All saves (are supposed to be) simulated in this program, so pre-existing data should be fine... " +
-                        "but...this is really weird! This one especially should never crash! What the hell did you do?!?" +
-                        "\n\n" +
-                        "You should DEFINATLY restart the program."
-                        );
-                    return;
-                }
-                
-            }
-            
-
-            Library.RefreshWorkshopTree();
         }
 
 

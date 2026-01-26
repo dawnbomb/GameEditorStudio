@@ -92,6 +92,8 @@ namespace GameEditorStudio
                     break;
                 }
             }
+
+            SaveProjectXML(MethodData.mainMenu.WorkshopData.ProjectDataItem,MethodData.mainMenu.WorkshopData);
         }
 
 
@@ -160,11 +162,12 @@ namespace GameEditorStudio
                         //First we store and clear the current search bar text.
                         //Needed because otherwise it saves literally only the visible items in the treeview, but i still need it to be based on treeview for order.
                         //If you want to test removing the search bar cleansing, make a backup of the workshop first!
-                        
-                        
 
 
-                        LoadOrderContent += editor.Key + Environment.NewLine; //for load order text
+
+
+                        //LoadOrderContent += editor.Key + Environment.NewLine; //for load order text (Old, when using editor names)
+                        LoadOrderContent += editor.Value.EditorKey + Environment.NewLine; //for load order text
 
                         EditorsToDelete.Add(editor.Key);//Add editor string to name list
                         Directory.CreateDirectory(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + editor.Key);
@@ -178,8 +181,11 @@ namespace GameEditorStudio
                         {
 
                             writer.WriteStartElement("Editor"); //This is the root of the XML
-                            writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
-                            writer.WriteElementString("VersionDate", LibraryGES.VersionDate);                            
+                            writer.WriteElementString("CreatedVersion", editor.Value.CreatedDate.ToString());
+                            writer.WriteElementString("CreatedDate", editor.Value.CreatedDate);
+                            writer.WriteElementString("SavedVersion", LibraryGES.VersionNumber.ToString());
+                            writer.WriteElementString("SavedDate", DateTime.Now.ToString("MMM dd yyyy"));
+                            writer.WriteElementString("Seperator", "----------------------------------------------------------------------------------");                        
                             writer.WriteElementString("Name", editor.Key); //This is all misc editor data.
                             writer.WriteElementString("Type", editor.Value.EditorType);
                             writer.WriteElementString("Icon", editor.Value.EditorIcon); //This is the name of the file that this editor uses.
@@ -677,8 +683,7 @@ namespace GameEditorStudio
             {
                 File.WriteAllBytes(SavePath + "\\" + HFile.Value.FileLocation, HFile.Value.FileBytes); //saves to the path i set, everything in the array.
             }
-
-
+                        
         }
 
         public static void SaveDocumentsWorkshop(MethodData ActionPack) 
@@ -710,14 +715,14 @@ namespace GameEditorStudio
             Directory.CreateDirectory(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events\\");
             Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Events\\");
 
+            bool Failed = false; //yes this is used. WAY down below in the catch part of try catch.
+
             //Step 1.5: Save to the example location.
             SaveEventsToXML(ExtraPath);
 
             //Step 2: Delete everything in the example location.
             Directory.Delete(LibraryGES.ApplicationLocation + ExtraPath + "\\", true);
-
-
-            bool Failed = false; //yes this is used. WAY down below in the catch part of try catch.
+                        
             if (Failed == true) { return; }
 
 
@@ -761,11 +766,13 @@ namespace GameEditorStudio
                         using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + WorkshopName + "\\Events\\" + Event.DisplayName + "\\Event.xml", settings))
                         {
                             writer.WriteStartElement("Event");
-                            writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
-                            writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
+                            writer.WriteElementString("CreatedVersion", Event.CreatedDate.ToString());
+                            writer.WriteElementString("CreatedDate", Event.CreatedDate);
+                            writer.WriteElementString("SavedVersion", LibraryGES.VersionNumber.ToString());
+                            writer.WriteElementString("SavedDate", DateTime.Now.ToString("MMM dd yyyy"));
+                            writer.WriteElementString("Seperator", "----------------------------------------------------------------------------------");
                             writer.WriteElementString("Note", "The resource's name is unused and for debugging. The current name could be diffrent.");
                             writer.WriteElementString("Note2", "The Resource's Key is the WorkshopResourceKey. Not the ProjectResourceKey.");
-                            
                             writer.WriteElementString("Seperator", "================================================================================");
                             writer.WriteElementString("Name", Event.DisplayName);
                             writer.WriteElementString("Note", Event.Note);
@@ -791,7 +798,7 @@ namespace GameEditorStudio
                                 writer.WriteEndElement(); //End Resources
 
                                 {   //SAVE SOME SPECIAL STUFF IF THIS IS THE COMMAND PROMPT COMMAND.                                    
-                                    if (AnEventCommand.Command.Key == "638907232781932877-460670541-291625304") 
+                                    if (AnEventCommand.Command.Key == "CMD1" || AnEventCommand.Command.Key == "CMD2" || AnEventCommand.Command.Key == "CMD3") 
                                     {
                                         writer.WriteElementString("CMD", "True");
 
@@ -851,21 +858,23 @@ namespace GameEditorStudio
                                 {
                                     EventResource eventResource = MethodData.mainMenu.WorkshopData.WorkshopEventResources.Find(thing => thing.Key == thekey);
                                     if (thekey == "") { continue; }
+                                    if (savedresources.Contains(eventResource) || savedresourceparents.Contains(eventResource)) { continue; }
                                     SaveResource(eventResource);
                                     savedresources.Add(eventResource);
                                 }
                                 foreach (EventResource resource in savedresources) //then save any parent resources that the used resources rely on.
                                 {
-                                    if (resource.ParentKey != "") 
+                                    if (resource.ParentKey != "" && resource.ParentKey != null) 
                                     {
                                         EventResource eventResource = MethodData.mainMenu.WorkshopData.WorkshopEventResources.Find(thing => thing.Key == resource.ParentKey);
 
-                                        if (!savedresourceparents.Contains(eventResource)) 
-                                        {
-                                            SaveResource(eventResource);
-                                            savedresourceparents.Add(eventResource);
-                                        }
-                                        
+                                        if (eventResource == null) 
+                                        { throw new Exception("Forcing catch!"); } //May happen if the child parent link is broken.
+                                        if (savedresources.Contains(eventResource) || savedresourceparents.Contains(eventResource))  { continue; }
+
+                                        SaveResource(eventResource);
+                                        savedresourceparents.Add(eventResource);
+
                                     }
                                     
                                 }
@@ -879,7 +888,7 @@ namespace GameEditorStudio
                             {
                                 writer.WriteStartElement("Resource");                               
                                 
-                                writer.WriteElementString("Name", eventResource.Name);
+                                writer.WriteElementString("Name", eventResource.Name); //I had a crash here i never confirmed as fixed. It was actually because eventResource was null. I may have fixed it, but i can't recreate it to make sure...
                                 writer.WriteElementString("Key", eventResource.Key);
 
                                 if (eventResource.ResourceType == EventResource.ResourceTypes.File)
@@ -933,7 +942,7 @@ namespace GameEditorStudio
         // To fix the CS0120 error, the method `SaveWorkshopXml` must either be made static or called on an instance of `CommandMethodsClass`.
         // Since the method is being called from a static context, the simplest fix is to make `SaveWorkshopXml` static.
 
-        private static void SaveWorkshopXml(WorkshopData workshopData) //Not a command method i just wanted it in the save .cs file as the other xml saves.
+        public static void SaveWorkshopXml(WorkshopData workshopData) //Not a command method i just wanted it in the save .cs file as the other xml saves.
         {
             //Save a test example. If this fails, the real file is not corrupted. 
             string LibraryXmlPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\" + "LibraryTestSave.xml";
@@ -963,11 +972,15 @@ namespace GameEditorStudio
                     using (XmlWriter writer = XmlWriter.Create(LibraryXmlPath, settings))
                     {
                         writer.WriteStartElement("Workshop");
-                        writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
-                        writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
+                        writer.WriteElementString("CreatedVersion", workshopData.CreatedVersion.ToString());
+                        writer.WriteElementString("CreatedDate", workshopData.CreatedDate);
+                        writer.WriteElementString("SavedVersion", LibraryGES.VersionNumber.ToString());
+                        writer.WriteElementString("SavedDate", DateTime.Now.ToString("MMM dd yyyy"));
+                        writer.WriteElementString("Seperator", "----------------------------------------------------------------------------------");
                         writer.WriteElementString("WorkshopName", workshopData.WorkshopName); //Note: This is for reference only, so i can tell what workshop a file is for when it's open in notepad. This isn't actually used anywhere. 
                         writer.WriteElementString("InputLocation", workshopData.WorkshopInputDirectory);
                         writer.WriteElementString("ProjectsRequireSameInputFolderName", workshopData.ProjectsRequireSameFolderName == true ? "true" : "false");
+                        writer.WriteElementString("Seperator", "----------------------------------------------------------------------------------");
 
                         writer.WriteStartElement("ResourceList");
                         foreach (EventResource WorkshopEventResource in workshopData.WorkshopEventResources)
@@ -1019,7 +1032,7 @@ namespace GameEditorStudio
                         );
                     return;
                 }
-
+                
             }
 
 
@@ -1033,6 +1046,9 @@ namespace GameEditorStudio
 
             string TestLocation = LibraryGES.ApplicationLocation + "\\Projects\\" + "GESDummyProject" + "\\" + ProjectData.ProjectName + "\\" + "Project.xml";
             string RealLocation = LibraryGES.ApplicationLocation + "\\Projects\\" + workshopData.WorkshopName + "\\" + ProjectData.ProjectName + "\\" + "Project.xml";
+
+
+
 
             try
             {
@@ -1061,8 +1077,11 @@ namespace GameEditorStudio
                 using (XmlWriter writer = XmlWriter.Create(theLocation, settings))
                 {
                     writer.WriteStartElement("Project"); //This is the root of the XML
-                    writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
-                    writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
+                    writer.WriteElementString("CreatedVersion", ProjectData.CreatedDate.ToString());
+                    writer.WriteElementString("CreatedDate", ProjectData.CreatedDate);
+                    writer.WriteElementString("SavedVersion", LibraryGES.VersionNumber.ToString());
+                    writer.WriteElementString("SavedDate", DateTime.Now.ToString("MMM dd yyyy"));
+                    writer.WriteElementString("Seperator", "----------------------------------------------------------------------------------");
                     writer.WriteElementString("NOTE", "The resources are (Project Event Resources) with a key matching (Workshop Event Resources).");
                     writer.WriteElementString("Seperator", "====================================================================================");
                     writer.WriteElementString("Name", ProjectData.ProjectName);

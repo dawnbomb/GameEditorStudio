@@ -22,5 +22,17 @@ namespace GameEditorStudio.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string ToSVersion {
+            get {
+                return ((string)(this["ToSVersion"]));
+            }
+            set {
+                this["ToSVersion"] = value;
+            }
+        }
     }
 }

@@ -1,12 +1,12 @@
-﻿<Window x:Class="GameEditorStudio.Workshop"
+﻿<UserControl x:Class="GameEditorStudio.Workshop"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"        
         xmlns:local="clr-namespace:GameEditorStudio"
         mc:Ignorable="d"
-        Title="Crystal Editor    Version: Etrian HD Demo 1" Height="900" Width="1580">
-
+        >
+    <!--Height="900" Width="1580"-->
 
 
 
@@ -56,7 +56,7 @@
             </DockPanel>
         </Grid>
 
-       
+
 
         <GridSplitter Style="{DynamicResource SplitterVertical}" Grid.Column="2" Grid.Row="4" Grid.RowSpan="3" Width="12"  />
 
@@ -341,14 +341,24 @@
                                                             <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="Auto"/>
-
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
                                                         </Grid.RowDefinitions>
 
                                                         <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
                                                         <TextBox x:Name="PropertiesGroupNameBox" Grid.Row="0" Grid.Column="2" Margin="3" Text="New Group" TextWrapping="Wrap"  KeyDown="PropertiesGroupNameTextBox_KeyDown"/>
 
-                                                        <Label Content="Tooltip" Grid.Row="1" Grid.Column="1" Margin="0"/>
-                                                        <TextBox x:Name="PropertiesGroupTooltipBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Height="100" Margin="3" Text="" TextWrapping="Wrap"  TextChanged="PropertiesGroupTooltipTextBox_TextChanged"/>
+                                                        <Label Content="Style" Grid.Row="1" Grid.Column="1" Margin="0"/>
+                                                        <ComboBox x:Name="PropertiesGroupNameBox2" Grid.Row="1" Grid.Column="2" Margin="3" Text="New Group"  KeyDown="PropertiesGroupNameTextBox_KeyDown">
+                                                            <ComboBoxItem Content="Name is on top" IsSelected="True"/>
+                                                            <ComboBoxItem Content="Name is on the line" />
+                                                            <ComboBoxItem Content="Name is inside" />
+                                                        </ComboBox>
+
+                                                        <Label Content="Tooltip" Grid.Row="2" Grid.Column="1" Margin="0"/>
+                                                        <TextBox x:Name="PropertiesGroupTooltipBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Height="100" Margin="3" Text="" TextWrapping="Wrap"  TextChanged="PropertiesGroupTooltipTextBox_TextChanged"/>
+                                                        <Label Grid.Row="4" Grid.Column="1" Content="Tip:" HorizontalAlignment="Left" Margin="3,33,3,3"  VerticalAlignment="Top"/>
+                                                        <Label Grid.Row="4" Grid.Column="2" Content="If every entry in a group is set to hidden, &#xA;the group will also become hidden."  Margin="0,33,-60,0"  VerticalAlignment="Center"/>
                                                     </Grid>
                                                 </DockPanel>
                                             </Border>
@@ -402,7 +412,8 @@
                     <ComboBoxItem Content="True"/>
                 </ComboBox>-->
 
-                                                        <Label Content="Hide Entry" Grid.Row="2" Grid.Column="1" Margin="0"/>
+                                                        <Label Content="Hide Entry" Grid.Row="2" Grid.Column="1" Margin="0" />
+                                                        <Border Grid.Row="2" Grid.Column="1" Margin="3,0,19,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="The next time this editor is opened, &#xA;this entry will disappear. &#xA; &#xA;You can still un-hide an entry later by using &#xA;the Show Hidden Entrys toggle on the hot bar. &#xA; &#xA;Also, if all entrys in a group are hidden,&#xA;the group itself will also become hidden."/>
                                                         <CheckBox Name="HideEntryCheckbox" Grid.Row="2" Grid.Column="2" Margin="3" Checked="HideEntryCheckboxChecked" Unchecked="HideEntryCheckboxUnchecked" >
                                                             <CheckBox.LayoutTransform>
                                                                 <ScaleTransform ScaleX="2" ScaleY="2" />
@@ -592,7 +603,7 @@
                     <TabItem Header="Documents">
                         <DockPanel   LastChildFill="True" >
 
-                            <local:DocumentsUserControl></local:DocumentsUserControl>
+                            <local:DocumentsUserControl x:Name="DocumentsControl"/>
 
                         </DockPanel>
                     </TabItem>
@@ -605,9 +616,9 @@
                                     </DockPanel>
                                 </Border>
                                 <Label Content="This Info and Entry Symbology only work on 1 byte &#xD;&#xA;entrys. Support for entrys with 2+ bytes &#xD;&#xA;will be added in the future." Margin="5,5,5,5" DockPanel.Dock="Top"/>
-                                <local:UserControlCrossReference Margin="5,5,5,5"/>
+                                <local:UserControlCrossReference x:Name="CrossReferenceInfo" Margin="5,5,5,5"/>
                             </DockPanel>
-                        </Border>                        
+                        </Border>
                     </TabItem>
                     <TabItem Header="Auto Mod">
                         <Border>
@@ -617,7 +628,7 @@
                                         <Label Content="Automatically mod the game!" FontWeight="Bold" DockPanel.Dock="Left"/>
                                     </DockPanel>
                                 </Border>
-                                
+
                                 <Grid  Margin="5">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -686,7 +697,7 @@
                                         <Label Name="ListLabel" Content="List Name" FontWeight="Bold" DockPanel.Dock="Left"/>
                                     </DockPanel>
                                 </Border>
-                                
+
                                 <ScrollViewer x:Name="ListPanel" Margin="0,0,0,0" >
                                     <Grid>
                                         <ListBox x:Name="EntryListBox" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,0,0" BorderThickness="0" SelectionChanged="EntryListBox_SelectionChanged" Background="#FF242527" Foreground="#FFE6E3E3"/>
@@ -719,11 +730,11 @@
                     <local:Community x:Name="Community2"   Grid.Column="2" Visibility="Collapsed"/>
 
 
-                    <!--<DockPanel  Grid.Column="2" Margin="0,30,0,0" >
+                    <DockPanel  Grid.Column="2" Margin="0,30,0,0" >
 
-                        <ContentControl DockPanel.Dock="Top" MinHeight="100"  >
+                        <!--<ContentControl DockPanel.Dock="Top" MinHeight="100"  >
                             <DockPanel>
-                                <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
+                                <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
                                     <Label Content="Projects / Mods" FontWeight="Bold" />
                                     <Button DockPanel.Dock="Right" Content="New"  Height="30" MinWidth="50" Margin="0,3,10,2" Width="60" ToolTip="Create a new Mod / Project."  />
                                 </DockPanel>
@@ -735,24 +746,88 @@
 
                                     <DataGrid.RowStyle>
                                         <Style TargetType="{x:Type DataGridRow}">
-                                            --><!--<EventSetter Event="MouseDoubleClick" Handler="Row_DoubleClick" />--><!--
+                                            <EventSetter Event="MouseDoubleClick" Handler="Row_DoubleClick" />
                                         </Style>
                                     </DataGrid.RowStyle>
                                     <DataGrid.ContextMenu>
                                         <ContextMenu>
-                                            --><!--<MenuItem Header="New Project" Click="CreateNewProject" />
+                                            <MenuItem Header="New Project" Click="CreateNewProject" />
                                             <MenuItem Header="Delete Project" Click="DeleteProject" />
                                             <MenuItem Header="Open Input Folder" Click="OpenInput" />
-                                            <MenuItem Header="Open Output Folder" Click="OpenOutput" />--><!--
+                                            <MenuItem Header="Open Output Folder" Click="OpenOutput" />
                                         </ContextMenu>
                                     </DataGrid.ContextMenu>
                                 </DataGrid>
                             </DockPanel>
+                        </ContentControl>-->
+
+                        <ContentControl DockPanel.Dock="Top" Height="300" Margin="0,0,0,0" >
+                            <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,0,0,0">
+                                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                    <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" >
+                                        <Label Content="Project Info" FontWeight="Bold" />
+                                        <!--<Button DockPanel.Dock="Right" Content="Launch"  Height="30" MinWidth="80" Margin="0,3,10,2" Click="ButtonLaunchWorkshop_Click" Width="100" ToolTip="Launch this workshop loading the selected project's data.  &#xD;Data is loaded using files in the output folder.  &#xD;If a file isn't there, it loads it from the input folder.  &#xD;If a file still isn't there, it probably just crashes :>"  />-->
+                                    </DockPanel>
+                                </Border>
+
+
+                                <DockPanel DockPanel.Dock="Top" Background="{x:Null}" >
+
+                                    <DockPanel DockPanel.Dock="Top" Margin="10,3,10,10"  >
+                                        <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                                            <Label Content="Project Name" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
+                                            <Button Name="ButtonOpenInputFolder2" Content=" Open " DockPanel.Dock="Right" Click="OpenProjectFolder" Width="63" Height="30"/>
+                                        </DockPanel>
+                                        <Border CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
+                                            <!--Background="White"-->
+                                            <TextBox x:Name="ProjectNameTextbox" DockPanel.Dock="Top" Margin="0,0,0,0" Text="" KeyDown="ChangeProjectName" Padding="4"  BorderThickness="0"  ToolTip="The name of your mod / project. &#xD;This is not shared, and can be whatever you want." IsEnabled="False"  />
+                                        </Border>
+
+                                    </DockPanel>
+
+
+
+                                    <DockPanel DockPanel.Dock="Top" Margin="10,3,10,10"  >
+                                        <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                                            <Label Content="Input Folder" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
+                                            <Label Name="LabelForMissingProjectInput" Content="Missing!" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,3,0,0" />
+                                            <Button Name="ButtonOpenInputFolder" Content=" Open " DockPanel.Dock="Right" Click="OpenProjectInputFolder" Width="63" Height="30"/>
+                                            <!--<Button x:Name="ButtonSelectInputDirectory" Content="Browse..." DockPanel.Dock="Right" Height="30" Width="100" Margin="0,0,3,0" Click="ButtonSelectInputDirectory_Click"  />-->
+                                        </DockPanel>
+                                        <DockPanel DockPanel.Dock="Top">
+                                            <Border Name="BorderInputFolder" CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
+                                                <TextBox x:Name="TextBoxInputDirectory" Margin="2,0,2,0" Padding="4"  BorderThickness="0"  DockPanel.Dock="Left" Text="Where new projects read files from. :)"  IsEnabled="False" />
+                                            </Border>
+
+
+                                        </DockPanel>
+
+                                    </DockPanel>
+
+                                    <DockPanel DockPanel.Dock="Top" Margin="10,3,10,0"  >
+                                        <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                                            <Label Content="Output Folder" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
+                                            <Label Name="LabelForMissingProjectOutput" Content="Missing!" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,3,0,0" />
+                                            <Button Name="ButtonOpenOutputFolder" Content=" Open " DockPanel.Dock="Right" Click="OpenProjectOutputFolder" Width="60" Height="30"/>
+                                            <Button Content="Browse..." DockPanel.Dock="Right" Height="30" Width="100" Margin="0,0,3,0" Click="SetProjectOutputFolder"  ToolTip="The folder where files are saved to. &#xD;When saving, files will save in the same folder structure as the input folder.  &#xD;   &#xD;TIP: If your modding for a 3DS or Switch game,  &#xD;Set the output folder as the emulator/game's mod folder! :D"  />
+                                        </DockPanel>
+                                        <DockPanel DockPanel.Dock="Top">
+                                            <Border Name="BorderOutputFolder" CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
+                                                <TextBox x:Name="TextBoxOutputDirectory" Margin="2,0,2,0" Padding="4"  BorderThickness="0"  DockPanel.Dock="Left" Text="Where files will be saved to. :)"  IsEnabled="False" />
+                                            </Border>
+                                        </DockPanel>
+
+                                    </DockPanel>
+
+
+
+                                </DockPanel>
+                            </DockPanel>
                         </ContentControl>
 
-                        <ContentControl DockPanel.Dock="Top" Height="300" Margin="0,14,0,0" >
+                        <!--<ContentControl DockPanel.Dock="Top" Height="300" Margin="0,14,0,0" >
                             <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,0,0,0">
-                                <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
+                                <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
                                     <Label Content="Project Info" FontWeight="Bold" />
                                     <Button DockPanel.Dock="Right" Content="Load Project"  Height="30" MinWidth="140" Margin="0,3,10,2"  Width="100" ToolTip="Launch this workshop loading the selected project's data.  &#xD;Data is loaded using files in the output folder.  &#xD;If a file isn't there, it loads it from the input folder.  &#xD;If a file still isn't there, it probably just crashes :>"  />
                                 </DockPanel>
@@ -762,7 +837,9 @@
                                     <DockPanel DockPanel.Dock="Top" Margin="10,3,10,10"  >
                                         <Label Content="Project Name" DockPanel.Dock="Top" Margin="-3,0,0,0"  />
                                         <Border CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
-                                            --><!--Background="White"--><!--
+                                            -->
+                        <!--Background="White"-->
+                        <!--
                                             <TextBox x:Name="ProjectNameTextbox" KeyDown="ChangeProjectName" DockPanel.Dock="Top" Margin="0,0,0,0" Text=""  Padding="4"  BorderThickness="0"  ToolTip="The name of your mod / project. &#xD;This is not shared, and can be whatever you want."   />
                                         </Border>
 
@@ -804,16 +881,19 @@
 
                                 </DockPanel>
                             </DockPanel>
-                        </ContentControl>
+                        </ContentControl>-->
 
-                        <ContentControl DockPanel.Dock="Top" MinHeight="200" Margin="0,10,0,0" BorderThickness="2,0,2,2" BorderBrush="#575757">
+                        <ContentControl DockPanel.Dock="Bottom"  Margin="0,50,0,0" BorderThickness="2,0,2,2" BorderBrush="#575757">
                             <DockPanel DockPanel.Dock="Bottom" Background="{x:Null}" >
 
-                                <DockPanel LastChildFill="False" Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top" >
-                                    <Label Content="Project Resources" FontWeight="Bold" />
-                                    <Label Name="LabelForMissingProjectResources" Content="Some last known locations are wrong?" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,0,0,0" />
-                                </DockPanel>
-                                --><!--Note: Only local files/folders appear here, never child ones, because the user doesn't need to actually set them (thats the point of child items).--><!--
+                                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                    <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" >
+                                        <Label Content="Project Resources" FontWeight="Bold" />
+                                        <Label Name="LabelForMissingProjectResources" Content="Some last known locations are wrong?" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,0,0,0" />
+                                    </DockPanel>
+                                </Border>
+
+                                <!--Note: Only local files/folders appear here, never child ones, because the user doesn't need to actually set them (thats the point of child items).-->
                                 <DockPanel>
                                     <ScrollViewer VerticalScrollBarVisibility="Auto" >
                                         <DockPanel>
@@ -828,11 +908,34 @@
                             </DockPanel>
                         </ContentControl>
 
-                        
+                        <!--<ContentControl DockPanel.Dock="Top" MinHeight="200" Margin="0,10,0,0" BorderThickness="2,0,2,2" BorderBrush="#575757">
+                            <DockPanel DockPanel.Dock="Bottom" Background="{x:Null}" >
 
-                        --><!--//Style="{DynamicResource PixelBorder}"--><!--
-                        
-                    </DockPanel>-->
+                                <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
+                                    <Label Content="Project Resources" FontWeight="Bold" />
+                                    <Label Name="LabelForMissingProjectResources" Content="Some last known locations are wrong?" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,0,0,0" />
+                                </DockPanel>
+                                -->
+                        <!--Note: Only local files/folders appear here, never child ones, because the user doesn't need to actually set them (thats the point of child items).-->
+                        <!--
+                                <DockPanel>
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto" >
+                                        <DockPanel>
+                                            <DockPanel Name="ProjectEventResourcesPanel"  LastChildFill="False" DockPanel.Dock="Top" Background="{x:Null}" >
+
+                                            </DockPanel>
+                                        </DockPanel>
+
+                                    </ScrollViewer>
+                                </DockPanel>
+
+                            </DockPanel>
+                        </ContentControl>-->
+
+
+
+
+                    </DockPanel>
 
                 </Grid>
             </DockPanel>
@@ -845,4 +948,4 @@
 
 
     </Grid>
-</Window>
+</UserControl>

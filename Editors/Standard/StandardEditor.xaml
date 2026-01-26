@@ -6,14 +6,20 @@
              xmlns:local="clr-namespace:GameEditorStudio"
              mc:Ignorable="d" 
              d:DesignHeight="750" d:DesignWidth="1100">
-    <DockPanel>
+    
+
+    <DockPanel x:Name="BackPanel">
+        
+        <Grid x:Name="BackGrid" Background="Transparent">
+            
+        </Grid>
 
         <DockPanel Name="Hotbar" Margin="0,2,0,0" DockPanel.Dock="Top" >
             <DockPanel LastChildFill="False">
                 <Button Content=" I-ID " DockPanel.Dock="Left" Click="ToggleItemIDNumberVisibility" Margin="1,0,5,0" ToolTip="Toggles item ID numbers. &#xD;&#xA;ID numbers are shown using the real, internal game data order, not the order you arrange them in. &#xD;&#xA;If you didn't know, you can drag items around and reorder them!&#xD;&#xA;Anyway, because the ID numbers can become almost useless, you have the option to turn them off."/>
                 <Button Content="アA" Width="45" DockPanel.Dock="Left" x:Name="TranslationToggle" Style="{DynamicResource ButtonError}"  Click="ToggleTranslationPanel" Margin="0,0,2,0" ToolTip="Toggles the translation panel.&#xD;&#xA;This is an upcoming feature, and will be useful for people making english patches."/>
 
-                
+
             </DockPanel>
             <DockPanel LastChildFill="False" Margin="151,0,0,0">
                 <Button Content=" 🔍 " DockPanel.Dock="Left" x:Name="EntryAddressButton2"  Click="ToggleEntrySynbology" Margin="2,0,2,0" ToolTip="Toggles Symbology. &#xD;&#xA;Symbology tries to tell you information useful for discovering what an entry byte actually does. &#xD;&#xA;You can mouseover an entry symbol to learn more detailed information." Width="42"/>
@@ -23,13 +29,15 @@
                 <Button Content="👁"  DockPanel.Dock="Left" x:Name="EntryHiddenToggle"   Click="ToggleHiddenEntrys" Margin="2,0,2,0" ToolTip="Toggles the visibility of hidden entrys. &#xD;&#xA;When visable, a hidden entry will appear red. &#xA;&#xA;Note that entrys that represent text are forced to hidden &#xA;when the workshop opens, even if you set them not to be." Width="38"/>
 
                 <Button Content="👁️‍🗨️"  DockPanel.Dock="Left" x:Name="DebugShowALL"   Click="ToggleDebugShowALL" Margin="2,0,2,0" ToolTip="Makes EVERYTHING visable. &#xD;&#xA;This button only exists in debug mode.&#xA;Mostly it just shows merged entrys." Width="38"/>
-                
+
+                <Button Content="Help / Tutorial"  DockPanel.Dock="Right" x:Name="HelpButton"   Click="HelpButtonClicked" Margin="2,0,2,0" Width="161"/>
+
             </DockPanel>
         </DockPanel>
-        
+
 
         <Grid x:Name="MainGrid" DockPanel.Dock="Top">
-            
+
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -39,10 +47,10 @@
             <Grid Name="LeftGrid" Grid.Column="0" HorizontalAlignment="Left" Width="250" >
                 <local:TheLeftBar x:Name="LeftBar"  Grid.Column="0" />
             </Grid>
-            
-            
+
+
             <GridSplitter Style="{DynamicResource SplitterVertical}" Grid.Column="1" Width="10"/>
-            
+
             <Grid Grid.Column="2"  >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" MinHeight="60"/>
@@ -62,17 +70,17 @@
                         <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                             <DockPanel Style="{DynamicResource ContentBar}">
                                 <Label Content="Description" FontWeight="Bold" Margin="5,0,0,0" />
-                                <Button Content="Description Manager" HorizontalAlignment="Right" Margin="0,2,5,2" VerticalAlignment="Top"  Width="220" Height="30"/>
+                                <Button Content="Description Manager" Click="OpenDescriptionManager" HorizontalAlignment="Right" Margin="0,2,5,2" VerticalAlignment="Top"  Width="220" Height="30"/>
                             </DockPanel>
                         </Border>
-                        
+
                     </DockPanel>
                 </ContentControl>
 
             </Grid>
         </Grid>
 
-        
 
     </DockPanel>
+
 </UserControl>

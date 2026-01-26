@@ -34,34 +34,37 @@ namespace GameEditorStudio
     /// </summary>
     public partial class FileManager : System.Windows.Controls.UserControl
     {
-        Workshop TheWorkshop { get; set; }
+        public Workshop TheWorkshop { get; set; }
         public bool IsTextEditor = false;
         public Editor ThisEditor {  get; set; }
 
         public bool IsTextFileManager = false;
-
-        bool TESTBOOL = false;
-
-
-
 
 
 
         public FileManager()
         {
             InitializeComponent();
+           
 
             this.Loaded += new RoutedEventHandler(LoadEvent);
 
         }
 
+        
+
         public void LoadEvent(object sender, RoutedEventArgs e)
         {
-            var parentWindow = Window.GetWindow(this);
-            if (parentWindow is Workshop workshopWindow)
+            var workshopWindow = VisualTreeHelper.GetParent(this);
+            while (workshopWindow != null && workshopWindow is not Workshop)
             {
-                TheWorkshop = workshopWindow;
-                RefreshFileTree(); 
+                workshopWindow = VisualTreeHelper.GetParent(workshopWindow);
+            }
+
+            if (workshopWindow is Workshop workshopControl)
+            {
+                TheWorkshop = workshopControl;
+                RefreshFileTree();
 
                 if (IsTextEditor == true)
                 {
@@ -71,6 +74,22 @@ namespace GameEditorStudio
                     AddFileButton.Click += (s, e) => ButtonManageTextEditorFiles();
                 }
             }
+
+
+            //var parentWindow = Window.GetWindow(this);
+            //if (parentWindow is Workshop workshopWindow)
+            //{
+            //    TheWorkshop = workshopWindow;
+            //    RefreshFileTree();
+
+            //    if (IsTextEditor == true)
+            //    {
+            //        ItemsLabel.Content = "Text Files";
+            //        AddFileButton.Content = "Manage";
+            //        AddFileButton.Click -= ButtonAddFileToWorkshop;
+            //        AddFileButton.Click += (s, e) => ButtonManageTextEditorFiles();
+            //    }
+            //}
         }
 
         
@@ -96,7 +115,7 @@ namespace GameEditorStudio
 
             if (IsTextEditor == false)
             {
-                foreach (GameFile GameFile in TheWorkshop.WorkshopData.GameFiles.Values)//Database.GameFiles) // Update the FileTree with the current File List.
+                foreach (GameFile GameFile in TheWorkshop.WorkshopData.GameFiles.Values)//Error as part of the All 1 Window update
                 {
                     TreeViewItem TreeViewItem = new TreeViewItem();
 
@@ -279,8 +298,7 @@ namespace GameEditorStudio
         }
 
         private void ButtonManageTextEditorFiles() 
-        {
-            TESTBOOL = true;
+        {            
             TextEditorFileManager textEditorFileManager = new TextEditorFileManager(ThisEditor);
             ThisEditor.TextEditorData.MainGrid.Visibility = Visibility.Collapsed;
             ThisEditor.EditorBackPanel.Children.Add(textEditorFileManager);

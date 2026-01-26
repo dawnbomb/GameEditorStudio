@@ -23,6 +23,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.IO;
+using Microsoft.Win32;
 
 namespace GameEditorStudio
 {
@@ -89,6 +91,12 @@ namespace GameEditorStudio
             if (draggedItems.Count > 0)
             {
                 DragDrop.DoDragDrop(ItemsTree, draggedItems, DragDropEffects.Move);
+            }
+
+            if (clickedItem.HasItems)
+            {
+                clickedItem.IsExpanded = !clickedItem.IsExpanded;
+                //e.Handled = true; // prevent default double-click expand behavior
             }
         }
 
@@ -180,8 +188,8 @@ namespace GameEditorStudio
 
             originallySelectedItem = null;
             draggedItems = null;
-
-            foreach (TreeViewItem TreeViewItemK in EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.Items)
+            
+            foreach (TreeViewItem TreeViewItemK in LibraryGES.GetALLTreeViewItems(EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView))
             {
                 TheWorkshop.ItemNameBuilder(TreeViewItemK); //Doing this here to make sure folder item counts work as intended.
             }
@@ -370,6 +378,111 @@ namespace GameEditorStudio
                     item.IsSelected = true;
                 }
             }
+
+
+            ContextMenu contextMenu = new ContextMenu();
+            ItemsLabel.ContextMenu = contextMenu;
+
+            MenuItem MenuItemCreateNewItem = new MenuItem();
+            MenuItemCreateNewItem.Header = "Export current item names (in origonal name order) to a text file.";
+            contextMenu.Items.Add(MenuItemCreateNewItem);
+            MenuItemCreateNewItem.Click += (sender, e) => { ExportItemNamesOrigonalToTextFile(); };
+
+            MenuItem MenuItemCreateNewItem2 = new MenuItem();
+            MenuItemCreateNewItem2.Header = "Export current item names (in current name order) to a text file.";
+            contextMenu.Items.Add(MenuItemCreateNewItem2);
+            MenuItemCreateNewItem2.Click += (sender, e) => { ExportItemNamesCurrentToTextFile(); };
+            //MenuItemCreateNewItem2.Click += (sender, e) => TheWorkshop.ExportItemNamesCurrentToTextFile(EditorClass);
+        }
+
+        private void ExportItemNamesOrigonalToTextFile()
+        {
+            List<ItemInfo> allItems = new List<ItemInfo>();
+
+            Stack<TreeViewItem> stack = new Stack<TreeViewItem>();
+            for (int i = ItemsTree.Items.Count - 1; i >= 0; i--)
+                stack.Push((TreeViewItem)ItemsTree.Items[i]);
+
+            while (stack.Count > 0)
+            {
+                TreeViewItem item = stack.Pop();
+                ItemInfo itemInfo = item.Tag as ItemInfo;
+                if (itemInfo != null && !itemInfo.IsFolder)
+                {
+                    allItems.Add(itemInfo);
+                }
+
+                // Add children to stack
+                for (int i = item.Items.Count - 1; i >= 0; i--)
+                    stack.Push((TreeViewItem)item.Items[i]);
+            }
+
+            // Sort by ItemIndex
+            var sortedItems = allItems.OrderBy(ii => ii.ItemIndex);
+
+            // Build output
+            string Output = string.Join(Environment.NewLine, sortedItems.Select(ii => ii.ItemName.TrimEnd('\0')));
+
+            // Ask user where to save
+            SaveFileDialog dialog = new SaveFileDialog
+            {
+                Title = "Save Item Names (using origonal name order)",
+                Filter = "Text File (*.txt)|*.txt",
+                DefaultExt = ".txt",
+                FileName = "ItemNames.txt"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                File.WriteAllText(dialog.FileName, Output);
+            }
+        }
+
+        private void ExportItemNamesCurrentToTextFile()
+        {
+            string Output = "";
+
+            Stack<TreeViewItem> stack = new Stack<TreeViewItem>();
+
+            // seed with root items (push in reverse so top item is processed first)
+            for (int i = ItemsTree.Items.Count - 1; i >= 0; i--)
+            {
+                stack.Push((TreeViewItem)ItemsTree.Items[i]);
+            }
+
+            while (stack.Count > 0)
+            {
+                TreeViewItem item = stack.Pop();
+
+                ItemInfo itemInfo = item.Tag as ItemInfo;
+                if (itemInfo != null)
+                {
+                    // still skip folders
+                    if (itemInfo.IsFolder == false)
+                    {
+                        Output += itemInfo.ItemName.TrimEnd('\0') + Environment.NewLine;
+                    }
+                }
+
+                // push children in reverse so they maintain visual order
+                for (int i = item.Items.Count - 1; i >= 0; i--)
+                {
+                    stack.Push((TreeViewItem)item.Items[i]);
+                }
+            }
+
+            SaveFileDialog dialog = new SaveFileDialog
+            {
+                Title = "Save Item Names (using current name order)",
+                Filter = "Text File (*.txt)|*.txt",
+                DefaultExt = ".txt",
+                FileName = "ItemNames.txt"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                File.WriteAllText(dialog.FileName, Output);
+            }
         }
 
 
@@ -431,7 +544,8 @@ namespace GameEditorStudio
 
             }
 
-            foreach (TreeViewItem TreeViewItemK in EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.Items)
+            
+            foreach (TreeViewItem TreeViewItemK in LibraryGES.GetALLTreeViewItems(EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView))
             {
                 TheWorkshop.ItemNameBuilder(TreeViewItemK); //Doing this again here to make sure folder item counts work as intended.
             }
@@ -674,32 +788,6 @@ namespace GameEditorStudio
         }
 
 
-
-
-        //private void ToggleItemIDNumberVisibility(object sender, RoutedEventArgs e)
-        //{
-        //    if (Properties.Settings.Default.ShowItemIndex == "Hide")
-        //    {
-        //        Properties.Settings.Default.ShowItemIndex = "Show";
-
-        //    }
-        //    else if (Properties.Settings.Default.ShowItemIndex == "Show")
-        //    {
-        //        Properties.Settings.Default.ShowItemIndex = "Hide";
-
-        //    }
-        //    foreach (var editor in Database.GameEditors)
-        //    {
-        //        if (editor.Value.EditorType == "DataTable")
-        //        {
-        //            foreach (TreeViewItem TreeItem in editor.Value.SWData.EditorLeftDockPanel.TreeView.Items)
-        //            {
-        //                TheWorkshop.ItemNameBuilder(TreeItem);
-        //            }
-        //        }
-
-        //    }
-        //}
 
         private void UpdateNameCharacterCount() 
         {

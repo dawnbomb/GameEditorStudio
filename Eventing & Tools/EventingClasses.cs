@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -51,7 +52,7 @@ namespace GameEditorStudio
     }
 
 
-    public class Command //Info for each command. This is imported from a google sheet.
+    public class Command //Info for each command in the master CommandsList. 
     {
         public string DisplayName { get; set; } = "New Command"; //The display name of the command that appears in the Tools dropdown Menu, or the Event Commands menu.
         public string Description { get; set; } = "";
@@ -108,6 +109,11 @@ namespace GameEditorStudio
 
     public class Event //An entire event (the kind the user creates)
     {
+        public Version CreatedVersion { get; set; } = new Version(0, 0); //The GES version this was first created with.
+        public string CreatedDate { get; set; } = ""; //The date this was first created.
+        public Version SavedVersion { get; set; } = new Version(0, 0); //The last GES version this was used/saved with.
+        public string SavedDate { get; set; } = ""; // The date this was last used/saved.
+
         public string DisplayName { get; set; } = "New Event";
         public string Note { get; set; } = "";
         public string Tooltip { get; set; } = "";
@@ -129,11 +135,23 @@ namespace GameEditorStudio
 
     }
 
+    
     public class EventResource //A workshop can define any number of these resources, and events can use them to automate tasks. Some of these make a projecteventresource as well. saves to XML. Not a child of anything?
     {
         //As a reminder this is NOT a project event resource.
-
-        public string Name { get; set; } = ""; //A Display name for the Event Resource. This is not the name of the actual thing being targeted. For organization purposes only / never referenced to do anything.
+        public string _name;
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (_name != value)
+                {
+                    _name = value;
+                    OnPropertyChanged();
+                }
+            }
+        } //A Display name for the Event Resource. This is not the name of the actual thing being targeted. For organization purposes only / never referenced to do anything.
         public string Location { get; set; } = ""; //The name of actual target File or Folder itself. IE Location. Sometimes this is only a name, and somethings it's the full location path. 
         public bool RequiredName { get; set; } = false; //Decides if the exact Local file / folder name is explicitly required or now. true or false.
         public string Key { get; set; } = ""; //a completly unique identifier.          
@@ -144,6 +162,11 @@ namespace GameEditorStudio
 
 
         public enum ResourceTypes { File, Folder, WTools, CMDText }
+
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
     

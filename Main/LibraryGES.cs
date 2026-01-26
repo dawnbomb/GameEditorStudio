@@ -17,8 +17,8 @@ namespace GameEditorStudio
     public static class LibraryGES
     {        
         
-        public static string VersionDate { get; set; } = "Augest 17 2025";
-        public static Version VersionNumber { get; set; } = new Version(0, 2, 0); //Version Numbers (in order) are Major.Minor.Build.Revision
+        public static string VersionDate { get; set; } = "January 26 2026";
+        public static Version VersionNumber { get; set; } = new Version(0, 2, 8); //Version Numbers (in order) are Major.Minor.Build.Revision
         //Major is big releases.
         //Minor is new features / content.
         //Build is for Bugfixes or small changes.
@@ -548,14 +548,90 @@ namespace GameEditorStudio
         }
 
 
+        public static List<TreeViewItem> GetALLTreeViewItems(TreeView treeView) 
+        {
+            List<TreeViewItem> allItems = new List<TreeViewItem>();
+
+            AddItems(treeView.Items);
+            void AddItems(ItemCollection items)
+            {
+                foreach (TreeViewItem item in items)
+                {
+                    allItems.Add(item); // Add the current item
+                    AddItems(item.Items); // Recursively add children items
+                }
+            }
+            
+            return (allItems);
+        }
+
+
+        public static string PathQuoter(string input) //Is the input string looks like a path, surround it in quotes.
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return input;
+
+            // Already quoted
+            if (input.StartsWith("\"") && input.EndsWith("\""))
+                return input;
+
+            // Heuristics to decide if it's a path
+            bool looksLikePath =
+                input.Contains(Path.DirectorySeparatorChar.ToString()) ||
+                input.Contains(Path.AltDirectorySeparatorChar.ToString()) ||
+                Path.IsPathRooted(input);
+
+            if (looksLikePath)
+                return $"\"{input}\"";
+
+            return input;
+        }
 
 
 
+        public static Workshop GetParentWorkshop(UserControl userControl) 
+        {
+            var workshopWindow = VisualTreeHelper.GetParent(userControl);
+            while (workshopWindow != null && workshopWindow is not Workshop)
+            {
+                workshopWindow = VisualTreeHelper.GetParent(workshopWindow);
+            }
 
+            if (workshopWindow is Workshop workshopControl)
+            {
+                return workshopControl;
+            }
 
+            return null;
+        }
 
-        
+        public static void RemoveFromParent(UIElement element)
+        {
+            if (element == null) return;
 
+            var parent = LogicalTreeHelper.GetParent(element);
+
+            switch (parent)
+            {
+                case Panel panel:
+                    panel.Children.Remove(element);
+                    break;
+
+                case ContentControl contentControl:
+                    if (contentControl.Content == element)
+                        contentControl.Content = null;
+                    break;
+
+                case Decorator decorator:
+                    if (decorator.Child == element)
+                        decorator.Child = null;
+                    break;
+
+                case ItemsControl itemsControl:
+                    itemsControl.Items.Remove(element);
+                    break;
+            }
+        }
 
 
     }

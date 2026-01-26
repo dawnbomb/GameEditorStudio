@@ -24,13 +24,26 @@ namespace GameEditorStudio
         public TermsAndConditions()
         {
             InitializeComponent();
+            VNum.Content = "v" + Properties.Settings.Default.ToSVersion;
+
+            if (Properties.Settings.Default.ToSVersion == LibraryGES.VersionNumber.ToString()) 
+            {
+                CloseToS();
+            }
         }
 
         private void ButtonIAgreeToToS(object sender, RoutedEventArgs e)
+        {   
+            Properties.Settings.Default.ToSVersion = LibraryGES.VersionNumber.ToString();
+            Properties.Settings.Default.Save();
+
+            CloseToS();
+        }
+
+        private void CloseToS() 
         {
             this.Visibility = Visibility.Collapsed;
         }
-
         
     }
 }

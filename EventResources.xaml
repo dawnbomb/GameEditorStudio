@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameEditorStudio"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="1000">
+             MinHeight="100" >
     <DockPanel Margin="0,0,0,0" Style="{DynamicResource DockList}" MinHeight="200">
         <Border  Height="42" DockPanel.Dock="Top">
             <DockPanel >
@@ -30,12 +30,13 @@ Like trying to run a folder as a file for a emulator, because the resource was p
             </DockPanel>
         </Border>
 
-        <DockPanel Style="{DynamicResource ContentBar}"   DockPanel.Dock="Bottom" Background="#FF1D0303">
-            <Label Content="Reminder: Events using resources need you to also set the PROJECT'S resource locations!" FontWeight="Bold" DockPanel.Dock="Bottom" Foreground="#FFFFAAAA" />
+        <!--<DockPanel Style="{DynamicResource ContentBar}"   DockPanel.Dock="Bottom" Background="#FF1D0303">
+            --><!--<Label Content="Reminder: Events using resources need you to also set the PROJECT'S resource locations!" FontWeight="Bold" DockPanel.Dock="Bottom" Foreground="#FFFFAAAA" />-->
+            <!--<Label Content="Note: The child resource dropdown not updating the parent name is just a visual bug. " FontWeight="Bold" DockPanel.Dock="Bottom" Foreground="#FFFFAAAA" />--><!--
             <DockPanel DockPanel.Dock="Left" LastChildFill="False"  Margin="0,0,0,0" Background="Transparent">
             </DockPanel>
-            <!--<Label Content="(skipuntil your ready for the eventing system)" DockPanel.Dock="Right" HorizontalAlignment="Right"/>-->
-        </DockPanel>
+            --><!--<Label Content="(skipuntil your ready for the eventing system)" DockPanel.Dock="Right" HorizontalAlignment="Right"/>--><!--
+        </DockPanel>-->
         <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Top" >
             <DockPanel Name="ResourcePanel" DockPanel.Dock="Top" LastChildFill="False" Background="Transparent">
 

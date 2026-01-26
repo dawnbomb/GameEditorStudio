@@ -54,7 +54,7 @@ namespace GameEditorStudio
     //
     // the bottom is whatever the newest random shit is. 
 
-    public partial class Workshop : Window
+    public partial class Workshop : UserControl
     {
         //This is a pertial class.              
         
@@ -89,7 +89,6 @@ namespace GameEditorStudio
         public Workshop(WorkshopData mydata, ProjectData Project, bool IsWorkshopPreviewModeActive = false) //GameLibrary GameLibrary
         {
             InitializeComponent();
-            this.Title = "Game Editor Studio     Version: " + LibraryGES.VersionNumber + "   ( " + LibraryGES.VersionDate + " )";
 
             WorkshopData = mydata;            
             WorkshopData.ProjectDataItem = Project;  
@@ -97,11 +96,21 @@ namespace GameEditorStudio
 
             IsPreviewMode = IsWorkshopPreviewModeActive;
 
+
+            TheCrossReference = CrossReferenceInfo;
+            TheCrossReference.TheWorkshop = this;
+
+            TheDocumentsUserControl = DocumentsControl;
+            TheDocumentsUserControl.TheWorkshop = this;
+            TheDocumentsUserControl.Database = WorkshopData;
+
+            FileManager.TheWorkshop = this;
+
             #if DEBUG
 
-            #else
+#else
 
-            #endif
+#endif
 
             foreach (Command command in Database.Commands)
             {
@@ -141,12 +150,13 @@ namespace GameEditorStudio
                 PropertiesEntryType.Items.Add(new ComboBoxItem { Content = type.ToString() });
             }
 
-            LoadWorkshopDatabaseCode LoadDatabase = new();
+            
             try
             {
                 if (IsPreviewMode == false)
                 {
-                    LoadDatabase.LoadGameFilesIntoDatabase(this, WorkshopData); //First we load workshop files into the database. }
+                    FileLoading fileLoading = new();
+                    fileLoading.LoadAllGameFilesIntoWorkshopDatabase(WorkshopData); //First we load workshop files into the database. }
                 };
             }
             catch
@@ -166,13 +176,15 @@ namespace GameEditorStudio
 
                 Application.Current.Shutdown();
                 return;
-            }            
-            LoadDatabase.LoadEditors(this, WorkshopData); //Then we load the editor info into the database.
+            }
+            LoadWorkshopDatabaseCode LoadDatabase = new();
+            LoadDatabase.LoadEveryEditorXMLIntoWorkshopData(this, WorkshopData); //Then we load the editor info into the database.
+            LoadDatabase.GenerateAllEditorUIs(WorkshopData);
             //The above method triggers CreateEditor in a loop, creating every editor using the database information.
-                       
-            
-            
-            
+
+
+
+
 
             //Finally we make sure everything is hidden. This is mostly so i don't have to make sure vision is collapsed all the time when developing the program.
             foreach (KeyValuePair<string, Editor> editor in WorkshopData.GameEditors)
@@ -320,19 +332,21 @@ namespace GameEditorStudio
             //}
 
 
+            ProjectNameTextbox.Text = WorkshopData.ProjectDataItem.ProjectName;
+            TextBoxInputDirectory.Text = WorkshopData.ProjectDataItem.ProjectInputDirectory;
+            TextBoxOutputDirectory.Text = WorkshopData.ProjectDataItem.ProjectOutputDirectory;
+            RefreshProjectEventResourcesUI(WorkshopData.ProjectDataItem);
+
+            MenusForToolsAndEvents.MenuWorkshopSetup(this);
 
         }
-
-
-
-
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////HUD//////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        
+
 
 
 
@@ -357,7 +371,7 @@ namespace GameEditorStudio
 
 
 
-        public void UpdateEntryDecorations() 
+        public void UpdateEntryDecorationsForAllEditors() 
         {
             foreach (var editor in WorkshopData.GameEditors.Values)
             {
@@ -696,21 +710,56 @@ namespace GameEditorStudio
             //}
         }
 
-        private void OpenProjectInput(object sender, RoutedEventArgs e)
+        private void OpenProjectFolder(object sender, RoutedEventArgs e)
+        {
+            MethodData MethodData = new();
+            MethodData.WorkshopData = WorkshopData;
+            CommandMethodsClass.OpenProjectFolder(MethodData);
+        }
+
+        private void OpenProjectInputFolder(object sender, RoutedEventArgs e)
         {
             MethodData MethodData = new();
             MethodData.WorkshopData = WorkshopData;
             CommandMethodsClass.OpenInputFolder(MethodData);
         }
-
-        private void OpenProjectOutput(object sender, RoutedEventArgs e)
+       
+        private void OpenProjectOutputFolder(object sender, RoutedEventArgs e)
         {
             MethodData MethodData = new();
             MethodData.WorkshopData = WorkshopData;
             CommandMethodsClass.OpenOutputFolder(MethodData);
         }
 
-        
+        private void SetProjectOutputFolder(object sender, RoutedEventArgs e)
+        {
+            if (WorkshopData.ProjectDataItem == null) { return; }
+
+            VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog(); //This starts folder selection using Ookii.Dialogs.WPF NuGet Package
+            FolderSelect.Description = "Please select where files will save to."; //This sets a description to help remind the user what their looking for.
+            FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.        
+            {   //Smart seleting the folder to start in.
+                string outputPath = TextBoxOutputDirectory.Text + "\\";
+                DirectoryInfo? current = new DirectoryInfo(outputPath);
+                while (current != null && !current.Exists)
+                {
+                    current = current.Parent;
+                }
+                if (current != null)
+                {
+                    FolderSelect.SelectedPath = current.FullName + "\\";
+                }
+            }
+            if ((bool)FolderSelect.ShowDialog(Window.GetWindow(this))) //This triggers the folder selection screen, and if the user does not cancel out...
+            {                
+                WorkshopData.ProjectDataItem.ProjectOutputDirectory = FolderSelect.SelectedPath;
+                TextBoxOutputDirectory.Text = FolderSelect.SelectedPath;
+
+                UpdateProjectXML(WorkshopData.ProjectDataItem);//ProjectName, Input, Output     
+
+            }
+        }
+
 
         private void SetProjectInputDirectory(object sender, RoutedEventArgs e)
         {
@@ -786,39 +835,223 @@ namespace GameEditorStudio
             //}
         }
 
-        private void SetProjectOutputDirectory(object sender, RoutedEventArgs e)
+
+
+        public void RefreshProjectEventResourcesUI(ProjectData UserProject)
         {
-            //if (ProjectsSelector.SelectedIndex < 0) //|| LibraryTreeOfWorkshops.SelectedItem == null
-            //{
-            //    return;
-            //}
+            LabelForMissingProjectResources.Visibility = Visibility.Collapsed;
+            ProjectEventResourcesPanel.Children.Clear();
+
+            if (UserProject == null)
+            {
+                return;
+            }
+
+            foreach (EventResource WorkshopEventResource in WorkshopData.WorkshopEventResources)
+            {
+                if (WorkshopEventResource.IsChild == true)
+                {
+                    continue;
+                }
+                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.CMDText)
+                {
+                    continue;
+                }
 
 
-            //VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog(); //This starts folder selection using Ookii.Dialogs.WPF NuGet Package
-            //FolderSelect.Description = "Please select where files will save to."; //This sets a description to help remind the user what their looking for.
-            //FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.        
-            //{   //Smart seleting the folder to start in.
-            //    string outputPath = TextBoxOutputDirectory.Text + "\\";
-            //    DirectoryInfo? current = new DirectoryInfo(outputPath);
-            //    while (current != null && !current.Exists)
-            //    {
-            //        current = current.Parent;
-            //    }
-            //    if (current != null)
-            //    {
-            //        FolderSelect.SelectedPath = current.FullName + "\\";
-            //    }
-            //}
-            //if ((bool)FolderSelect.ShowDialog(this)) //This triggers the folder selection screen, and if the user does not cancel out...
-            //{
-            //    ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
-            //    UserProject.ProjectOutputDirectory = FolderSelect.SelectedPath;
-            //    TextBoxOutputDirectory.Text = FolderSelect.SelectedPath;
-
-            //    UpdateProjectXML(UserProject);//ProjectName, Input, Output                
 
 
-            //}
+                DockPanel MainPanel = new();
+                ProjectEventResourcesPanel.Children.Add(MainPanel);
+                DockPanel.SetDock(MainPanel, Dock.Top);
+                MainPanel.Margin = new Thickness(4, 2, 4, 7);
+
+                DockPanel TopPanel = new();
+                DockPanel.SetDock(TopPanel, Dock.Top);
+                MainPanel.Children.Add(TopPanel);
+                TopPanel.LastChildFill = false;
+
+                DockPanel BottomPanel = new();
+                DockPanel.SetDock(BottomPanel, Dock.Top);
+                MainPanel.Children.Add(BottomPanel);
+
+
+
+                Label Label = new();
+                TopPanel.Children.Add(Label);
+                DockPanel.SetDock(Label, Dock.Left);
+                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File && WorkshopEventResource.IsChild == false)
+                { Label.Content = "🗎   " + WorkshopEventResource.Name; }
+                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false)
+                { Label.Content = "📁 " + WorkshopEventResource.Name; }
+                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.CMDText && WorkshopEventResource.IsChild == false)
+                { Label.Content = "✎ " + WorkshopEventResource.Name; }
+
+                Button OpenButton = new();
+                TopPanel.Children.Add(OpenButton);
+                DockPanel.SetDock(OpenButton, Dock.Right);
+                OpenButton.Height = 30;
+                OpenButton.Content = " Open ";
+
+                Button BrowseButton = new();
+                TopPanel.Children.Add(BrowseButton);
+                DockPanel.SetDock(BrowseButton, Dock.Right);
+                BrowseButton.Width = 100;
+                BrowseButton.Height = 30;
+                BrowseButton.Margin = new Thickness(0, 0, 4, 0);
+                BrowseButton.Content = "Browse...";
+
+
+
+                //< Border CornerRadius = "8" BorderBrush = "Black"  BorderThickness = "1.5" Padding = "2" Background = "#FF18191B" >  < !--Background = "White"-- >
+                //        < TextBox x: Name = "ProjectNameTextbox" DockPanel.Dock = "Top" Margin = "0,0,0,0" Text = "New Project" KeyDown = "ChangeProjectName" Padding = "4"  BorderThickness = "0" />
+                // </ Border >
+
+                Border TextBorder = new Border();
+                BottomPanel.Children.Add(TextBorder);
+                TextBorder.CornerRadius = new CornerRadius(8);
+                TextBorder.BorderBrush = Brushes.Black;
+                TextBorder.BorderThickness = new Thickness(1.5);
+                TextBorder.Padding = new Thickness(2);
+                TextBorder.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#FF18191B"));
+
+                TextBox Textbox = new TextBox();
+                TextBorder.Child = Textbox;
+                Textbox.Padding = new Thickness(4);
+                Textbox.BorderThickness = new Thickness(0);
+                Textbox.Margin = new Thickness(0);
+                DockPanel.SetDock(Textbox, Dock.Left);
+                Textbox.IsEnabled = false;
+                foreach (ProjectEventResource ProjectEventData in UserProject.ProjectEventResources) //Copy 3
+                {
+                    if (WorkshopEventResource.Key == ProjectEventData.Key)
+                    {
+                        Textbox.Text = ProjectEventData.Location;
+                        TextBorder.ToolTip = ProjectEventData.Location;
+                    }
+
+                }
+
+
+                OpenButton.Click += (sender, e) =>
+                {
+                    if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File && WorkshopEventResource.IsChild == false)
+                    {
+                        LibraryGES.OpenFileFolder(Textbox.Text);
+                    }
+                    else if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false)
+                    {
+                        LibraryGES.OpenFolder(Textbox.Text);
+                    }
+                };
+
+                Label MissingLabel = new();
+                TopPanel.Children.Add(MissingLabel);
+                MissingLabel.Content = "Location Error!";
+                MissingLabel.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#FF440A0A"));
+                MissingLabel.Foreground = (SolidColorBrush)(new BrushConverter().ConvertFrom("#FFFF1800"));
+                MissingLabel.Padding = new Thickness(3, 1, 3, 3);
+                MissingLabel.BorderThickness = new Thickness(0);
+                MissingLabel.Height = 25;
+                MissingLabel.Margin = new Thickness(10, 0, 0, 0);
+                MissingLabel.Visibility = Visibility.Collapsed;
+                DockPanel.SetDock(Textbox, Dock.Left);
+                {
+                    //This all deals with making it clear to the user that resources are not set properly. 
+                    if (Textbox.Text != "" && !File.Exists(Textbox.Text) && WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File && WorkshopEventResource.IsChild == false) //If file does NOT exist!
+                    {
+                        LabelForMissingProjectResources.Visibility = Visibility.Visible;
+                        MissingLabel.Visibility = Visibility.Visible;
+
+                    }
+                    if (Textbox.Text != "" && !Directory.Exists(Textbox.Text) && WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false) //If folder does NOT exist!
+                    {
+                        LabelForMissingProjectResources.Visibility = Visibility.Visible;
+                        MissingLabel.Visibility = Visibility.Visible;
+
+                    }
+                    string finalPart = Path.GetFileName(Textbox.Text);
+                    if (Textbox.Text != "" && File.Exists(Textbox.Text) && WorkshopEventResource.RequiredName == true && finalPart != WorkshopEventResource.Location && WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File && WorkshopEventResource.IsChild == false) //If file does NOT exist!
+                    {
+                        LabelForMissingProjectResources.Visibility = Visibility.Visible;
+                        MissingLabel.Visibility = Visibility.Visible;
+
+                    }
+                    if (Textbox.Text != "" && Directory.Exists(Textbox.Text) && WorkshopEventResource.RequiredName == true && finalPart != WorkshopEventResource.Location && WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false) //If folder does NOT exist!
+                    {
+                        LabelForMissingProjectResources.Visibility = Visibility.Visible;
+                        MissingLabel.Visibility = Visibility.Visible;
+
+                    }
+                }
+
+
+
+                BrowseButton.Click += (sender, e) =>
+                {
+                    string TheString = "";
+
+                    if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File && WorkshopEventResource.IsChild == false)
+                    { TheString = LibraryGES.GetSelectedFilePath("Select a File"); }  //TYPE IF
+                    if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false)
+                    { TheString = LibraryGES.GetSelectedFolderPath("Select a Folder"); }  //TYPE IF
+
+
+
+                    if (TheString != null && TheString != "")
+                    {
+                        if (WorkshopEventResource.RequiredName == true)
+                        {
+                            if (Path.GetFileName(TheString) == WorkshopEventResource.Location)
+                            {
+                                Textbox.Text = TheString;
+
+
+                                foreach (ProjectEventResource ProjectEventResource in UserProject.ProjectEventResources) //Copy 1
+                                {
+                                    if (WorkshopEventResource.Key == ProjectEventResource.Key)
+                                    {
+                                        ProjectEventResource.Location = TheString;
+                                        MissingLabel.Visibility = Visibility.Collapsed;
+
+                                        CommandMethodsClass.SaveProjectXML(UserProject, WorkshopData);
+                                    }
+
+                                }
+
+
+                            }
+                            else
+                            {
+                                PixelWPF.LibraryPixel.NotificationNegative("Wrong File/Folder Selected", "This resource is set to require a specific name." +
+                                    "\n\nRequired Name:" +
+                                    "\n" + WorkshopEventResource.Location);
+                                //MessageBox.Show("You selected the wrong resource." +
+                                //    "\nSometimes a resource can require an exact matching name, this is one of those times." +
+                                //"\nYou must " + TheString + " with the name " + WorkshopEventResource.RequiredName, "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                            }
+                        }
+                        else
+                        {
+                            Textbox.Text = TheString;
+                            foreach (ProjectEventResource ProjectEventResource in UserProject.ProjectEventResources) //Copy 2
+                            {
+                                if (WorkshopEventResource.Key == ProjectEventResource.Key)
+                                {
+                                    ProjectEventResource.Location = TheString;
+                                    MissingLabel.Visibility = Visibility.Collapsed;
+                                    CommandMethodsClass.SaveProjectXML(UserProject, WorkshopData);
+                                }
+
+                            }
+                        }
+
+
+                    }
+
+                };
+
+            }
         }
 
 
@@ -1065,7 +1298,8 @@ namespace GameEditorStudio
                 EditorClass.StandardEditorData.NameTableStart = Num;
                 CharacterSetManager CharacterManager = new();
                 CharacterManager.Decode(this, EditorClass, "Items");
-                foreach (TreeViewItem TreeViewItem in EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.Items)
+                
+                foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView))
                 {
                     ItemInfo ItemInfo = TreeViewItem.Tag as ItemInfo;
                     ItemNameBuilder(TreeViewItem);
@@ -1090,7 +1324,9 @@ namespace GameEditorStudio
             EditorClass.StandardEditorData.NameTableCharacterSet = PropertiesEditorNameTableCharacterSetDropdown.Text;
             CharacterSetManager CharacterManager = new();
             CharacterManager.Decode(this, EditorClass, "Items");
-            foreach (TreeViewItem TreeViewItem in EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.Items)
+                       
+
+            foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView))
             {
                 ItemInfo ItemInfo = TreeViewItem.Tag as ItemInfo;
                 ItemNameBuilder(TreeViewItem);
@@ -1129,7 +1365,7 @@ namespace GameEditorStudio
                 //SetAscii.DecodeAscii(EditorClass, EditorClass.NameTableFile.FileBytes);
                 CharacterSetManager CharacterManager = new();
                 CharacterManager.Decode(this, EditorClass, "Items");
-                foreach (TreeViewItem TreeViewItem in EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.Items)
+                foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView))
                 {
                     ItemInfo ItemInfo = TreeViewItem.Tag as ItemInfo;
                     ItemNameBuilder(TreeViewItem);
@@ -1168,8 +1404,8 @@ namespace GameEditorStudio
                 //CharacterSetAscii SetAscii = new();
                 //SetAscii.DecodeAscii(EditorClass, EditorClass.NameTableFile.FileBytes);
                 CharacterSetManager CharacterManager = new();
-                CharacterManager.Decode(this, EditorClass, "Items");
-                foreach (TreeViewItem TreeViewItem in EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.Items)
+                CharacterManager.Decode(this, EditorClass, "Items");                
+                foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView))
                 {
                     ItemInfo ItemInfo = TreeViewItem.Tag as ItemInfo;
                     ItemNameBuilder(TreeViewItem);
@@ -1284,8 +1520,8 @@ namespace GameEditorStudio
                     //CharacterSetAscii Encoding = new();
                     //Encoding.DecodeAscii(EditorClass, EditorClass.NameTableFile.FileBytes);
                     CharacterSetManager CharacterManager = new();
-                    CharacterManager.Decode(this, EditorClass, "Items");
-                    foreach (TreeViewItem TreeViewItem in EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.Items)
+                    CharacterManager.Decode(this, EditorClass, "Items");                    
+                    foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView))
                     {
                         ItemInfo ItemInfo = TreeViewItem.Tag as ItemInfo;
                         ItemNameBuilder(TreeViewItem);
@@ -1522,7 +1758,7 @@ namespace GameEditorStudio
             NewRow.SWData.CategoryList.Insert(TheIndex, NewRow);
 
 
-            GenerateStandardEditor CreateSWEditorCode = new();
+            StandardEditorSetup CreateSWEditorCode = new();
             CreateSWEditorCode.CreateCategory(NewRow);
 
 
@@ -1543,7 +1779,7 @@ namespace GameEditorStudio
             NewRow.SWData.CategoryList.Insert(TheIndex, NewRow);
 
 
-            GenerateStandardEditor CreateSWEditorCode = new();
+            StandardEditorSetup CreateSWEditorCode = new();
             CreateSWEditorCode.CreateCategory(NewRow);
 
 
@@ -1652,7 +1888,7 @@ namespace GameEditorStudio
             Column.ColumnRow.ColumnList.Insert(TheIndex, Column);
 
 
-            GenerateStandardEditor CreateSWEditorCode = new();
+            StandardEditorSetup CreateSWEditorCode = new();
             CreateSWEditorCode.CreateColumn(Column);
 
         }
@@ -1666,7 +1902,7 @@ namespace GameEditorStudio
             Column.ColumnRow.ColumnList.Insert(TheIndex, Column);
 
 
-            GenerateStandardEditor CreateSWEditorCode = new();
+            StandardEditorSetup CreateSWEditorCode = new();
             CreateSWEditorCode.CreateColumn(Column);
 
         }
@@ -1793,6 +2029,7 @@ namespace GameEditorStudio
         private void HideNameCheckboxChecked(object sender, RoutedEventArgs e)
         {
             EntryClass.IsNameHidden = true;
+            PropertiesNameBox.IsEnabled = false;
             StandardEditorMethods.UpdateEntryName(EntryClass);
             //EntryClass.EntryLabel.Visibility = Visibility.Collapsed;
         }
@@ -1800,6 +2037,7 @@ namespace GameEditorStudio
         private void HideNameCheckboxUnchecked(object sender, RoutedEventArgs e)
         {
             EntryClass.IsNameHidden = false;
+            PropertiesNameBox.IsEnabled = true;
             StandardEditorMethods.UpdateEntryName(EntryClass);
             //EntryClass.EntryLabel.Visibility = Visibility.Visible;
         }
@@ -2175,7 +2413,7 @@ namespace GameEditorStudio
             }//End of IF
 
             UpdateSymbology(EntryClass);
-            UpdateEntryDecorations();
+            UpdateEntryDecorationsForAllEditors();
             
         }
 
@@ -2526,8 +2764,8 @@ namespace GameEditorStudio
             foreach (var editor in WorkshopData.GameEditors)
             {
                 if (editor.Value.EditorType == "DataTable")
-                {
-                    foreach (TreeViewItem TreeItem in editor.Value.StandardEditorData.EditorLeftDockPanel.TreeView.Items)
+                {   
+                    foreach (TreeViewItem TreeItem in LibraryGES.GetALLTreeViewItems(editor.Value.StandardEditorData.EditorLeftDockPanel.TreeView))
                     {
                         ItemNameBuilder(TreeItem);
                     }
@@ -3000,6 +3238,12 @@ namespace GameEditorStudio
             {
                 if (tool.Key == "638835886790069008-583706364-23567425")
                 {
+                    if (!File.Exists(tool.Location))
+                    {
+                        PixelWPF.LibraryPixel.Notification("HxD Hex Editor is not available!", "To use HxD Hex Editor with Game Editor Studio, go to the Tools menu and set the location of HxD Hex Editor. ");
+                        return;
+                    }
+
                     if (EditorClass.StandardEditorData.FileNameTable == null)
                     {
                         return;
@@ -3032,6 +3276,13 @@ namespace GameEditorStudio
             {
                 if (tool.Key == "638835886790068999-832829574-642210583")
                 {
+                    if (!File.Exists(tool.Location)) 
+                    {
+                        PixelWPF.LibraryPixel.Notification("010 Editor is not available!","To use 010 Editor with Game Editor Studio, go to the Tools menu and set the location of 010 Editor. ");
+                        return;
+                    }
+                    
+
                     if (EditorClass.StandardEditorData.FileNameTable == null)
                     {
                         return;
@@ -3063,6 +3314,12 @@ namespace GameEditorStudio
             {
                 if (tool.Key == "638835886790069008-583706364-23567425")
                 {
+                    if (!File.Exists(tool.Location))
+                    {
+                        PixelWPF.LibraryPixel.Notification("HxD Hex Editor is not available!", "To use HxD Hex Editor with Game Editor Studio, go to the Tools menu and set the location of HxD Hex Editor. ");
+                        return;
+                    }
+
                     if (EditorClass.StandardEditorData.FileDataTable == null)
                     {
                         return;
@@ -3094,6 +3351,12 @@ namespace GameEditorStudio
             {
                 if (tool.Key == "638835886790068999-832829574-642210583") 
                 {
+                    if (!File.Exists(tool.Location))
+                    {
+                        PixelWPF.LibraryPixel.Notification("010 Editor is not available!", "To use 010 Editor with Game Editor Studio, go to the Tools menu and set the location of 010 Editor. ");
+                        return;
+                    }
+
                     if (EditorClass.StandardEditorData.FileDataTable == null)
                     {
                         return;

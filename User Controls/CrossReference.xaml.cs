@@ -23,25 +23,13 @@ namespace GameEditorStudio
     /// </summary>
     public partial class UserControlCrossReference : UserControl
     {
-        Workshop TheWorkshop;
+        public Workshop TheWorkshop { get; set; }
 
         public UserControlCrossReference()
         {
             InitializeComponent();
-            this.Loaded += new RoutedEventHandler(LoadEvent);
         }
 
-        public void LoadEvent(object sender, RoutedEventArgs e) 
-        {
-            var parentWindow = Window.GetWindow(this);
-
-            if (parentWindow is Workshop workshopWindow)
-            {                
-                TheWorkshop = workshopWindow;
-                TheWorkshop.TheCrossReference = this;
-            }
-        }
-                
 
         public void FillLearnBox(Editor TheEditor, Entry TheEntry)
         {
