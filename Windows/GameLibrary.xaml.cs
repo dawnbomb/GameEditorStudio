@@ -71,10 +71,9 @@ namespace GameEditorStudio
     //<DebugSymbols>false</DebugSymbols>
     //These last two debug lines, remove the Game Editor Studio.pdb from publishing, which is a debugging file. Hopefully unnecessary for release versions.
 
-    public partial class GameLibrary : Window
+    public partial class GameLibrary : UserControl
     {        
         public WorkshopData? SelectedWorkshop { get; set; }
-        public TopMenu MainMenu { get; set; }
 
         //Order of operations is...
         //1: Window Initalize
@@ -85,16 +84,15 @@ namespace GameEditorStudio
         public GameLibrary()
         {
             InitializeComponent();   
-            this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-            this.Title = "Game Editor Studio     Version: " + LibraryGES.VersionNumber + "   ( " + LibraryGES.VersionDate + " )";
             LibraryGES.ApplicationLocation = AppDomain.CurrentDomain.BaseDirectory;
             Database.GameLibrary = this; 
 
             #if DEBUG
-            LibraryGES.ApplicationLocation = "D:\\Game Editor Studio"; //Where the .exe is supposed to be.                     
+            LibraryGES.ApplicationLocation = "D:\\Game Editor Studio"; //"O:\\Teddy\\Game Editor Studio\\Game Editor Studio"; //Where the .exe is supposed to be.                     
             #endif
 
             LoadDatabase LoadDatabase = new(); //Must happen before Setup Commands, because commands use tools.   
+            LoadDatabase.LoadWiki();
             LoadDatabase.LoadThemes(); //Loads from Other/Themes - A theme is a list of colors for the UI. Users can create their own color themes. 
             LoadDatabase.LoadToolsList(); //Loads from Other/Tools.xml.            
             LoadDatabase.LoadCommandsList(this); //Loads from Other/Commands.xml.            
@@ -111,15 +109,8 @@ namespace GameEditorStudio
 
             Dispatcher.InvokeAsync(async () => await PixelWPF.GithubUpdater.CheckForUpdatesAsync("GameEditorStudio", "dawnbomb/GameEditorStudio/releases/latest", LibraryGES.VersionNumber));
 
-            TermsAndConditions tos = new();
-            LibraryGrid.Children.Add(tos);
-            Grid.SetRowSpan(tos, 15);
-            Grid.SetColumnSpan(tos, 15);
-
-            this.Topmost = true;    // Temporarily set topmost to ensure visibility
-            this.Activate();        // Try to bring to foreground
-            this.Focus();           // Set keyboard focus
-            this.Topmost = false;   // Reset topmost if undesired permanently
+            MainMenu.MenuLibrarySetup(this);
+            
 
         }
 
@@ -234,10 +225,19 @@ namespace GameEditorStudio
 
 
 
-            { //Documents and Editors
+            { //Right sidebar stuff.
+
+                //WorkshopCreatedLabel
 
                 //WorkshopInfoDocuments.Content = "Documents: " + Convert.ToString(System.IO.Directory.GetDirectories(LibraryMan.ApplicationLocation + "\\Workshops\\" + WorkshopName + "\\Documentation", "*", SearchOption.TopDirectoryOnly).Count());
 
+                //Workshop Info Panel
+                WorkshopCreatedLabel.Content = "GES v" + SelectedWorkshop.CreatedVersion + " " + SelectedWorkshop.CreatedDate + "";
+                if (SelectedWorkshop.CreatedVersion.ToString() == "0.0") { WorkshopCreatedLabel.Content = "UNKNOWN"; }
+                WorkshopSavedLabel.Content = "GES v" + SelectedWorkshop.SavedVersion + " " + SelectedWorkshop.SavedDate + "";
+                if (SelectedWorkshop.SavedVersion.ToString() == "0.0") { WorkshopSavedLabel.Content = "UNKNOWN"; }
+
+                //Documents Panel
                 string documentationPath = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", SelectedWorkshop.WorkshopName, "Documents");
                 string[] folderPaths = Directory.GetDirectories(documentationPath);
                 foreach (string folderPath in folderPaths)
@@ -253,9 +253,10 @@ namespace GameEditorStudio
                         item.IsSelected = true;
                     }
                 }
+                DocumentCountLabel.Content = "(" + LibraryDocumentsTree.Items.Count + ")";
 
 
-
+                //Editors Panel
                 string WorkshopEditorsFolder = LibraryGES.ApplicationLocation + "\\Workshops\\" + SelectedWorkshop.WorkshopName + "\\Editors\\";
                 string[] EditorFoldersList = Directory.GetDirectories(WorkshopEditorsFolder);
 
@@ -266,6 +267,7 @@ namespace GameEditorStudio
                     TreeViewItem folderItem = new TreeViewItem { Header = folderName };
                     EditorsTree.Items.Add(folderItem);
                 }
+                EditorCountLabel.Content = "(" + EditorsTree.Items.Count + ")";
             }
 
         }
@@ -279,6 +281,29 @@ namespace GameEditorStudio
 
         private void LaunchWorkshop() 
         {
+            if (SelectedWorkshop.CreatedVersion > LibraryGES.VersionNumber)
+            {
+                PixelWPF.LibraryPixel.Notification("Workshop from future version of GES!",
+                        "The version of GES your using is so old it's before this workshop was even first created! " +
+                        "As such, it may use features only added in future versions. " +
+                        "\n" +
+                        "\nWorse yet, it may open, and even save properly, but in doing so the workshop may lose important data that is only acnowledged by future versions of GES." +
+                        "\n" +
+                        "\nI won't stop you from *trying* to use it anyway, but be *VERY* careful of this."
+                        );
+            }
+            else if (SelectedWorkshop.SavedVersion > LibraryGES.VersionNumber)
+            {
+                PixelWPF.LibraryPixel.Notification("Workshop last used in future GES version!",
+                        "The workshop you are trying to open was last used in a later version of GES, " +
+                        "and it may use features only added in future versions. " +
+                        "\n" +
+                        "\nWorse yet, it may open, and save, but in doing so the workshop may lose important data that is only acnowledged by future versions of GES." +
+                        "\n" +
+                        "\nI won't stop you from *trying* to use it anyway, but just be aware and *VERY* careful of this."
+                        );
+            }
+
             if (SelectedWorkshop.ProjectDataItem != null || SelectedWorkshop.WorkshopXaml != null) 
             {
                 PixelWPF.LibraryPixel.NotificationNegative("Sorry - Please restart Game Editor Studio D;",
@@ -310,22 +335,9 @@ namespace GameEditorStudio
                 return;
             }
 
-            Workshop TheWorkshop = new Workshop(SelectedWorkshop, UserProject); //Thing One, the workshop
-
-            DependencyObject parent = this;
-            while (parent != null && !(parent is Window))
-            {
-                parent = VisualTreeHelper.GetParent(parent);
-            }
-            Window currentWindow = parent as Window;
-            if (currentWindow != null)
-            {
-                // Set the position of the new window to the position of the current window
-                TheWorkshop.Left = currentWindow.Left;
-                TheWorkshop.Top = currentWindow.Top + 30;
-            }
-
-            TheWorkshop.Show();
+            Workshop TheWorkshop = new Workshop(SelectedWorkshop, UserProject); //Thing One, the workshop     
+            Database.GESMain.GESGrid.Children.Add(TheWorkshop);
+            
 
             //Properties.Settings.Default.LastWorkshop = WorkshopName; //Set the workshop name in settings, so it can be used by other parts of the program. 
         }
@@ -335,25 +347,8 @@ namespace GameEditorStudio
             bool IsPreviewModeActive = true;
 
             Workshop TheWorkshop = new Workshop(SelectedWorkshop, null, IsPreviewModeActive); //Thing One, the workshop
+            Database.GESMain.GESGrid.Children.Add(TheWorkshop);
 
-            DependencyObject parent = this;
-            while (parent != null && !(parent is Window))
-            {
-                parent = VisualTreeHelper.GetParent(parent);
-            }
-            Window currentWindow = parent as Window;
-            if (currentWindow != null)
-            {
-                // Set the position of the new window to the position of the current window
-                TheWorkshop.Left = currentWindow.Left;
-                TheWorkshop.Top = currentWindow.Top;
-            }
-
-            TheWorkshop.Show();
-
-            //LoadEditor.CreateEditor(f2); 
-            //If auto mode, run load auto mode
-            //this.Close();
         }
 
 
@@ -570,6 +565,7 @@ namespace GameEditorStudio
                     if (WorkshopEventResource.Key == ProjectEventData.Key)
                     {
                         Textbox.Text = ProjectEventData.Location;
+                        TextBorder.ToolTip = ProjectEventData.Location;
                     }
 
                 }
@@ -697,21 +693,25 @@ namespace GameEditorStudio
         }
 
         private void CreateNewProject(object sender, RoutedEventArgs e) //THE NEW PROJECT sdkjfsdjfklsdjfklsjfklsjfklsjkflsjklfjklfsdjklfsjlfkjfklsda
-        {            
+        {
+            if (LibraryTreeOfWorkshops.SelectedItem == null) { return; }
+
             string TheProjectFolder = LibraryGES.ApplicationLocation + "\\Projects\\" + SelectedWorkshop.WorkshopName + "\\" + "New Project" + "\\";
-            if (Directory.Exists(TheProjectFolder) || LibraryTreeOfWorkshops.SelectedItem == null )
+            if (Directory.Exists(TheProjectFolder))
             {
                 return;
             }            
                                     
             Directory.CreateDirectory(TheProjectFolder);
 
-            ProjectData NewDataItem = new();
-            SelectedWorkshop.ProjectsList.Add(NewDataItem); //Add to the list of projects for this workshop.
-            CommandMethodsClass.SaveProjectXML(NewDataItem, SelectedWorkshop);       
+            ProjectData NewProjectDataItem = new();
+            SelectedWorkshop.ProjectsList.Add(NewProjectDataItem); //Add to the list of projects for this workshop.
+            NewProjectDataItem.CreatedDate = DateTime.Now.ToString("MMM dd yyyy");
+            NewProjectDataItem.CreatedVersion = LibraryGES.VersionNumber;
+            CommandMethodsClass.SaveProjectXML(NewProjectDataItem, SelectedWorkshop);       
 
             CollectionViewSource.GetDefaultView(ProjectsSelector.ItemsSource).Refresh();
-            ProjectsSelector.SelectedItem = NewDataItem;
+            ProjectsSelector.SelectedItem = NewProjectDataItem;
         }
         
 
@@ -787,8 +787,8 @@ namespace GameEditorStudio
                     FolderSelect.SelectedPath = current.FullName + "\\";
                 }
             }
-            
-            if ((bool)FolderSelect.ShowDialog(this)) //This triggers the folder selection screen, and if the user does not cancel out...
+
+            if ((bool)FolderSelect.ShowDialog(Window.GetWindow(this))) //This triggers the folder selection screen, and if the user does not cancel out...
             {
 
                 //if (System.IO.File.ReadAllText(ExePath + "\\Workshops\\" + WorkshopName + "\\" +  WorkshopInputDirectory) == Path.GetFileName(FolderSelect.SelectedPath))
@@ -817,10 +817,11 @@ namespace GameEditorStudio
 
                     ProjectData UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
                     UserProject.ProjectInputDirectory = FolderSelect.SelectedPath;
-                    TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
+                    TextBoxInputDirectory.Text = FolderSelect.SelectedPath;                    
 
                     CommandMethodsClass.SaveProjectXML(UserProject, SelectedWorkshop);
 
+                    LabelForMissingProjectInput.Visibility = Visibility.Collapsed;
 
                 }
                 else
@@ -861,8 +862,8 @@ namespace GameEditorStudio
                 {
                     FolderSelect.SelectedPath = current.FullName + "\\";
                 }
-            }            
-            if ((bool)FolderSelect.ShowDialog(this)) //This triggers the folder selection screen, and if the user does not cancel out...
+            }
+            if ((bool)FolderSelect.ShowDialog(Window.GetWindow(this))) //This triggers the folder selection screen, and if the user does not cancel out...
             {
                 ProjectData UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
                 UserProject.ProjectOutputDirectory = FolderSelect.SelectedPath;
@@ -870,7 +871,7 @@ namespace GameEditorStudio
 
                 CommandMethodsClass.SaveProjectXML(UserProject, SelectedWorkshop);
 
-
+                LabelForMissingProjectOutput.Visibility = Visibility.Collapsed;
             }
 
 
@@ -888,8 +889,13 @@ namespace GameEditorStudio
         {
             TreeViewItem Item = LibraryDocumentsTree.SelectedItem as TreeViewItem;
             if (Item == null) { return; }
+
             TextBoxWorkshopReadMe.Text = Item.Tag as string;
             DocumentNameLabel.Content = Item.Header as string;
+            if (Item.Header as string == "READ ME" || Item.Header as string == "README" || Item.Header as string == "readme" || Item.Header as string == "read me") 
+            {
+                DocumentNameLabel.Content = SelectedWorkshop.WorkshopName + " - " + Item.Header as string; 
+            }
         }
         private void OpenProjectFolder(object sender, RoutedEventArgs e)
         {

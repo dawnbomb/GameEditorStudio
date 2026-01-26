@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -72,15 +73,30 @@ namespace GameEditorStudio
             MenuOpened();
         }
 
-        private void MenuOpened() 
+        public void MenuLibrarySetup(GameLibrary library) 
         {
-            var parentWindow = Window.GetWindow(this);
-            if (parentWindow is GameLibrary GameLibraryWindow)
-            {
-                GameLibrary = GameLibraryWindow;
-                GameLibrary.MainMenu = this;
-                WorkshopData = GameLibrary.SelectedWorkshop;
+            GameLibrary = library;
+            //This origonally set workshop data every time the menu was opened.
 
+            MenuSaveEditors.IsEnabled = false;
+            MenuSaveGameData.IsEnabled = false;
+            MenuSaveWorkshopDocuments.IsEnabled = false;
+            MenuSaveProjectDocuments.IsEnabled = false;
+            NewEditorItem.IsEnabled = false;
+            ItemExportEditors.IsEnabled = false;
+        }
+
+        public void MenuWorkshopSetup(Workshop workshop) 
+        {
+            WorkshopData = workshop.WorkshopData;
+            ProjectDataItem = WorkshopData.ProjectDataItem;
+
+            if (workshop.IsPreviewMode == true)
+            {
+                TheMenu.IsEnabled = false;
+
+                MenuInputShortcut.IsEnabled = false;
+                MenuOutputShortcut.IsEnabled = false;
 
                 MenuSaveEditors.IsEnabled = false;
                 MenuSaveGameData.IsEnabled = false;
@@ -88,41 +104,22 @@ namespace GameEditorStudio
                 MenuSaveProjectDocuments.IsEnabled = false;
                 NewEditorItem.IsEnabled = false;
                 ItemExportEditors.IsEnabled = false;
-            }
 
-            if (parentWindow is Workshop WorkshopWindow)
+                WorkshopMenu.IsEnabled = false;
+                ToolsMenu.IsEnabled = false;
+                EventsMenu.IsEnabled = false;
+                ShortcutsMenu.IsEnabled = false;
+                ExtrasMenu.IsEnabled = false;
+            }
+        }
+
+        private void MenuOpened() //Triggers every time any menu is opened.
+        {
+            if (GameLibrary != null) //When in the Game Library.  We grab the currently selected workshop.
             {
-                WorkshopData = WorkshopWindow.WorkshopData;
-                ProjectDataItem = WorkshopWindow.WorkshopData.ProjectDataItem;
-
-                if (WorkshopWindow.IsPreviewMode == true)
-                {
-                    MenuInputShortcut.IsEnabled = false;
-                    MenuOutputShortcut.IsEnabled = false;
-                }
-
-
-                if (WorkshopWindow.IsPreviewMode == true)
-                {
-                    TheMenu.IsEnabled = false;
-
-                    MenuSaveEditors.IsEnabled = false;
-                    MenuSaveGameData.IsEnabled = false;
-                    MenuSaveWorkshopDocuments.IsEnabled = false;
-                    MenuSaveProjectDocuments.IsEnabled = false;
-                    NewEditorItem.IsEnabled = false;
-                    ItemExportEditors.IsEnabled = false;
-
-                    WorkshopMenu.IsEnabled = false;
-                    ToolsMenu.IsEnabled = false;
-                    EventsMenu.IsEnabled = false;
-                    ShortcutsMenu.IsEnabled = false;
-                    ExtrasMenu.IsEnabled = false;
-
-
-                }
-
+                WorkshopData = GameLibrary.SelectedWorkshop;
             }
+            //The workshop control loads itself as a reference on creation, and never again. So it doesn't need to update. 
 
             ReloadToolLocations();
         }
@@ -265,6 +262,7 @@ namespace GameEditorStudio
             if (WorkshopData == null) { return; }
 
             UserControlEditorCreator EditorMaker = new UserControlEditorCreator();
+            EditorMaker.TheWorkshop = WorkshopData.WorkshopXaml;
             Grid.SetRow(EditorMaker, 2);
             Grid.SetColumn(EditorMaker, 1);
             Grid.SetRowSpan(EditorMaker, 3);
@@ -479,12 +477,14 @@ namespace GameEditorStudio
 
                 menuItem.Header = menuName;
 
-
-
-                List<string> missingTools = new List<string>();
-                List<string> missingResources = new List<string>();
+                                
+                List<string> missingEventCommands = new List<string>();
+                List<string> missingEventChildParentLinks = new List<string>();
+                List<string> missingTools = new List<string>();                
+                List<string> missingProjectResources = new List<string>();
                 bool conditionsMet = true;
-                bool MissingProjectResourceFromLastKnownLocation = false;
+                bool BrokenEvent = false;
+                bool MissingRequirements = false;
                 bool CMDTHING = false;
 
                 foreach (EventCommand myCommand in Event.CommandList)
@@ -496,8 +496,10 @@ namespace GameEditorStudio
                     {
                         if (string.IsNullOrEmpty(tool.Location) || !File.Exists(tool.Location))
                         {
-                            missingTools.Add(tool.DisplayName);
                             conditionsMet = false;
+                            MissingRequirements = true;
+                            missingTools.Add(tool.DisplayName);
+                            
                         }
                     }
 
@@ -508,11 +510,12 @@ namespace GameEditorStudio
                         idex++;
                         if (string.IsNullOrEmpty(resourceKeyPair.Value))
                         {
-                            if (myCommand.CMDList.Count != 0 ){ conditionsMet = false; CMDTHING = true; continue; }
+                            if (myCommand.CMDList.Count != 0 ){ conditionsMet = false; BrokenEvent = true; CMDTHING = true; continue; }
                             if (myCommand.Command.RequiredResourcesList[idex].IsOptional == true) { continue; }
+
                             conditionsMet = false;
-                            missingResources.Add(myCommand.Command.RequiredResourcesList[idex].Label);
-                            //missingResources.Add(resourceKeyPair.Key.ToString());
+                            BrokenEvent = true;
+                            missingEventCommands.Add(myCommand.Command.RequiredResourcesList[idex].Label);
                             continue;
                         }
 
@@ -522,7 +525,8 @@ namespace GameEditorStudio
                         if (eventResource == null)
                         {
                             conditionsMet = false;
-                            missingResources.Add($"Resource {resourceKeyPair.Key} not defined");
+                            BrokenEvent = true;
+                            missingEventCommands.Add($"Resource {resourceKeyPair.Key} not defined");
                             continue;
                         }
 
@@ -530,32 +534,47 @@ namespace GameEditorStudio
 
                         string effectiveResourceLocation = "";
 
-                        // Check if this resource is relative or absolute
-                        if (!string.IsNullOrEmpty(eventResource.ParentKey))
+                        // Check if this resource is a child. IE if path is relative or absolute
+                        if (eventResource.IsChild == true) //!string.IsNullOrEmpty(eventResource.ParentKey)
                         {
                             // It's a relative resource, find the base resource in project resources
-                            ProjectEventResource baseResource = ProjectDataItem.ProjectEventResources.FirstOrDefault(res => res.Key == eventResource.ParentKey);
+                            ProjectEventResource projectResource = ProjectDataItem.ProjectEventResources.FirstOrDefault(res => res.Key == eventResource.ParentKey); //PARENT key
 
-                            if (baseResource == null || string.IsNullOrEmpty(baseResource.Location))
+                            if (projectResource == null )
                             {
                                 conditionsMet = false;
-                                missingResources.Add(eventResource.Name ?? $"Base Resource for {resourceKeyPair.Key}");
+                                BrokenEvent = true;
+                                missingEventChildParentLinks.Add(eventResource.Name ?? $"Base Resource for {resourceKeyPair.Key}");
+                                continue;
+                            }
+                            else if (string.IsNullOrEmpty(projectResource.Location))
+                            {
+                                conditionsMet = false;                                
+                                MissingRequirements = true;
+                                missingProjectResources.Add(eventResource.Name ?? $"Base Resource for {resourceKeyPair.Key}");
                                 continue;
                             }
 
                             // Combine the base resource location with the relative path from the event resource
-                            effectiveResourceLocation = Path.Combine(baseResource.Location, eventResource.Location ?? "");
+                            effectiveResourceLocation = Path.Combine(projectResource.Location, eventResource.Location ?? "");
                         }
-                        else
+                        else if (eventResource.IsChild == false) 
                         {
                             // It's an absolute resource, find the corresponding project event resource and use its location
-                            ProjectEventResource projectResource = ProjectDataItem.ProjectEventResources.FirstOrDefault(res => res.Key == eventResource.Key);
+                            ProjectEventResource projectResource = ProjectDataItem.ProjectEventResources.FirstOrDefault(res => res.Key == eventResource.Key); //MY key
 
-                            if (projectResource == null || string.IsNullOrEmpty(projectResource.Location))
+                            if (projectResource == null )
                             {
                                 conditionsMet = false;
-                                missingResources.Add(eventResource.Name ?? $"Missing Project Resource {eventResource.Key}");
-                                MissingProjectResourceFromLastKnownLocation = true;
+                                MissingRequirements = true;    
+                                missingProjectResources.Add(eventResource.Name ?? $"Missing Project Resource {eventResource.Key}");
+                                continue;
+                            }
+                            else if (string.IsNullOrEmpty(projectResource.Location)) //same as above, for now...
+                            {
+                                conditionsMet = false;
+                                MissingRequirements = true;                          
+                                missingProjectResources.Add(eventResource.Name ?? $"Missing Project Resource {eventResource.Key}");
                                 continue;
                             }
 
@@ -566,8 +585,8 @@ namespace GameEditorStudio
                         if (!ResourceExists(effectiveResourceLocation, eventResource))
                         {
                             conditionsMet = false;
-                            MissingProjectResourceFromLastKnownLocation = true;
-                            missingResources.Add(eventResource.Name ?? $"Resource {resourceKeyPair.Key}");
+                            MissingRequirements = true;                      
+                            missingProjectResources.Add(eventResource.Name ?? $"Resource {resourceKeyPair.Key}");
                         }
                     }
 
@@ -580,36 +599,70 @@ namespace GameEditorStudio
                 if (Event.CommandList.Count == 0)
                 {
                     conditionsMet = false;
+                    BrokenEvent = true;
                 }
 
                 if (!conditionsMet)
                 {
-                    string TheMissingTools = "Missing Tools: ";
-                    string TheMissingResources = "Missing Resources: "; //Later use these to make the message when clicked show only stuff thats actually missing.
-
-
-
-                    if (Event.CommandList.Count == 0) { Run runX = new Run(" (No Commands)"); menuName.Inlines.Add(runX); }
-                    else if (MissingProjectResourceFromLastKnownLocation == true) { Run runX = new Run(" (Missing Project Resource!)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.OrangeRed; }
-                    else if (missingTools.Count != 0 && missingResources.Count != 0) { Run runX = new Run(" (Missing Tools & Resources)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.MediumPurple; }
-                    else if (missingTools.Count != 0) { Run runX = new Run(" (Missing Tools)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.DarkBlue; }
-                    else if (missingResources.Count != 0) { Run runX = new Run(" (Broken Event / Unassigned Command)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.DarkGreen; }
-                    else if (CMDTHING == true ) { Run runX = new Run(" (Broken Event / Unassigned CMD Command)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.DarkGreen; }
-
-                    else { Run runX = new Run(" (?????)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.LightGray; }
-
                     runname.Foreground = Brushes.Gray;
-                    string missingToolsText = string.Join(", ", missingTools);
-                    string missingResourcesText = string.Join(", ", missingResources);
-                    menuItem.Click += (s, args) =>
+
+                    if (BrokenEvent == true)
                     {
-                        string message = "Missing Tools: " + missingToolsText +
-                                         "\nMissing Resources: " + missingResourcesText +
-                                         "\n\nPS: Don't trust this poorly made error message. \nCheck everything, including the event data itself. ";
-                        MessageBox.Show(message);
-                    };
+                        if (Event.CommandList.Count == 0) { Run runX = new Run(" (Broken Event: No Commands)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
+                        else if (CMDTHING == true) { Run runX = new Run(" (Broken Event: CMD Command Unassigned)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
+                        else if (missingEventCommands.Count != 0 && missingEventChildParentLinks.Count != 0) { Run runX = new Run(" (Broken Event: Unassigned Commands & Child Links)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
+                        else if (missingEventCommands.Count != 0) { Run runX = new Run(" (Broken Event: Unassigned Commands)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
+                        else if (missingEventChildParentLinks.Count != 0) { Run runX = new Run(" (Broken Event: Unassigned Child-Parent Links)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
+                        else { Run runX = new Run(" (Unknown Error)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
+
+                        string missingCommandsText = string.Join("\n, ", missingEventCommands);
+                        string missingChildParentLinkText = string.Join("\n, ", missingEventChildParentLinks);                        
+                        menuItem.Click += (s, args) =>
+                        {
+                            string message = "";
+                            if (missingEventCommands.Count != 0) { message = message + "Unassigned Event Commands: \n" + missingCommandsText + "\n\n"; }
+                            if (missingEventChildParentLinks.Count != 0) { message = message + "Unassigned Child-Parent Links: \n" + missingChildParentLinkText; }
+
+                            if (Event.CommandList.Count == 0) { message = "This event doesn't have any commands."; }
+                            if (CMDTHING == true) { message = "This event has one or more commands that use command prompt. Atleast one of them has an empty resource link."; }
+
+                            message = message + "\n\nBroken events are an error for workshop creators to fix. Report this error to whoever made the workshop! D:";
+
+                            MessageBox.Show(message);
+                        };
+
+
+                    }
+                    else if (MissingRequirements == true)
+                    {
+                        if (missingTools.Count != 0 && missingProjectResources.Count != 0) { Run runX = new Run(" (Missing: Tools & Resources)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.OrangeRed; }
+                        else if (missingTools.Count != 0) { Run runX = new Run(" (Missing: Tools)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.OrangeRed; }
+                        else if (missingProjectResources.Count != 0) { Run runX = new Run(" (Missing: Project Resources)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.OrangeRed; }
+                        else { Run runX = new Run(" (Unknown Error)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.OrangeRed; }
+
+                        string missingToolsText = string.Join("\n", missingTools);
+                        string missingProjectResourcesText = string.Join("\n", missingProjectResources);
+                        menuItem.Click += (s, args) =>
+                        {
+                            string message = "";
+                            if (missingTools.Count != 0) { message = message + "Missing Tools: \n" + missingToolsText + "\n\n"; }
+                            if (missingProjectResources.Count != 0) { message = message + "Missing Project Resources: \n" + missingProjectResourcesText; }
+                            
+                            MessageBox.Show(message);
+                        };
+
+
+                    }
+                    else //Unknown Problem
+                    {
+                        Run runX = new Run(" (Unknown Error)");
+                        menuName.Inlines.Add(runX);
+                        runX.Foreground = Brushes.LightGray;
+                    }
+
+                    
                 }
-                else
+                else //if event will work perfectly fine.
                 {
                     menuItem.Click += (s, args) =>
                     {
@@ -654,26 +707,35 @@ namespace GameEditorStudio
 
         private void OpenEventsWindow(object sender, RoutedEventArgs e)
         {
+            if (WorkshopData == null) { return; }
+            if (WorkshopData.WorkshopName == null || WorkshopData.WorkshopName == "") { return; }
 
-            var parentWindow = Window.GetWindow(this);
+            EventsMenu EventsControl = new(WorkshopData, this);
+            Grid.SetColumnSpan(EventsControl, 99);
+            Grid.SetRowSpan(EventsControl, 99);
+            Database.GESMain.GESGrid.Children.Add(EventsControl);
 
 
-            if (parentWindow is Workshop workshopWindow)
-            {
-                if (workshopWindow.WorkshopData.WorkshopName == null || workshopWindow.WorkshopData.WorkshopName == "") { return; }
-                EventsMenu EventsSetup = new(WorkshopData, this);
-                EventsSetup.Owner = workshopWindow;
-                EventsSetup.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                EventsSetup.Show();
-            }
-            if (parentWindow is GameLibrary LibraryWindow)
-            {
-                if (LibraryWindow.SelectedWorkshop.WorkshopName == null || LibraryWindow.SelectedWorkshop.WorkshopName == "") { return; }
-                EventsMenu EventsWindow = new(WorkshopData, this);
-                EventsWindow.Owner = LibraryWindow;
-                EventsWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                EventsWindow.Show();
-            }
+            //Previous Code. 
+            //var parentWindow = Window.GetWindow(this);
+            //if (parentWindow is Workshop workshopWindow)
+            //{
+            //    if (workshopWindow.WorkshopData.WorkshopName == null || workshopWindow.WorkshopData.WorkshopName == "") { return; }
+
+            //    EventsMenu EventsControl = new(WorkshopData, this);                
+            //    Grid.SetColumnSpan(EventsControl, 99);
+            //    Grid.SetRowSpan(EventsControl, 99);
+            //    workshopWindow.GridBack.Children.Add(EventsControl);
+            //}
+            //if (parentWindow is GameLibrary LibraryWindow)
+            //{
+            //    if (LibraryWindow.SelectedWorkshop.WorkshopName == null || LibraryWindow.SelectedWorkshop.WorkshopName == "") { return; }
+
+            //    EventsMenu EventsControl = new(WorkshopData, this);
+            //    Grid.SetColumnSpan(EventsControl, 99);
+            //    Grid.SetRowSpan(EventsControl, 99);
+            //    LibraryWindow.LibraryGrid.Children.Add(EventsControl);
+            //}
 
 
         }
@@ -825,6 +887,12 @@ namespace GameEditorStudio
             else
             {
                 DecBox.Background = Brushes.Red;
+
+                if (originalText == "") 
+                {
+                    DecBox.ClearValue(TextBox.BackgroundProperty);
+                }
+                
             }
         }
 
@@ -918,7 +986,7 @@ namespace GameEditorStudio
 
         private void OpenReshade(object sender, RoutedEventArgs e)
         {  
-            string colorsplash = LibraryGES.ApplicationLocation + "/Other/ColorSplash/Color Splash Installer.exe";
+            string colorsplash = LibraryGES.ApplicationLocation + "/Other/ColorSplash/Reshade Color Splash.exe";
             Process process = new Process
             {
                 StartInfo = new ProcessStartInfo

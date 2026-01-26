@@ -1674,9 +1674,10 @@ namespace GameEditorStudio
                 EditorClass.Workshop.GeneralTab.IsSelected = true;
                 
             }
-            
 
-            TabControl tabControlProp = parentWindow.FindName("EntryElementProperties") as TabControl;
+            //TabControl tabControlProp2 =  ;
+
+            TabControl tabControlProp = EditorClass.Workshop.FindName("EntryElementProperties") as TabControl;
             foreach (TabItem tabItem in tabControlProp.Items)
             {                
                 if (EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox && tabItem.Header != null && tabItem.Header.ToString() == "NumberBox")
@@ -1708,6 +1709,8 @@ namespace GameEditorStudio
             EntryStyleUpdate(PreviousEntry);            
             EntryStyleUpdate(EntryClass);
 
+            EditorClass.Workshop.PropertiesNameBox.IsEnabled = true;
+            if (EntryClass.IsNameHidden == true) { EditorClass.Workshop.PropertiesNameBox.IsEnabled = false; }
             
 
         }

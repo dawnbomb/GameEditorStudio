@@ -17,6 +17,8 @@ namespace GameEditorStudio
 
     public static class Database 
     {
+        public static GES GESMain { get; set; } //The main window.
+
 
         public static List<Tool> Tools { get; set; } = new();
         public static List<Command> Commands { get; set; } = new();
@@ -41,6 +43,12 @@ namespace GameEditorStudio
 
     public class ProjectData //The root project data itself. 
     {
+        public Version CreatedVersion { get; set; } = new Version(0, 0); //The GES version this was first created with.
+        public string CreatedDate { get; set; } = ""; //The date this was first created.
+        public Version SavedVersion { get; set; } = new Version(0, 0); //The last GES version this was used/saved with.
+        public string SavedDate { get; set; } = ""; // The date this was last used/saved.
+
+
         /*public ICommand ButtonCommand { get; set; }*/
         public string ProjectName { get; set; } = "New Project";
         public string ProjectInputDirectory { get; set; }
@@ -50,6 +58,10 @@ namespace GameEditorStudio
 
     public class WorkshopData //When i later make this a list in true database, remember to make sure workshop common events still load / save / use properly
     {
+        public Version CreatedVersion { get; set; } = new Version(0, 0); //The GES version this was first created with.
+        public string CreatedDate { get; set; } = ""; //The date this was first created.
+        public Version SavedVersion { get; set; } = new Version(0, 0); //The last GES version this was used/saved with.
+        public string SavedDate { get; set; } = ""; // The date this was last used/saved.
 
         ///////////////////////////////GAME LIBRARY INFO AKA BASICS///////////////////////////////////////////////////////////////////
         public string WorkshopName { get; set; } = ""; //The name of the workshop (IE name of whats selected in Game Library)
@@ -93,20 +105,21 @@ namespace GameEditorStudio
     
 
     public class Editor 
-    {       
+    {
+        public Version CreatedVersion { get; set; } = new Version(0, 0); //The GES version this was first created with.
+        public string CreatedDate { get; set; } = ""; //The date this was first created.
+        public Version SavedVersion { get; set; } = new Version(0, 0); //The last GES version this was used/saved with.
+        public string SavedDate { get; set; } = ""; // The date this was last used/saved.
+
+
         public Workshop Workshop { get; set; } //The workshop this editor is in.
-        public string EditorName { get; set; } //Not XML (yet)
+        public string EditorName { get; set; } //Not USED in XML (yet)
         public string EditorType { get; set; } //XML   types are DataTable and TextEditor  (convert this to enum later...?)
         public string EditorIcon { get; set; } //XML
         public string EditorKey { get; set; } //XML   This is the key to the editor, used for saving and loading. It is not the name of the editor, but a unique identifier.
 
-        public DockPanel? EditorBackPanel { get; set; }   //The back of the editor. A user should not see this, used just for organization. Includes left bar and main editor.       
-                
-        public StandardEditorData StandardEditorData { get; set; } = new();
-        public TextEditorData TextEditorData { get; set; }
-
-        public List<Entry> ListOfEntrysUsingMyNames { get; set; } = new(); // Not XML  used to know the list of entrys to update? entrys that have menus who get text from this editor.
-
+        public DockPanel EditorBackPanel { get; set; }   //The back of the editor.     
+        
 
         //Button Data
         public Image EditorImage { get; set; } //fsdfs
@@ -114,6 +127,13 @@ namespace GameEditorStudio
         public DockPanel EditorBarDockPanel { get; set; }
         public Label EditorLabel { get; set; } //The border around the editor button, used to make it look nice.
         public Button EditorButton { get; set; } //The button tab that opens the editor.
+
+        //Editor Specific  Also i eventually need to make some enum to explicitly state what kind of editor this is... 
+        //Actually it does exist, it'e the EditorType above. Clean this up later...
+        public StandardEditorData StandardEditorData { get; set; } = new(); //Editor type 1.
+        public TextEditorData TextEditorData { get; set; } //Editor type 2.
+
+        public List<Entry> ListOfEntrysUsingMyNames { get; set; } = new(); // Not XML  used to know the list of entrys to update? entrys that have menus who get text from this editor.
 
 
 

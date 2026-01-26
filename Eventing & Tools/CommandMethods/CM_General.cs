@@ -238,6 +238,15 @@ namespace GameEditorStudio
             }
         }
 
+        public static void OpenFileFolder(MethodData MethodData)
+        {
+            string resource0 = MethodData.ResourceLocations[0];
+            if (resource0 == "") { return; }
+
+            LibraryGES.OpenFileFolder(resource0);
+
+        }
+
         public static void OpenFolder(MethodData MethodData)
         {
             string resource0 = MethodData.ResourceLocations[0];
@@ -268,13 +277,9 @@ namespace GameEditorStudio
             Process.Start(startInfo);
         }
 
-        public static void CommandPrompt(MethodData MethodData) 
+        public static void CommandPromptDebug(MethodData MethodData) 
         {
-            //ProcessStartInfo startInfo = new ProcessStartInfo()
-            //{
-            //    FileName = "cmd.exe",  //MethodData.ResourceLocations[0],
-            //    UseShellExecute = true       // This allows starting a process associated with a file type (when needed)
-            //};
+            //This Command needs to sync the FINAL string with the button in eventing so people can trust that the button is giving accurate information.
 
             string FINAL = "";
 
@@ -282,27 +287,108 @@ namespace GameEditorStudio
             {
                 if (!string.IsNullOrEmpty(resource))
                 {
-                    FINAL = FINAL + resource;
+                    string astring = resource;
+                    astring = LibraryGES.PathQuoter(astring);
+
+                    if (astring == "WTOOLS")
+                    {
+                        FINAL = FINAL + "\"" + LibraryGES.ApplicationLocation + "\\Workshops\\" + MethodData.WorkshopData.WorkshopName + "\\Tools\\";
+                    }
+                    else
+                    {
+                        FINAL = FINAL + astring + " ";
+                    }
+
                 }
             }
 
-            string truefinal = FINAL;
+            string testa = FINAL;
 
-            string resource0 = MethodData.ResourceLocations[0];
-            string resource1 = MethodData.ResourceLocations[1];
-            //string resource2 = MethodData.ResourceLocations[2];
-            //string resource3 = MethodData.ResourceLocations[3];
+            ProcessStartInfo startInfo = new ProcessStartInfo()
+            {
+                FileName = "cmd.exe",
+                Arguments = "/k \"" + FINAL + "\"",   // or "/c" if you want it to close after running
+                UseShellExecute = true
+            };
+            Process.Start(startInfo);
 
-            string FINAL1 = resource0 + resource1;
-            //string FINAL2 = resource0 + resource1 + resource2;
-            //string FINAL3 = resource0 + resource1 + resource2 + resource3;
-            //string FINAL4 = resource0 + resource1 + resource2 + resource3 + resource4;
-
-            //File.WriteAllText(resource0, resource1);
-            //File.WriteAllText(@"C:\\Users\\Dawnbomb\\Downloads\\UnitiaText Tool\\F One\\MyFile.txt", resource3 + "\n" + FINAL2);
-
-            //Process.Start(startInfo);
         }
+
+        public static void CommandPromptAutoClose(MethodData MethodData)
+        {
+            //This Command needs to sync the FINAL string with the button in eventing so people can trust that the button is giving accurate information.
+
+            string FINAL = "";
+
+            foreach (string resource in MethodData.ResourceLocations)
+            {
+                if (!string.IsNullOrEmpty(resource))
+                {
+                    string astring = resource;
+                    astring = LibraryGES.PathQuoter(astring);
+
+                    if (astring == "WTOOLS")
+                    {
+                        FINAL = FINAL + "\"" + LibraryGES.ApplicationLocation + "\\Workshops\\" + MethodData.WorkshopData.WorkshopName + "\\Tools\\";
+                    }
+                    else
+                    {
+                        FINAL = FINAL + astring + " ";
+                    }
+
+                }
+            }
+
+            string testa = FINAL;
+
+            ProcessStartInfo startInfo = new ProcessStartInfo()
+            {
+                FileName = "cmd.exe",
+                Arguments = "/c \"" + FINAL + " && exit || pause\"",   // or "/c" if you want it to close after running
+                UseShellExecute = true
+            };
+            Process.Start(startInfo);
+
+        }
+
+        public static void CommandPromptHidden(MethodData MethodData)
+        {
+            //This Command needs to sync the FINAL string with the button in eventing so people can trust that the button is giving accurate information.
+
+            string FINAL = "";
+
+            foreach (string resource in MethodData.ResourceLocations)
+            {
+                if (!string.IsNullOrEmpty(resource))
+                {
+                    string astring = resource;
+                    astring = LibraryGES.PathQuoter(astring);
+
+                    if (astring == "WTOOLS")
+                    {
+                        FINAL = FINAL + "\"" + LibraryGES.ApplicationLocation + "\\Workshops\\" + MethodData.WorkshopData.WorkshopName + "\\Tools\\";
+                    }
+                    else
+                    {
+                        FINAL = FINAL + astring + " ";
+                    }
+
+                }
+            }
+
+            string testa = FINAL;
+
+            ProcessStartInfo startInfo = new ProcessStartInfo()
+            {
+                FileName = "cmd.exe",
+                Arguments = "/k \"" + FINAL + "\"",   // or "/c" if you want it to close after running
+                UseShellExecute = true
+            };
+            Process.Start(startInfo);
+
+        }
+
+        
 
     }
 }

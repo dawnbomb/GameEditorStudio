@@ -26,6 +26,8 @@ namespace GameEditorStudio
         WorkshopData workshopData { get; set; } = null; 
         EventsMenu eventsMenu { get; set; } = null; //Used to refresh what files and filenames the events window has access to.
 
+        List<ComboBox> ParentSelectComboBoxes = new(); //A list of all comboboxes. Used to refresh them all when a resource is renamed.
+
         public EventResources()
         {
             InitializeComponent();
@@ -153,6 +155,8 @@ namespace GameEditorStudio
             BottomPanel.Margin = new Thickness(0, 0, 0, 3);
             BottomPanel.Background = TheBrush;
 
+            ComboBox ComboBox = new(); //THIS IS CREATED HERE BUT MANAGED WAY LOWER AND ONLY IF IT'S A CHILD RESOURCE.
+
             Button DeleteButton = new();
             TopPanel.Children.Add(DeleteButton);
             DockPanel.SetDock(DeleteButton, Dock.Right);
@@ -160,33 +164,119 @@ namespace GameEditorStudio
             DeleteButton.Content = "Delete";
             DeleteButton.Click += (sender, e) =>
             {
-                if (MainPanel.Parent is Panel parentPanel)
-                {
-                    parentPanel.Children.Remove(MainPanel);
-                    workshopData.WorkshopEventResources.Remove(EventResource);
+                if (MainPanel.Parent is not Panel parentPanel)
+                    return;
 
-                    foreach (ProjectData project in workshopData.ProjectsList)
+                // Find events that are using this resource
+                var eventsUsingResource = new List<string>();
+                foreach (Event eventItem in workshopData.WorkshopEvents)
+                {
+                    foreach (EventCommand command in eventItem.CommandList)
                     {
-                        project.ProjectEventResources.RemoveAll(pr => pr.Key == EventResource.Key);
-                    }
-                    foreach (Event eventItem in workshopData.WorkshopEvents)
-                    {
-                        foreach (EventCommand command in eventItem.CommandList)
+                        if (command.ResourceKeys.Values.Any(v => v == EventResource.Key))
                         {
-                            // Make a list of the keys so we can safely modify while iterating
-                            foreach (var key in command.ResourceKeys.Keys.ToList())
+                            if (!eventsUsingResource.Contains(eventItem.DisplayName))
+                                eventsUsingResource.Add(eventItem.DisplayName);
+                        }
+                    }
+                }
+
+                List<EventResource> ResourcesUsingResource = new();
+                foreach (EventResource WEventResource in workshopData.WorkshopEventResources)
+                {
+                    if (WEventResource.ParentKey == EventResource.Key) 
+                    {
+                        ResourcesUsingResource.Add(WEventResource);
+                    }
+                }
+
+                // Show confirmation if it's in use
+                if (eventsUsingResource.Count > 0 || ResourcesUsingResource.Count > 0)
+                {
+                    var message = new StringBuilder();
+
+                    if (eventsUsingResource.Count > 0)
+                    {
+                        message.AppendLine("This resource is used by the following events:");
+                        message.AppendLine(string.Join("\n", eventsUsingResource));
+                        message.AppendLine();
+                    }
+
+                    if (ResourcesUsingResource.Count > 0)
+                    {
+                        message.AppendLine("This resource is used by the following child resources:");
+                        message.AppendLine(string.Join("\n", ResourcesUsingResource.Select(r => r.Name)));
+                        message.AppendLine();
+                    }
+
+                    string lastline = "";
+                    if (eventsUsingResource.Count > 0 && ResourcesUsingResource.Count > 0) { lastline = "the events and child resources using this will have their assigned resource set to None."; }
+                    if (eventsUsingResource.Count > 0) { lastline = "the events using this will have their assigned resource set to None."; }
+                    if (ResourcesUsingResource.Count > 0) { lastline = "the child resources using this will have their assigned resource set to None."; }
+
+                    message.AppendLine("Are you sure you want to delete it?");                                      
+                    message.AppendLine("If you delete it, " + lastline);
+
+                    var result = MessageBox.Show(message.ToString(), "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    if (result != MessageBoxResult.Yes)
+                        return; // user canceled
+                }
+
+                // Proceed with deletion
+                parentPanel.Children.Remove(MainPanel);
+                workshopData.WorkshopEventResources.Remove(EventResource);
+
+                foreach (ProjectData project in workshopData.ProjectsList)
+                {
+                    project.ProjectEventResources.RemoveAll(pr => pr.Key == EventResource.Key);
+                }
+
+                foreach (Event eventItem in workshopData.WorkshopEvents)
+                {
+                    foreach (EventCommand command in eventItem.CommandList)
+                    {
+                        foreach (var key in command.ResourceKeys.Keys.ToList())
+                        {
+                            if (command.ResourceKeys[key] == EventResource.Key)
+                                command.ResourceKeys[key] = ""; // remove assignment
+                        }
+                    }
+                }
+
+                foreach (EventResource WeventResource in ResourcesUsingResource) 
+                {
+                    WeventResource.ParentKey = "";
+                }
+
+                if (ParentSelectComboBoxes.Contains(ComboBox)) { ParentSelectComboBoxes.Remove(ComboBox); }
+                foreach (ComboBox comboBox in ParentSelectComboBoxes) //Refresh all comboboxes to make sure the deleted resource is gone from all of them.
+                {
+                    var currentlySelected = comboBox.SelectedItem as ComboBoxItem;
+                    string CurrentlySelectedtemResourceKey = (currentlySelected?.Tag as EventResource)?.Key;
+                    comboBox.Items.Clear();
+                    ComboBoxItem NoneComboBoxItem = new();
+                    NoneComboBoxItem.Content = "None";
+                    comboBox.Items.Add(NoneComboBoxItem);
+                    comboBox.SelectedItem = NoneComboBoxItem;
+                    foreach (EventResource EventResourceX in workshopData.WorkshopEventResources)
+                    {
+                        if (EventResourceX.ResourceType == EventResource.ResourceTypes.Folder && EventResourceX.IsChild == false)
+                        {
+                            ComboBoxItem ComboBoxItem = new();
+                            ComboBoxItem.Content = "📁 " + EventResourceX.Name;
+                            ComboBoxItem.Tag = EventResourceX;
+                            comboBox.Items.Add(ComboBoxItem);
+                            if (EventResourceX.Key == CurrentlySelectedtemResourceKey)
                             {
-                                if (command.ResourceKeys[key] == EventResource.Key)
-                                {
-                                    command.ResourceKeys[key] = ""; // update value directly in dictionary
-                                }
+                                comboBox.SelectedItem = ComboBoxItem; // Reselect the previously selected item if it still exists.
                             }
                         }
                     }
-                    Database.GameLibrary.RefreshProjectEventResourcesUI();
                 }
+
+                Database.GameLibrary.RefreshProjectEventResourcesUI();
                 eventsMenu.RefreshEventUI();
-            };
+            }; //End of Delete button.
 
 
             //🗎 📁
@@ -204,14 +294,27 @@ namespace GameEditorStudio
             TextBox NameBox = new TextBox();
             TopPanel.Children.Add(NameBox);
             DockPanel.SetDock(NameBox, Dock.Left);
-            NameBox.Width = 170;
+            NameBox.Width = 250;
             NameBox.Text = EventResource.Name;
             NameBox.ToolTip = "This is not asking for the actual name, but for you to give this resource a name. \nInstead of game.exe, you can say totally say \"The game's .exe file\", or whatever.\nIE somewhere between a name, and a detailed instruction. Like \"The game exe's folder\".";
             NameBox.TextChanged += (sender, e) =>
             {
                 EventResource.Name = NameBox.Text;
                 eventsMenu.RefreshEventUI();
-                Database.GameLibrary.RefreshProjectEventResourcesUI();
+                Database.GameLibrary.RefreshProjectEventResourcesUI();                                
+
+                foreach (ComboBox comboBox in ParentSelectComboBoxes)  //Make all of my child resources update their comboboxes to reflect my new name.
+                {
+                    ComboBoxItem selectedItem = comboBox.SelectedItem as ComboBoxItem;
+                    if (selectedItem.Tag == null) { continue; }
+                    EventResource selectedResource = selectedItem.Tag as EventResource;
+
+                    if (EventResource == selectedResource)
+                    {
+                        selectedItem.Content = "📁 " + EventResource.Name;
+                    }
+                    
+                }
             };
 
             if (EventResource.IsChild == true)
@@ -227,82 +330,80 @@ namespace GameEditorStudio
 
             if (EventResource.IsChild == true)
             {
-                ComboBox ComboBox = new();
+                //the combobox is creates up above because it's referenced when deleting a resource.
+                ComboBox.Name = "ParentSelectComboBox";
                 TopPanel.Children.Add(ComboBox);
                 DockPanel.SetDock(ComboBox, Dock.Left);
-                ComboBox.Width = 150;
+                ComboBox.Width = 180;
                 ComboBox.Margin = new Thickness(5, 0, 0, 0);
+                ParentSelectComboBoxes.Add(ComboBox);
 
-                // Populate the ComboBox initially and set selection based on RelativeKey
-                ComboBoxItem initiallySelectedItem = null;
+                //The Initial setup.
+                ComboBoxItem NoneComboBoxItem = new();
+                NoneComboBoxItem.Content = "None";
+                ComboBox.Items.Add(NoneComboBoxItem);
+                ComboBox.SelectedItem = NoneComboBoxItem; //Select None by default.                    
+
                 foreach (EventResource EventResourceX in workshopData.WorkshopEventResources)
                 {
                     if (EventResourceX.ResourceType == EventResource.ResourceTypes.Folder && EventResourceX.IsChild == false)
                     {
-                        ComboBoxItem ComboBoxItem = new ComboBoxItem
-                        {
-                            Content = EventResourceX.Name,
-                            Tag = EventResourceX
-                        };
+                        ComboBoxItem ComboBoxItem = new();
+                        ComboBoxItem.Content = "📁 " + EventResourceX.Name;
+                        ComboBoxItem.Tag = EventResourceX;
                         ComboBox.Items.Add(ComboBoxItem);
 
-                        // Check if this item should be selected
                         if (EventResource.ParentKey == EventResourceX.Key)
                         {
-                            initiallySelectedItem = ComboBoxItem;
+                            ComboBox.SelectedItem = ComboBoxItem; //Select this item if it matches the parent key.
                         }
                     }
                 }
 
-                if (initiallySelectedItem != null)
-                {
-                    ComboBox.SelectedItem = initiallySelectedItem;
-                }
-
+                //Clear the combobox's item list and re-setup when opened. This makes sure the user has the latest list of possible parents.
                 ComboBox.DropDownOpened += (sender, e) =>
                 {
                     var currentlySelected = ComboBox.SelectedItem as ComboBoxItem;
-                    string selectedResourceKey = (currentlySelected?.Tag as EventResource)?.Key;
+                    string CurrentlySelectedtemResourceKey = (currentlySelected?.Tag as EventResource)?.Key;
 
                     ComboBox.Items.Clear();
-                    ComboBoxItem newItemToSelect = null;
+
+                    ComboBoxItem NoneComboBoxItem = new();
+                    NoneComboBoxItem.Content = "None";
+                    ComboBox.Items.Add(NoneComboBoxItem);
+                    ComboBox.SelectedItem = NoneComboBoxItem;
 
                     foreach (EventResource EventResourceX in workshopData.WorkshopEventResources)
                     {
                         if (EventResourceX.ResourceType == EventResource.ResourceTypes.Folder && EventResourceX.IsChild == false)
                         {
-                            ComboBoxItem ComboBoxItem = new ComboBoxItem
-                            {
-                                Content = EventResourceX.Name,
-                                Tag = EventResourceX
-                            };
+                            ComboBoxItem ComboBoxItem = new();
+                            ComboBoxItem.Content = "📁 " + EventResourceX.Name;
+                            ComboBoxItem.Tag = EventResourceX;
                             ComboBox.Items.Add(ComboBoxItem);
 
-                            if (EventResourceX.Key == selectedResourceKey)
+                            if (EventResourceX.Key == CurrentlySelectedtemResourceKey)
                             {
-                                newItemToSelect = ComboBoxItem;
+                                ComboBox.SelectedItem = ComboBoxItem; // Reselect the previously selected item if it still exists.
                             }
                         }
                     }
 
-                    if (newItemToSelect != null)
-                    {
-                        ComboBox.SelectedItem = newItemToSelect;
-                    }
                 };
 
+                //Closed stuff.
                 ComboBox.DropDownClosed += (sender, e) =>
                 {
-                    if (ComboBox.SelectedItem is ComboBoxItem comboBoxItem && comboBoxItem.Tag is EventResource eventResource)
+                    ComboBoxItem item = ComboBox.SelectedItem as ComboBoxItem;
+                    if (item.Tag == null ) 
+                    {                        
+                        EventResource.ParentKey = "";
+                    }
+                    else if (item.Tag is EventResource eventResource)
                     {
-                        // Update the reference key when an item is selected
                         EventResource.ParentKey = eventResource.Key;
                     }
-                    else
-                    {
-                        // Handle the case when no item is selected
-                        EventResource.ParentKey = null;  // or some default value or behavior
-                    }
+                    
                 };
             }
 
@@ -375,7 +476,24 @@ namespace GameEditorStudio
                 };// this is here because if it doesn't require an exact name, there is no need to show the path. 
             }
 
+            Label MissingLabel = new();
+            MissingLabel.Content = "Project Resource Location is not set!";
+            //MissingLabel.Background = Brushes.DarkRed;
+            //MissingLabel.Margin = new Thickness(1);
+            MissingLabel.Foreground = Brushes.Red;
+            DockPanel.SetDock(MissingLabel, Dock.Left);
+            TopPanel.Children.Add(MissingLabel);
+            if (EventResource.IsChild == true) { MissingLabel.Visibility = Visibility.Collapsed; }
+            foreach (ProjectData project in workshopData.ProjectsList)
+            {
+                ProjectEventResource projectEventResource = project.ProjectEventResources.Find(pr => pr.Key == EventResource.Key);
+                if (projectEventResource != null)
+                {
 
+                    if (projectEventResource.Location != "" && projectEventResource.Location != null) { MissingLabel.Visibility = Visibility.Collapsed; break; }
+
+                }
+            }
 
 
 

@@ -9,6 +9,7 @@ using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Linq;
 using OfficeOpenXml;
@@ -33,6 +34,58 @@ namespace GameEditorStudio
         //It re-checks the last known tool locations, incase the user is moving tools around while the program is running (this is not common, but still very expected).
 
 
+        public void LoadWiki()
+        {
+            string wikiPath = Path.Combine(LibraryGES.ApplicationLocation, "Other", "Wiki");
+            if (!Directory.Exists(wikiPath))
+                return;
+
+            foreach (string categoryPath in Directory.GetDirectories(wikiPath))
+            {
+                WikiFolder wikiFolder = new()
+                {
+                    Name = Path.GetFileName(categoryPath)
+                };
+                LibraryGES.Wiki.Folders.Add(wikiFolder);
+
+                // Each subfolder is now a document
+                foreach (string docFolderPath in Directory.GetDirectories(categoryPath))
+                {
+                    WikiDocument wikiDocument = new()
+                    {
+                        Name = Path.GetFileName(docFolderPath)
+                    };
+
+                    // Load the text file
+                    string? txtFile = Directory.GetFiles(docFolderPath, "*.txt").FirstOrDefault();
+                    if (txtFile != null)
+                        wikiDocument.Text = File.ReadAllText(txtFile);
+
+                    // Load .png images
+                    foreach (string imgFile in Directory.GetFiles(docFolderPath, "*.png"))
+                    {
+                        BitmapImage bitmap = new();
+                        bitmap.BeginInit();
+                        bitmap.UriSource = new Uri(imgFile, UriKind.Absolute);
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.EndInit();
+                        bitmap.Freeze();
+
+                        WikiImage wikiImage = new()
+                        {
+                            FileName = Path.GetFileName(imgFile),
+                            Bitmap = bitmap
+                        };
+
+                        wikiDocument.ImagesList.Add(wikiImage);
+                    }
+
+                    // **Add document to folder**
+                    wikiFolder.Documents.Add(wikiDocument);
+                }
+            }
+        }
+
         //////////////////////////////////////////////////////
         ////////////////////WORKSHOPS/////////////////////////
         //////////////////////////////////////////////////////
@@ -54,28 +107,16 @@ namespace GameEditorStudio
                         XElement xml = XElement.Load(TargetXML);
 
                         //Loading Workshop basic data
-                        workshopData.WorkshopName = xml.Element("WorkshopName")?.Value;
+                        //workshopData.WorkshopName = xml.Element("WorkshopName")?.Value;
+                        workshopData.WorkshopName = workshopfolder;
                         workshopData.WorkshopInputDirectory = xml.Element("InputLocation")?.Value;
                         workshopData.ProjectsRequireSameFolderName = bool.TryParse(xml.Element("ProjectsRequireSameInputFolderName")?.Value, out bool result) && result;
 
-                        //Loading Workshop Event Resources
-                        //foreach (var xmlEvent in xml.Descendants("Resource"))
-                        //{
-                        //    EventResource EventResource = new();
-                        //    workshopData.WorkshopEventResources.Add(EventResource);
-
-                        //    EventResource.Name = xmlEvent.Element("Name")?.Value;
-                        //    EventResource.Location = xmlEvent.Element("Location")?.Value;
-                        //    EventResource.RequiredName = bool.TryParse(xmlEvent.Element("RequiredName")?.Value, out var result2) ? result2 : false;
-                        //    EventResource.Key = xmlEvent.Element("Key")?.Value;
-                        //    EventResource.ParentKey = xmlEvent.Element("ParentKey")?.Value;
-                        //    //THESE NEED TO BE UPDATED TO USE THE ISCHILD AND FILETYPE VARIABLES IF I EVER USE THIS CODE AGAIN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        //    if (xmlEvent.Element("ResourceType")?.Value == "File" && xmlEvent.Element("PathType")?.Value == "FullPath") { EventResource.ResourceType = "LocalFile"; }
-                        //    if (xmlEvent.Element("ResourceType")?.Value == "Folder" && xmlEvent.Element("PathType")?.Value == "FullPath") { EventResource.ResourceType = "LocalFolder"; }
-                        //    if (xmlEvent.Element("ResourceType")?.Value == "File" && xmlEvent.Element("PathType")?.Value == "PartialPath") { EventResource.ResourceType = "RelativeFile"; }
-                        //    if (xmlEvent.Element("ResourceType")?.Value == "Folder" && xmlEvent.Element("PathType")?.Value == "PartialPath") { EventResource.ResourceType = "RelativeFolder"; }
-
-                        //}
+                        workshopData.CreatedDate = xml.Element("CreatedDate")?.Value ?? "";
+                        workshopData.CreatedVersion = Version.TryParse(xml.Element("CreatedVersion")?.Value, out var vx1) ? vx1 : new Version(0, 0);
+                        workshopData.SavedDate = xml.Element("SavedDate")?.Value ?? "";
+                        workshopData.SavedVersion = Version.TryParse(xml.Element("SavedVersion")?.Value, out var vx2) ? vx2 : new Version(0, 0);
+                                                
                     }
 
                     
@@ -197,13 +238,21 @@ namespace GameEditorStudio
                             XDocument doc = XDocument.Load(eventFile);
                             foreach (var xmlEvent in doc.Descendants("Event"))
                             {
-                                Event newEvent = new Event
-                                {
+                                Event newEvent = new Event //Actual event loading from XML happens here.
+                                {   
+
                                     DisplayName = xmlEvent.Element("Name")?.Value ?? "New Event",
                                     Note = xmlEvent.Element("Note")?.Value ?? string.Empty,
                                     Tooltip = xmlEvent.Element("Tooltip")?.Value ?? string.Empty,
                                     CommandList = new List<EventCommand>()
                                 };
+
+
+                                newEvent.CreatedDate = xmlEvent.Element("CreatedDate")?.Value ?? "";
+                                newEvent.CreatedVersion = Version.TryParse(xmlEvent.Element("CreatedVersion")?.Value, out var vx1) ? vx1 : new Version(0, 0);
+                                newEvent.SavedDate = xmlEvent.Element("SavedDate")?.Value ?? "";
+                                newEvent.SavedVersion = Version.TryParse(xmlEvent.Element("SavedVersion")?.Value, out var vx2) ? vx2 : new Version(0, 0);
+
 
                                 var commandElements = xmlEvent.Descendants("Command");
                                 foreach (var commandElement in commandElements)
@@ -326,13 +375,13 @@ namespace GameEditorStudio
 
                             using (FileStream fs = new FileStream(TheProjectFolder + "\\Project.xml", FileMode.Open, FileAccess.Read))
                             {
-                                XElement xml = XElement.Load(fs);
-                                string PName = xml.Element("Name")?.Value;
-                                string PInput = xml.Element("InputLocation")?.Value;
-                                string POutput = xml.Element("OutputLocation")?.Value;
+                                XElement Pxml = XElement.Load(fs);
+                                string PName = Pxml.Element("Name")?.Value;
+                                string PInput = Pxml.Element("InputLocation")?.Value;
+                                string POutput = Pxml.Element("OutputLocation")?.Value;
 
                                 List<ProjectEventResource> ProjectEventResources = new();
-                                var xmlEventResources = xml.Element("ResourceList");
+                                var xmlEventResources = Pxml.Element("ResourceList");
 
                                 if (xmlEventResources != null)
                                 {
@@ -346,6 +395,7 @@ namespace GameEditorStudio
                                         ProjectEventResource projectEventData = new ProjectEventResource
                                         {
                                             Key = EventResource.Key,
+                                            
                                         };
                                         ProjectEventResources.Add(projectEventData);
                                     }
@@ -372,6 +422,11 @@ namespace GameEditorStudio
                                 projectDataItem.ProjectInputDirectory = PInput;
                                 projectDataItem.ProjectOutputDirectory = POutput;
                                 projectDataItem.ProjectEventResources = ProjectEventResources;
+
+                                projectDataItem.CreatedDate = Pxml.Element("CreatedDate")?.Value ?? "";
+                                projectDataItem.CreatedVersion = Version.TryParse(Pxml.Element("CreatedVersion")?.Value, out var vx1) ? vx1 : new Version(0, 0);
+                                projectDataItem.SavedDate = Pxml.Element("SavedDate")?.Value ?? "";
+                                projectDataItem.SavedVersion = Version.TryParse(Pxml.Element("SavedVersion")?.Value, out var vx2) ? vx2 : new Version(0, 0);
 
 
                             }

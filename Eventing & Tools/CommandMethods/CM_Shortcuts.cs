@@ -153,6 +153,7 @@ namespace GameEditorStudio
                 
                 if (MethodData.GameLibrary != null) //If Library
                 {
+                    if (MethodData.GameLibrary.SelectedWorkshop == null) { return; }
                     folderPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + MethodData.GameLibrary.SelectedWorkshop.WorkshopName + "\\";
                 }
                 else if (MethodData.WorkshopData != null) //If Workshop

@@ -22,7 +22,7 @@ namespace GameEditorStudio
     /// </summary>
     public partial class UserControlEditorCreator : UserControl
     {
-        Workshop TheWorkshop { get; set; }
+        public Workshop TheWorkshop { get; set; }
         public UserControlEditorCreator()
         {
             InitializeComponent();
@@ -32,27 +32,10 @@ namespace GameEditorStudio
             DataTableDebugButton.Visibility = Visibility.Collapsed; //This is a debug button, it shows the data table for the editor creation process. It is not needed in the final product.
             #endif
 
-            this.Loaded += new RoutedEventHandler(LoadEvent);
+            
+
             
         }
-
-        public void LoadEvent(object sender, RoutedEventArgs e) 
-        {
-            var parentWindow = Window.GetWindow(this);
-
-            if (parentWindow is Workshop workshopWindow)
-            {                
-                TheWorkshop = workshopWindow;
-
-            }
-
-            //TabEditorType.Visibility = Visibility.Collapsed;
-            //StandardWidthPart2.Visibility = Visibility.Collapsed;
-            //StandardWidthPart3.Visibility = Visibility.Collapsed;
-            //StandardWidthPartF.Visibility = Visibility.Collapsed;
-
-            
-        }       
                 
 
         public event EventHandler RequestClose;
@@ -247,7 +230,7 @@ namespace GameEditorStudio
             //When making a new editor, i forcibly turn on symbology.
             LibraryGES.ShowSymbology = true;
             LibraryGES.ShowEntryAddress = true; //i now also force on E-IDs
-            TheWorkshop.UpdateEntryDecorations();
+            TheWorkshop.UpdateEntryDecorationsForAllEditors();
             
         }
 

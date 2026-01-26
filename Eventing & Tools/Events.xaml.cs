@@ -26,7 +26,7 @@ namespace GameEditorStudio
 {
     
 
-    public partial class EventsMenu : Window
+    public partial class EventsMenu : UserControl
     {
         //int Commands = 0;
         WorkshopData workshopData { get; set; } 
@@ -46,7 +46,7 @@ namespace GameEditorStudio
             InitializeComponent();
 
             this.workshopData = workshopDataI;
-            this.Title = " Events - " + workshopData.WorkshopName ;
+            //this.Title = " Events - " + workshopData.WorkshopName ;
             WorkshopEvents = workshopData.WorkshopEvents;
             EventResources = workshopData.WorkshopEventResources;
             MainMenu = TheMainMenu;
@@ -94,17 +94,38 @@ namespace GameEditorStudio
 
         private void CreateNewEvent(object sender, RoutedEventArgs e)
         {
-            Event TheEvent = new();
-            TheEvent.DisplayName = "New Event";
-            WorkshopEvents.Add(TheEvent);
+            HashSet<string> existingNames = new(WorkshopEvents.Select(ev => ev.DisplayName));
 
-            TreeViewItem treeViewItem = new TreeViewItem();
-            treeViewItem.Header = TheEvent.DisplayName;
+            // Start with "New Event"
+            string baseName = "New Event";
+            string newName = baseName;
+            int counter = 1;
+
+            // Increment until we find a unique name
+            while (existingNames.Contains(newName))
+            {
+                counter++;
+                newName = $"{baseName} {counter}";
+            }
+
+            // Create the new event
+            Event theEvent = new()
+            {
+                DisplayName = newName,
+                CreatedVersion = LibraryGES.VersionNumber,
+                CreatedDate = DateTime.Now.ToString("MMM dd yyyy"),
+            };
+            WorkshopEvents.Add(theEvent);
+
+            // Create TreeViewItem
+            TreeViewItem treeViewItem = new()
+            {
+                Header = theEvent.DisplayName,
+                Tag = theEvent,
+                IsSelected = true // Select the new event
+            };
+
             EventListTree.Items.Add(treeViewItem);
-            treeViewItem.Tag = TheEvent;
-            //EventListTree
-
-            treeViewItem.IsSelected = true; //Select the new event.
 
         }
 
@@ -130,6 +151,15 @@ namespace GameEditorStudio
 
             if (e.Key == Key.Enter)
             {
+                foreach (Event Event in WorkshopEvents) 
+                {
+                    if (Event.DisplayName == EventNameBox.Text) 
+                    {
+                        PixelWPF.LibraryPixel.NotificationNegative("You can't use that name! D:", "Another event already has that name! \nPick something else!  >:(");
+                        return;
+                    } 
+                }
+
                 CurrentEvent.DisplayName = EventNameBox.Text;
                 TreeViewItem itemm = EventListTree.SelectedItem as TreeViewItem;
                 itemm.Header = CurrentEvent.DisplayName;
@@ -214,7 +244,7 @@ namespace GameEditorStudio
             TopPanel.Children.Add(commandLabel);
 
             //IF COMMAND PROMPT COMMAND, WE ADD SOME EXTRA CONTROLS.
-            if (EventCommand.Command.Key == "638907232781932877-460670541-291625304") 
+            if (EventCommand.Command.Key == "CMD1" || EventCommand.Command.Key == "CMD2" || EventCommand.Command.Key == "CMD3") 
             {
                 CMDStuff(TopPanel, EventCommand, commandDockPanel); //Adds buttons for the command prompt command to the Top Panel.
             }
@@ -225,16 +255,16 @@ namespace GameEditorStudio
             foreach (CommandResource ResourceData in EventCommand.Command.RequiredResourcesList ) // KeyValuePair<string, string> pair in EventCommand.Command.Resources
             {
                                     
-                CreateResourcePanel(ResourceData, commandDockPanel, EventCommand, i);
+                CreateResourceRowOnPanel(ResourceData, commandDockPanel, EventCommand, i);
                 i++;
                 
             }
 
-            int Ci = 1;
+            int Ci = 1; //IF COMMAND PROMPT COMMAND, WE ADD SOME SPECIAL ROWS.
             foreach (CommandResource ResourceData in EventCommand.CMDList) // KeyValuePair<string, string> pair in EventCommand.Command.Resources
             {
 
-                CreateResourcePanel(ResourceData, commandDockPanel, EventCommand, Ci);
+                CreateResourceRowOnPanel(ResourceData, commandDockPanel, EventCommand, Ci);
                 Ci++;
             }
 
@@ -254,7 +284,7 @@ namespace GameEditorStudio
             {
                 //This also happens in LoadDatabase.cs when loading the command prompt command into an event. Any changes here need to happen over there as well.
                 CommandResource ResourceData = new();
-                ResourceData.Label = "Workshop Tools Folder Path";
+                ResourceData.Label = "Workshop Tools Folder Path (Click help for more info) (YOU MUST COMPLETE THE PATH)";
                 ResourceData.Type = CommandResource.ResourceTypes.WTools;
                 EventCommand.CMDList.Add(ResourceData);
 
@@ -343,52 +373,120 @@ namespace GameEditorStudio
             HelpBtn.Click += (sender, e) =>
             {
                 PixelWPF.LibraryPixel.Notification("Command Prompt Help",
-                    "The command lets you send text commands to run in command prompt. " +
-                    "As there are all kinds of things a user could be wanting to do with CMD, it has some special controls. This command sends one (and only one) final string to be run in command prompt, and buttons that let you add references to locations." +
+                    "This command lets you send one (and only one) final text line to run in command prompt. " +
+                    "As command prompt has all kinds of things a user could want to do with it, there are has some special controls." +
                     "\n" +
-                    "\nThe GES Path button adds the path to where the game editor studio's exe is on a end users computer. " +
+                    "\nThe File / Folder buttons: " +
+                    "\nThese add the location of the selected resource to the final text. This location text is always surrounded with \"quotation marks\" because command prompt requires quotation marks for locations.  If you select a child resource, you get the Parent Location + Child Location." +
                     "\n" +
-                    "\nThe Resource Path button adds the path of a resource. If you are using a child resource, the path becomes parent path + child path (IE you don't need to select parent first, it automatically grabs it's parent).)" +
+                    "\nThe Text Button:" +
+                    "\nThis lets you add your own custom text. " +
                     "\n" +
-                    "\nThe Add Text button lets you add your own text. " +
+                    "\nTools Path:" +
+                    "\nThis control adds a PARTIAL LOCATION PATH to the Workshop's Tools folder. This is where you can put third party programs that are workshop specific, such as a tool to unpack a game specific filetype. IMPORTANT: This is only a path UPTO the tools folder. It's up to you to add the rest of the path by adding text afterwards. Your text MUST end with \" to complete the path. " +
                     "\n" +
-                    "\nNote that spaces are not automatically added.");
+                    "\nYou can use the Check Final Text button to see what would be sent to command prompt when the event is actually run. ");
             };
+
+
+
+            ComboBox CMDModeBox = new();
+            CMDModeBox.Width = 190;
+            CMDModeBox.Margin = new(4, 4, 4, 4);
+            DockPanel.SetDock(CMDModeBox, Dock.Right);
+            CMDModeBox.HorizontalAlignment = HorizontalAlignment.Right;
+            TopPanel.Children.Add(CMDModeBox);
+
+            ComboBoxItem DebugModeItem = new();
+            DebugModeItem.Content = "Stay Open Mode";
+            CMDModeBox.Items.Add(DebugModeItem);
+
+            ComboBoxItem AutoCloseItem = new();
+            AutoCloseItem.Content = "Auto Close Mode";
+            CMDModeBox.Items.Add(AutoCloseItem);
+
+            ComboBoxItem HiddenItem = new();
+            HiddenItem.Content = "Hidden Mode";
+            //CMDModeBox.Items.Add(HiddenItem); //Temporary disable Hidden mode untill i finish coding it.
+
+            if (EventCommand.Command.Key == "CMD1") { CMDModeBox.SelectedItem = DebugModeItem; }
+            if (EventCommand.Command.Key == "CMD2") { CMDModeBox.SelectedItem = AutoCloseItem; }
+            if (EventCommand.Command.Key == "CMD3") { CMDModeBox.SelectedItem = HiddenItem; }
+
+            CMDModeBox.SelectionChanged += (sender, e) =>
+            {
+                if (CMDModeBox.SelectedItem == DebugModeItem) 
+                {
+                    Command command = Database.Commands.Find(Command => Command.Key == "CMD1");
+                    EventCommand.Command = command;
+                }
+                else if (CMDModeBox.SelectedItem == AutoCloseItem) 
+                {
+                    Command command = Database.Commands.Find(Command => Command.Key == "CMD2");
+                    EventCommand.Command = command;
+                }
+                else if (CMDModeBox.SelectedItem == HiddenItem) 
+                {
+                    Command command = Database.Commands.Find(Command => Command.Key == "CMD3");
+                    EventCommand.Command = command;
+                }
+            };
+
 
 
             ///////////////////////////////////////
             DockPanel ResourcePanel = new();
             commandDockPanel.Children.Add(ResourcePanel);
             DockPanel.SetDock(ResourcePanel, Dock.Bottom);
-            
-            Label label = new();
-            label.Content = "Mouse hover for final string: ";
-            label.Padding = new(25, 0, 25, 0);
-            ResourcePanel.Children.Add(label);
-            DockPanel.SetDock(label, Dock.Left);
+
+            //Label label = new();
+            //label.Content = "Final Text to CMD: ";
+            //label.Padding = new(25, 0, 25, 0);
+            //ResourcePanel.Children.Add(label);
+            //DockPanel.SetDock(label, Dock.Left);
+
+            TextBox finalbox = new();
+            //finalbox.IsEnabled = false;
+            finalbox.ToolTip = finalbox.Text;
+            finalbox.TextWrapping = TextWrapping.Wrap;
 
             Button finalBtn = new();
-            finalBtn.Content = "Example";
+            finalBtn.Content = " Check final text ";
+            finalBtn.Margin = new(2);
             DockPanel.SetDock(finalBtn, Dock.Left);
             ResourcePanel.Children.Add(finalBtn);
             finalBtn.Click += (sender, e) =>
             {
-                PixelWPF.LibraryPixel.Notification("Dummy",
-                    "");
+                MethodData methodData = LibraryGES.TransformKeysToLocations(EventCommand.ResourceKeys, EventResources, MainMenu, EventCommand);
+
+                finalbox.Text = "";
+
+                foreach (string resource in methodData.ResourceLocations)
+                {
+                    if (!string.IsNullOrEmpty(resource))
+                    {
+                        string astring = resource;
+                        astring = LibraryGES.PathQuoter(astring);
+
+                        if (astring == "WTOOLS")
+                        {
+                            finalbox.Text = finalbox.Text + "\"" + LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\Tools\\";
+                        }
+                        else 
+                        {
+                            finalbox.Text = finalbox.Text + astring + " ";
+                        }
+                            
+                    }
+                }
             };
 
-            TextBox finalbox = new();
-            finalbox.IsEnabled = false;            
-            finalbox.ToolTip = finalbox.Text;
-            ResourcePanel.Children.Add(finalbox);
+            ResourcePanel.Children.Add(finalbox); //Needs to be after finalBtn to show up right.
 
-
-
-            finalbox.Text = "Final String: "; //This is the final string that will be sent to command prompt.
 
         }
 
-        public void CreateResourcePanel(CommandResource CommandResourceData, DockPanel dockPanel, EventCommand EventCommand, int i) 
+        public void CreateResourceRowOnPanel(CommandResource CommandResourceData, DockPanel dockPanel, EventCommand EventCommand, int i) 
         {
             DockPanel ResourcePanel = new();
             dockPanel.Children.Add(ResourcePanel);
@@ -413,6 +511,28 @@ namespace GameEditorStudio
 
             if (CommandResourceData.Type == CommandResource.ResourceTypes.WTools) { return; }
 
+            Button Dbutton = new(); //for CMD command only
+            if (EventCommand.CMDList.Count != 0) //IF COMMAND PROMPT, MAKE A CHECKBOX FOR SURROUNDING PATH WITH QUOTES
+            {
+                Dbutton.Content = " Delete ";
+                Dbutton.Margin = new(4, 2, 4, 2);
+                DockPanel.SetDock(Dbutton, Dock.Right);
+                ResourcePanel.Children.Add(Dbutton);
+                Dbutton.Click += (sender, e) =>
+                {
+                    EventCommand.CMDList.Remove(CommandResourceData);
+                    EventCommand.ResourceKeys.Remove(i); //This is important, or the resource order won't be correct in the end. 
+
+                    var reordered = EventCommand.ResourceKeys
+                        .OrderBy(kvp => kvp.Key)
+                        .Select((kvp, index) => new KeyValuePair<int, string>(index + 1, kvp.Value))
+                        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                    EventCommand.ResourceKeys = reordered;
+
+                    UpdateEventCommandsUI();
+                };
+
+            }
             if (CommandResourceData.Type == CommandResource.ResourceTypes.CMDText) //IF COMMAND PROMPT, MAKE A TEXT INPUT AND STOP HERE (NO DROPDOWN)
             {
                 EventResource TheEventResource = null;
@@ -439,6 +559,7 @@ namespace GameEditorStudio
                 return;
             }
             
+
 
             ComboBox ResourceBox = new();
             DockPanel.SetDock(ResourceBox, Dock.Right);
@@ -587,6 +708,8 @@ namespace GameEditorStudio
 
                 }
             };
+
+            
         }
 
 
@@ -644,10 +767,15 @@ namespace GameEditorStudio
             }
 
             // Open the EventManagerCommands window with the insertIndex
+
             CommandsWindow CommandsWindow = new CommandsWindow(insertIndex);
-            CommandsWindow.Owner = this; // 'this' refers to the current window
-            CommandsWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            CommandsWindow.Show();
+            Window parentWindow = Window.GetWindow(this);
+            if (this.Parent is Panel parentPanel)
+            {
+                CommandsWindow.Owner = parentWindow;
+                CommandsWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                CommandsWindow.Show();
+            }            
 
             CommandsWindow.CommandAdded += AddCommandToMyNewCommandList; //fix?
 
@@ -799,9 +927,23 @@ namespace GameEditorStudio
         private void OpenEventingTutorial(object sender, RoutedEventArgs e)
         {
             EventingTutorial eventingTutorial = new EventingTutorial();
-            eventingTutorial.Owner = this;
-            eventingTutorial.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            eventingTutorial.Show();
+            Window parentWindow = Window.GetWindow(this);
+
+            if (this.Parent is Panel parentPanel)
+            {
+                eventingTutorial.Owner = parentWindow;
+                eventingTutorial.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                eventingTutorial.Show();
+            }
+            
+        }
+
+        private void ButtonExitEventing(object sender, RoutedEventArgs e)
+        {
+            if (this.Parent is Panel parentPanel)
+            {
+                parentPanel.Children.Remove(this);
+            }
         }
     }
 

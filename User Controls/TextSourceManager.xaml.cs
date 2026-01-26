@@ -24,7 +24,7 @@ namespace GameEditorStudio
         WorkshopData Database { get; set; }
         Entry EntryClass { get; set; }
         ListBox EntryListBox { get; set; }
-        Workshop Workshop { get; set; }
+        public Workshop Workshop { get; set; }
         bool DescriptionMode { get; set; } = false;
         bool MenuMode { get; set; } = false; 
 
@@ -70,14 +70,14 @@ namespace GameEditorStudio
                 FileNameIDTextBox.Visibility = Visibility.Collapsed;
                 DataLinkFirstNameIDHelpPanel.Visibility = Visibility.Collapsed;
 
-                foreach (ComboBoxItem CItem in ComboBoxListType.Items) 
+                foreach (ComboBoxItem CItem in ComboBoxListType.Items)
                 {
                     if (CItem.Content as string == "Link to Editor")
                     {
                         ComboBoxListType.Items.Remove(CItem);
                         break;
                     }
-                }                
+                }
 
                 //Remove from Editor
                 //NOTE: IF I EVER ALLOW EDITORS TO GET NAMES FROM ANOTHER EDITOR, ENTRY MENUS LINKING TO EDITORS WILL BREAK. 
@@ -88,53 +88,59 @@ namespace GameEditorStudio
 
             var parentWindow = Window.GetWindow(this);
 
-            if (parentWindow is Workshop workshopWindow)
-            {
-                Database = workshopWindow.WorkshopData;
-
-
-                EditorsTreeView.Items.Clear();
-                foreach (var Editor2 in Database.GameEditors)
-                {
-                    Editor Editor = Editor2.Value;
-
-                    TreeViewItem Item = new TreeViewItem();
-                    Item.Header = Editor.EditorName;
-                    Item.Tag = Editor;
-
-                    EditorsTreeView.Items.Add(Item);
-                }
-
-                if (EntryClass != null) 
-                {
-                    if (EntryClass.EntryTypeMenu.LinkedEditor != null)
-                    {
-                        foreach (TreeViewItem TItem in EditorsTreeView.Items)
-                        {
-                            Editor TheEditor = TItem.Tag as Editor;
-                            if (TheEditor == EntryClass.EntryTypeMenu.LinkedEditor)
-                            {
-                                TItem.IsSelected = true;
-                                EditorFileNameIDTextBox.Text = EntryClass.EntryTypeMenu.FirstNameID.ToString();
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-
-            }
+            
 
         }
 
+
+        public void SetupForEditorNames(WorkshopData wdata) 
+        {
+            //IMPORTANT NOTE: THIS ONLY WORKS FOR NAMES FOR AN ENTRY (MENU MODE). 
+            //IF I EVER ADD SUPPORT FOR NAMES FROM EDITORS FOR THINGS OTHER THEN ENTRYS, I MUST RETHINK?
+            //PS: DON'T LET EDITORS GET NAMES FROM EDITORS WITHOUT TESTING IF ANY INFINITE LOOPS WILL OCCUR.
+            //AND DONT FORGET EXTENDED LOOPS, LIKE A gets from B, B gets from C, C gets from A.
+            //Well, i guess as entrys load AFTER editor names, so maybe this won't be a problem after all?
+
+            Database = wdata;
+
+            EditorsTreeView.Items.Clear();
+            foreach (var Editor2 in Database.GameEditors)
+            {
+                Editor Editor = Editor2.Value;
+
+                TreeViewItem Item = new TreeViewItem();
+                Item.Header = Editor.EditorName;
+                Item.Tag = Editor;
+
+                EditorsTreeView.Items.Add(Item);
+            }
+
+            if (EntryClass != null)
+            {
+                if (EntryClass.EntryTypeMenu.LinkedEditor != null)
+                {
+                    foreach (TreeViewItem TItem in EditorsTreeView.Items)
+                    {
+                        Editor TheEditor = TItem.Tag as Editor;
+                        if (TheEditor == EntryClass.EntryTypeMenu.LinkedEditor)
+                        {
+                            TItem.IsSelected = true;
+                            EditorFileNameIDTextBox.Text = EntryClass.EntryTypeMenu.FirstNameID.ToString();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
         //public event EventHandler RequestClose;
         //private void CancelEditorCreation(object sender, RoutedEventArgs e)
         //{
         //    RequestClose?.Invoke(this, EventArgs.Empty);
         //}
 
-        public void SetupForDescription() 
+        public void SetupForDescription(WorkshopData datab) 
         {
+            Database = datab;
             DescriptionMode = true;
 
             TextLastLineNameLabel.Visibility = Visibility.Collapsed;
@@ -157,12 +163,7 @@ namespace GameEditorStudio
             //Still, i should keep the posibility of this in mind if i ever do this.)
 
             var parentWindow = Window.GetWindow(this);
-
-            if (parentWindow is Workshop workshopWindow)
-            {
-                Database = workshopWindow.WorkshopData;
-
-            }
+            
 
             if (Database.WorkshopXaml.EditorClass.StandardEditorData.DescriptionTableList.Count != 0)
             {
@@ -172,7 +173,7 @@ namespace GameEditorStudio
                 FileFullRowSizeTextBox.Text = TextTable.RowSize.ToString();
                 CharacterSetComboBox.Text = TextTable.CharacterSet;
 
-                
+
 
                 if (Database.WorkshopXaml.EditorClass.StandardEditorData.DescriptionTableList[0].LinkType == DescriptionTable.LinkTypes.TextFile)
                 {
@@ -186,8 +187,8 @@ namespace GameEditorStudio
             }
         }
         public void ShowDescriptionFileInUse(object sender, RoutedEventArgs e)
-        {
-            foreach (TreeViewItem Item3 in DataFileManager.TreeGameFiles.Items) //FileTreeExtraTable.Items
+        {            
+            foreach (TreeViewItem Item3 in LibraryGES.GetALLTreeViewItems(DataFileManager.TreeGameFiles)) //FileTreeExtraTable.Items
             {
                 if (Item3.Tag == Database.WorkshopXaml.EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable)
                 {
@@ -195,7 +196,7 @@ namespace GameEditorStudio
                     break;
                 }
             }
-            foreach (TreeViewItem Item3 in FileManagerForTextFiles.TreeGameFiles.Items) //FileTreeExtraTable.Items
+            foreach (TreeViewItem Item3 in LibraryGES.GetALLTreeViewItems(FileManagerForTextFiles.TreeGameFiles)) //FileTreeExtraTable.Items
             {
                 if (Item3.Tag == Database.WorkshopXaml.EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable)
                 {
@@ -267,10 +268,12 @@ namespace GameEditorStudio
             TextLastLineTextBox.Text = (EntryClass.EntryTypeMenu.NameCount + EntryClass.EntryTypeMenu.Start - 1).ToString();
             TextFileFileNameIDTextBox.Text = EntryClass.EntryTypeMenu.FirstNameID.ToString();
 
-            //Editor Setuo
+            SetupForEditorNames(database);
+
+            //Editor Setup
             if (EntryClass.EntryTypeMenu.LinkedEditor != null) 
-            {
-                foreach (TreeViewItem TItem in EditorsTreeView.Items) 
+            {                
+                foreach (TreeViewItem TItem in LibraryGES.GetALLTreeViewItems(EditorsTreeView)) 
                 {
                     Editor TheEditor = TItem.Tag as Editor;
                     if (TheEditor == EntryClass.EntryTypeMenu.LinkedEditor) 
@@ -310,8 +313,8 @@ namespace GameEditorStudio
             FileTextSizeTextBox.Text = "31";
             FileNameIDTextBox.Text = "0";
             FileNameCountTextBox.Text = "37";
-
-            foreach (TreeViewItem Item3 in DataFileManager.TreeGameFiles.Items) //FileTreeExtraTable.Items
+            
+            foreach (TreeViewItem Item3 in LibraryGES.GetALLTreeViewItems(DataFileManager.TreeGameFiles)) //FileTreeExtraTable.Items
             {
                 GameFile TheFile = Item3.Tag as GameFile;
                 if (TheFile.FileName == "skill.bin")
@@ -324,8 +327,8 @@ namespace GameEditorStudio
         }
 
         public void ShowMenuDataFileInUse(object sender, RoutedEventArgs e)
-        {
-            foreach (TreeViewItem Item3 in DataFileManager.TreeGameFiles.Items) //FileTreeExtraTable.Items
+        {            
+            foreach (TreeViewItem Item3 in LibraryGES.GetALLTreeViewItems(DataFileManager.TreeGameFiles)) //FileTreeExtraTable.Items
             {
                 if (Item3.Tag == Database.WorkshopXaml.EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable)
                 {

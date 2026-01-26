@@ -177,7 +177,7 @@ namespace GameEditorStudio
 
                 foreach (Command Command in Database.Commands)
                 {
-                    if (Command.Key == "638907232781932877-460670541-291625304") { continue; }
+                    //if (Command.Key == "638907232781932877-460670541-291625304") { continue; }  //skip over command prompt
 
                     if (item.Header.ToString() == Command.Category)
                     {

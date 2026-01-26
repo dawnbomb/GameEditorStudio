@@ -1,7 +1,7 @@
 ﻿<Application x:Class="GameEditorStudio.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="Windows/GameLibrary.xaml"
+             StartupUri="Windows/GES.xaml"
              xmlns:local="clr-namespace:GameEditorStudio">
              <!--xmlns:local="clr-namespace:Crystal_Editor"
              xmlns:properties="clr-namespace:Crystal_Editor.Properties"-->

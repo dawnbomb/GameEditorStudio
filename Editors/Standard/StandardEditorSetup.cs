@@ -38,36 +38,16 @@ using Path = System.IO.Path;
 
 namespace GameEditorStudio
 {
-    public class GenerateStandardEditor
+    public class StandardEditorSetup
     {
-        
+        //This triggers when a editor is generated. I split the editor setup code into this file because it's a ton of code. 
+        //This pulls information from the Database, and builds the main part of the editor UI based on that.
+        //Stuff regarding the left bar is in a seperate file. 
 
-
-
-
-
-
-
-        //////////////////////////////////////// Lazy put together move scrollviewer with mouse code.
-        ////////////////////////////////////////
-        //////////////////////////////////////// The actual Generation code for standard editors. 
-
-
-
-
-
-        public void GenerateNormalEditor(Workshop TheWorkshop, WorkshopData Database, Editor EditorClass)
-        {
-            // HEY - In the future i want to instead have a xaml for a standard editor, and greatly reduce the amount of code.
-            // I tried doing it myself, but for some reason i can't understand, the LeftBar.xaml won't load in properly. 
-            // I will consider this post release. 
-
-            //This triggers when the user makes a new editor in SetupNewEditor (not a loop)
-            //or when the workshop is first launched via LoadEditorModeAuto (A loop) -> LoadTheDatabase.
-            //Either way, this method is what actually creates an editor.
-            //This method pulls information from the Database, and builds an editor based on that.
-            //The database is loaded from files on system, or for a new editor, information the user input during editor creation.
-            foreach (var category in EditorClass.StandardEditorData.CategoryList) //Select thr fir
+        public void SetupStandardEditor(WorkshopData Database, Editor EditorClass)
+        {   
+            //First we set the first possible entry as the selected entry. 
+            foreach (var category in EditorClass.StandardEditorData.CategoryList) 
             {
                 foreach (var column in category.ColumnList)
                 {
@@ -90,22 +70,27 @@ namespace GameEditorStudio
                                 break; // Exit as soon as one is found
                             }
                         }
-
-                        
                         
                     }
                     if (EditorClass.StandardEditorData.SelectedEntry != null) { break; }
                 }
                 if (EditorClass.StandardEditorData.SelectedEntry != null) { break; }
             }
+            
 
-            EditorClass.Workshop = TheWorkshop; 
+            //Creates the main DockPanel of the editor. All Editor GUI stuff goes inside this Dockpanel.
+            //This grid is the very back of the entire editor. Everything else is a child of this grid, and those things are all GUI.
+            //DockPanel EditorDockPanel = new();
+            //EditorDockPanel.Background = Brushes.Purple; //If the user ever SEES this grid, it's a bug. So it gets a obvious ugly color.    ////////////COLOR/////////////////         
+            //TheWorkshop.MidGrid.Children.Add(EditorDockPanel);
+            //EditorClass.EditorBackPanel = EditorDockPanel;
 
-            CreateEditor(EditorClass, TheWorkshop, Database);  //Creates the main DockPanel of the editor. All Editor GUI stuff goes inside this Dockpanel.
 
-            MakeButton MakeEditorButton = new();
-            MakeEditorButton.CreateButton(TheWorkshop, Database, EditorClass); //Creates the button a user needs to click to make this editor appear.
-                        
+
+            //Grid mainGrid = new Grid(); //A grid is needed to make a grid splitter work (annoyingly). Previously i just docked a left and right dockpanel directly into editordockpanel.
+            //EditorDockPanel.Children.Add(mainGrid);
+
+
 
 
             //This creates the entire core part of the editor.
@@ -155,63 +140,6 @@ namespace GameEditorStudio
 
 
 
-        public void CreateEditor(Editor EditorClass, Workshop TheWorkshop, WorkshopData Database)
-        {
-            //This grid is the very back of the entire editor. Everything else is a child of this grid, and those things are all GUI.
-            DockPanel EditorDockPanel = new();
-            EditorDockPanel.Background = Brushes.Purple; //If the user ever SEES this grid, it's a bug. So it gets a obvious ugly color.    ////////////COLOR/////////////////         
-            TheWorkshop.MidGrid.Children.Add(EditorDockPanel);
-
-            EditorClass.EditorBackPanel = new();
-            EditorClass.EditorBackPanel = EditorDockPanel;
-
-
-
-            Grid mainGrid = new Grid(); //A grid is needed to make a grid splitter work (annoyingly). Previously i just docked a left and right dockpanel directly into editordockpanel.
-            EditorDockPanel.Children.Add(mainGrid);
-
-
-            //RightDock.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#333333"));
-            /////////////////////////// HEY - DESCRIPTION TEXT BOX CODE WAS MOVED TO THE LEFTBAR, AND KIND OF THE CHARACTER SET MANAGER. (I may move it again later)
-            /////////////////////////// I now generate a new textbox every time the item in the item list changes, although, i may move it back here in the future.
-            StandardEditor standardEditor = new StandardEditor(TheWorkshop, Database, EditorClass);
-            EditorClass.StandardEditorData.TheXaml = standardEditor;
-            Grid.SetColumnSpan(standardEditor, 3); //This makes the standard editor take up all three columns of the main grid.
-            mainGrid.Children.Add(standardEditor);
-
-            for (int i = 0; i < EditorClass.StandardEditorData.DescriptionTableList.Count; i++) //a foreach loop but using for explicitly so i can remove itself if it's invalid a little later here. 
-            {
-                var DescriptionTable = EditorClass.StandardEditorData.DescriptionTableList[i];
-
-                if (DescriptionTable.LinkType == DescriptionTable.LinkTypes.DataFile)
-                {
-                    if (DescriptionTable.Start == 0 || DescriptionTable.RowSize == 0 || DescriptionTable.TextSize == 0 || DescriptionTable.FileTextTable == null || DescriptionTable.FileTextTable.FileLocation == null)
-                    {
-                        // Remove and break
-                        EditorClass.StandardEditorData.DescriptionTableList.RemoveAt(i);
-                        continue;
-                    }
-                }
-                if (DescriptionTable.LinkType == DescriptionTable.LinkTypes.TextFile)
-                {
-                    if (DescriptionTable.FileTextTable == null || DescriptionTable.FileTextTable.FileLocation == null)
-                    {
-                        // Remove and break
-                        EditorClass.StandardEditorData.DescriptionTableList.RemoveAt(i);
-                        continue;
-                    }
-                }
-            }
-            return;
-
-
-            
-
-            
-        }
-        
-
-
 
         public void CreateCategory(Category CatClass)
         {
@@ -222,6 +150,7 @@ namespace GameEditorStudio
             if (SWData == null || TheWorkshop == null || Database == null) { PixelWPF.LibraryPixel.NotificationNegative("Critical Error!", "Create Category error, will crash soon. Report this D:"); }
                         
             int TheIndex = CatClass.SWData.CategoryList.IndexOf(CatClass);
+            //CatClass.CatBorder = new();
             SWData.MainDockPanel.Children.Insert(TheIndex, CatClass.CatBorder);
 
             

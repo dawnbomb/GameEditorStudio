@@ -196,18 +196,34 @@ namespace GameEditorStudio
             {
                 var DescriptionTable = EditorClass.StandardEditorData.DescriptionTableList[i];
 
-
+                
                 TextBox DescriptionTextBox = new();
                 DescriptionTextBox.AcceptsReturn = true;
                 DescriptionTextBox.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
                 DescriptionTextBox.TextWrapping = TextWrapping.NoWrap;
                 DescriptionTextBox.Margin = new Thickness(5);
                 DockPanel.SetDock(DescriptionTextBox, Dock.Top);
-                EditorClass.StandardEditorData.EditorDescriptionsPanel.Children.Add(DescriptionTextBox);
                 DescriptionTextBox.MinHeight = 76;
+                DescriptionTextBox.VerticalAlignment = VerticalAlignment.Top;
+                EditorClass.StandardEditorData.EditorDescriptionsPanel.Children.Add(DescriptionTextBox);
+
+                TreeViewItem selectedItem222 = EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.SelectedItem as TreeViewItem;
+                ItemInfo ItemInfo222 = selectedItem222.Tag as ItemInfo;
+                if (ItemInfo222.IsFolder == true)
+                {
+                    DescriptionTextBox.IsEnabled = false;
+                    return;
+                }
+
+                
+                
                 DescriptionTable.ExtraTableTextBox = DescriptionTextBox;
                 DescriptionTable.ExtraTableEncodeIsEnabled = true;
-                DescriptionTextBox.VerticalAlignment = VerticalAlignment.Top;
+                
+                DescriptionTextBox.IsEnabled = true;
+
+
+                
 
                 DescriptionTextBox.PreviewKeyDown += (sender, e) =>
                 {

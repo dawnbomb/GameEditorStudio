@@ -18,145 +18,154 @@ namespace GameEditorStudio.Loading
     class LoadWorkshopDatabaseCode
     {
 
-        //Later: I should create a editor's button here instead of during EditorCreate, because some editors / users may
-        //want Semi-Auto mode, causeing the program to only load an editor when clicked on instead of every editor at once. This may reduce lag / wait times?
 
-        // ////////DO NOT FORGET ThE DATABASE IS ALSO LOADED WHEN A NEW EDITOR IS CREATED.
-
-        //This file triggers in one of two ways.
-        //1: When the workshop is loaded, to load the database with XML info.
-        //2: The below partial class when a editor is created, also to load a database with XML info, but also to trigger making a new editor with that info.
-
-
-        public void LoadGameFilesIntoDatabase(Workshop TheWorkshop, WorkshopData Database) //Triggers when the workshop is launched.
+        public void LoadEveryEditorXMLIntoWorkshopData(Workshop TheWorkshop, WorkshopData Database) //Triggers when the workshop is launched / opened.
         {
-            //This doesn't happen in preview mode. 
-            string EditorsFolder = LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\";             
-            
-            foreach (string Editor in Directory.GetDirectories(EditorsFolder))
+            //I had AI rewrite this method and did not look at it very hard but it works. 
+            string editorsRoot = Path.Combine(LibraryGES.ApplicationLocation,"Workshops",TheWorkshop.WorkshopData.WorkshopName,"Editors");
+
+            string loadOrderPath = Path.Combine(editorsRoot, "LoadOrder.txt");
+
+            // 1. Read LoadOrder.txt (Editor KEYS)
+            List<string> loadOrderKeys = new();
+            if (File.Exists(loadOrderPath))
             {
-                XElement Filesxml = XElement.Load(Editor + "\\Files.xml"); //This loads a XML from your workshop called WorkshopFiles.xml
-                                
-                foreach (XElement FileX in Filesxml.Descendants("File"))
-                {
-                    GameFile FileInfo = new(); //This class stores everything about a file.
-                    FileInfo.FileName = FileX.Element("Name")?.Value;
-                    FileInfo.FileLocation = FileX.Element("Location")?.Value;
-                    FileInfo.FileNote = FileX.Element("Note")?.Value;
-                    FileInfo.FileWorkshopTooltip = FileX.Element("Tooltip")?.Value;
-
-                    bool GameFileExists = false;
-                    foreach (GameFile GameFile in Database.GameFiles.Values) 
-                    {
-                        if (GameFile.FileLocation == FileInfo.FileLocation) 
-                        {
-                            GameFileExists = true;
-                        }
-                    }
-                    if (GameFileExists == false) 
-                    {
-                        Database.GameFiles.Add(FileInfo.FileLocation, FileInfo);//Adding the GameFile to the Dictionary, with the Key of the FilePath so the key is ALWAYS unique.    
-                    }                    
-                }
-            }
-
-            foreach (GameFile GameFile in Database.GameFiles.Values)
-            {    
-                if (TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory != "" && File.Exists(Path.Combine(TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory, GameFile.FileLocation)))
-                {
-                    GameFile.FileBytes = File.ReadAllBytes(TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\" + GameFile.FileLocation);
-                }
-                else if (TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory != "")
-                {
-                    GameFile.FileBytes = File.ReadAllBytes(TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + GameFile.FileLocation);
-                }
-                else
-                {
-                    return;
-                }
-            }
-
-
-            
-
-
-
-        }
-
-        
-
-        public void LoadEditors(Workshop TheWorkshop, WorkshopData Database) //Triggers when the workshop is launched / opened.
-        {
-
-            List<string> EditorsList = new();
-            string EditorsText = LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + "LoadOrder.txt";
-
-            if (File.Exists(EditorsText))
-            {
-                string[] lines = File.ReadAllLines(EditorsText);
-                foreach (string line in lines)
+                foreach (string line in File.ReadAllLines(loadOrderPath))
                 {
                     if (!string.IsNullOrWhiteSpace(line))
-                    {
-                        EditorsList.Add(line);
-                    }
+                        loadOrderKeys.Add(line.Trim());
                 }
             }
 
-            //This first loads every editor in the EditorsList (Last save editor order).
-            //Then using EditorFolderNames it loads every editor that is NOT in that list. (IE new editors you imported from somewhere)
+            // 2. Scan ALL editor folders and build Key → XML map
+            Dictionary<string, string> editorKeyToXmlPath = new();
 
-            foreach (string EditorName in EditorsList)
+            foreach (string editorFolder in Directory.GetDirectories(editorsRoot))
             {
-                string TargetXML = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors", EditorName, "Editor.xml");
-                if (File.Exists(TargetXML))
-                {
-                    LoadTheEditor(TheWorkshop, Database, TargetXML);
+                string editorXmlPath = Path.Combine(editorFolder, "Editor.xml");
+                if (!File.Exists(editorXmlPath))
+                    continue;
 
+                XElement xml = XElement.Load(editorXmlPath);
+                string editorKey = xml.Element("Key")?.Value;
+
+                if (string.IsNullOrWhiteSpace(editorKey))
+                    continue;
+
+                // If duplicate keys exist, first one wins (you may want to log this)
+                if (!editorKeyToXmlPath.ContainsKey(editorKey))
+                {
+                    editorKeyToXmlPath.Add(editorKey, editorXmlPath);
                 }
             }
 
-            string[] EditorFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors").Select(Path.GetFileName).ToArray();
-            foreach (string FolderName in EditorFolderNames)
+            // 3. PART 1 — Load editors in LoadOrder.txt order
+            HashSet<string> loadedKeys = new();
+
+            foreach (string key in loadOrderKeys)
             {
-                if (!EditorsList.Contains(FolderName))
+                if (editorKeyToXmlPath.TryGetValue(key, out string editorXmlPath))
                 {
-                    string TargetXML = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors", FolderName, "Editor.xml");
-                    LoadTheEditor(TheWorkshop, Database, TargetXML);
+                    LoadEditorXML(TheWorkshop, Database, editorXmlPath);
+                    loadedKeys.Add(key);
                 }
-                //CreateButton(TheWorkshop);
+                // else: key listed but editor missing — optional warning/log
             }
 
-            foreach (Editor TheEditor in Database.GameEditors.Values) //This loads a editors entry data, happening last so editors can load their names first, (so Menu Link From Editor can work, it needs names loaded)
+            // 4. PART 2 — Load any remaining editors not in LoadOrder.txt
+            foreach (var kvp in editorKeyToXmlPath)
+            {
+                if (!loadedKeys.Contains(kvp.Key))
+                {
+                    LoadEditorXML(TheWorkshop, Database, kvp.Value);
+                }
+            }
+
+
+            //   //All my old code below. Keeping it for reference just in case AI messed something up.
+            
+            //List<string> ListOfEditorKeys = new();
+            //List<KeyValuePair<string, string>> FolderNameEditorKeyPairs = new();
+
+            //string EditorsText = LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + "LoadOrder.txt";
+
+            //if (File.Exists(EditorsText))
+            //{
+            //    string[] lines = File.ReadAllLines(EditorsText);
+            //    foreach (string line in lines)
+            //    {
+            //        if (!string.IsNullOrWhiteSpace(line))
+            //        {
+            //            ListOfEditorKeys.Add(line);
+            //        }
+            //    }
+            //}
+
+            //{
+            //    //PART 1: Loading editors from LordOrder.txt
+
+            //    foreach (string EditorKey in ListOfEditorKeys)
+            //    {
+            //        string TargetXML = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors", EditorKey, "Editor.xml");
+            //        if (File.Exists(TargetXML))
+            //        {
+            //            LoadEditorXML(TheWorkshop, Database, TargetXML);
+
+            //        }
+            //    }
+
+            //    ////AI code rewrite
+            //    //string editorsRoot = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors");
+            //    //foreach (string EditorKey in ListOfEditorKeys)
+            //    //{
+            //    //    foreach (string editorFolder in Directory.GetDirectories(editorsRoot))
+            //    //    {
+            //    //        string targetXML = Path.Combine(editorFolder, "Editor.xml");
+            //    //        if (!File.Exists(targetXML))
+            //    //            continue;
+
+            //    //        XElement xml = XElement.Load(targetXML);
+            //    //        string xmlKey = xml.Element("Key")?.Value;
+
+            //    //        if (xmlKey == EditorKey)
+            //    //        {
+            //    //            LoadEditorXML(TheWorkshop, Database, targetXML);
+            //    //            break; // stop searching folders for this key
+            //    //        }
+            //    //    }
+            //    //}
+            //}
+
+            //{
+            //    //Database.GameEditors   and  Editor.EditorKey
+
+            //    //PART 2: Loading any editors that are new (Did not exist in the LoadOrder.txt) (IE new editors you imported from somewhere)
+            //    string[] EditorFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors").Select(Path.GetFileName).ToArray();
+            //    foreach (string FolderName in EditorFolderNames)
+            //    {
+            //        if (!ListOfEditorKeys.Contains(FolderName))
+            //        {
+            //            string TargetXML = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors", FolderName, "Editor.xml");
+            //            LoadEditorXML(TheWorkshop, Database, TargetXML);
+            //        }
+            //        //CreateButton(TheWorkshop);
+            //    }
+
+            //}
+
+            //Here we finish loading standard editor XMLs. These are split into 2 parts so all editors load their names first (so Menu Links to another editor's name list works properly)
+            foreach (Editor TheEditor in Database.GameEditors.Values) 
             {
                 if (TheEditor.EditorType == "DataTable") 
                 {
                     LoadStandardEditor EditorSetup = new();
-                    EditorSetup.LoadDataTableFromFilePart2(TheWorkshop, Database, TheEditor);                    
+                    EditorSetup.LoadDataTableXMLIntoDatabasePART2(TheWorkshop, Database, TheEditor);                    
                     
                 }
             }
 
+            
 
-            foreach (Editor TheEditor in Database.GameEditors.Values) //This loads a editors entry data, happening last so editors can load their names first, (so Menu Link From Editor can work, it needs names loaded)
-            {
-                if (TheEditor.EditorType == "DataTable")
-                {
-                    GenerateStandardEditor Maker = new GenerateStandardEditor();
-                    Maker.GenerateNormalEditor(TheWorkshop, Database, TheEditor); //Create a editor with this information.
-
-                }
-                if (TheEditor.EditorType == "TextEditor")
-                {
-                    TextEditor ATextEditor = new TextEditor(Database, TheEditor);
-                }
-            }
-
-            TheWorkshop.UpdateEntryDecorations();
-
-            {   //Generate the Test Dummy Editor 
-                
-            }
         }
 
         //This Method is for creating a new editor while already inside a workshop. IE when going into a workshop and clicking the "New Editor" button.
@@ -167,7 +176,7 @@ namespace GameEditorStudio.Loading
 
         // ////////NOTE:    the database is also loaded, via the editor creator user control. This only happens when the user is making a brand new editor, all other editors are made above.
 
-        public void LoadTheEditor(Workshop TheWorkshop, WorkshopData Database, string TargetXML)
+        public void LoadEditorXML(Workshop TheWorkshop, WorkshopData Database, string TargetXML)
         {
             XDocument doc = XDocument.Load(TargetXML);
             string EditorType = doc.Descendants("Type").FirstOrDefault()?.Value;
@@ -175,14 +184,38 @@ namespace GameEditorStudio.Loading
             if (EditorType == "DataTable")
             {
                 LoadStandardEditor EditorSetup = new();
-                EditorSetup.LoadDataTableFromFile(TheWorkshop, Database, TargetXML);
+                EditorSetup.LoadDataTableXMLIntoDatabasePART1(TheWorkshop, Database, TargetXML);
             }
             if (EditorType == "TextEditor")
             {
                 LoadTextEditor EditorSetup = new();
-                EditorSetup.LoadTextEditorFromFile(TheWorkshop, Database, TargetXML);
+                EditorSetup.LoadTextEditorXMLIntoDatabase(TheWorkshop, Database, TargetXML);
             }
         }
+
+        public void GenerateAllEditorUIs(WorkshopData database) 
+        {
+            //This happens after all editors load their data because some UI elements of an editor link to the loaded data of another editor. 
+
+            foreach (Editor TheEditor in database.GameEditors.Values)
+            {
+                TabButtonMaker MakeEditorButton = new();
+                MakeEditorButton.CreateTabButton(database, TheEditor); 
+
+                if (TheEditor.EditorType == "DataTable")
+                {
+                    StandardEditor standardEditor = new(database, TheEditor); //Generates the Editor UI using Editor data.
+                }
+                if (TheEditor.EditorType == "TextEditor")
+                {
+                    TextEditor ATextEditor = new TextEditor(database, TheEditor);
+                }
+            }
+
+            database.WorkshopXaml.UpdateEntryDecorationsForAllEditors();
+        }
+
+
 
     }
 

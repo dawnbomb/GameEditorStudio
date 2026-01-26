@@ -19,7 +19,7 @@
             <DockPanel>
                 <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                     <DockPanel Style="{DynamicResource ContentBar}">
-                        <Label Content="Items" FontWeight="Bold"/>
+                        <Label Name="ItemsLabel" Content="Items" FontWeight="Bold"/>
                         <TextBox Name="SearchBar" Margin="15,4,4,4" Text="🔎 Search....." TextChanged="SearchBarTextChanged"/>
                     </DockPanel>
                 </Border>
@@ -50,10 +50,12 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Label Content="Name" Grid.Row="0" Grid.Column="0"/>
-                    <TextBox x:Name="ItemNameTextbox" Grid.Row="0" Grid.Column="1" Width="Auto" Margin="3" PreviewKeyDown="ItemNameboxPreviewKeyDown" KeyDown="ItemNameboxKeyDown" TextChanged="ItemNameboxTextChanged" ToolTip="The item name, if the item text is sourced from game files, will be saved back to game files.&#xD;&#xA;As such, be careful about using symbols the game doesn't recognize as text."/>
+                    <Border Grid.Row="0" Grid.Column="0" Margin="3,0,4,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="This lets you edit the name of an item. &#xA;BE CAREFUL ABOUT USING SYMBOLS THE GAME DOESN'T RECONIZE!!! &#xA;Also: most games have a character limit for name length.&#xA; &#xA;If you want to give it a Nickname, use a note instead!"/>
+                    <TextBox x:Name="ItemNameTextbox" Grid.Row="0" Grid.Column="1" Width="Auto" Margin="3" PreviewKeyDown="ItemNameboxPreviewKeyDown" KeyDown="ItemNameboxKeyDown" TextChanged="ItemNameboxTextChanged"/>
 
                     <Label Content="Note" Grid.Row="1" Grid.Column="0"/>
-                    <TextBox x:Name="ItemNoteTextbox" Grid.Row="1" Grid.Column="1" Margin="3" KeyDown="ItemNoteboxKeyDown" ToolTip="An item note is displayed next to the item in the items list.&#xD;&#xA;It does not get saved to the game files.&#xD;&#xA;Item note data is a part of the editor, not a project. " />
+                    <Border Grid.Row="1" Grid.Column="0" Margin="3,0,4,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="Notes (to the right) appear as &#xA;orange text next to the item. &#xA;They do not save to the game, but &#xA;are useful for quick notes. &#xA; &#xA;For detailed notes, use the box below. &#xA;It creates a tooltip for the item. &#xA;Don't be afraid to have a LOT of text!. &#xA; &#xA;Note that BOTH types of notes are a part of the editor, &#xA;they are not a part of your project. &#xA;IE other people can see them when sharing a workshop."/>
+                    <TextBox x:Name="ItemNoteTextbox" Grid.Row="1" Grid.Column="1" Margin="3" KeyDown="ItemNoteboxKeyDown" />
 
                     <TextBox x:Name="ItemNotepadTextbox" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" TextChanged="NotepadTextChanged" ToolTip="This is where you write a tooltip for the item.&#xD;&#xA;Items with a tooltip appear underlined, and hovering the mouse on them shows the tooltip.&#xD;&#xA;It also supports linebreaks (the enter key), go nuts.&#xD;&#xA;Item Tooltips are part of the editor, not a mod / project, but support for that is coming later." />
                 </Grid>
