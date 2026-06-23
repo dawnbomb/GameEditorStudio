@@ -71,7 +71,10 @@ namespace GameEditorStudio
                     LastChildFill = false,
                     Visibility = Visibility.Collapsed,  // Initially hidden
                     Name = $"Panel{tool.Category.Replace(" ", "")}",  // Remove spaces for a valid name
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    
                 };
+                DockPanel.SetDock(panelForTab, Dock.Top);
                 panelForTab.Style = (Style)FindResource("DockList");
 
                 dockList.Add(panelForTab);
@@ -148,6 +151,7 @@ namespace GameEditorStudio
                 border.Margin = new Thickness(10, 8, 10, 0);
                 border.Height = 36;
                 border.MinWidth = 700;
+                border.Width = double.NaN; // Auto width to fill available space
                 DockPanel.SetDock(border, Dock.Top);
 
                 DockPanel ToolPanel = new DockPanel();
@@ -227,7 +231,8 @@ namespace GameEditorStudio
                 MinWidth = 50,
                 Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF191919")),
                 FontSize = 20,
-                VerticalContentAlignment = VerticalAlignment.Center
+                VerticalContentAlignment = VerticalAlignment.Center,
+                
             };
             Binding locationBinding = new Binding("Location")
             {
@@ -235,6 +240,7 @@ namespace GameEditorStudio
                 Mode = BindingMode.TwoWay
             };
             locationTextBox.SetBinding(TextBox.TextProperty, locationBinding);
+            locationTextBox.SetBinding(TextBox.ToolTipProperty, locationBinding);
             DockPanel.SetDock(locationTextBox, Dock.Right);
             toolPanel.Children.Add(locationTextBox);
             browseButton.Tag = locationTextBox;

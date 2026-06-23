@@ -24,8 +24,8 @@ using System.Xml;
 using System.Xml.Linq;
 using Ookii.Dialogs.Wpf;
 using PixelWPF;
-using Windows.Gaming.Input;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 using TextBox = System.Windows.Controls.TextBox;
@@ -45,9 +45,7 @@ namespace GameEditorStudio
 
         
         public WorkshopData WorkshopData { get; set; }
-
         public GameLibrary GameLibrary { get; set; }
-        public ProjectData ProjectDataItem { get; set; }
 
 
         public TopMenu()
@@ -64,6 +62,7 @@ namespace GameEditorStudio
             DebugMenu.Visibility = Visibility.Collapsed; //Show only in debug mode.
             HUDReshade.Visibility = Visibility.Collapsed;  //Show only in debug mode.
             WikiButton.Visibility = Visibility.Collapsed;  
+            LibraryButton.Visibility = Visibility.Collapsed;
             #endif
 
         }
@@ -76,40 +75,70 @@ namespace GameEditorStudio
         public void MenuLibrarySetup(GameLibrary library) 
         {
             GameLibrary = library;
-            //This origonally set workshop data every time the menu was opened.
 
+            //File
+            //WorkshopMenu.IsEnabled = false;
+            MenuSaveEvents.IsEnabled = false;
             MenuSaveEditors.IsEnabled = false;
             MenuSaveGameData.IsEnabled = false;
             MenuSaveWorkshopDocuments.IsEnabled = false;
             MenuSaveProjectDocuments.IsEnabled = false;
+            MenuSaveEvents.IsEnabled = false;
             NewEditorItem.IsEnabled = false;
             ItemExportEditors.IsEnabled = false;
+
+            //Events
+            EventsMenu.IsEnabled = false;
+
+            //Shortcuts
+            MenuProjectShortcut.IsEnabled = false;
+            MenuInputShortcut.IsEnabled = false;
+            MenuOutputShortcut.IsEnabled = false;
+
+
         }
 
-        public void MenuWorkshopSetup(Workshop workshop) 
-        {
-            WorkshopData = workshop.WorkshopData;
-            ProjectDataItem = WorkshopData.ProjectDataItem;
+        public void SetupTopMenuForProject(Workshop workshop) 
+        {            
+            //ProjectDataItem = WorkshopData.CurrentProject;
 
-            if (workshop.IsPreviewMode == true)
+            if (workshop.WorkshopData.IsProjectLoaded == false)
             {
-                TheMenu.IsEnabled = false;
-
-                MenuInputShortcut.IsEnabled = false;
-                MenuOutputShortcut.IsEnabled = false;
-
+                //File
                 MenuSaveEditors.IsEnabled = false;
                 MenuSaveGameData.IsEnabled = false;
-                MenuSaveWorkshopDocuments.IsEnabled = false;
+                //MenuSaveWorkshopDocuments.IsEnabled = false;
                 MenuSaveProjectDocuments.IsEnabled = false;
                 NewEditorItem.IsEnabled = false;
                 ItemExportEditors.IsEnabled = false;
 
-                WorkshopMenu.IsEnabled = false;
-                ToolsMenu.IsEnabled = false;
-                EventsMenu.IsEnabled = false;
-                ShortcutsMenu.IsEnabled = false;
-                ExtrasMenu.IsEnabled = false;
+                //Events
+                //ItemEventsSetup.IsEnabled = false;
+                //EventsMenu.IsEnabled = false;
+
+                //Shortcuts
+                MenuProjectShortcut.IsEnabled = false;
+                MenuInputShortcut.IsEnabled = false;
+                MenuOutputShortcut.IsEnabled = false;
+            }
+            if (workshop.WorkshopData.IsProjectLoaded == true)
+            {    
+                //File
+                MenuSaveEditors.IsEnabled = true;
+                MenuSaveGameData.IsEnabled = true;
+                MenuSaveWorkshopDocuments.IsEnabled = true;
+                MenuSaveProjectDocuments.IsEnabled = true;
+                NewEditorItem.IsEnabled = true;
+                ItemExportEditors.IsEnabled = true;
+
+                //Events
+                //ItemEventsSetup.IsEnabled = true;
+                //EventsMenu.IsEnabled = true;
+
+                //Shortcuts
+                MenuProjectShortcut.IsEnabled = true;
+                MenuInputShortcut.IsEnabled = true;
+                MenuOutputShortcut.IsEnabled = true;
             }
         }
 
@@ -120,6 +149,19 @@ namespace GameEditorStudio
                 WorkshopData = GameLibrary.SelectedWorkshop;
             }
             //The workshop control loads itself as a reference on creation, and never again. So it doesn't need to update. 
+            
+            //if (WorkshopData.IsProjectLoaded == false) 
+            //{
+            //    MenuProjectShortcut.IsEnabled = false;
+            //    MenuInputShortcut.IsEnabled = false;
+            //    MenuOutputShortcut.IsEnabled = false;
+            //}
+            //if (WorkshopData.IsProjectLoaded == true)
+            //{
+            //    MenuProjectShortcut.IsEnabled = true;
+            //    MenuInputShortcut.IsEnabled = true;
+            //    MenuOutputShortcut.IsEnabled = true;
+            //}            
 
             ReloadToolLocations();
         }
@@ -218,7 +260,7 @@ namespace GameEditorStudio
             
         }
 
-        private void SaveProjectDocuments(object sender, RoutedEventArgs e)
+        private void SaveTheLoadedProjectDocuments(object sender, RoutedEventArgs e)
         {
             if (WorkshopData == null)
             {
@@ -266,7 +308,8 @@ namespace GameEditorStudio
             Grid.SetRow(EditorMaker, 2);
             Grid.SetColumn(EditorMaker, 1);
             Grid.SetRowSpan(EditorMaker, 3);
-            Grid.SetColumnSpan(EditorMaker, 2);
+            Grid.SetColumnSpan(EditorMaker, 3);
+            //LibraryGES.SetGridData(EditorMaker);
             WorkshopData.WorkshopXaml.GridBack.Children.Add(EditorMaker);
 
             EditorMaker.RequestClose += (s, e) =>
@@ -425,9 +468,13 @@ namespace GameEditorStudio
         //========================Tools=========================
         //========================Events=========================
 
+
         private void EventsMenu_SubmenuOpened(object sender, RoutedEventArgs e)
         {
-            
+            //NOTE ON EVENTING:
+            //Eventing always sends a method pack, with the SELECTED PROJECT.
+            //A few specific commands ignore the selected project, and instead use the loaded project.
+            //At the time of writing, these include: Save Editors, Save Game Data, Save Project Documents, Save Everything, and the shortcuts OpenLoadedProjectFolder, OpenLoadedProjectInputFolder, and OpenLoadedProjectOutputFolder.
             MenuOpened();
 
             while (EventsMenu.Items.Count > 2)
@@ -435,15 +482,15 @@ namespace GameEditorStudio
                 EventsMenu.Items.RemoveAt(2); // Always remove all items except the first two. 
             }
 
-            if (WorkshopData == null)  //WorkshopName == null || WorkshopName == ""
-            {                
-                ItemEventsSetup.IsEnabled = false;
-                return;
-            }
-            else 
-            {
-                ItemEventsSetup.IsEnabled = true;
-            }
+            //if (WorkshopData == null)  //WorkshopName == null || WorkshopName == ""
+            //{                
+            //    ItemEventsSetup.IsEnabled = false;
+            //    return;
+            //}
+            //else 
+            //{
+            //    ItemEventsSetup.IsEnabled = true;
+            //}
 
             foreach (Event Event in WorkshopData.WorkshopEvents)
             {
@@ -486,10 +533,19 @@ namespace GameEditorStudio
                 bool BrokenEvent = false;
                 bool MissingRequirements = false;
                 bool CMDTHING = false;
+                bool NeedsLoadedProject = false;
 
                 foreach (EventCommand myCommand in Event.CommandList)
                 {
                     //if (myCommand.CMDList.Count != 0) { continue; }
+                    if (WorkshopData.SelectedProject == null) { conditionsMet = false; continue; }
+                    if (WorkshopData.LoadedProject == null) 
+                    {                                         
+                        //The very tiny list of specific commands that require a loaded project.
+                        if (myCommand.Command.Key == "638835921950407398-717630473-427782251") { NeedsLoadedProject = true; conditionsMet = false; continue; } //If Save Editors 
+                        if (myCommand.Command.Key == "638835921950407433-13988325-250675840")  { NeedsLoadedProject = true; conditionsMet = false; continue; } //If Save Game Data
+                        if (myCommand.Command.Key == "638835921950407528-367118138-951819106") { NeedsLoadedProject = true; conditionsMet = false; continue; } //If Save Loaded Project Documents List
+                    }
 
                     // Check for missing tools
                     foreach (Tool tool in myCommand.Command.RequiredToolsList)
@@ -538,7 +594,7 @@ namespace GameEditorStudio
                         if (eventResource.IsChild == true) //!string.IsNullOrEmpty(eventResource.ParentKey)
                         {
                             // It's a relative resource, find the base resource in project resources
-                            ProjectEventResource projectResource = ProjectDataItem.ProjectEventResources.FirstOrDefault(res => res.Key == eventResource.ParentKey); //PARENT key
+                            ProjectEventResource projectResource = WorkshopData.SelectedProject.ProjectEventResources.FirstOrDefault(res => res.Key == eventResource.ParentKey); //PARENT key
 
                             if (projectResource == null )
                             {
@@ -561,7 +617,7 @@ namespace GameEditorStudio
                         else if (eventResource.IsChild == false) 
                         {
                             // It's an absolute resource, find the corresponding project event resource and use its location
-                            ProjectEventResource projectResource = ProjectDataItem.ProjectEventResources.FirstOrDefault(res => res.Key == eventResource.Key); //MY key
+                            ProjectEventResource projectResource = WorkshopData.SelectedProject.ProjectEventResources.FirstOrDefault(res => res.Key == eventResource.Key); //MY key
 
                             if (projectResource == null )
                             {
@@ -606,8 +662,33 @@ namespace GameEditorStudio
                 {
                     runname.Foreground = Brushes.Gray;
 
-                    if (BrokenEvent == true)
+                    if (WorkshopData.SelectedProject == null)
                     {
+                        Run runX = new Run(" (No Project Selected in home tab)");
+                        menuName.Inlines.Add(runX);
+                        runX.Foreground = Brushes.LightGray;                        
+                    }
+                    else if (WorkshopData.LoadedProject == null && NeedsLoadedProject == true)
+                    {
+                        Run runX = new Run(" (Needs loaded project. Hover for info.)");
+                        menuName.Inlines.Add(runX);
+                        runX.Foreground = Brushes.LightGray;
+                        //runX.TextDecorations = new TextDecorationCollection { new TextDecoration
+                        //{
+                        //    Location = TextDecorationLocation.Underline,
+                        //    Pen = new Pen(Brushes.LightGray, 2),
+                        //    PenThicknessUnit = TextDecorationUnit.Pixel,                            
+                        //}};
+                        string AddedTooltip = "This event has commands that make use of a LOADED project. \nSome Examples: \nSave Editors, Save Game Data, Save Project Documents.";
+                        if (menuItem.ToolTip == null) 
+                        { menuItem.ToolTip = menuItem.ToolTip + AddedTooltip; }
+                        else 
+                        { menuItem.ToolTip = menuItem.ToolTip + "\n\n" + AddedTooltip; } 
+                            
+                    }
+                    else if (BrokenEvent == true)
+                    {
+                        
                         if (Event.CommandList.Count == 0) { Run runX = new Run(" (Broken Event: No Commands)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
                         else if (CMDTHING == true) { Run runX = new Run(" (Broken Event: CMD Command Unassigned)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
                         else if (missingEventCommands.Count != 0 && missingEventChildParentLinks.Count != 0) { Run runX = new Run(" (Broken Event: Unassigned Commands & Child Links)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
@@ -635,6 +716,7 @@ namespace GameEditorStudio
                     }
                     else if (MissingRequirements == true)
                     {
+                        
                         if (missingTools.Count != 0 && missingProjectResources.Count != 0) { Run runX = new Run(" (Missing: Tools & Resources)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.OrangeRed; }
                         else if (missingTools.Count != 0) { Run runX = new Run(" (Missing: Tools)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.OrangeRed; }
                         else if (missingProjectResources.Count != 0) { Run runX = new Run(" (Missing: Project Resources)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.OrangeRed; }
@@ -650,9 +732,8 @@ namespace GameEditorStudio
                             
                             MessageBox.Show(message);
                         };
-
-
-                    }
+                                                
+                    }                    
                     else //Unknown Problem
                     {
                         Run runX = new Run(" (Unknown Error)");
@@ -670,6 +751,14 @@ namespace GameEditorStudio
                         {
                             if (myCommand.Command.TheMethod != null)
                             {
+                                if (WorkshopData.LoadedProject != WorkshopData.SelectedProject && WorkshopData.LoadedProject != null) 
+                                {
+                                    if (PixelWPF.LibraryPixel.NotificationConfirm("Just checking...", "You have a loaded project, but your trying to run an event for a diffrent project (the selected one). Did you mean to do this?") == false)
+                                    {
+                                        return;
+                                    }
+                                }
+
                                 MethodData actionPack = LibraryGES.TransformKeysToLocations(myCommand.ResourceKeys, WorkshopData.WorkshopEventResources, this, myCommand);
                                 actionPack.mainMenu = this;
                                 myCommand.Command.TheMethod(actionPack);
@@ -756,29 +845,29 @@ namespace GameEditorStudio
             MethodData MethodData = new();
             CommandMethodsClass.OpenDownloadsFolder(MethodData);
         }
-        private void OpenProjectFolder(object sender, RoutedEventArgs e)
+        private void OpenLoadedProjectFolder(object sender, RoutedEventArgs e)
         {
             MethodData MethodData = new();
             MethodData.GameLibrary = GameLibrary;
             MethodData.WorkshopData = WorkshopData;
-            CommandMethodsClass.OpenProjectFolder(MethodData);
+            CommandMethodsClass.OpenLoadedProjectFolder(MethodData);
 
         }
-        private void OpenInputFolder(object sender, RoutedEventArgs e)
+        private void OpenLoadedProjectInputFolder(object sender, RoutedEventArgs e)
         {
             MethodData MethodData = new();
             MethodData.GameLibrary = GameLibrary;
             MethodData.WorkshopData = WorkshopData;
-            CommandMethodsClass.OpenInputFolder(MethodData);
+            CommandMethodsClass.OpenLoadedProjectInputFolder(MethodData);
 
         }
 
-        private void OpenOutputFolder(object sender, RoutedEventArgs e)
+        private void OpenLoadedProjectOutputFolder(object sender, RoutedEventArgs e)
         {
             MethodData MethodData = new();
             MethodData.GameLibrary = GameLibrary;
             MethodData.WorkshopData = WorkshopData;
-            CommandMethodsClass.OpenOutputFolder(MethodData);
+            CommandMethodsClass.OpenLoadedProjectOutputFolder(MethodData);
         }
 
         private void OpenWorkshopFolder(object sender, RoutedEventArgs e)
@@ -832,7 +921,10 @@ namespace GameEditorStudio
             PixelWPF.LibraryPixel.Notification("Title Test","Content test");
         }
 
-
+        private void DebugNotificationError(object sender, RoutedEventArgs e)
+        {
+            PixelWPF.LibraryPixel.NotificationNegative("Title Test", "Content test");
+        }
 
 
 
@@ -853,53 +945,68 @@ namespace GameEditorStudio
             int caret = DecBox.CaretIndex;
             string originalText = DecBox.Text;
 
-            if (ulong.TryParse(originalText.Trim(), out ulong value))
+            // 1. We allow thousands separators (commas) and leading/trailing whitespace
+            // We use InvariantCulture to ensure ',' is always treated as a thousands separator
+            var style = System.Globalization.NumberStyles.AllowThousands |
+                        System.Globalization.NumberStyles.Integer;
+            var provider = System.Globalization.CultureInfo.InvariantCulture;
+
+            if (ulong.TryParse(originalText, style, provider, out ulong value))
             {
-                // Don't update the box that triggered this
+                // Don't update the box that triggered this if the user is currently typing
+                // This prevents the cursor from jumping or commas being stripped while typing
                 if (!DecBox.IsFocused)
                 {
+                    // Optional: You could use value.ToString("N0") if you WANTED commas back
                     DecBox.Text = value.ToString();
-                    DecBox.CaretIndex = caret;
+                    DecBox.CaretIndex = Math.Min(caret, DecBox.Text.Length);
                 }
 
                 byte[] littleEndian = BitConverter.GetBytes(value);
+
+                // Find the actual length of the data (ignoring trailing zeros)
                 int actualLen = littleEndian.Length;
                 while (actualLen > 1 && littleEndian[actualLen - 1] == 0) actualLen--;
 
                 var trimmedLittle = littleEndian.Take(actualLen).ToArray();
 
+                // Update Hex Little Endian Box
                 if (!HexBoxLil.IsFocused)
                 {
                     HexBoxLil.Text = string.Concat(trimmedLittle.Select(b => b.ToString("X2")));
                 }
 
+                // Update Hex Big Endian Box
                 if (!HexBoxBig.IsFocused)
                 {
                     var big = trimmedLittle.Reverse().ToArray();
                     HexBoxBig.Text = string.Concat(big.Select(b => b.ToString("X2")));
                 }
 
-                // Clear backgrounds
+                // Clear backgrounds if valid
                 DecBox.ClearValue(TextBox.BackgroundProperty);
                 HexBoxLil.ClearValue(TextBox.BackgroundProperty);
                 HexBoxBig.ClearValue(TextBox.BackgroundProperty);
             }
             else
             {
-                DecBox.Background = Brushes.Red;
-
-                if (originalText == "") 
+                // If empty, it's not "wrong", it's just empty
+                if (string.IsNullOrWhiteSpace(originalText))
                 {
                     DecBox.ClearValue(TextBox.BackgroundProperty);
                 }
-                
+                else
+                {
+                    DecBox.Background = Brushes.Red;
+                }
             }
         }
 
         private void TextBoxHexLilConvert(object sender, TextChangedEventArgs e)
         {
             int caret = HexBoxLil.CaretIndex;
-            string text = HexBoxLil.Text.Trim();
+            string textbase = HexBoxLil.Text.Trim();
+            string text = textbase.Replace(" ","");
 
             try
             {
@@ -941,7 +1048,8 @@ namespace GameEditorStudio
         private void TextBoxHexBigConvert(object sender, TextChangedEventArgs e)
         {
             int caret = HexBoxBig.CaretIndex;
-            string text = HexBoxBig.Text.Trim();
+            string textbase = HexBoxBig.Text.Trim();
+            string text = textbase.Replace(" ", "");
 
             try
             {
@@ -985,18 +1093,24 @@ namespace GameEditorStudio
         //======================================TopRight================================
 
         private void OpenReshade(object sender, RoutedEventArgs e)
-        {  
-            string colorsplash = LibraryGES.ApplicationLocation + "/Other/ColorSplash/Reshade Color Splash.exe";
-            Process process = new Process
+        {
+            try 
             {
-                StartInfo = new ProcessStartInfo
+                string colorsplash = LibraryGES.ApplicationLocation + "/Other/ColorSplash/Reshade Color Splash.exe";
+                Process process = new Process
                 {
-                    FileName = colorsplash,                    
-                    UseShellExecute = true // Needed if launching .exe directly (not using redirected IO)
-                },
-                EnableRaisingEvents = true
-            };
-            process.Start();  
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = colorsplash,
+                        UseShellExecute = true // Needed if launching .exe directly (not using redirected IO)
+                    },
+                    EnableRaisingEvents = true
+                };
+                process.Start();
+            } 
+            catch { }
+
+           
         }
 
         private void OpenWiki(object sender, RoutedEventArgs e)
@@ -1062,6 +1176,19 @@ namespace GameEditorStudio
             }
         }
 
-        
+        private void ExitWorkshop(object sender, RoutedEventArgs e)
+        {
+            try //Im to lazy to check if were in a workshop right now, so heres a try catch instead. 
+            {
+                ((System.Windows.Controls.Panel)WorkshopData.WorkshopXaml.Parent).Children.Remove(WorkshopData.WorkshopXaml);
+            } 
+            catch 
+            { }
+            
+
+            //Unload current workshop data from memory.
+            //Make sure saving works correctly.
+            
+        }
     }
 }

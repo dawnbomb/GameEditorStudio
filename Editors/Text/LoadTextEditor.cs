@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml.Linq;
-using WpfHexaEditor;
+using WpfHexEditor;
 
 namespace GameEditorStudio
 {
@@ -16,70 +16,48 @@ namespace GameEditorStudio
     {
         public void NewTextEditorIntoDatabase(WorkshopData database, UserControlEditorCreator Maker) 
         {
-            Workshop TheWorkshop = database.WorkshopXaml;
-
-            TheWorkshop.EditorName = Maker.TextboxEditorName.Text;
-
-
-            Editor editor = new(); //Creates the base class of the editor. Everything else becomes a child of this class, including other classes.
+            TextEditorData editor = new();            
             editor.EditorName = Maker.TextboxEditorName.Text;
-            editor.EditorType = "TextEditor";
-            editor.EditorKey = PixelWPF.LibraryPixel.GenerateKey();
-            //EditorClass.EditorIcon = Maker.DemoEditorImage.Tag as string; for old icon system.
 
+            editor.WorkshopData = database;
+            editor.WorkshopXaml = database.WorkshopXaml;
 
-            TextEditorData TextData = new();
-            editor.TextEditorData  = TextData;
+            database.GameEditors.Add(editor);
                         
-
-            database.GameEditors.Add(TheWorkshop.EditorName, editor);
-
-            TabButtonMaker MakeEditorButton = new();
-            MakeEditorButton.CreateTabButton(database, editor);
 
             TextEditor ATextEditor = new TextEditor(database, editor);
 
-            editor.EditorButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            editor.EditorTab.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         }
 
         public void LoadTextEditorXMLIntoDatabase(Workshop TheWorkshop, WorkshopData Database, string TargetXML) 
         {
             XElement xml = XElement.Load(TargetXML);
-            TheWorkshop.EditorName = xml.Element("Name")?.Value; //Sets the name of the editor were working with from the name stored in XML.
 
-            Editor EditorClass = new();          //Creates a EditorClass
-            EditorClass.Workshop = TheWorkshop;
-            //EditorClass.EditorName = xml.Element("Name")?.Value;
-            //EditorClass.EditorName = EditorName;
-            EditorClass.EditorName = Path.GetFileName(Path.GetDirectoryName(TargetXML));
-            EditorClass.EditorIcon = xml.Element("Icon")?.Value;
-            EditorClass.EditorType = xml.Element("Type")?.Value;
-            EditorClass.EditorKey = xml.Element("Key")?.Value;
+            TextEditorData TextEditorClass = new();          //Creates a EditorClass
+            TextEditorClass.WorkshopXaml = TheWorkshop;
+            TextEditorClass.WorkshopData = Database;
+            TextEditorClass.EditorName = Path.GetFileName(Path.GetDirectoryName(TargetXML));
+            TextEditorClass.EditorIcon = xml.Element("Icon")?.Value;
+            TextEditorClass.EditorKey = xml.Element("Key")?.Value;
 
-            EditorClass.TextEditorData = new();
-
-            if (TheWorkshop.IsPreviewMode == false) 
+            foreach (XElement item in xml.Descendants("EditorFile"))
             {
-                foreach (XElement item in xml.Descendants("EditorFile"))
-                {
-                    string ItemLocation = item.Element("FileLocation")?.Value;
+                string ItemLocation = item.Element("FileLocation")?.Value;
+                TextEditorClass.GameFileLocations.Add(ItemLocation);
 
-                    foreach (GameFile gameFile in Database.GameFiles.Values) 
+                foreach (GameFile gameFile in Database.GameFiles)
+                {
+                    if (gameFile.FileLocation == ItemLocation)
                     {
-                        if (gameFile.FileLocation == ItemLocation) 
-                        {
-                            EditorClass.TextEditorData.ListOfGameFiles.Add(gameFile);
-                        }
+                        TextEditorClass.ListOfGameFiles.Add(gameFile);
                     }
                 }
-                //EditorClass.TextEditorData.TheText = System.IO.File.ReadAllText(Database.Workshop.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.TextEditorData.FileLocation);
             }
+
             
-
-            Database.GameEditors.Add(TheWorkshop.EditorName, EditorClass); //Adds a core (aka the value) with the Key (New editor name from textbox) to the database dictionary.
-
-
-
+            
+            Database.GameEditors.Add(TextEditorClass); //Adds a core (aka the value) with the Key (New editor name from textbox) to the database dictionary.
             
         }
 

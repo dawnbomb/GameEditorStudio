@@ -319,18 +319,18 @@ namespace GameEditorStudio
 
         public void ChangeCurrentEditorGraphic(string GraphicName) 
         {
-            TheWorkshop.EditorClass.EditorIcon = GraphicName;
+            //TheWorkshop.EditorClass.EditorIcon = GraphicName;
 
-            string baseGraphicsPath = Path.Combine(LibraryGES.ApplicationLocation, "Other\\Icons");
-            string[] files = Directory.GetFiles(LibraryGES.ApplicationLocation + "\\Other\\Icons\\", GraphicName, SearchOption.AllDirectories);
-            if (files.Length > 0)
-            {
-                // File found, use the first found instance
-                string foundFilePath = files[0];
-                TheWorkshop.EditorClass.EditorImage.Source = new BitmapImage(new Uri(foundFilePath));
-            }
+            //string baseGraphicsPath = Path.Combine(LibraryGES.ApplicationLocation, "Other\\Icons");
+            //string[] files = Directory.GetFiles(LibraryGES.ApplicationLocation + "\\Other\\Icons\\", GraphicName, SearchOption.AllDirectories);
+            //if (files.Length > 0)
+            //{
+            //    // File found, use the first found instance
+            //    string foundFilePath = files[0];
+            //    TheWorkshop.EditorClass.EditorTabImage.Source = new BitmapImage(new Uri(foundFilePath));
+            //}
 
-            TheWorkshop.UpdateEditorButton(TheWorkshop.EditorClass);
+            //TheWorkshop.UpdateEditorTab(TheWorkshop.EditorClass);
             
         }
 

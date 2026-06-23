@@ -1,0 +1,133 @@
+﻿<Window x:Class="GameEditorStudio.Tutorial"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GameEditorStudio"
+        mc:Ignorable="d"
+        Title="Tutorial" Height="800" Width="900">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1"/>
+            <RowDefinition Height="433*"/>
+            <RowDefinition Height="26.04"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="*" Name="EditColumn"/>
+        </Grid.ColumnDefinitions>
+
+        <DockPanel Grid.Column="0" Grid.Row="1" Grid.RowSpan="1" Margin="5,5,5,5">
+            
+            
+            <Border  DockPanel.Dock="Top"  >
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Style="{DynamicResource ContentBar}" LastChildFill="False">
+                        <Label Content="Categories" FontWeight="Bold"/>
+                        <Button Name="ButtonDelCategory" Content="Del" DockPanel.Dock="Right"  Click="DeleteWikiCategory" Margin="2,3,2,3" Width="60"/>
+                        <Button Name="ButtonNewCategory" Content="New" DockPanel.Dock="Right"  Click="NewWikiCategory" Margin="2,3,2,3" Width="60"/>
+                        
+                        <Button x:Name="ButtonEditMode" Content="Edit" Width="120" Margin="3" DockPanel.Dock="Right" Click="ButtonEditModeClick"/>
+                    </DockPanel>
+
+
+                    <TreeView x:Name="TreeOfCategorys" DockPanel.Dock="Top" SelectedItemChanged="CategoryChanged" Height="250">
+
+                    </TreeView>
+
+                    <DockPanel Name="CategoryEditGrid">
+                        <Label Content="Name:" DockPanel.Dock="Left" />
+                        
+                        <Button Name="ButtonMovCatDown" Content="↓" DockPanel.Dock="Right"  Click="MovCatDown" Margin="0,3,2,3" Width="35"/>
+                        <Button Name="ButtonMovCatUp" Content="↑" DockPanel.Dock="Right"  Click="MovCatUp" Margin="2,3,0,3" Width="35"/>
+                        <TextBox Name="CategoryNameBox" DockPanel.Dock="Left" MinWidth="105" Margin="-5,5,0,5" KeyDown="CategoryNameBoxKeyDown"/>
+                    </DockPanel>
+                    
+
+                </DockPanel>
+            </Border>
+
+
+
+            <Border  DockPanel.Dock="Top" Margin="0,10,0,0" >
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Style="{DynamicResource ContentBar}" LastChildFill="False">
+                        <Label Content="Documents" FontWeight="Bold"/>
+                        <Button Name="ButtonDelDocument" Content="Del" DockPanel.Dock="Right"  Click="DeleteWikiTopic" Margin="2,3,2,3" Width="60"/>
+                        <Button Name="ButtonNewDocument" Content="New" DockPanel.Dock="Right" Click="NewWikiTopic" Margin="2,3,2,3" Width="60"/>
+                    </DockPanel>
+
+                    <DockPanel Name="DocumentEditGrid" DockPanel.Dock="Bottom">
+                        <Label Content="Name:" DockPanel.Dock="Left" />                                              
+                        <Button Name="ButtonMovDocDown" Content="↓" DockPanel.Dock="Right"  Click="MovDocDown" Margin="0,3,2,3" Width="35"/>
+                        <Button Name="ButtonMovDocUp" Content="↑" DockPanel.Dock="Right"  Click="MovDocUp" Margin="2,3,0,3" Width="35"/>
+                        <TextBox DockPanel.Dock="Left" MinWidth="105" Margin="-5,5,0,5" Name="DocumentNameBox" KeyDown="DocumentNameBoxKeyDown" Height="30"/>
+                    </DockPanel>
+
+                    <TreeView x:Name="TreeOfDocuments" SelectedItemChanged="DocumentChanged" MinHeight="200" DockPanel.Dock="Top">
+
+                    </TreeView>
+
+                    
+                </DockPanel>
+            </Border>
+
+
+        </DockPanel>
+
+        <DockPanel Grid.Column="1" Grid.Row="1" Grid.RowSpan="1" Margin="5,5,5,5">
+            
+
+            
+        </DockPanel>
+
+        <ContentControl  Grid.Column="1" Grid.Row="1" Grid.RowSpan="1" Margin="5,5,5,5">
+            <DockPanel>
+                <DockPanel Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" Background="#FF272727"  >
+                    <Label Name="DocumentLabel" Content="Info" FontWeight="Bold" FontSize="30"  DockPanel.Dock="Left" HorizontalAlignment="Center" HorizontalContentAlignment="Center" />                    
+                </DockPanel>
+                <Separator Width="Auto" DockPanel.Dock="Top" Style="{DynamicResource SeparatorSolid}"/>
+                <ScrollViewer Name="PatchnoteScrollViewer" VerticalScrollBarVisibility="Auto" Background="#FF353535"  >
+                    <StackPanel Background="#FF21211F">
+                        <StackPanel Name="PatchnotePanel" Background="Transparent" Margin="5,10,5,10">
+                            <TextBlock x:Name="DocumentReadBox" Margin="15,10,15,10" FontSize="20" FontFamily="{DynamicResource AppFont}" TextWrapping="Wrap" Foreground="#FFE6E6E6"/>
+                        </StackPanel>
+                    </StackPanel>
+                        
+
+                </ScrollViewer>
+            </DockPanel>
+
+        </ContentControl>
+        
+        <Label Grid.Column="1" Content="Next:  Tutorial History.         Later:   Related Topics." HorizontalAlignment="Left" Margin="0,0,0,0" Grid.Row="2" Grid.ColumnSpan="1" VerticalAlignment="Center" Height="32" />
+
+
+
+
+
+
+
+
+        <ContentControl Name="EditorView"  Grid.Column="2" Grid.Row="1" Grid.RowSpan="1" Margin="5,5,5,5">
+            <DockPanel>
+                <DockPanel Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" Background="#FF272727"  >
+                    <Button Name="SaveWikiButton" Content="Save Wiki" Width="110" Click="ButtonSaveWiki" ToolTip="Saves the entire wiki to FAKE folder to test saving, then deletes real wiki folder, then saves over it. Saves everything, not just this document."/>
+                </DockPanel>
+                <Separator Width="Auto" DockPanel.Dock="Top" Style="{DynamicResource SeparatorSolid}"/>
+                <ScrollViewer Name="PatchnoteScrollViewer2" VerticalScrollBarVisibility="Auto" Background="#FF353535"  >
+                    <DockPanel Background="{x:Null}">                        
+                        <TextBox x:Name="DocumentEditBox" TextChanged="TextboxTextChanged" Margin="10" TextWrapping="Wrap" AcceptsReturn="True">
+
+                        </TextBox>
+                    </DockPanel>
+
+
+                </ScrollViewer>
+            </DockPanel>
+
+        </ContentControl>
+
+    </Grid>
+</Window>

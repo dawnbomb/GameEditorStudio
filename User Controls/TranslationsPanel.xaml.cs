@@ -27,7 +27,7 @@ namespace GameEditorStudio
             InitializeComponent();
         }
 
-        public async Task UpdateTranslationsPanel(ItemInfo nameitem) 
+        public async Task UpdateTranslationsPanel(TextInfo nameitem) 
         {
             OrigonalNameTextbox.Text = nameitem.ItemOrigonalName;
             //LibreTextbox.Text = TranslateUsingLibreTranslate(nameitem.ItemOrigonalName);

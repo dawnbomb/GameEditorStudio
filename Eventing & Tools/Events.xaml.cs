@@ -17,8 +17,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.TextFormatting;
 using System.Windows.Shapes;
-using Windows.Management.Deployment.Preview;
-using Windows.Media.Devices;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using static GameEditorStudio.EventsMenu;
 
@@ -589,41 +587,41 @@ namespace GameEditorStudio
                     continue;
                 }
 
-                string TheThingy = ""; //The file/folder we are actually using.
+                //string TheThingy = ""; //The file/folder we are actually using.
 
-                if (EventResource.RequiredName == true)
-                {
-                    TheThingy = EventResource.Location;
+                //if (EventResource.RequiredName == true)
+                //{
+                //    TheThingy = EventResource.Location;
 
-                    if (EventResource.Location == "") 
-                    {
-                        TheThingy = "ERROR";
-                    }
-                }
-                else if (EventResource.RequiredName == false) 
-                {
-                    ProjectEventResource ProjectResource = MainMenu.ProjectDataItem.ProjectEventResources.Find(thing => thing.Key == EventResource.Key);
+                //    if (EventResource.Location == "") 
+                //    {
+                //        TheThingy = "ERROR";
+                //    }
+                //}
+                //else if (EventResource.RequiredName == false) 
+                //{
+                //    ProjectEventResource ProjectResource = MainMenu.WorkshopData.SelectedProject.ProjectEventResources.Find(thing => thing.Key == EventResource.Key);
 
-                    if (ProjectResource != null)
-                    {
-                        string sdfsdf = System.IO.Path.GetFileName(ProjectResource.Location);
-                        TheThingy = sdfsdf;
+                //    if (ProjectResource != null)
+                //    {
+                //        string sdfsdf = System.IO.Path.GetFileName(ProjectResource.Location);
+                //        TheThingy = sdfsdf;
 
-                        if (sdfsdf == "" || sdfsdf == null)
-                        {
-                            TheThingy = "ERROR";
-                        }
+                //        if (sdfsdf == "" || sdfsdf == null)
+                //        {
+                //            TheThingy = "ERROR";
+                //        }
 
                         
-                    }
-                    else if (ProjectResource == null)
-                    {
-                        if (EventResource.IsChild == true)
-                        {
-                            TheThingy = System.IO.Path.GetFileName(EventResource.Location);
-                        }
-                    }
-                }
+                //    }
+                //    else if (ProjectResource == null)
+                //    {
+                //        if (EventResource.IsChild == true)
+                //        {
+                //            TheThingy = System.IO.Path.GetFileName(EventResource.Location);
+                //        }
+                //    }
+                //}
                 
                 TextBlock tex = new();
                 ComboBoxItem Item = new();
@@ -944,6 +942,8 @@ namespace GameEditorStudio
             {
                 parentPanel.Children.Remove(this);
             }
+
+            workshopData.WorkshopXaml.HomeControl.RefreshProjectEventResourcesUI(workshopData.SelectedProject);
         }
     }
 

@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="565">
     <Grid>
-        <DataGrid x:Name="EntryValueInsightDataGrid" AutoGenerateColumns="False"  HorizontalContentAlignment="Left" GridLinesVisibility="Vertical" HeadersVisibility="Column" AlternatingRowBackground="#FF484848" HorizontalScrollBarVisibility="Disabled"  IsReadOnly="True">>
+        <DataGrid x:Name="EntryValueInsightDataGrid" CanUserResizeColumns="False" AutoGenerateColumns="False"  HorizontalContentAlignment="Left" GridLinesVisibility="Vertical" HeadersVisibility="Column" AlternatingRowBackground="#FF484848" HorizontalScrollBarVisibility="Disabled"  IsReadOnly="True">>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Value" Binding="{Binding Number}" Width="Auto" IsReadOnly="True" MinWidth="40" />
                 <DataGridTextColumn Header="Count" Binding="{Binding Count}" Width="Auto" IsReadOnly="True" MinWidth="80" />

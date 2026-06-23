@@ -67,6 +67,17 @@ namespace GameEditorStudio
 
             // Mark event as handled so other controls don't block it
             e.Handled = true;
+
+
+            if (Mouse.LeftButton == MouseButtonState.Pressed)
+            {
+                // If we are dragging, manually nudge the ScrollViewer
+                scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta);
+            }
+
+            // During a DragDrop operation, Mouse.LeftButton is usually 'Pressed'
+            // We check this to ensure we only override behavior during a drag
+
         }
     }
 }

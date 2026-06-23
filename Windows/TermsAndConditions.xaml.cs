@@ -24,7 +24,7 @@ namespace GameEditorStudio
         public TermsAndConditions()
         {
             InitializeComponent();
-            VNum.Content = "v" + Properties.Settings.Default.ToSVersion;
+            //VNum.Content = "v" + Properties.Settings.Default.ToSVersion;
 
             if (Properties.Settings.Default.ToSVersion == LibraryGES.VersionNumber.ToString()) 
             {

@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml;
-using Windows.Security.Authentication.Web.Core;
+using WpfHexEditor;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Microsoft.IO.RecyclableMemoryStreamManager;
 
@@ -17,36 +19,52 @@ namespace GameEditorStudio
     
     public static partial class CommandMethodsClass //This file contains saving actions. These save XML data to the users computer. They can also be accessed fia the File menu.
     {
-
+        
         public static void SaveAll(MethodData MethodData)
-        {                   
+        {            
 
-            foreach (Command Command in Database.Commands)
+            if (MethodData.mainMenu.WorkshopData.LoadedProject != null)
             {
-                if (Command.Key == "638835921950407398-717630473-427782251") //SaveEditors
+                foreach (Command Command in Database.Commands)
                 {
-                    MethodData EventPack = new();
-                    EventPack.Command = Command;
-                    EventPack.mainMenu = MethodData.mainMenu;
+                    if (Command.Key == "638835921950407398-717630473-427782251") //SaveEditors
+                    {
+                        MethodData EventPack = new();
+                        EventPack.Command = Command;
+                        EventPack.mainMenu = MethodData.mainMenu;
 
-                    Command.TheMethod?.Invoke(EventPack); 
-                    break;
+                        Command.TheMethod?.Invoke(EventPack);
+                        break;
+                    }
                 }
-            }
 
-            //CommandMethodsClass.SaveGameData(MethodData);
 
-            foreach (Command Command in Database.Commands)
-            {
-                if (Command.Key == "638835921950407433-13988325-250675840") //SaveGameData
+                foreach (Command Command in Database.Commands)
                 {
-                    MethodData EventPack = new();
-                    EventPack.Command = Command;
-                    EventPack.mainMenu = MethodData.mainMenu;
+                    if (Command.Key == "638835921950407433-13988325-250675840") //SaveGameData
+                    {
+                        MethodData EventPack = new();
+                        EventPack.Command = Command;
+                        EventPack.mainMenu = MethodData.mainMenu;
 
-                    Command.TheMethod?.Invoke(EventPack); 
-                    break;
+                        Command.TheMethod?.Invoke(EventPack);
+                        break;
+                    }
                 }
+
+                foreach (Command Command in Database.Commands)
+                {
+                    if (Command.Key == "638835921950407528-367118138-951819106") //SaveLoadedProjectDocuments
+                    {
+                        MethodData EventPack = new();
+                        EventPack.Command = Command;
+                        EventPack.mainMenu = MethodData.mainMenu;
+
+                        Command.TheMethod?.Invoke(EventPack);
+                        break;
+                    }
+                }
+
             }
 
             foreach (Command Command in Database.Commands)
@@ -57,27 +75,10 @@ namespace GameEditorStudio
                     EventPack.Command = Command;
                     EventPack.mainMenu = MethodData.mainMenu;
 
-                    Command.TheMethod?.Invoke(EventPack);  
-                    break;
-                }
-            }
-
-            foreach (Command Command in Database.Commands)
-            {
-                if (Command.Key == "638835921950407528-367118138-951819106") //SaveDocumentsProject
-                {
-                    MethodData EventPack = new();
-                    EventPack.Command = Command;
-                    EventPack.mainMenu = MethodData.mainMenu;
-
-                    Command.TheMethod?.Invoke(EventPack);  
+                    Command.TheMethod?.Invoke(EventPack);
                     break;
                 }
             }            
-
-            //Command.Database.TheDocumentsUserControl.SaveAllDocumentsWorkshop();
-            //Command.Database.TheDocumentsUserControl.SaveAllDocumentsProject();
-
 
 
             foreach (Command Command in Database.Commands)
@@ -93,7 +94,15 @@ namespace GameEditorStudio
                 }
             }
 
-            SaveProjectXML(MethodData.mainMenu.WorkshopData.ProjectDataItem,MethodData.mainMenu.WorkshopData);
+            
+            if (MethodData.mainMenu.WorkshopData.SelectedProject != null)
+            {
+                SaveProjectXML(MethodData.mainMenu.WorkshopData.SelectedProject, MethodData.mainMenu.WorkshopData);
+            }
+            if (MethodData.mainMenu.WorkshopData.LoadedProject != null && MethodData.mainMenu.WorkshopData.LoadedProject != MethodData.mainMenu.WorkshopData.SelectedProject)
+            {
+                SaveProjectXML(MethodData.mainMenu.WorkshopData.LoadedProject, MethodData.mainMenu.WorkshopData);
+            }
         }
 
 
@@ -101,15 +110,22 @@ namespace GameEditorStudio
         {
             if (MethodData.Command.WorkshopData == null)  //think about this more before adding it
             {
+                if (MethodData.mainMenu.WorkshopData == null) { PixelWPF.LibraryPixel.NotificationNegative("Weird Error", "Workshop not set...?"); }
                 return;
             }
 
             WorkshopData Database = MethodData.mainMenu.WorkshopData;
             Workshop TheWorkshop = Database.WorkshopXaml;
 
-            if (TheWorkshop.IsPreviewMode == true) { return; }
+            if (TheWorkshop.WorkshopData.IsProjectLoaded == false) //because we save some linked data table file info...
+            {
+                PixelWPF.LibraryPixel.NotificationNegative("Cannot Save Editors in Preview Mode", "Your not allowed to save workshop editor's while in preview mode. I may add support for it in the future, but for now, you can't.  (Also how did you even trigger this error???)");
+                return;
+            }
 
             if (Database.GameEditors.Count == 0) { return; }
+
+            string NameOfEditorThatCrashedSaving = "";
 
             try
             {
@@ -147,7 +163,7 @@ namespace GameEditorStudio
                 void SaveAllEditors(WorkshopData Database, Workshop TheWorkshop, string ExtraPath)
                 {
                     
-                    List<string> EditorsToDelete = new List<string>(); //Used to delete aka rename old folders. Currently causes a access forbidden crash.
+                    //List<string> EditorsToDelete = new List<string>(); //Used to delete aka rename old folders. Currently causes a access forbidden crash.
 
                     string LoadOrderFile = LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + "LoadOrder.txt"; //causes weird errors if outside this
 
@@ -157,328 +173,503 @@ namespace GameEditorStudio
                     //I am manually serializing because people online would not help me understand a better way
                     //and doing it manually has some upsides like complete control, useful in the future when doing updates between program versions.
                     //In the future, all foreach loops may want to be for loops, as i learned it gives a performance increase. For now this works fine.
-                    foreach (KeyValuePair<string, Editor> editor in Database.GameEditors)
+                    foreach (Editor editor in Database.GameEditors)
                     {
+                        NameOfEditorThatCrashedSaving = editor.EditorName;
                         //First we store and clear the current search bar text.
                         //Needed because otherwise it saves literally only the visible items in the treeview, but i still need it to be based on treeview for order.
                         //If you want to test removing the search bar cleansing, make a backup of the workshop first!
 
 
-
-
-                        //LoadOrderContent += editor.Key + Environment.NewLine; //for load order text (Old, when using editor names)
-                        LoadOrderContent += editor.Value.EditorKey + Environment.NewLine; //for load order text
-
-                        EditorsToDelete.Add(editor.Key);//Add editor string to name list
-                        Directory.CreateDirectory(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + editor.Key);
+                        LoadOrderContent += editor.EditorKey + "     ( "+ editor.EditorName + " )" +  Environment.NewLine; //for load order text
+                                                
+                        Directory.CreateDirectory(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + editor.EditorName);
 
                         XmlWriterSettings settings = new XmlWriterSettings();
                         settings.Indent = true;
                         settings.IndentChars = ("    ");
                         settings.CloseOutput = true;
                         settings.OmitXmlDeclaration = true;
-                        using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + editor.Key + "\\" + "\\Editor.xml", settings))
+                        using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + editor.EditorName + "\\" + "\\Editor.xml", settings))
                         {
 
-                            writer.WriteStartElement("Editor"); //This is the root of the XML
-                            writer.WriteElementString("CreatedVersion", editor.Value.CreatedDate.ToString());
-                            writer.WriteElementString("CreatedDate", editor.Value.CreatedDate);
+                            writer.WriteStartElement("Editor"); //This is the root of the XML                            
+                            writer.WriteElementString("Seperator", "--------------------------------------------------------------------------------------------");                        
+                            writer.WriteElementString("Name", editor.EditorName); //This is all misc editor data.
+                            if (editor is DataTableEditorData) { writer.WriteElementString("Type", "DataTable"); }
+                            else if (editor is TextEditorData) { writer.WriteElementString("Type", "TextEditor"); }
+                            else { writer.WriteElementString("Type", "UNKNOWN"); }
+                            writer.WriteElementString("Icon", editor.EditorIcon); //This is the name of the icon file that this editor uses.
+                            writer.WriteElementString("Key", editor.EditorKey);
+                            writer.WriteElementString("Seperator", "--------------------------------------------------------------------------------------------");
+                            writer.WriteElementString("CreatedVersion", editor.CreatedDate.ToString());
+                            writer.WriteElementString("CreatedDate", editor.CreatedDate);
                             writer.WriteElementString("SavedVersion", LibraryGES.VersionNumber.ToString());
                             writer.WriteElementString("SavedDate", DateTime.Now.ToString("MMM dd yyyy"));
-                            writer.WriteElementString("Seperator", "----------------------------------------------------------------------------------");                        
-                            writer.WriteElementString("Name", editor.Key); //This is all misc editor data.
-                            writer.WriteElementString("Type", editor.Value.EditorType);
-                            writer.WriteElementString("Icon", editor.Value.EditorIcon); //This is the name of the file that this editor uses.
-                            writer.WriteElementString("Key", editor.Value.EditorKey);
-                            writer.WriteElementString("Seperator", "----------------------------------------------------------------------------------");
+                            writer.WriteElementString("Seperator", "--------------------------------------------------------------------------------------------");
 
-
-                            if (editor.Value.EditorType == "DataTable")
+                            if (editor is DataTableEditorData DTEData)
                             {
-                                string CurrentSearchBarText = editor.Value.StandardEditorData.EditorLeftDockPanel.SearchBar.Text;
-                                editor.Value.StandardEditorData.EditorLeftDockPanel.SearchBar.Text = "";
-
-                                writer.WriteStartElement("NameTable"); //Info about the file referenced for & table information about the editor's Name List.
-                                if (editor.Value.StandardEditorData.NameTableLinkType == StandardEditorData.NameTableLinkTypes.DataFile) { writer.WriteElementString("LinkType", "DataFile"); }
-                                if (editor.Value.StandardEditorData.NameTableLinkType == StandardEditorData.NameTableLinkTypes.TextFile) { writer.WriteElementString("LinkType", "TextFile"); }
-                                if (editor.Value.StandardEditorData.NameTableLinkType == StandardEditorData.NameTableLinkTypes.Editor) { writer.WriteElementString("LinkType", "Editor"); }
-                                if (editor.Value.StandardEditorData.NameTableLinkType == StandardEditorData.NameTableLinkTypes.Nothing) { writer.WriteElementString("LinkType", "Nothing"); }
-                                if (editor.Value.StandardEditorData.FileNameTable != null)
-                                {
-                                    writer.WriteElementString("Location", editor.Value.StandardEditorData.FileNameTable.FileLocation);
-                                }
-                                else
-                                {
-                                    writer.WriteElementString("Location", "");
-                                }
-                                writer.WriteElementString("Start", editor.Value.StandardEditorData.NameTableStart.ToString());
-                                writer.WriteElementString("RowSize", editor.Value.StandardEditorData.NameTableRowSize.ToString());
-                                writer.WriteElementString("CharacterSet", editor.Value.StandardEditorData.NameTableCharacterSet);
-                                writer.WriteElementString("TextSize", editor.Value.StandardEditorData.NameTableTextSize.ToString());
-                                writer.WriteElementString("ItemCount", editor.Value.StandardEditorData.NameTableItemCount.ToString()); //How many names / items are in the collection this editor edits. (Like weapons, spells, etc)
-                                writer.WriteElementString("Key", editor.Value.StandardEditorData.NameTableKey.ToString());
-                                writer.WriteEndElement(); // End NameFile
-
-
                                 
-                                writer.WriteStartElement("DataTable"); //Info about the file used for the main data of the editor.
-                                writer.WriteElementString("TableKey", editor.Value.StandardEditorData.TableKey);
-                                writer.WriteElementString("Location", editor.Value.StandardEditorData.FileDataTable.FileLocation);
-                                writer.WriteElementString("Start", editor.Value.StandardEditorData.DataTableStart.ToString());
-                                writer.WriteElementString("RowSize", editor.Value.StandardEditorData.DataTableRowSize.ToString());
-                                writer.WriteEndElement(); // End EditorFile
-
-
-                                if (editor.Value.StandardEditorData.DescriptionTableList.Count != 0) 
+                                //IF NAME TABLE EXISTS, SAVE ALL NAME TABLE INFO
+                                if (DTEData.NameTable != null) 
                                 {
-                                    DescriptionTable DescriptionTable = editor.Value.StandardEditorData.DescriptionTableList[0];
+                                    string CurrentSearchBarText = DTEData.EditorLeftBar.SearchBar.Text;
+                                    DTEData.EditorLeftBar.SearchBar.Text = "";
+
+                                    writer.WriteStartElement("NameTable"); //Info about the file referenced for & table information about the editor's Name List.
+                                    SaveTextTable(DTEData.NameTable, "name");
+                                    //if (DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.DataFile) { writer.WriteElementString("LinkType", "DataFile"); }
+                                    //if (DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.TextFile) { writer.WriteElementString("LinkType", "TextFile"); }
+                                    //if (DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.Editor) { writer.WriteElementString("LinkType", "Editor"); }
+                                    //if (DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.Nothing) { writer.WriteElementString("LinkType", "Nothing"); }
+                                    //writer.WriteElementString("FirstNameID", DTEData.NameTable.NameTableFirstNumber.ToString());
+                                    //writer.WriteElementString("ItemCount", DTEData.NameTable.NameTableItemCount.ToString()); //How many names / items are in the collection this editor edits. (Like weapons, spells, etc)
+                                    //if (DTEData.NameTable.TextTableFile != null)
+                                    //{
+                                    //    writer.WriteElementString("Location", DTEData.NameTable.TextTableFile.FileLocation);
+                                    //}
+                                    //if (DTEData.NameTable.TextTableLinkType != TextTable.TextTableLinkTypes.Nothing) 
+                                    //{
+                                    //    writer.WriteElementString("Start", DTEData.NameTable.TextTableStart.ToString());
+                                    //    writer.WriteElementString("RowSize", DTEData.NameTable.TextTableRowSize.ToString());
+                                    //    writer.WriteElementString("CharacterSet", DTEData.NameTable.TextTableCharacterSet);
+                                    //    writer.WriteElementString("TextSize", DTEData.NameTable.TextTableTextSize.ToString());
+                                    //}                                    
+                                    //writer.WriteElementString("Key", DTEData.NameTable.TextTableKey.ToString());
+                                    //writer.WriteElementString("Seperator", "-------------------------------------------------");
+                                    //{
+                                    //    writer.WriteStartElement("ItemList");
+                                    //    ItemCollection items = DTEData.EditorLeftBar.TreeView.Items;
+                                    //    foreach (TreeViewItem treeItem in items)
+                                    //    {
+                                    //        SaveItemOrFolder(writer, treeItem);
+                                    //    }
+                                    //    writer.WriteEndElement(); //End ItemList
+                                    //}                                    
+
+                                    writer.WriteEndElement(); // End Name Table 
+
+
+                                    //writer.WriteStartElement("ItemList");
+                                    //ItemCollection items = DTEData.EditorLeftBar.TreeView.Items;
+                                    //foreach (TreeViewItem treeItem in items)
+                                    //{
+                                    //    SaveItemOrFolder(writer, treeItem);
+                                    //}
+                                    //writer.WriteEndElement(); //End ItemList
+
+                                    //void SaveItemOrFolder(XmlWriter writer, TreeViewItem treeItem)
+                                    //{
+                                    //    TextInfo data = treeItem.Tag as TextInfo;
+                                    //    string elementName = data.IsFolder == true ? "Folder" : "Item";
+
+                                    //    writer.WriteStartElement(elementName);
+                                    //    if (DTEData.NameTable.TextTableFile == null || string.IsNullOrEmpty(DTEData.NameTable.TextTableFile.FileLocation) || data.IsFolder == true)
+                                    //    {
+                                    //        writer.WriteElementString("Name", data.ItemName);
+                                    //    }
+
+                                    //    writer.WriteElementString("Index", data.ItemIndex.ToString());
+                                    //    if (data.ItemNote != "") { writer.WriteElementString("Note", data.ItemNote); }
+                                    //    if (data.ItemWorkshopTooltip != "") { writer.WriteElementString("Tooltip", data.ItemWorkshopTooltip); }                                        
+                                    //    writer.WriteElementString("Key", data.ItemKey);
+                                    //    int MyStart = DTEData.NameTable.TextTableStart + (data.ItemIndex * DTEData.NameTable.TextTableRowSize);
+                                    //    int MyEnd = DTEData.NameTable.TextTableStart + ((data.ItemIndex + 1) * DTEData.NameTable.TextTableRowSize) - 1;
+                                    //    writer.WriteElementString("RowStart", MyStart.ToString());
+                                    //    writer.WriteElementString("RowEnd", MyStart.ToString());
+
+                                    //    // Handle nested items or folders
+                                    //    if (data.IsFolder == true && treeItem.HasItems)
+                                    //    {
+                                    //        foreach (TreeViewItem childItem in treeItem.Items)
+                                    //        {
+                                    //            SaveItemOrFolder(writer, childItem); // Recursive call
+                                    //        }
+                                    //    }
+
+                                    //    writer.WriteEndElement(); // End Item or Folder
+                                    //}
+
+                                    DTEData.EditorLeftBar.SearchBar.Text = CurrentSearchBarText;
+                                }
+
+
+                                //IF DESCRIPTION TABLE EXISTS, SAVE ALL DESCRIPTION TABLE INFO
+                                if (DTEData.DescriptionTableList.Count != 0) 
+                                {
+                                    TextTable TheDescriptionTable = DTEData.DescriptionTableList[0];
                                     writer.WriteStartElement("DescriptionTable");
-                                    if (DescriptionTable.LinkType == DescriptionTable.LinkTypes.DataFile) { writer.WriteElementString("LinkType", "DataFile"); }
-                                    if (DescriptionTable.LinkType == DescriptionTable.LinkTypes.TextFile) { writer.WriteElementString("LinkType", "TextFile"); }
-                                    if (DescriptionTable.LinkType == DescriptionTable.LinkTypes.Editor) { writer.WriteElementString("LinkType", "Editor"); }
-                                    if (DescriptionTable.LinkType == DescriptionTable.LinkTypes.Nothing) { writer.WriteElementString("LinkType", "Nothing"); }
-                                    writer.WriteElementString("Location", DescriptionTable.FileTextTable.FileLocation);
-                                    writer.WriteElementString("Start", DescriptionTable.Start.ToString());
-                                    writer.WriteElementString("RowSize", DescriptionTable.RowSize.ToString());
-                                    writer.WriteElementString("CharacterSet", DescriptionTable.CharacterSet);
-                                    writer.WriteElementString("TextSize", DescriptionTable.TextSize.ToString());
-                                    writer.WriteElementString("Key", DescriptionTable.Key.ToString());
+                                    SaveTextTable(TheDescriptionTable, "description");
+                                    //if (TheDescriptionTable.TextTableLinkType == TextTable.TextTableLinkTypes.DataFile) { writer.WriteElementString("LinkType", "DataFile"); }
+                                    //if (TheDescriptionTable.TextTableLinkType == TextTable.TextTableLinkTypes.DataFileAdvanced) { writer.WriteElementString("LinkType", "DataFileAdvanced"); }
+                                    //if (TheDescriptionTable.TextTableLinkType == TextTable.TextTableLinkTypes.TextFile) { writer.WriteElementString("LinkType", "TextFile"); }
+                                    //if (TheDescriptionTable.TextTableLinkType == TextTable.TextTableLinkTypes.Editor) { writer.WriteElementString("LinkType", "Editor"); }
+                                    //if (TheDescriptionTable.TextTableLinkType == TextTable.TextTableLinkTypes.Nothing) { writer.WriteElementString("LinkType", "Nothing"); }
+                                    //writer.WriteElementString("Location", TheDescriptionTable.TextTableFile.FileLocation);
+                                    //writer.WriteElementString("Start", TheDescriptionTable.TextTableStart.ToString());
+                                    //writer.WriteElementString("RowSize", TheDescriptionTable.TextTableRowSize.ToString());
+                                    //writer.WriteElementString("CharacterSet", TheDescriptionTable.TextTableCharacterSet);
+                                    //writer.WriteElementString("TextSize", TheDescriptionTable.TextTableTextSize.ToString());
+                                    //writer.WriteElementString("Key", TheDescriptionTable.TextTableKey.ToString());
                                     writer.WriteEndElement(); // End DescriptionTable
                                 }
-                                
-                                
 
-                                
-                                
-                                
 
-                                writer.WriteStartElement("ItemList");   // Start of the ItemList
-                                void SaveItemOrFolder(XmlWriter writer, TreeViewItem treeItem)
+
+
+
+                                //IF DATA TABLE EXISTS, SAVE ALL DATA TABLE INFO.
+                                if (DTEData.DataTable != null)
                                 {
-                                    ItemInfo data = treeItem.Tag as ItemInfo;
-                                    string elementName = data.IsFolder == true ? "Folder" : "Item";
+                                    writer.WriteStartElement("DataTable"); //Info about the file used for the main data of the editor.
+                                    if (DTEData.DataTable.LinkType == DataTable.DataTableLinkTypes.DataFile) { writer.WriteElementString("LinkType", "DataFile"); }
+                                    if (DTEData.DataTable.LinkType == DataTable.DataTableLinkTypes.Advanced) { writer.WriteElementString("LinkType", "Advanced"); }
+                                    writer.WriteElementString("TableKey", DTEData.DataTable.DataTableKey);
+                                    writer.WriteElementString("Location", DTEData.DataTable.FileDataTable.FileLocation);
+                                    writer.WriteElementString("Start", DTEData.DataTable.DataTableStart.ToString());
+                                    writer.WriteElementString("RowSize", DTEData.DataTable.DataTableRowSize.ToString());
+                                    writer.WriteEndElement(); // End EditorFile
 
-                                    writer.WriteStartElement(elementName);
-                                    if (editor.Value.StandardEditorData.FileNameTable == null || string.IsNullOrEmpty(editor.Value.StandardEditorData.FileNameTable.FileLocation) || data.IsFolder == true)
+                                    writer.WriteStartElement("Grid");
                                     {
-                                        writer.WriteElementString("Name", data.ItemName);
-                                    }
-                                                                        
-                                    writer.WriteElementString("Index", data.ItemIndex.ToString());
-                                    writer.WriteElementString("Note", data.ItemNote);
-                                    writer.WriteElementString("Tooltip", data.ItemWorkshopTooltip);
-                                    writer.WriteElementString("Key", data.ItemKey);
-
-                                    // Handle nested items or folders
-                                    if (data.IsFolder == true && treeItem.HasItems)
-                                    {
-                                        foreach (TreeViewItem childItem in treeItem.Items)
+                                        writer.WriteStartElement("MergedEntryList");
+                                        foreach (var entry in DTEData.MergedEntryList.OrderBy(e => e.RowOffset))
                                         {
-                                            SaveItemOrFolder(writer, childItem); // Recursive call
+                                            SaveAnEntry(entry);
                                         }
-                                    }
-
-                                    writer.WriteEndElement(); // End Item or Folder
-                                }
-
-                                // Process each top-level item or folder
-                                ItemCollection items = editor.Value.StandardEditorData.EditorLeftDockPanel.TreeView.Items;
-                                foreach (TreeViewItem treeItem in items)
-                                {
-                                    SaveItemOrFolder(writer, treeItem);
-                                }
-                                writer.WriteEndElement(); //End ItemList
+                                        writer.WriteEndElement(); //End MergedEntryList
 
 
-
-                                
-
-                                writer.WriteStartElement("CategoryList");
-                                foreach (var row in editor.Value.StandardEditorData.CategoryList)
-                                {
-                                    writer.WriteStartElement("Category");
-                                    writer.WriteElementString("Name", row.CategoryName);
-                                    writer.WriteElementString("Key", row.Key);
-                                    writer.WriteElementString("Tooltip", row.Tooltip);
-
-
-                                    foreach (var column in row.ColumnList)
-                                    {
-                                        writer.WriteStartElement("Column");                                        
-                                        writer.WriteElementString("Name", column.ColumnName);
-                                        writer.WriteElementString("Key", column.Key);
-
-                                        foreach (ItemBase itembase in column.ItemBaseList) 
+                                        //Rewritten to remove column references. 
+                                        writer.WriteStartElement("CategoryList");
+                                        foreach (var category in DTEData.CategoryList)
                                         {
-                                            if (itembase is Entry Ientry)
-                                            {
-                                                SaveAnEntry(Ientry);
-                                            }
+                                            if (category.GridItems.Count == 0) { continue; } //Do not save empty categories.
 
-                                            if (itembase is Group group) 
-                                            {
-                                                writer.WriteStartElement("Group");
-                                                writer.WriteElementString("Name", group.GroupName);
-                                                writer.WriteElementString("Tooltip", group.GroupTooltip);
-                                                writer.WriteElementString("Key", group.Key);
+                                            writer.WriteStartElement("Category");
+                                            writer.WriteElementString("Name", category.CategoryName);
+                                            writer.WriteElementString("Key", category.Key);
+                                            writer.WriteElementString("Tooltip", category.Tooltip);
 
-                                                foreach (Entry Gentry in group.EntryList)
+                                            // Group items by their GridItem Column value for human-readable XML
+                                            var itemsByColumn = category.GridItems
+                                                .GroupBy(item => item.Column)
+                                                .OrderBy(group => group.Key); // Sort by column index
+
+                                            //Foreach column.
+                                            foreach (var columnGroup in itemsByColumn)
+                                            {
+                                                writer.WriteStartElement("Column");
+
+                                                var sortedItems = columnGroup.OrderBy(item => item.Row);
+
+                                                //foreach item in column.
+                                                foreach (GridItem item in sortedItems)
                                                 {
-                                                    SaveAnEntry(Gentry);
-                                                }
 
-                                                writer.WriteEndElement(); //End Group
-                                            }
-
-                                            
-                                        }
-
-                                        void SaveAnEntry(Entry entry) 
-                                        {
-                                            writer.WriteStartElement("Entry");
-                                            writer.WriteElementString("Name", entry.Name);
-                                            writer.WriteElementString("Tooltip", entry.WorkshopTooltip);
-                                            writer.WriteElementString("IsNameHidden", entry.IsNameHidden.ToString());
-                                            writer.WriteElementString("IsEntryHidden", entry.IsEntryHidden.ToString());
-                                            writer.WriteElementString("RowOffset", entry.RowOffset.ToString());
-                                            writer.WriteElementString("Bytes", entry.Bytes.ToString());
-                                            //writer.WriteElementString("Endianness", entry.Endianness.ToString());
-
-                                            if (entry.Endianness == "1" || entry.Endianness == "2L" || entry.Endianness == "4L")
-                                            { writer.WriteElementString("Endianness", "Little"); }
-                                            else { writer.WriteElementString("Endianness", "Big"); }
-                                            if (entry.Bytes == 0) 
-                                            { writer.WriteElementString("IsMerged", "True"); }
-                                            else { writer.WriteElementString("IsMerged", "False"); }
-
-                                            //writer.WriteElementString("TypeX", entry.SubType);
-
-
-                                            if (entry.NewSubType == Entry.EntrySubTypes.NumberBox)
-                                            {
-                                                writer.WriteStartElement("NumberBox");
-                                                writer.WriteElementString("Sign", entry.EntryTypeNumberBox.NewNumberSign.ToString());
-                                                writer.WriteEndElement(); //End NumberBox 
-                                            }
-
-
-                                            if (entry.NewSubType == Entry.EntrySubTypes.CheckBox)
-                                            {
-                                                writer.WriteStartElement("CheckBox");
-                                                writer.WriteElementString("TrueValue", entry.EntryTypeCheckBox.TrueValue.ToString());
-                                                writer.WriteElementString("FalseValue", entry.EntryTypeCheckBox.FalseValue.ToString());
-                                                writer.WriteEndElement(); //End CheckBox 
-                                            }
-
-
-                                            if (entry.NewSubType == Entry.EntrySubTypes.BitFlag)
-                                            {
-                                                writer.WriteStartElement("BitFlag");
-                                                writer.WriteElementString("Flag1Name", entry.EntryTypeBitFlag.BitFlag1Name.ToString());
-                                                writer.WriteElementString("Flag2Name", entry.EntryTypeBitFlag.BitFlag2Name.ToString());
-                                                writer.WriteElementString("Flag3Name", entry.EntryTypeBitFlag.BitFlag3Name.ToString());
-                                                writer.WriteElementString("Flag4Name", entry.EntryTypeBitFlag.BitFlag4Name.ToString());
-                                                writer.WriteElementString("Flag5Name", entry.EntryTypeBitFlag.BitFlag5Name.ToString());
-                                                writer.WriteElementString("Flag6Name", entry.EntryTypeBitFlag.BitFlag6Name.ToString());
-                                                writer.WriteElementString("Flag7Name", entry.EntryTypeBitFlag.BitFlag7Name.ToString());
-                                                writer.WriteElementString("Flag8Name", entry.EntryTypeBitFlag.BitFlag8Name.ToString());
-                                                writer.WriteEndElement(); //End BitFlag    
-                                            }
-
-
-
-                                            if (entry.NewSubType == Entry.EntrySubTypes.Menu) //A Menu can have upto 65000 options PER entry. (2 bytes)
-                                            {
-                                                writer.WriteStartElement("Menu");
-                                                if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.Dropdown) { writer.WriteElementString("MenuType", "Dropdown"); }
-                                                if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List) { writer.WriteElementString("MenuType", "List"); }
-                                                if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile) { writer.WriteElementString("LinkType", "DataFile"); }
-                                                if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile) { writer.WriteElementString("LinkType", "TextFile"); }
-                                                if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor) { writer.WriteElementString("LinkType", "Editor"); }
-                                                if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing) { writer.WriteElementString("LinkType", "Nothing"); }
-
-
-
-                                                if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile)
-                                                {
-                                                    writer.WriteStartElement("FileData");
-                                                    writer.WriteElementString("FirstNameID", entry.EntryTypeMenu.FirstNameID.ToString());
-                                                    writer.WriteElementString("Location", entry.EntryTypeMenu.GameFile.FileLocation);
-                                                    writer.WriteElementString("Start", entry.EntryTypeMenu.Start.ToString());
-                                                    writer.WriteElementString("RowSize", entry.EntryTypeMenu.RowSize.ToString());
-                                                    writer.WriteElementString("CharacterSet", entry.EntryTypeMenu.CharacterSet.ToString());
-                                                    writer.WriteElementString("TextSize", entry.EntryTypeMenu.CharCount.ToString());
-                                                    writer.WriteElementString("NameCount", entry.EntryTypeMenu.NameCount.ToString());
-                                                    writer.WriteEndElement(); //End FileData
-                                                }
-                                                if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
-                                                {
-                                                    writer.WriteStartElement("TextData");
-                                                    writer.WriteElementString("FirstNameID", entry.EntryTypeMenu.FirstNameID.ToString());
-                                                    writer.WriteElementString("Location", entry.EntryTypeMenu.GameFile.FileLocation);
-                                                    writer.WriteElementString("Start", entry.EntryTypeMenu.Start.ToString());
-                                                    writer.WriteElementString("NameCount", entry.EntryTypeMenu.NameCount.ToString());
-                                                    writer.WriteEndElement(); //End FileData
-                                                }
-                                                if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor)
-                                                {
-                                                    writer.WriteStartElement("EditorData");
-                                                    writer.WriteElementString("FirstNameID", entry.EntryTypeMenu.FirstNameID.ToString());
-                                                    if (entry.EntryTypeMenu.LinkedEditor == null)
+                                                    if (item is Entry Ientry)
                                                     {
-                                                        writer.WriteElementString("EditorName", entry.EntryTypeMenu.OldLinkedEditorName); //Yes we're saving the OLD Editor. This is NOT an axident!
-                                                        writer.WriteElementString("EditorKey", entry.EntryTypeMenu.OldLinkedEditorKey);
+                                                        SaveAnEntry(Ientry);
                                                     }
-                                                    else
+
+                                                    if (item is Group group)
                                                     {
-                                                        writer.WriteElementString("EditorName", entry.EntryTypeMenu.LinkedEditor.EditorName); //Only used to notify if a link to editor is missing. (The editor is missing)
-                                                        writer.WriteElementString("EditorKey", entry.EntryTypeMenu.LinkedEditor.EditorKey);
-                                                    }
-                                                    //writer.WriteElementString("Start", entry.EntryTypeMenu.Start.ToString());
-                                                    writer.WriteElementString("NameCount", entry.EntryTypeMenu.NameCount.ToString());
-                                                    writer.WriteEndElement(); //End FileData
-                                                }
-                                                if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing)
-                                                {
-                                                    writer.WriteStartElement("NameList");
-                                                    for (int i = 0; i < entry.EntryTypeMenu.NothingNameList.Length; i++)
-                                                    {
-                                                        if (!string.IsNullOrEmpty(entry.EntryTypeMenu.NothingNameList[i]))
+                                                        writer.WriteStartElement("Group");
+                                                        writer.WriteElementString("Name", group.GroupName);
+                                                        writer.WriteElementString("Tooltip", group.GroupTooltip);
+                                                        writer.WriteElementString("Key", group.Key);
+
+                                                        writer.WriteElementString("Column", item.Column.ToString());
+                                                        writer.WriteElementString("Row", item.Row.ToString());
+                                                        writer.WriteElementString("ColumnSpan", group.ColumnSpan.ToString());
+                                                        writer.WriteElementString("RowSpan", group.RowSpan.ToString()); // your temp value
+
+                                                        var groupItemsByColumn = group.GridItems.GroupBy(item => item.Column).OrderBy(group => group.Key);
+                                                        // save foreach column inside the group
+                                                        foreach (var groupColumn in groupItemsByColumn)
                                                         {
-                                                            string listItem = $"{i}: {entry.EntryTypeMenu.NothingNameList[i]}";
-                                                            writer.WriteElementString("Item", listItem);
+                                                            writer.WriteStartElement("Column");
+
+                                                            var sortedGroupItems = groupColumn.OrderBy(item => item.Row);
+
+                                                            foreach (GridItem eitem in sortedGroupItems)
+                                                            {
+                                                                if (eitem is Entry entry)
+                                                                {
+                                                                    SaveAnEntry(entry);
+                                                                }
+                                                                // (Optional: nested groups later if you ever allow them)
+                                                            }
+
+                                                            writer.WriteEndElement(); // End Column
                                                         }
+
+                                                        writer.WriteEndElement(); //End Group
                                                     }
-                                                    writer.WriteEndElement(); //End NameList
-                                                }
 
-                                                writer.WriteEndElement(); //End Menu    
 
-                                            }
+                                                } //end of items in columnm sorted by row.
 
-                                            writer.WriteElementString("TableKey", editor.Value.StandardEditorData.TableKey);
-                                            writer.WriteElementString("Start", editor.Value.StandardEditorData.DataTableStart.ToString());
-                                            writer.WriteElementString("RowSize", editor.Value.StandardEditorData.DataTableRowSize.ToString());
-                                            writer.WriteElementString("EntryKey", entry.Key);
-                                            //writer.WriteElementString("RowSize", entry.DataTableRowSize.ToString());
+                                                writer.WriteEndElement(); //End Column
+                                            } //end of items in category, sorted by column.
+                                            writer.WriteEndElement(); //End Category
+                                        }
+                                        writer.WriteEndElement(); //End CategoryList
+                                    }
+                                    writer.WriteEndElement(); //End Grid
 
-                                            writer.WriteEndElement(); //End Entry
+                                    
+                                }
+
+                                
+
+                                void SaveTextTable(TextTable texttable, string mytype) 
+                                {
+                                    if (texttable.TextTableLinkType == TextTable.TextTableLinkTypes.DataFile) { writer.WriteElementString("LinkType", "DataFile"); }
+                                    if (texttable.TextTableLinkType == TextTable.TextTableLinkTypes.Advanced) { writer.WriteElementString("LinkType", "Advanced"); }
+                                    if (texttable.TextTableLinkType == TextTable.TextTableLinkTypes.TextFile) { writer.WriteElementString("LinkType", "TextFile"); }
+                                    if (texttable.TextTableLinkType == TextTable.TextTableLinkTypes.Editor) { writer.WriteElementString("LinkType", "Editor"); }
+                                    if (texttable.TextTableLinkType == TextTable.TextTableLinkTypes.Nothing) { writer.WriteElementString("LinkType", "Nothing"); }                                    
+                                    if (texttable.TextTableFile != null)
+                                    {
+                                        writer.WriteElementString("Location", texttable.TextTableFile.FileLocation);
+                                    }
+                                    if (texttable.TextTableLinkType != TextTable.TextTableLinkTypes.Nothing)
+                                    {
+                                        writer.WriteElementString("Start", texttable.TextTableStart.ToString());
+                                        writer.WriteElementString("RowSize", texttable.TextTableRowSize.ToString());
+                                        writer.WriteElementString("CharacterSet", texttable.TextTableCharacterSet);
+                                        writer.WriteElementString("CharacterLimit", texttable.TextTableCharLimit.ToString());
+                                    }
+                                    writer.WriteElementString("Key", texttable.TextTableKey.ToString());
+                                    
+                                    if (mytype == "name")
+                                    {
+                                        writer.WriteElementString("Seperator", "---------------------------------------");
+                                        writer.WriteElementString("FirstNameID", texttable.TextTableFirstNameID.ToString());
+                                        writer.WriteElementString("ItemCount", texttable.TextTableItemCount.ToString());  //How many names / items are in the collection this editor edits. (Like weapons, spells, etc)
+                                        
+                                        writer.WriteStartElement("ItemList");
+                                        ItemCollection items = DTEData.EditorLeftBar.TreeView.Items;
+                                        foreach (TreeViewItem treeItem in items)
+                                        {
+                                            SaveItemOrFolder(treeItem);
+                                        }
+                                        writer.WriteEndElement(); //End ItemList
+                                    }
+
+                                    if (mytype == "description" && texttable.TextTableLinkType == TextTable.TextTableLinkTypes.Advanced)
+                                    {
+                                        writer.WriteElementString("Seperator", "---------------------------------------");
+                                        writer.WriteElementString("ItemCount", texttable.TextTableItemCount.ToString());
+                                        writer.WriteStartElement("ItemList");
+                                        foreach (TextInfo textinfo in texttable.ItemList)
+                                        {
+                                            SaveTextRowInfo(textinfo);
+                                        }
+                                        writer.WriteEndElement(); //End ItemList
+                                    }
+
+                                    if (mytype == "menu")
+                                    {
+                                        writer.WriteElementString("Seperator", "---------------------------------------");
+                                        writer.WriteElementString("FirstNameID", texttable.TextTableFirstNameID.ToString());
+                                        writer.WriteElementString("ItemCount", texttable.TextTableItemCount.ToString());  //How many names / items are in the collection this editor edits. (Like weapons, spells, etc)
+
+                                        writer.WriteStartElement("ItemList");
+                                        foreach (TextInfo textinfo in texttable.ItemList)
+                                        {
+                                            SaveTextRowInfo(textinfo);
+                                        }
+                                        writer.WriteEndElement(); //End ItemList
+                                        if (texttable.LinkedDTEEditor != null) 
+                                        {
+                                            writer.WriteElementString("LinkedEditorName", texttable.LinkedDTEEditor.EditorName);
+                                            writer.WriteElementString("LinkedEditorKey", texttable.LinkedDTEEditor.EditorKey.ToString());
+                                        }
+                                        if (texttable.LinkedDTEEditor == null)
+                                        {
+                                            writer.WriteElementString("LinkedEditorName", texttable.PreviousLinkedEditorName);
+                                            writer.WriteElementString("LinkedEditorKey", texttable.PreviousLinkedEditorKey.ToString());
                                         }
 
-                                        
-                                        writer.WriteEndElement(); //End Column
                                     }
-                                    writer.WriteEndElement(); //End Category
+
+
+
+                                    void SaveItemOrFolder(TreeViewItem treeItem)
+                                    {
+                                        TextInfo data = treeItem.Tag as TextInfo;
+                                        string elementName = data.IsFolder == true ? "Folder" : "Item";
+
+                                        writer.WriteStartElement(elementName);
+                                        if (texttable.TextTableFile == null || string.IsNullOrEmpty(texttable.TextTableFile.FileLocation) || data.IsFolder == true)
+                                        {
+                                            writer.WriteElementString("Name", data.ItemName);
+                                        }
+
+                                        writer.WriteElementString("Index", data.ItemIndex.ToString());
+                                        if (data.ItemNote != "") { writer.WriteElementString("Note", data.ItemNote); }
+                                        if (data.ItemWorkshopTooltip != "") { writer.WriteElementString("Tooltip", data.ItemWorkshopTooltip); }
+                                        writer.WriteElementString("Key", data.ItemKey);
+                                        writer.WriteElementString("RowStart", data.RowStart.ToString());
+                                        writer.WriteElementString("RowEnd", data.RowEnd.ToString());
+
+                                        // Handle nested items or folders
+                                        if (data.IsFolder == true && treeItem.HasItems)
+                                        {
+                                            foreach (TreeViewItem childItem in treeItem.Items)
+                                            {
+                                                SaveItemOrFolder(childItem); // Recursive call
+                                            }
+                                        }
+
+                                        writer.WriteEndElement(); // End Item or Folder
+                                    }
+
+                                    void SaveTextRowInfo(TextInfo data)
+                                    {
+                                        string elementName = data.IsFolder == true ? "Folder" : "Item";
+
+                                        writer.WriteStartElement(elementName);
+                                        if (texttable.TextTableFile == null || string.IsNullOrEmpty(texttable.TextTableFile.FileLocation) || data.IsFolder == true)
+                                        {
+                                            writer.WriteElementString("Name", data.ItemName);
+                                        }
+
+                                        writer.WriteElementString("Index", data.ItemIndex.ToString());
+                                        if (data.ItemNote != "") { writer.WriteElementString("Note", data.ItemNote); }
+                                        if (data.ItemWorkshopTooltip != "") { writer.WriteElementString("Tooltip", data.ItemWorkshopTooltip); }
+                                        writer.WriteElementString("Key", data.ItemKey);
+                                        writer.WriteElementString("RowStart", data.RowStart.ToString());
+                                        writer.WriteElementString("RowEnd", data.RowEnd.ToString());
+
+                                        writer.WriteEndElement(); // End Item or Folder
+                                    }
                                 }
-                                writer.WriteEndElement(); //End CategoryList
 
-                                editor.Value.StandardEditorData.EditorLeftDockPanel.SearchBar.Text = CurrentSearchBarText;
 
-                            } //End IF STANDARD WIDTH TABLE EDITOR
+                                //HELPER METHODS
+                                void SaveAnEntry(Entry entry)
+                                {
+                                    writer.WriteStartElement("Entry");
+                                    writer.WriteElementString("Name", entry.Name);
+                                    writer.WriteElementString("Tooltip", entry.WorkshopTooltip);
+                                    writer.WriteElementString("Row", entry.Row.ToString());
+                                    writer.WriteElementString("Column", entry.Column.ToString());
+                                    if (entry.NewSubType == Entry.EntrySubTypes.BitFlag)
+                                    { writer.WriteElementString("RowSpan", "8"); }
+                                    else
+                                    { writer.WriteElementString("RowSpan", entry.RowSpan.ToString()); }
+                                    writer.WriteElementString("ColumnSpan", entry.ColumnSpan.ToString());   
+                                    writer.WriteElementString("IsNameHidden", entry.IsNameHidden.ToString());
+                                    writer.WriteElementString("IsEntryHidden", entry.IsEntryHidden.ToString());
+                                    writer.WriteElementString("RowOffset", entry.RowOffset.ToString());
+                                    writer.WriteElementString("Bytes", entry.Bytes.ToString());
 
-                            if (editor.Value.EditorType == "TextEditor")
+
+                                    if (entry.Endianness == "1" || entry.Endianness == "2L" || entry.Endianness == "4L")
+                                    { writer.WriteElementString("Endianness", "Little"); }
+                                    else { writer.WriteElementString("Endianness", "Big"); }
+                                    //if (entry.Bytes == 0)  { writer.WriteElementString("IsMerged", "True"); }
+                                    //else { writer.WriteElementString("IsMerged", "False"); }
+                                    writer.WriteElementString("IsMerged", entry.IsMerged.ToString());
+
+
+                                    if (entry.NewSubType == Entry.EntrySubTypes.NumberBox)
+                                    {
+                                        writer.WriteStartElement("NumberBox");
+                                        writer.WriteElementString("Sign", entry.EntryTypeNumberBox.NewNumberSign.ToString());
+                                        writer.WriteElementString("Suffix", entry.EntryTypeNumberBox.Suffix);
+                                        writer.WriteEndElement(); //End NumberBox 
+                                    }
+
+
+                                    if (entry.NewSubType == Entry.EntrySubTypes.CheckBox)
+                                    {
+                                        writer.WriteStartElement("CheckBox");
+                                        writer.WriteElementString("TrueValue", entry.EntryTypeCheckBox.TrueValue.ToString());
+                                        writer.WriteElementString("FalseValue", entry.EntryTypeCheckBox.FalseValue.ToString());
+                                        writer.WriteEndElement(); //End CheckBox 
+                                    }
+
+
+                                    if (entry.NewSubType == Entry.EntrySubTypes.BitFlag)
+                                    {
+                                        writer.WriteStartElement("BitFlag");
+                                        writer.WriteElementString("Flag1Name", entry.EntryTypeBitFlag.BitFlag1Name.ToString());
+                                        writer.WriteElementString("Flag2Name", entry.EntryTypeBitFlag.BitFlag2Name.ToString());
+                                        writer.WriteElementString("Flag3Name", entry.EntryTypeBitFlag.BitFlag3Name.ToString());
+                                        writer.WriteElementString("Flag4Name", entry.EntryTypeBitFlag.BitFlag4Name.ToString());
+                                        writer.WriteElementString("Flag5Name", entry.EntryTypeBitFlag.BitFlag5Name.ToString());
+                                        writer.WriteElementString("Flag6Name", entry.EntryTypeBitFlag.BitFlag6Name.ToString());
+                                        writer.WriteElementString("Flag7Name", entry.EntryTypeBitFlag.BitFlag7Name.ToString());
+                                        writer.WriteElementString("Flag8Name", entry.EntryTypeBitFlag.BitFlag8Name.ToString());
+                                        writer.WriteEndElement(); //End BitFlag    
+                                    }
+
+
+
+                                    if (entry.NewSubType == Entry.EntrySubTypes.Menu) //A Menu can have upto 65000 options PER entry. (2 bytes)
+                                    {
+                                        writer.WriteStartElement("Menu");
+                                        if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.Dropdown) { writer.WriteElementString("MenuType", "Dropdown"); }
+                                        if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List) { writer.WriteElementString("MenuType", "List"); }
+                                        
+                                        if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile) { writer.WriteElementString("LinkType", "DataFile"); }
+                                        if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile) { writer.WriteElementString("LinkType", "TextFile"); }
+                                        if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor) { writer.WriteElementString("LinkType", "Editor"); }
+                                        if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing) { writer.WriteElementString("LinkType", "Nothing"); }
+
+
+
+
+                                        if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile && entry.EntryTypeMenu.TextTableDataFile != null)
+                                        {
+                                            writer.WriteStartElement("MenuTable");
+                                            SaveTextTable(entry.EntryTypeMenu.TextTableDataFile, "menu");
+                                            writer.WriteEndElement(); //End SpecialTable    
+                                        }
+                                        if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile && entry.EntryTypeMenu.TextTableTextFile != null)
+                                        {
+                                            writer.WriteStartElement("MenuTable");
+                                            SaveTextTable(entry.EntryTypeMenu.TextTableTextFile, "menu");
+                                            writer.WriteEndElement(); //End SpecialTable    
+                                        }
+                                        if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor && entry.EntryTypeMenu.TextTableEditor != null)
+                                        {
+                                            writer.WriteStartElement("MenuTable");
+                                            SaveTextTable(entry.EntryTypeMenu.TextTableEditor, "menu");
+                                            writer.WriteEndElement(); //End SpecialTable    
+                                        }
+                                        if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing && entry.EntryTypeMenu.TextTableNothing != null)
+                                        {
+                                            writer.WriteStartElement("MenuTable");
+                                            SaveTextTable(entry.EntryTypeMenu.TextTableNothing, "menu");
+                                            writer.WriteEndElement(); //End SpecialTable    
+                                        }
+                                        writer.WriteEndElement(); //End Menu    
+
+                                    }
+
+                                    
+
+                                    writer.WriteElementString("EntryKey", entry.Key); // is loaded.
+                                    writer.WriteElementString("TableKey", DTEData.DataTable.DataTableKey); //Is loaded, but is unused. It's a future proofing thing.
+                                    writer.WriteElementString("Start", DTEData.DataTable.DataTableStart.ToString()); //Pretty sure this isn't loaded later.
+                                    writer.WriteElementString("RowSize", DTEData.DataTable.DataTableRowSize.ToString()); //pretty sure this isn't loaded later.
+
+                                    writer.WriteEndElement(); //End Entry
+                                }
+
+                               
+
+                            } //End OF STANDARD WIDTH TABLE EDITOR
+
+                            if (editor is TextEditorData textdata)
                             {
-                                foreach (GameFile GameFile in editor.Value.TextEditorData.ListOfGameFiles) 
+                                foreach (GameFile GameFile in textdata.ListOfGameFiles) 
                                 {
                                     writer.WriteStartElement("EditorFile"); //Info about the file used for the main data of the editor.
                                     writer.WriteElementString("FileLocation", GameFile.FileLocation);
@@ -492,7 +683,7 @@ namespace GameEditorStudio
 
                         } //End of using XmlWriter
 
-                        using (XmlWriter FileWriter = XmlWriter.Create(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + editor.Key + "\\" + "\\Files.xml", settings))
+                        using (XmlWriter FileWriter = XmlWriter.Create(LibraryGES.ApplicationLocation + ExtraPath + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + editor.EditorName + "\\" + "\\Files.xml", settings))
                         {                            
 
                             List<GameFile> SomeGameFiles = new();
@@ -502,40 +693,54 @@ namespace GameEditorStudio
                             FileWriter.WriteStartElement("Files"); //
                             FileWriter.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
                             FileWriter.WriteElementString("VersionDate", LibraryGES.VersionDate);
+                            FileWriter.WriteElementString("Seperator", "--------------------------------------------------------------------------------------------");
 
 
-                            if (editor.Value.StandardEditorData.FileNameTable != null) //if name table file exists! For editors using a custom name list, it won't exist.
+
+                            if (editor is DataTableEditorData DataTableData) 
                             {
-                                GameFile AFile = editor.Value.StandardEditorData.FileNameTable;
-                                if (!SomeGameFiles.Contains(AFile)) 
+                                if (DataTableData.NameTable != null) 
                                 {
-                                    SomeGameFiles.Add(AFile);
+                                    if (DataTableData.NameTable.TextTableFile != null) //if name table file exists! For editors using a custom name list, it won't exist.
+                                    {
+                                        GameFile NFile = DataTableData.NameTable.TextTableFile;
+                                        if (!SomeGameFiles.Contains(NFile))
+                                        {
+                                            SomeGameFiles.Add(NFile);
+                                        }
+                                    }
+                                }
+
+                                if (DataTableData.DataTable != null) 
+                                {
+                                    GameFile AFile = DataTableData.DataTable.FileDataTable;
+                                    if (!SomeGameFiles.Contains(AFile))
+                                    {
+                                        SomeGameFiles.Add(AFile);
+                                    }
                                 }
                                 
-                                
-                            }
-                            if (editor.Value.EditorType == "DataTable") 
-                            {
-                                GameFile AFile = editor.Value.StandardEditorData.FileDataTable;
-                                if (!SomeGameFiles.Contains(AFile))
+
+                                //if (DataTableData.DescriptionTableList.Count != 0)
+                                //{
+                                    
+                                //}
+                                foreach (TextTable ExtraTable in DataTableData.DescriptionTableList)
                                 {
-                                    SomeGameFiles.Add(AFile);
-                                }                            
+                                    GameFile DFile = ExtraTable.TextTableFile;
+                                    if (!SomeGameFiles.Contains(DFile))
+                                    {
+                                        SomeGameFiles.Add(DFile);
+                                    }
+                                }
+
+
                             }                            
-                            foreach (DescriptionTable ExtraTable in editor.Value.StandardEditorData.DescriptionTableList)
-                            {
-                                GameFile AFile = ExtraTable.FileTextTable;
-                                if (!SomeGameFiles.Contains(AFile))
-                                {
-                                    SomeGameFiles.Add(AFile);
-                                }
-                                
+                            
 
-                            }
-
-                            if (editor.Value.EditorType == "TextEditor") //Start of Text Editor Files
+                            if (editor is TextEditorData textdata) //Start of Text Editor Files
                             {
-                                foreach (GameFile GameFile in editor.Value.TextEditorData.ListOfGameFiles) 
+                                foreach (GameFile GameFile in textdata.ListOfGameFiles) 
                                 {
                                     if (!SomeGameFiles.Contains(GameFile))
                                     {
@@ -547,20 +752,39 @@ namespace GameEditorStudio
 
                             
 
-                            foreach (Editor TheEditor in Database.GameEditors.Values) 
+                            foreach (Editor AnEditor in Database.GameEditors) 
                             {
-                                foreach (Entry theEntry in TheEditor.StandardEditorData.MasterEntryList)
+                                if (AnEditor is not DataTableEditorData TheEditor) { continue; }
+
+                                foreach (Entry theEntry in TheEditor.DataTableEditorData.MasterEntryList)
                                 {
                                     if (theEntry.NewSubType == Entry.EntrySubTypes.Menu)
                                     {
-                                        if (theEntry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile || theEntry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
+                                        if (theEntry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile )
                                         {
-                                            if (theEntry.EntryTypeMenu.GameFile != null)
+                                            if (theEntry.EntryTypeMenu.TextTableDataFile != null) 
                                             {
-                                                GameFile AFile = theEntry.EntryTypeMenu.GameFile;
-                                                if (!SomeGameFiles.Contains(AFile))
+                                                GameFile AFile = theEntry.EntryTypeMenu.TextTableDataFile.TextTableFile;
+                                                if (AFile != null)
+                                                {                                                    
+                                                    if (!SomeGameFiles.Contains(AFile))
+                                                    {
+                                                        SomeGameFiles.Add(AFile);
+                                                    }
+                                                }
+                                            }                                            
+                                        }
+                                        if (theEntry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
+                                        {
+                                            if (theEntry.EntryTypeMenu.TextTableTextFile != null)
+                                            {
+                                                GameFile AFile = theEntry.EntryTypeMenu.TextTableTextFile.TextTableFile;
+                                                if (AFile != null)
                                                 {
-                                                    SomeGameFiles.Add(AFile);
+                                                    if (!SomeGameFiles.Contains(AFile))
+                                                    {
+                                                        SomeGameFiles.Add(AFile);
+                                                    }
                                                 }
                                             }
                                         }
@@ -627,20 +851,24 @@ namespace GameEditorStudio
             {
 
                 PixelWPF.LibraryPixel.NotificationNegative("Error: Editors not saved.",
-                    "An error occured during the \"Saving Editors\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +
+                    "Editor (" + NameOfEditorThatCrashedSaving + ") caused the save operation to stop. " +
                     "\n\n" +
-                    "As you were probably saving more then just your editors, you'll be happy to hear that each part of saving is handled seperately. This means there is NO CHANCE that any other parts of the saving operation are affected, such as when also saving documents or game giles. " +
+                    "Do not worry :) " +
+                    "\n1: Your files are not corrupted." +
+                    "\n2: Each part of saving is handled seperately (Editors, game files, documents, etc). There is no chance your game files are affected." +
                     "\n\n" +
-                    "Anyway as for editors, To help users know which documents are which on their computer, we save editors using the names you give them to actual folders. " +
-                    "Each operating system has a diffrent list of symbols it doesn't allow folder names to use. " +
-                    "To deal with this problem the program first runs a simulation of what would happen IF it actually saved anything, " +
-                    "by creating a temporary dummy folder and saving everything to that temporary folder. " +
+                    "EXPLAINED:" +
+                    "\n" +
+                    "So anyway this is *probably* an invalid name crash. To help make editors easy to share, editors are saved to folders using the names you give them." +
+                    "Now each operating system has a diffrent list of symbols it doesn't allow folder names to use, " +
+                    "so to deal with this problem the program first runs a simulation of what would happen IF it actually saved anything." +
+                    "It saves everything to a temporary folder to make sure the operating system will allow it, and if it works, THEN we perform an actual save." +
                     "This way there is no chance your actual editors folder will get corrupted or result in any other serious error. :)" +
                     "\n\n" +
-                    "As your seeing this error, it means your operating system doesn't like atleast one of the symbols you tried using in a editor's name. " +
+                    "As you are seeing this error, it almost certinly means your operating system doesn't like atleast one of the symbols you tried using in an editor's name. " +
                     "Try to avoid symbols like @, #, $, %, &, *, \\, /, :, ;, etc. Also most operating systems DO allow spaces in folder names, so the problem isn't that. " +
                     "\n\n" +
-                    "Try changing the names of any editors you think might have caused the error, and then try saving your editors again. "
+                    "Note that, yes it's possible for there to be other causes, but like 95% of the time it's just the editor name >_>. "
                     );
 
                 
@@ -656,21 +884,30 @@ namespace GameEditorStudio
             //I need to make it so for the entrys of the currently selected item, if a entry is edited, that it is saved.
             //Currently the user can just swap items back and forth to save to MemoryFile, and then here MemoryFile saves to your PC.
 
+            
+
             if (MethodData.Command.WorkshopData == null)  //think about this more before adding it
             {
+                if (MethodData.mainMenu.WorkshopData == null) { PixelWPF.LibraryPixel.NotificationNegative("Weird Error", "Workshop not set...?"); }
+                return;
+            }
+            if (MethodData.Command.WorkshopData.IsProjectLoaded == false) 
+            {
+                PixelWPF.LibraryPixel.NotificationNegative("Cannot Save Game Data In Preview Mode", "You don't seem to have a project loaded, so you can't save the workshop's game files. (How did you even trigger this error?)");
                 return;
             }
 
+
             string SavePath = "";
 
-            if (MethodData.Command.WorkshopData.ProjectDataItem.ProjectOutputDirectory != "")
+            if (MethodData.Command.WorkshopData.LoadedProject.ProjectOutputDirectory != "")
             {
                 //Make sure this actually exists!
-                SavePath = MethodData.Command.WorkshopData.ProjectDataItem.ProjectOutputDirectory;
+                SavePath = MethodData.Command.WorkshopData.LoadedProject.ProjectOutputDirectory;
             }
-            else if (MethodData.Command.WorkshopData.ProjectDataItem.ProjectInputDirectory != "")
+            else if (MethodData.Command.WorkshopData.LoadedProject.ProjectInputDirectory != "")
             {
-                SavePath = MethodData.Command.WorkshopData.ProjectDataItem.ProjectInputDirectory;
+                SavePath = MethodData.Command.WorkshopData.LoadedProject.ProjectInputDirectory;
             }
             else 
             {
@@ -679,9 +916,16 @@ namespace GameEditorStudio
 
             //add a check for if SavePath location exists
 
-            foreach (KeyValuePair<string, GameFile> HFile in MethodData.Command.WorkshopData.GameFiles)
+            foreach (GameFile gameFile in MethodData.Command.WorkshopData.GameFiles)
             {
-                File.WriteAllBytes(SavePath + "\\" + HFile.Value.FileLocation, HFile.Value.FileBytes); //saves to the path i set, everything in the array.
+                
+                string TheFolderPath = Path.GetDirectoryName(Path.Combine(SavePath, gameFile.FileLocation));
+                if (!Directory.Exists(TheFolderPath))
+                {
+                    Directory.CreateDirectory(TheFolderPath);
+                }
+
+                File.WriteAllBytes(SavePath + "\\" + gameFile.FileLocation, gameFile.FileBytes); //saves to the path i set, everything in the array.
             }
                         
         }
@@ -690,24 +934,148 @@ namespace GameEditorStudio
         {
             if (ActionPack.mainMenu.WorkshopData == null)  
             {
+                if (ActionPack.mainMenu.WorkshopData == null) { PixelWPF.LibraryPixel.NotificationNegative("Weird Error", "Workshop not set...?"); }
                 return;
             }
 
-            ActionPack.mainMenu.WorkshopData.WorkshopXaml.TheDocumentsUserControl.SaveAllDocumentsWorkshop();
+            //ActionPack.mainMenu.WorkshopData.WorkshopXaml.TheDocumentsUserControl.SaveAllDocumentsWorkshop();
+
+            WorkshopData WorkshopData = ActionPack.mainMenu.WorkshopData;
+
+            try
+            {
+                //First we do a test save to a dummy location. This makes it so if it crashes, file corruption won't happen to the real file locations.
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\DOCocumentationFolderTest");
+                foreach (Document Document in WorkshopData.WorkshopDocumentsList)
+                {
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\DOCocumentationFolderTest\\" + Document.Name);
+                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\DOCocumentationFolderTest\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
+
+                }
+                Directory.Delete(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\DOCocumentationFolderTest", true);
+
+                //Assuming there was no errors, the next chunk actually saves the documents.
+                //Instead of trying to properly deal with the logistics of renamed document folders, we just blow up the entire Documents folder and recreate it.  
+                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents");
+
+
+                string DocumentOrder = "";
+                foreach (Document Document in WorkshopData.WorkshopDocumentsList)
+                {
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + Document.Name);
+                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
+                    DocumentOrder = DocumentOrder + Document.Name + "\n";
+                }
+                System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + "LoadOrder.txt", DocumentOrder);
+
+
+            }
+            catch
+            {
+                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\DOCocumentationFolderTest");
+
+                PixelWPF.LibraryPixel.NotificationNegative("Error: WORKSHOP Documentation not saved.",
+                    "An error occured during the \"Saving Documentation\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +
+                    "\n\n" +
+                    "As you were probably saving more then only your documentation, you'll be happy to hear that each part of saving is handled seperately. " +
+                    "This means there is NO CHANCE that any other parts of the saving operation are affected, such as when also saving editors or saving workshop files. " +
+                    "\n\n" +
+                    "Documentats are saved using the names you give them to actual folders. " +
+                    "This can cause problems as each operating system has a diffrent list of symbols it doesn't allow folder names to use. " +
+                    "For safety, we first simulate what would happen IF it actually saved anything, " +
+                    "by creating a temporary dummy folder and saving everything to that temporary folder. " +
+                    "This way there is no chance your actual document folder will get corrupted or result in any other serious error. :)" +
+                    "\n\n" +
+                    "As your seeing this error, it means your operating system doesn't like atleast one of the symbols you tried using in a documents name. " +
+                    "Try to avoid symbols like @, #, $, %, &, *, \\, /, :, ;, etc. Also most operating systems DO allow spaces in folder names, so the problem isn't that. " +
+                    "\n\n" +
+                    "Try changing the names of any documents you think might have caused the error, and then try saving your documents again. " +
+                    "\n\n" +
+                    "Yes, the problem is the document NAMES, not the text inside them."
+                    );
+            }
         }
 
-        public static void SaveDocumentsProject(MethodData ActionPack)
+        public static void SaveLoadedProjectDocuments(MethodData ActionPack)
         {
             if (ActionPack.mainMenu.WorkshopData == null)
             {
+                PixelWPF.LibraryPixel.NotificationNegative("Weird Error", "Workshop not set...?");
                 return;
             }
-            ActionPack.mainMenu.WorkshopData.WorkshopXaml.TheDocumentsUserControl.SaveAllDocumentsProject();
+
+            WorkshopData WorkshopData = ActionPack.mainMenu.WorkshopData;
+
+            if (ActionPack.mainMenu.WorkshopData.IsProjectLoaded == false)
+            {
+                PixelWPF.LibraryPixel.NotificationNegative("Cannot Save Project Documents", "There is no loaded project. \n(Also how did you trigger this error?)");
+                return;
+            }
+
+            try
+            {
+
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\ProjectFolderTestSave");
+                foreach (Document Document in WorkshopData.ProjectDocumentsList)
+                {
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\ProjectFolderTestSave\\" + Document.Name);
+                    File.WriteAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\ProjectFolderTestSave\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
+
+                }
+
+                Directory.Delete(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\ProjectFolderTestSave", true);
+                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents");
+                //Assuming there was no errors, the next chunk actually saves the documents.
+                //Instead of trying to properly deal with the logistics of renamed document folders, we just blow up the entire Documents folder and recreate it.       
+
+
+                //Directory.CreateDirectory(TheWorkshop.ExePath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Documents");
+                string DocumentOrder = "";
+                foreach (Document Document in WorkshopData.ProjectDocumentsList)
+                {
+                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + Document.Name);
+                    File.WriteAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
+                    DocumentOrder = DocumentOrder + Document.Name + "\n";
+
+                }
+                File.WriteAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + "LoadOrder.txt", DocumentOrder);
+
+
+
+
+            }
+            catch
+            {
+                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\ProjectFolderTestSave");
+
+                PixelWPF.LibraryPixel.NotificationNegative("Error: PROJECT Documentation not saved.",
+                    "An error occured during the \"Saving Documentation\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +
+                    "\n\n" +
+                    "As you were probably saving more then only your documentation, you'll be happy to hear that each part of saving is handled seperately. " +
+                    "This means there is NO CHANCE that any other parts of the saving operation are affected, such as when also saving editors or saving workshop files. " +
+                    "\n\n" +
+                    "Documentats are saved using the names you give them to actual folders. " +
+                    "This can cause problems as each operating system has a diffrent list of symbols it doesn't allow folder names to use. " +
+                    "For safety, we first simulate what would happen IF it actually saved anything, " +
+                    "by creating a temporary dummy folder and saving everything to that temporary folder. " +
+                    "This way there is no chance your actual document folder will get corrupted or result in any other serious error. :)" +
+                    "\n\n" +
+                    "As your seeing this error, it means your operating system doesn't like atleast one of the symbols you tried using in a documents name. " +
+                    "Try to avoid symbols like @, #, $, %, &, *, \\, /, :, ;, etc. Also most operating systems DO allow spaces in folder names, so the problem isn't that. " +
+                    "\n\n" +
+                    "Try changing the names of any documents you think might have caused the error, and then try saving your documents again. " +
+                    "\n\n" +
+                    "Yes, the problem is the document NAMES, not the text inside them."
+                    );
+
+            }
         }
 
 
         public static void SaveEvents(MethodData MethodData) 
         {
+            if (MethodData.mainMenu.WorkshopData == null) { PixelWPF.LibraryPixel.NotificationNegative("Weird Error","Workshop not set...?"); }
+
             string WorkshopName = MethodData.mainMenu.WorkshopData.WorkshopName;
             
             //Step 1: Make sure everything can save to a Example location, letting us test if a problem (crash) would occur, before actually saving to the right location.
@@ -801,6 +1169,9 @@ namespace GameEditorStudio
                                     if (AnEventCommand.Command.Key == "CMD1" || AnEventCommand.Command.Key == "CMD2" || AnEventCommand.Command.Key == "CMD3") 
                                     {
                                         writer.WriteElementString("CMD", "True");
+                                        if (AnEventCommand.Command.Key == "CMD1") { writer.WriteElementString("SPECIAL_NOTE", "This (CMD1) is Stay Open Mode"); }
+                                        if (AnEventCommand.Command.Key == "CMD2") { writer.WriteElementString("SPECIAL_NOTE", "This (CMD2) is Auto Close Mode"); }
+                                        if (AnEventCommand.Command.Key == "CMD3") { writer.WriteElementString("SPECIAL_NOTE", "This (CMD3) is Hidden Mode"); }
 
                                         writer.WriteStartElement("CMDResourceList");
                                         foreach (CommandResource cmdResource in AnEventCommand.CMDList)
@@ -1040,7 +1411,7 @@ namespace GameEditorStudio
         }
 
 
-        public static void SaveProjectXML(ProjectData ProjectData, WorkshopData workshopData) //Not a command method i just wanted it in the save .cs file as the other xml saves.
+        public static void SaveProjectXML(Project ProjectData, WorkshopData workshopData) //Not a command method i just wanted it in the save .cs file as the other xml saves.
         {
             if (ProjectData.ProjectEventResources == null) { ProjectData.ProjectEventResources = new(); }
 

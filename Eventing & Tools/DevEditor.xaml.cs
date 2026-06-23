@@ -85,6 +85,7 @@ namespace GameEditorStudio
                 {
                     Content = category
                 };
+                if (comboItem.Content as string == "Hidden") { comboItem.Foreground = Brushes.Red; }
                 CommandTabCombobox.Items.Add(comboItem);
             }
             foreach (var group in CommandGroupNames)
@@ -93,6 +94,7 @@ namespace GameEditorStudio
                 {
                     Content = group
                 };
+                if (comboItem.Content as string == "Hidden") { comboItem.Foreground = Brushes.Red; }
                 CommandSubCombobox.Items.Add(comboItem);
             }
 
@@ -170,6 +172,11 @@ namespace GameEditorStudio
             CommandCategoryTextbox.Text = command.Category;
             CommandGroupTextbox.Text = command.Group;
 
+            if (CommandCategoryTextbox.Text == "Hidden") { CommandTabCombobox.Foreground = Brushes.Red; }
+            else { CommandTabCombobox.Foreground = Brushes.White;  }
+            if (CommandGroupTextbox.Text == "Hidden") { CommandSubCombobox.Foreground = Brushes.Red; }
+            else { CommandSubCombobox.Foreground = Brushes.White;  }
+            UpdateColorsAsBestICan();
 
             CommandToolsPanel.Children.Clear();
             foreach (Tool RequiredTool in command.RequiredToolsList) 
@@ -183,6 +190,14 @@ namespace GameEditorStudio
             {
                 NewCommandResourcePanel(RequiredResource);
             }
+        }
+
+        private void UpdateColorsAsBestICan() 
+        {
+            if (CommandCategoryTextbox.Text == "Hidden") { CommandTabCombobox.Foreground = Brushes.Red; CommandCategoryTextbox.Foreground = Brushes.Red; }
+            else { CommandTabCombobox.Foreground = Brushes.White; CommandCategoryTextbox.Foreground = Brushes.White; }
+            if (CommandGroupTextbox.Text == "Hidden") { CommandSubCombobox.Foreground = Brushes.Red; CommandGroupTextbox.Foreground = Brushes.Red; }
+            else { CommandSubCombobox.Foreground = Brushes.White; CommandGroupTextbox.Foreground = Brushes.White; }
         }
 
         private void CommonEventsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -851,6 +866,7 @@ namespace GameEditorStudio
 
             CommandCategoryTextbox.Text = CommandTabCombobox.Text;
 
+            UpdateColorsAsBestICan();
         }
 
         private void CommandGroupDropdownClosed(object sender, EventArgs e)
@@ -863,6 +879,8 @@ namespace GameEditorStudio
             //command.Group = CommandSubCombobox.Text;
 
             CommandGroupTextbox.Text = CommandSubCombobox.Text;
+
+            UpdateColorsAsBestICan();
         }
 
         private void ToolCatDropdownClosed(object sender, EventArgs e)
@@ -873,6 +891,32 @@ namespace GameEditorStudio
         private void CommonCatDropdownClosed(object sender, EventArgs e)
         {
             CommonCategoryTextbox.Text = CommonEventTabCombobox.Text;
+        }
+
+        private void CopyToolKey(object sender, RoutedEventArgs e)
+        {
+            string textToCopy = ToolKeyTextbox.Text;
+            if (string.IsNullOrEmpty(textToCopy)) return;
+
+            Clipboard.Clear(); // Clear first
+            System.Threading.Thread.Sleep(200);
+
+            for (int i = 0; i < 2; i++)
+            {
+                try
+                {
+                    Clipboard.SetDataObject(textToCopy, true);
+                    return;
+                }
+                catch (System.Runtime.InteropServices.COMException ex)
+                {
+                    if ((uint)ex.ErrorCode != 0x800401D0) throw;
+                    System.Threading.Thread.Sleep(100);
+                }
+            }
+
+            PixelWPF.LibraryPixel.NotificationNegative("Error copying to clipboard",
+                "I have no fucking idea why, but copying text is buggy in my program. \n\nAtleast i'm telling you it failed? >_>\n\nIt works like 1 in every 10 tries. This problem drove me mad until i gave up. Fuck this >:(");
         }
     }
 }

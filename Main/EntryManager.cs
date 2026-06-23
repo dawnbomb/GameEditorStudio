@@ -1,22 +1,26 @@
 ﻿using System;
-using System.Windows;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
-using System.Net;
-using System.Windows.Navigation;
-using static GameEditorStudio.Entry;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
-using static GameEditorStudio.EntryTypeMenu;
-using Windows.Gaming.Preview.GamesEnumeration;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
-using TabItem = System.Windows.Controls.TabItem;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
-using Windows.Management.Update;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Navigation;
+using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+using static GameEditorStudio.Entry;
+using static GameEditorStudio.EntryTypeMenu;
+using TabItem = System.Windows.Controls.TabItem;
 //using System.Windows.Forms;
 //using System.Drawing;
 
@@ -35,57 +39,102 @@ namespace GameEditorStudio
         //B=Byte size, 1="Byte" 2="UInt16" 4="UInt32"         Name!=the name of the textbox        type!= byte / ushort / uint, only include this in the FIRST time this ever happens in a form, later copies ommit this!
         //value!=Name of variable that holds the byte type (so byte/short/int has diffrent names)       StartingHex!= The hex offset      RowSize!=How many bytes in a row    Arrayofset! = how far into the row do we start grabbing info or saving it
         //Byte.TryParse(textBoxLv.Text, out byte value8); { Form1.ByteWriter(value8, enemydata_array, 104 + (enemyTree.SelectedNode.Index * 96) + 96); } //First 1 byte save
-                
-        public void LoadEntry(Workshop TheWorkshop, Editor EditorClass, Entry EntryClass) //LOADING ISN'T TAKING SIGN INTO CONSIDERATION!!!
+
+        public void LoadEntry(DataTableEditorData DTEData, Entry EntryClass) //LOADING ISN'T TAKING SIGN INTO CONSIDERATION!!!
         {
-            
+            //When the left bar selects a new item, this method triggers to load each entry's data based on Item Index.
+
             //This method simply takes the byte(s) from MemoryFile the entry controls,
             //converts them from Hex to Decimal, and loads that number into EditorClass.EntryByteDecimal.
             //Afterward (Down below) it loads the the entry with that information.
 
-            if (TheWorkshop.IsPreviewMode == true) { return; }
+            if (DTEData.WorkshopXaml.IsPreviewMode == true) { return; }
 
-            if (EntryClass.Endianness == "1") 
-            { 
-                EntryClass.EntryByteDecimal = EditorClass.StandardEditorData.FileDataTable.FileBytes[EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D"); 
+            ////ANSWER A
+            //if (EntryClass.Endianness == "1")
+            //{
+            //    EntryClass.EntryByteDecimal = DTEData.DataTable.FileDataTable.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
+            //}
+            //else if (EntryClass.Endianness == "2B")
+            //{
+            //    EntryClass.EntryByteDecimal = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+            //}
+            //else if (EntryClass.Endianness == "4B")
+            //{
+            //    EntryClass.EntryByteDecimal = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+            //}
+            //else if (EntryClass.Endianness == "2L")
+            //{
+            //    ushort value2 = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+            //    ushort swappedValue2 = (ushort)IPAddress.HostToNetworkOrder((short)value2); // Swap the endianness
+            //    EntryClass.EntryByteDecimal = swappedValue2.ToString("D");
+            //}
+            //else if (EntryClass.Endianness == "4L")
+            //{
+            //    uint value = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+            //    byte[] valueBytes = BitConverter.GetBytes(value);
+            //    Array.Reverse(valueBytes);
+            //    uint swappedValue = BitConverter.ToUInt32(valueBytes, 0);
+            //    EntryClass.EntryByteDecimal = swappedValue.ToString("D");
+            //}
+
+            //ANSWER B
+            if (EntryClass.Endianness == "1")
+            {
+                EntryClass.EntryByteDecimal = DTEData.DataTable.FileDataTable.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
             }
             else if (EntryClass.Endianness == "2B")
             {
-                EntryClass.EntryByteDecimal = BitConverter.ToUInt16(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
-            }
-            else if (EntryClass.Endianness == "4B")
-            {
-                EntryClass.EntryByteDecimal = BitConverter.ToUInt32(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
-            }
-            else if (EntryClass.Endianness == "2L") 
-            {
-                ushort value2 = BitConverter.ToUInt16(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+                ushort value2 = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
                 ushort swappedValue2 = (ushort)IPAddress.HostToNetworkOrder((short)value2); // Swap the endianness
                 EntryClass.EntryByteDecimal = swappedValue2.ToString("D");
             }
-            else if (EntryClass.Endianness == "4L") 
+            else if (EntryClass.Endianness == "4B")
             {
-                uint value = BitConverter.ToUInt32(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+                uint value = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
                 byte[] valueBytes = BitConverter.GetBytes(value);
                 Array.Reverse(valueBytes);
                 uint swappedValue = BitConverter.ToUInt32(valueBytes, 0);
                 EntryClass.EntryByteDecimal = swappedValue.ToString("D");
             }
+            else if (EntryClass.Endianness == "2L")
+            {
+                EntryClass.EntryByteDecimal = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+                
+            }
+            else if (EntryClass.Endianness == "4L")
+            {
+                EntryClass.EntryByteDecimal = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+                
+            }
+
+
+            if (EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox) 
+            { 
+                LoadNumberBox(EntryClass); //Load Entry
+            }
+            if (EntryClass.NewSubType == Entry.EntrySubTypes.CheckBox)
+            { 
+                LoadCheckBox(EntryClass); //Load Entry
+            }
+            if (EntryClass.NewSubType == Entry.EntrySubTypes.BitFlag)
+            {
+                LoadBitFlag(EntryClass); //Load Entry
+            }
+            if (EntryClass.NewSubType == Entry.EntrySubTypes.Menu) 
+            { 
+                LoadMenu(EntryClass); //Load Entry
+            }
+
+            //WARNING: I tried making symbology update whenever an entry is loaded, but it causes a LOT OF FUCKING LAG when swapping the selected item. DO NOT DO THIS! FIND A BETTER ANSWER! 
             
-
-
-
-            if (EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox) { LoadNumberBox(EntryClass); }
-            if (EntryClass.NewSubType == Entry.EntrySubTypes.CheckBox)  { LoadCheckBox(EntryClass); }
-            if (EntryClass.NewSubType == Entry.EntrySubTypes.BitFlag)   { LoadBitFlag(EntryClass); }
-            if (EntryClass.NewSubType == Entry.EntrySubTypes.Menu)      { LoadMenu(EntryClass, TheWorkshop); }
         }
 
-        public void SaveEntry(Editor EditorClass, Entry EntryClass)
+        public void SaveEntry(Entry EntryClass)
         {
-            
+            DataTableEditorData DTEData = EntryClass.ParentEditor.DataTableEditorData;
 
-            if (EntryClass.Endianness != "0") 
+            if (EntryClass.Endianness != "0")
             {
                 //This Method takes the number in EntryClass.EntryByteDecimal, converts it from Decimal to Hex, then saves it to the correct file location.
                 //This is the only way anything is saved to MemoryFile / eventually actual file.
@@ -102,7 +151,51 @@ namespace GameEditorStudio
                 //Checks if the entry allows saving.
                 //Creators may want to disable specific entrys from being editable if changing them causes the game to crash.
                 //There could be other uses as well. All entrys default to true.
-                if (EntryClass.IsEntryHidden == false && EntryClass.IsTextInUse == false ) 
+                //if (EntryClass.IsEntryHidden == false && EntryClass.IsTextInUse == false)
+                //{
+                //    //If 1/2/4/r2/r4 Bytes...  
+
+                //    //NOTE: I now ALWAYS save as an unsigned value. IE, EntryByteDecimal may NEVER be a negative (Not anymore). 
+                //    if (EntryClass.Endianness == "1")  //This is saving 1 Byte Size?   //First 1 byte save
+                //    {
+                //        //Thing that loads       -----------------The Hex GameFile---------------------------  ---Starting Byte--- --The Tree--   --Row Size----  --Offset into a row-- --To Decimal--               
+                //        Byte.TryParse(EntryClass.EntryByteDecimal, out byte value8);
+                //        { ByteManager.ByteWriter(value8, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); }
+
+                //    }
+                //    else if (EntryClass.Endianness == "2L")
+                //    {
+                //        UInt16.TryParse(EntryClass.EntryByteDecimal, out ushort value16);
+                //        value16 = (ushort)IPAddress.HostToNetworkOrder((short)value16); // Swap the endianness
+                //        { ByteManager.ByteWriter(value16, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 2 byte save
+
+
+                //    }
+                //    else if (EntryClass.Endianness == "4L")
+                //    {
+                //        UInt32.TryParse(EntryClass.EntryByteDecimal, out uint value32);
+                //        byte[] valueBytes = BitConverter.GetBytes(value32); // Swap the endianness
+                //        Array.Reverse(valueBytes); // Swap the endianness
+                //        value32 = BitConverter.ToUInt32(valueBytes, 0); // Swap the endianness
+                //        { ByteManager.ByteWriter(value32, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 4 byte save
+
+                //    }
+                //    else if (EntryClass.Endianness == "2B")
+                //    {
+                //        UInt16.TryParse(EntryClass.EntryByteDecimal, out ushort value16);
+                //        { ByteManager.ByteWriter(value16, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 2 byte save
+
+                //    }
+                //    else if (EntryClass.Endianness == "4B")
+                //    {
+                //        UInt32.TryParse(EntryClass.EntryByteDecimal, out uint value32);
+                //        { ByteManager.ByteWriter(value32, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 4 byte save
+
+                //    }
+                //}
+
+
+                if (EntryClass.IsEntryHidden == false && EntryClass.IsTextInUse == false)
                 {
                     //If 1/2/4/r2/r4 Bytes...  
 
@@ -111,136 +204,39 @@ namespace GameEditorStudio
                     {
                         //Thing that loads       -----------------The Hex GameFile---------------------------  ---Starting Byte--- --The Tree--   --Row Size----  --Offset into a row-- --To Decimal--               
                         Byte.TryParse(EntryClass.EntryByteDecimal, out byte value8);
-                        { ByteManager.ByteWriter(value8, EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); }
-
+                        { ByteManager.ByteWriter(value8, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); }
 
                     }
                     else if (EntryClass.Endianness == "2L")
                     {
                         UInt16.TryParse(EntryClass.EntryByteDecimal, out ushort value16);
-                        value16 = (ushort)IPAddress.HostToNetworkOrder((short)value16); // Swap the endianness
-                        { ByteManager.ByteWriter(value16, EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 2 byte save
-
+                        { ByteManager.ByteWriter(value16, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 2 byte save
 
                     }
                     else if (EntryClass.Endianness == "4L")
                     {
                         UInt32.TryParse(EntryClass.EntryByteDecimal, out uint value32);
-                        byte[] valueBytes = BitConverter.GetBytes(value32); // Swap the endianness
-                        Array.Reverse(valueBytes); // Swap the endianness
-                        value32 = BitConverter.ToUInt32(valueBytes, 0); // Swap the endianness
-                        { ByteManager.ByteWriter(value32, EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 4 byte save
-
+                        { ByteManager.ByteWriter(value32, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 4 byte save
                     }
                     else if (EntryClass.Endianness == "2B")
                     {
                         UInt16.TryParse(EntryClass.EntryByteDecimal, out ushort value16);
-                        { ByteManager.ByteWriter(value16, EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 2 byte save
+                        value16 = (ushort)IPAddress.HostToNetworkOrder((short)value16); // Swap the endianness
+                        { ByteManager.ByteWriter(value16, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 2 byte save
 
                     }
                     else if (EntryClass.Endianness == "4B")
                     {
                         UInt32.TryParse(EntryClass.EntryByteDecimal, out uint value32);
-                        { ByteManager.ByteWriter(value32, EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 4 byte save
+                        byte[] valueBytes = BitConverter.GetBytes(value32); // Swap the endianness
+                        Array.Reverse(valueBytes); // Swap the endianness
+                        value32 = BitConverter.ToUInt32(valueBytes, 0); // Swap the endianness
+                        { ByteManager.ByteWriter(value32, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 4 byte save
 
                     }
                 }
 
 
-
-                //if (EntryClass.HideEntry == false)
-                //{
-                //    //If 1/2/4/r2/r4 Bytes...  
-
-                //    if (EntryClass.Endianness == "1")  //This is saving 1 Byte Size?   //First 1 byte save
-                //    {
-                //        if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Signed) //&& EntryClass.NewSubType == EntrySubTypes.NumberBox
-                //        {
-                //            sbyte signedValue = sbyte.Parse(EntryClass.EntryByteDecimal); // Directly parse the string to a signed byte (sbyte)
-                //            byte value8 = (byte)signedValue; // Convert the signed byte to an unsigned byte properly.
-                //            ByteManager.ByteWriter(value8, EditorClass.SWData.FileDataTable.FileBytes, EditorClass.SWData.DataTableStart + (EditorClass.SWData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
-                //        }
-                //        if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Unsigned)
-                //        {
-                //            //Thing that loads       -----------------The Hex GameFile---------------------------  ---Starting Byte--- --The Tree--   --Row Size----  --Offset into a row-- --To Decimal--               
-                //            Byte.TryParse(EntryClass.EntryByteDecimal, out byte value8);
-                //            { ByteManager.ByteWriter(value8, EditorClass.SWData.FileDataTable.FileBytes, EditorClass.SWData.DataTableStart + (EditorClass.SWData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); }
-                //        }
-
-
-                //    }
-                //    else if (EntryClass.Endianness == "2L")
-                //    {
-                //        if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Unsigned)
-                //        {
-                //            UInt16.TryParse(EntryClass.EntryByteDecimal, out ushort value16);
-                //            value16 = (ushort)IPAddress.HostToNetworkOrder((short)value16); // Swap the endianness
-                //            { ByteManager.ByteWriter(value16, EditorClass.SWData.FileDataTable.FileBytes, EditorClass.SWData.DataTableStart + (EditorClass.SWData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 2 byte save
-
-                //        }
-                //        if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Signed)
-                //        {
-                //            short signedValue16 = Int16.Parse(EntryClass.EntryByteDecimal);
-                //            byte[] bytes16 = BitConverter.GetBytes(signedValue16);
-                //            Array.Reverse(bytes16); // Always reverse to ensure little-endian format regardless of system architecture
-                //            ByteManager.ByteWriter(BitConverter.ToInt16(bytes16, 0), EditorClass.SWData.FileDataTable.FileBytes, EditorClass.SWData.DataTableStart + (EditorClass.SWData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
-
-                //        }
-
-
-                //    }
-                //    else if (EntryClass.Endianness == "4L")
-                //    {
-                //        if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Unsigned)
-                //        {
-                //            UInt32.TryParse(EntryClass.EntryByteDecimal, out uint value32);
-                //            byte[] valueBytes = BitConverter.GetBytes(value32); // Swap the endianness
-                //            Array.Reverse(valueBytes); // Swap the endianness
-                //            value32 = BitConverter.ToUInt32(valueBytes, 0); // Swap the endianness
-                //            { ByteManager.ByteWriter(value32, EditorClass.SWData.FileDataTable.FileBytes, EditorClass.SWData.DataTableStart + (EditorClass.SWData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 4 byte save
-
-                //        }
-                //        if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Signed)
-                //        {
-                //            int signedValue32 = Int32.Parse(EntryClass.EntryByteDecimal);
-                //            byte[] bytes32 = BitConverter.GetBytes(signedValue32);
-                //            Array.Reverse(bytes32);  // Ensures little-endian format
-                //            ByteManager.ByteWriter(BitConverter.ToInt32(bytes32, 0), EditorClass.SWData.FileDataTable.FileBytes, EditorClass.SWData.DataTableStart + (EditorClass.SWData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
-
-                //        }
-
-                //    }
-                //    else if (EntryClass.Endianness == "2B")
-                //    {
-                //        if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Unsigned)
-                //        {
-                //            UInt16.TryParse(EntryClass.EntryByteDecimal, out ushort value16);
-                //            { ByteManager.ByteWriter(value16, EditorClass.SWData.FileDataTable.FileBytes, EditorClass.SWData.DataTableStart + (EditorClass.SWData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 2 byte save
-                //        }
-                //        if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Signed)
-                //        {
-                //            short signedValue16 = Int16.Parse(EntryClass.EntryByteDecimal);
-                //            ByteManager.ByteWriter((short)IPAddress.HostToNetworkOrder(signedValue16), EditorClass.SWData.FileDataTable.FileBytes, EditorClass.SWData.DataTableStart + (EditorClass.SWData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
-
-                //        }
-
-                //    }
-                //    else if (EntryClass.Endianness == "4B")
-                //    {
-                //        if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Unsigned)
-                //        {
-                //            UInt32.TryParse(EntryClass.EntryByteDecimal, out uint value32);
-                //            { ByteManager.ByteWriter(value32, EditorClass.SWData.FileDataTable.FileBytes, EditorClass.SWData.DataTableStart + (EditorClass.SWData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 4 byte save
-                //        }
-                //        if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Signed)
-                //        {
-                //            int signedValue32 = Int32.Parse(EntryClass.EntryByteDecimal);
-                //            ByteManager.ByteWriter(IPAddress.HostToNetworkOrder(signedValue32), EditorClass.SWData.FileDataTable.FileBytes, EditorClass.SWData.DataTableStart + (EditorClass.SWData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
-
-                //        }
-
-                //    }
-                //}
 
 
 
@@ -252,7 +248,7 @@ namespace GameEditorStudio
         {
             EntryClass.EntryTypeNumberBox.TextChangeEventWorks = false; //This prevent the textbox's change text event from firing. 
 
-            if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Unsigned) 
+            if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Unsigned)
             {
                 EntryClass.EntryTypeNumberBox.NumberBoxTextBox.Text = EntryClass.EntryByteDecimal;
             }
@@ -268,7 +264,7 @@ namespace GameEditorStudio
                             EntryClass.EntryTypeNumberBox.NumberBoxTextBox.Text = (longValue - 256).ToString();
                         }
                         else { EntryClass.EntryTypeNumberBox.NumberBoxTextBox.Text = longValue.ToString(); }
-                        
+
                     }
                     if (EntryClass.Bytes == 2)
                     {
@@ -293,7 +289,7 @@ namespace GameEditorStudio
         }
 
 
-        public void LoadCheckBox(Entry EntryClass) 
+        public void LoadCheckBox(Entry EntryClass)
         {
             if (EntryClass.EntryByteDecimal == EntryClass.EntryTypeCheckBox.TrueValue.ToString())
             {
@@ -333,136 +329,279 @@ namespace GameEditorStudio
         }
 
 
-        public void LoadMenu(Entry EntryClass, Workshop TheWorkshop)
-        {
-            
-            string UnknownValue = EntryClass.EntryByteDecimal + ": " + "ERROR!"; //text for a menu name the user hasn't assigned a name to, but is a valid value.
+        public void LoadMenu(Entry EntryClass)
+        {            
+
+            string MenuText = EntryClass.EntryByteDecimal + ": " + "???"; //text for a menu name the user hasn't assigned a name to, but is a valid value.
+            bool found = false; //If not found, text becomes ERROR! and red.             
 
             if (EntryClass.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List)
             {
-                
-                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile || EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
-                {
-                    bool FoundItem = false;
-                    foreach (string name in EntryClass.EntryTypeMenu.NameList)
-                    {                        
+                EntryClass.EntryTypeMenu.ListButton.ToolTip = null; //Reset tooltip status.
 
-                        string[] parts = name.Split(':');
-                        string number = parts[0].Trim();
-                        if (number == EntryClass.EntryByteDecimal)  //ComboItem.Tag
+
+                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile )
+                {
+                    TextTable texttable = EntryClass.EntryTypeMenu.TextTableDataFile;
+                    CharacterSetManager CSM = new();
+                    CSM.DecodeAllItemTexts(texttable); //Temp fix for preview mode, but it could probably cause problems later? >_>
+                    foreach (TextInfo textinfo in texttable.ItemList) 
+                    {
+                        if (textinfo.ItemIndex.ToString() == EntryClass.EntryByteDecimal) 
                         {
-                            //item.IsSelected = true;
-                            FoundItem = true;
-                            EntryClass.EntryTypeMenu.ListButton.Content = name; //EntryClass.EntryByteDecimal + ": " + 
+                            found = true;                            
+                            MenuText = (int.Parse(EntryClass.EntryByteDecimal) + texttable.TextTableFirstNameID) + ": " + textinfo.ItemName;
+                            EntryClass.EntryTypeMenu.ListButton.Tag = textinfo;
+                            if (textinfo.ItemWorkshopTooltip != "") { EntryClass.EntryTypeMenu.ListButton.ToolTip = textinfo.ItemWorkshopTooltip; }                            
+                            break;
+                        }
+                    }   
+                }
+                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
+                {
+                    TextTable texttable = EntryClass.EntryTypeMenu.TextTableTextFile;
+                    CharacterSetManager CSM = new();
+                    CSM.DecodeAllItemTexts(texttable); //Temp fix for preview mode, but it could probably cause problems later? >_>
+                    foreach (TextInfo textinfo in texttable.ItemList)
+                    {
+                        if (textinfo.ItemIndex.ToString() == EntryClass.EntryByteDecimal)
+                        {
+                            found = true;
+                            MenuText = (int.Parse(EntryClass.EntryByteDecimal) + texttable.TextTableFirstNameID) + ": " + textinfo.ItemName;
+                            EntryClass.EntryTypeMenu.ListButton.Tag = textinfo;
+                            if (textinfo.ItemWorkshopTooltip != "") { EntryClass.EntryTypeMenu.ListButton.ToolTip = textinfo.ItemWorkshopTooltip; }                            
+                            break;
                         }
                     }
-                    if (FoundItem == false)
+                }
+                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor)
+                {    
+                    TextTable texttable = EntryClass.EntryTypeMenu.TextTableEditor;
+                    foreach (TextInfo textinfo in texttable.LinkedDTEEditor.NameTable.ItemList) //slightly diffrent, it goes over the linked Name Table's items. 
                     {
-                        EntryClass.EntryTypeMenu.ListButton.Content = UnknownValue;
-                        EntryClass.EntryTypeMenu.ListButton.Foreground = Brushes.Red; //Red text for unknown value
+                        if (textinfo.ItemIndex.ToString() == EntryClass.EntryByteDecimal)
+                        //if (textinfo.ItemIndex.ToString() == (int.Parse(EntryClass.EntryByteDecimal) + texttable.LinkedDTEEditor.NameTable.TextTableFirstNameID).ToString())
+                        {
+                            found = true;
+                            MenuText = (int.Parse(EntryClass.EntryByteDecimal) + texttable.LinkedDTEEditor.NameTable.TextTableFirstNameID).ToString() + ": " + textinfo.ItemName;
+                            //MenuText = EntryClass.EntryByteDecimal + ": " + textinfo.ItemName;
+                            EntryClass.EntryTypeMenu.ListButton.Tag = textinfo;
+                            if (textinfo.ItemWorkshopTooltip != "") { EntryClass.EntryTypeMenu.ListButton.ToolTip = textinfo.ItemWorkshopTooltip; }                            
+                            break;
+                        }
                     }
                 }
-                //if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
-                //{
-                //    bool FoundItem = false;
-                //    foreach (string name in EntryClass.EntryTypeMenu.NameList)
-                //    {
-
-                //        string[] parts = name.Split(':');
-                //        string number = parts[0].Trim();
-                //        if (number == EntryClass.EntryByteDecimal)  //ComboItem.Tag
-                //        {
-                //            //item.IsSelected = true;
-                //            FoundItem = true;
-                //            EntryClass.EntryTypeMenu.ListButton.Content = name; //EntryClass.EntryByteDecimal + ": " + 
-                //        }
-                //    }
-                //    if (FoundItem == false)
-                //    {
-                //        EntryClass.EntryTypeMenu.ListButton.Content = EntryClass.EntryByteDecimal + ": " + UnknownValue;
-                //    }
-                //}
-                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor) //|| EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile
+                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing) 
                 {
-                    string theName = "";
-
-                    if (EntryClass.EntryTypeMenu.LinkedEditor != null) 
+                    TextTable texttable = EntryClass.EntryTypeMenu.TextTableNothing;
+                    foreach (TextInfo textinfo in texttable.ItemList)
                     {
-                        int anum = Int32.Parse(EntryClass.EntryByteDecimal) - EntryClass.EntryTypeMenu.FirstNameID;
-                        theName = EntryClass.EntryTypeMenu.LinkedEditor.StandardEditorData.EditorLeftDockPanel.ItemList[anum].ItemName;  //EntryClass.EntryTypeMenu.NothingNameList[Int32.Parse(EntryClass.EntryByteDecimal)];
-
-                        EntryClass.EntryTypeMenu.ListButton.Content = EntryClass.EntryByteDecimal + ": " + theName;
-                    }
-                    
-
-                    if (theName == "" || theName == null)
-                    { 
-                        EntryClass.EntryTypeMenu.ListButton.Content = UnknownValue;
-                        EntryClass.EntryTypeMenu.ListButton.Foreground = Brushes.Red; //Red text for unknown value
+                        if (textinfo.ItemIndex.ToString() == EntryClass.EntryByteDecimal)
+                        {
+                            found = true;
+                            MenuText = (int.Parse(EntryClass.EntryByteDecimal) + texttable.TextTableFirstNameID) + ": " + textinfo.ItemName;
+                            EntryClass.EntryTypeMenu.ListButton.Tag = textinfo;
+                            if (textinfo.ItemWorkshopTooltip != "") { EntryClass.EntryTypeMenu.ListButton.ToolTip = textinfo.ItemWorkshopTooltip; }                            
+                            break;
+                        }
                     }
                 }
-                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing) //|| EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile
+
+
+                
+                if (found == true) 
                 {
-                    string theName = EntryClass.EntryTypeMenu.NothingNameList[Int32.Parse(EntryClass.EntryByteDecimal)];
+                    EntryClass.EntryTypeMenu.ListButton.Content = MenuText;
+                    EntryClass.EntryTypeMenu.ListButton.Foreground = (Brush)(new BrushConverter().ConvertFrom("#E1E1E1"));
+                    //EntryClass.EntryTypeMenu.ListButton.Background = (Brush)(new BrushConverter().ConvertFrom("#232323"));
 
-                    EntryClass.EntryTypeMenu.ListButton.Content = EntryClass.EntryByteDecimal + ": " + theName;
-
-                    if (theName == "" || theName == null)
-                    { 
-                        EntryClass.EntryTypeMenu.ListButton.Content = UnknownValue;
-                        EntryClass.EntryTypeMenu.ListButton.Foreground = Brushes.Red; //Red text for unknown value
-                    }
+                    EntryClass.EntryTypeMenu.ListButton.IsEnabled = true;
                 }
+                if (found == false) 
+                {
+                    EntryClass.EntryTypeMenu.ListButton.Content = MenuText;
+                    //EntryClass.EntryTypeMenu.ListButton.Foreground = Brushes.Red; //Red text for unknown value
+                    EntryClass.EntryTypeMenu.ListButton.Foreground = (Brush)(new BrushConverter().ConvertFrom("#888888"));
+                    //EntryClass.EntryTypeMenu.ListButton.Foreground = (Brush)(new BrushConverter().ConvertFrom("#696969"));
+                    //EntryClass.EntryTypeMenu.ListButton.Foreground = (Brush)(new BrushConverter().ConvertFrom("#EE1111"));
+                    //EntryClass.EntryTypeMenu.ListButton.Background = (Brush)(new BrushConverter().ConvertFrom("#17181A"));
+                    EntryClass.EntryTypeMenu.ListButton.IsEnabled = false;
+
+                    EntryClass.EntryTypeMenu.ListButton.ToolTip = 
+                        "This entry's value was not found in the linked text table." +
+                        "\n(This is not a critical error.) " +
+                        "\n\nTo help prevent mistakes, this is disabled when this happens. " +
+                        "\n\nIf using a \"Nothing\" Table, you can add ? marks to the\nrelevant rows and it will be usable.";
+
+                    //ComboBoxItem FakeItem = new();
+                    //FakeItem.Content = MenuText; //found above
+                    //FakeItem.Foreground = Brushes.Red; //Red text for unknown value
+                    //EntryClass.EntryTypeMenu.Dropdown.Foreground = Brushes.Red; //Red text for unknown value
+                    //EntryClass.EntryTypeMenu.Dropdown.Items.Add(FakeItem);
+
+                    //TextInfo FakeInfo = new();
+                    //FakeInfo.ItemIndex = int.Parse(EntryClass.EntryByteDecimal);
+                    //FakeInfo.ItemName = "ERROR!";
+                    //FakeItem.Tag = FakeInfo;
+
+                    //FakeItem.IsSelected = true;
+                }
+                
 
             }
+
+
+
+
+
+
+
+
             if (EntryClass.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.Dropdown)
             {
-                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile || EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile || EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor || EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing)
+                EntryClass.EntryTypeMenu.Dropdown.ToolTip = null; //Reset tooltip status.
+                int StartNum = 0;
+                for (int i = EntryClass.EntryTypeMenu.Dropdown.Items.Count - 1; i >= 0; i--) //Remove all fake items.
                 {
-                    
-
-
-
-                    bool FoundItem = false;
-                    foreach (ComboBoxItem ComboItem in EntryClass.EntryTypeMenu.Dropdown.Items) 
-                    {                        
-                        
-                        string input = ComboItem.Content as string;
-                        if (input == "" || input == null) { return; }
-
-                        string[] parts = input.Split(':');
-                        string number = parts[0].Trim();
-                        // = number;
-
-                        if (number == EntryClass.EntryByteDecimal)  //ComboItem.Tag
-                        { 
-                            ComboItem.IsSelected = true;
-                            FoundItem = true;
-                        }    
-
-                    }
-                    if (FoundItem == false)
+                    // Get the item at the current index
+                    if (EntryClass.EntryTypeMenu.Dropdown.Items[i] is ComboBoxItem item)
                     {
-
-                        ComboBoxItem FakeItem = new();
-                        FakeItem.Content = UnknownValue; //found above
-                        FakeItem.Foreground = Brushes.Red; //Red text for unknown value
-                        EntryClass.EntryTypeMenu.Dropdown.Foreground = Brushes.Red; //Red text for unknown value
-                        EntryClass.EntryTypeMenu.Dropdown.Items.Add(FakeItem);
-                        FakeItem.IsSelected = true;
-
-                        //ComboBoxItem FakeItem = new();
-                        //FakeItem.Content = EntryClass.EntryByteDecimal + ": " + UnknownValue;
-                        //EntryClass.EntryTypeMenu.Dropdown.Items.Add(FakeItem);
-                        //FakeItem.IsSelected = true;
+                        // Check the tag
+                        if (item.Tag?.ToString() == "Fake")
+                        {
+                            EntryClass.EntryTypeMenu.Dropdown.Items.RemoveAt(i);
+                        }
                     }
+                }                
 
-
-                    //EntryClass.EntryTypeMenu.ListButton.Content = EntryClass.EntryByteDecimal + ": " + EntryClass.EntryTypeMenu.NothingItemList[Int32.Parse(EntryClass.EntryByteDecimal)];
-                }
-                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor) 
+                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile)
                 {
+                    TextTable texttable = EntryClass.EntryTypeMenu.TextTableDataFile;
+                    foreach (ComboBoxItem ComboItem in EntryClass.EntryTypeMenu.Dropdown.Items)
+                    {
+                        TextInfo textinfo = ComboItem.Tag as TextInfo;
+                        if (textinfo.ItemIndex.ToString() != EntryClass.EntryByteDecimal) { continue; }
+
+                        ComboItem.IsSelected = true;
+                        found = true;
+                        if (textinfo.ItemWorkshopTooltip != "") { EntryClass.EntryTypeMenu.Dropdown.ToolTip = textinfo.ItemWorkshopTooltip; }
+                        
+                        break;
+                    }
+                    StartNum = texttable.TextTableFirstNameID;
+
+                }
+                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
+                {
+                    TextTable texttable = EntryClass.EntryTypeMenu.TextTableTextFile;
+                    foreach (ComboBoxItem ComboItem in EntryClass.EntryTypeMenu.Dropdown.Items)
+                    {
+                        TextInfo textinfo = ComboItem.Tag as TextInfo;
+                        if (textinfo.ItemIndex.ToString() != EntryClass.EntryByteDecimal) { continue; }
+
+                        ComboItem.IsSelected = true;
+                        found = true;
+                        if (textinfo.ItemWorkshopTooltip != "") { EntryClass.EntryTypeMenu.Dropdown.ToolTip = textinfo.ItemWorkshopTooltip; }
+                        
+                        break;
+                    }
+                    StartNum = texttable.TextTableFirstNameID;
+                }
+                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor)
+                {
+                    TextTable texttable = EntryClass.EntryTypeMenu.TextTableEditor;
+                    foreach (ComboBoxItem ComboItem in EntryClass.EntryTypeMenu.Dropdown.Items)
+                    {
+                        if (EntryClass.ParentEditor.WorkshopData.IsProjectLoaded == false) 
+                        {
+                            ComboItem.IsSelected = true;
+                            found = true; 
+                            //EntryClass.EntryTypeMenu.Dropdown.ToolTip = "You can see "; 
+                            break; 
+                        }
+
+                        TextInfo textinfo = ComboItem.Tag as TextInfo;
+                        if (textinfo.ItemIndex.ToString() != EntryClass.EntryByteDecimal) { continue; }
+
+                        ComboItem.IsSelected = true;
+                        found = true;
+                        if (textinfo.ItemWorkshopTooltip != "") { EntryClass.EntryTypeMenu.Dropdown.ToolTip = textinfo.ItemWorkshopTooltip; }
+                        
+                        break;
+                    }
+                    try 
+                    {
+                        if (texttable != null) { if (texttable.LinkedDTEEditor != null) { StartNum = texttable.LinkedDTEEditor.NameTable.TextTableFirstNameID; }   }
+                        
+                    } catch { }
                     
+                }
+                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing)
+                {
+                    TextTable texttable = EntryClass.EntryTypeMenu.TextTableNothing;
+                    foreach (ComboBoxItem ComboItem in EntryClass.EntryTypeMenu.Dropdown.Items)
+                    {
+                        if (EntryClass.ParentEditor.WorkshopData.IsProjectLoaded == false)
+                        {
+                            ComboItem.IsSelected = true;
+                            found = true;
+                            //EntryClass.EntryTypeMenu.Dropdown.ToolTip = "You can see "; 
+                            break;
+                        }
+
+                        TextInfo textinfo = ComboItem.Tag as TextInfo;
+                        if (textinfo == null) { continue; }
+                        if (textinfo.ItemIndex.ToString() != EntryClass.EntryByteDecimal) { continue; }
+
+                        ComboItem.IsSelected = true;
+                        found = true;
+                        if (textinfo.ItemWorkshopTooltip != "") { EntryClass.EntryTypeMenu.Dropdown.ToolTip = textinfo.ItemWorkshopTooltip; }
+                        
+                        break;
+                    }
+                    StartNum = texttable.TextTableFirstNameID;
+                }
+
+
+
+                if (found == true) 
+                {
+                    EntryClass.EntryTypeMenu.Dropdown.IsEnabled = true;
+                }
+                if (found == false)
+                {
+
+
+                    ComboBoxItem FakeItem = new();
+                    //FakeItem.Content = MenuText; //found above
+                    FakeItem.Content = (int.Parse(EntryClass.EntryByteDecimal) + StartNum) + ": ???" ; //found above
+                    FakeItem.Foreground = Brushes.Red; //Red text for unknown value
+                    EntryClass.EntryTypeMenu.Dropdown.Foreground = Brushes.Red; //Red text for unknown value
+                    EntryClass.EntryTypeMenu.Dropdown.Items.Add(FakeItem);
+
+                    //NOTE: the last time i crashed when EntryByteDecimal was null,
+                    //it was because the left bar for editors was not selecting an item until the editor tab was clicked.
+                    //This is fixed now, but if this ever crashes again, it would be because EntryByteDecimal is not loaded to begin with. 
+                    TextInfo FakeInfo = new();
+                    FakeInfo.ItemIndex = int.Parse(EntryClass.EntryByteDecimal) + StartNum; 
+                    FakeInfo.ItemName = "ERROR!";
+                    //FakeItem.Tag = FakeInfo;
+                    FakeItem.Tag = "Fake";
+
+                    FakeItem.IsSelected = true;
+
+                    EntryClass.EntryTypeMenu.Dropdown.IsEnabled = false;
+                    EntryClass.EntryTypeMenu.Dropdown.ToolTip =
+                        "This entry's value was not found in the linked text table." +
+                        "\n(This is not a critical error.) " +
+                        "\n\nTo help prevent mistakes, this is disabled when this happens. " +
+                        "\n\nIf using a \"Nothing\" Table, you can add ? marks to the\nrelevant rows and it will be usable.";
+                    //FakeItem.ToolTip =
+                    //    "This entry's value was not found in the linked text table." +
+                    //    "\n(This is not a critical error.) " +
+                    //    "\n\nTo help prevent mistakes, this is disabled when this happens. " +
+                    //    "\n\nIf using a \"Nothing\" Table, you can add ? marks to the\nrelevant rows and it will be usable.";
+
                 }
 
             }
@@ -499,7 +638,10 @@ namespace GameEditorStudio
 
 
             TextBox NumberBox = new TextBox();
-            NumberBox.Height = 25;
+            NumberBox.Tag = EntryClass;
+            //NumberBox.Style = Application.Current.Resources["NumberBox"] as Style;
+            NumberBox.Style = Application.Current.Resources["EntrySuffixTextBox"] as Style;
+            NumberBox.Height = 28;
             NumberBox.MinWidth = 50;
             NumberBox.FontSize = 20;
             NumberBox.Margin = new Thickness(0, 0, 3, 0); // Left Top Right Bottom
@@ -511,14 +653,50 @@ namespace GameEditorStudio
                 NumberBox.IsEnabled = false;
             }
 
+
+            //DockPanel UpDownDock = new DockPanel();
+            //UpDownDock.Width = 13;
+            //UpDownDock.Height = 28;
+            ////EntryClass.EntryDockPanel.Children.Add(UpDownDock);
+            //UpDownDock.Margin = new Thickness(0, 0, 3, 0);
+
+            //Button upbtn = new Button();
+            //upbtn.Style = Application.Current.Resources["ButtonEntryNumberTop"] as Style;
+            ////upbtn.Width = 15;
+            //upbtn.Height = 14;
+            //upbtn.Content = "▲";
+            //upbtn.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#DDDDDD"));
+            //upbtn.FontSize = 10;
+            //upbtn.HorizontalAlignment = HorizontalAlignment.Stretch;
+            ////upbtn.VerticalAlignment = VerticalAlignment.Top;
+            //upbtn.Margin = new Thickness(0, 0, 0, 0); // Left Top Right Bottom
+            //UpDownDock.Children.Add(upbtn);
+            //DockPanel.SetDock(upbtn, Dock.Top);
+
+            //Button downbtn = new Button();
+            //downbtn.Style = Application.Current.Resources["ButtonEntryNumberBottom"] as Style;
+            ////updown.Style = Application.Current.Resources["ButtonEntryUpDown"] as Style;
+            ////downbtn.Width = 15;
+            //downbtn.Height = 14;
+            //downbtn.Content = "v";
+            //downbtn.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CCCCCC"));
+            //downbtn.FontSize = 10;
+            //downbtn.HorizontalAlignment = HorizontalAlignment.Stretch;
+            ////downbtn.VerticalAlignment = VerticalAlignment.Top;
+            //downbtn.Margin = new Thickness(0, 0, 0, 0); // Left Top Right Bottom
+            //UpDownDock.Children.Add(downbtn);
+            //DockPanel.SetDock(downbtn, Dock.Bottom);
+
+
             NumberBox.PreviewMouseDown += (sender, e) =>
             {
-                EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(EntryClass);
+                DTEMethods.EntryActivate(EntryClass);
+                //SetSelectedEntry(EntryClass);
+                //UpdateEntryProperties(EntryClass);
             };
             NumberBox.PreviewTextInput += (sender, e) =>
             {
-                
+
                 bool isDigit = char.IsDigit(e.Text, e.Text.Length - 1); // Check if its is a number or a minus sign (for signed numbers)
                 bool isMinusSign = e.Text == "-" && EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Signed;
 
@@ -540,9 +718,9 @@ namespace GameEditorStudio
 
             NumberBox.TextChanged += (sender, e) =>
             {
-                if (EntryClass.EntryTypeNumberBox.TextChangeEventWorks == false) 
+                if (EntryClass.EntryTypeNumberBox.TextChangeEventWorks == false)
                 {
-                    return; 
+                    return;
                 }
 
 
@@ -593,10 +771,11 @@ namespace GameEditorStudio
                         NumberBox.Text = longValue.ToString();
                         EntryClass.EntryByteDecimal = UnsignedValue.ToString();
 
-                        if (EntryClass == EntryClass.EntryEditor.StandardEditorData.SelectedEntry)
+                        if (EntryClass == EntryClass.ParentEditor.DataTableEditorData.EntryClass)
                         {
-                            SaveEntry(EntryClass.EntryEditor, EntryClass);
-                            UpdateEntryProperties(EntryClass);
+                            SaveEntry(EntryClass);
+                            //UpdateEntryProperties(EntryClass);
+                            DTEMethods.EntryActivate(EntryClass);
                         }
                     }
                 }
@@ -611,7 +790,7 @@ namespace GameEditorStudio
         }
 
 
-        
+
 
         public void CreateCheckBox(Workshop TheWorkshop, Entry EntryClass)
         {
@@ -625,11 +804,21 @@ namespace GameEditorStudio
             //Default properties end
 
             Button CheckBox = new Button();
+            CheckBox.Style = Application.Current.Resources["ButtonEntryCheckbox"] as Style;
             CheckBox.MinWidth = 30;
-            CheckBox.Height = 28;
-            CheckBox.Margin = new Thickness(0, 0, 3, 0); // Left Top Right Bottom 
+            CheckBox.Height = 30;
+            CheckBox.Margin = new Thickness(5, -1, 3, 0); // Left Top Right Bottom 
             CheckBox.HorizontalAlignment = HorizontalAlignment.Right;
-            EntryClass.EntryDockPanel.Children.Add(CheckBox);
+            CheckBox.VerticalContentAlignment = VerticalAlignment.Top;
+
+            {
+                //Add to 1 before the end.
+                int count = EntryClass.EntryDockPanel.Children.Count;
+                int insertIndex = count > 0 ? count - 1 : 0;
+                EntryClass.EntryDockPanel.Children.Insert(insertIndex, CheckBox);
+                //EntryClass.EntryDockPanel.Children.Add(CheckBox);
+            }
+
             if (EntryClass.IsEntryHidden == true || EntryClass.IsTextInUse == true)
             {
                 CheckBox.IsEnabled = false;
@@ -642,18 +831,19 @@ namespace GameEditorStudio
                 {
                     CheckBox.Content = EntryClass.EntryTypeCheckBox.FalseText;
                     EntryClass.EntryByteDecimal = EntryClass.EntryTypeCheckBox.FalseValue.ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
-                    
+                    SaveEntry(EntryClass);
+
                 }
                 else if (EntryClass.EntryByteDecimal == EntryClass.EntryTypeCheckBox.FalseValue.ToString())
                 {
                     CheckBox.Content = EntryClass.EntryTypeCheckBox.TrueText;
                     EntryClass.EntryByteDecimal = EntryClass.EntryTypeCheckBox.TrueValue.ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
 
-                EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(EntryClass);
+                //SetSelectedEntry(EntryClass);
+                //UpdateEntryProperties(EntryClass);
+                DTEMethods.EntryActivate(EntryClass);
 
             };
             EntryClass.EntryTypeCheckBox.CheckBoxButton = CheckBox;
@@ -676,14 +866,16 @@ namespace GameEditorStudio
 
 
             DockPanel BitFlags = new();
+            BitFlags.Background = Brushes.Transparent;
             //BitFlags.Background = Brushes.Crimson;
-            int BitFlagBoxHeight = 32;
+            int BitFlagBoxHeight = 31;
             int BitMinWidth = 33;
             var BitMargin = new Thickness(0, 0, 3, 0); // Left Top Right Bottom 
             var DockMargin = new Thickness(0, 3, 0, 3); // Left Top Right Bottom 
 
             ////////////////////////////////////////////////
             DockPanel BitFlag1 = new();
+            BitFlag1.Background = Brushes.Transparent;
             DockPanel.SetDock(BitFlag1, Dock.Top);
             BitFlag1.Margin = DockMargin;
 
@@ -693,6 +885,7 @@ namespace GameEditorStudio
             BitFlag1Label.HorizontalAlignment = HorizontalAlignment.Left;
 
             Button BitFlag1CheckBox = new Button();
+            BitFlag1CheckBox.Style = Application.Current.Resources["ButtonEntryCheckbox"] as Style;
             BitFlag1CheckBox.MinWidth = BitMinWidth;
             BitFlag1CheckBox.Height = BitFlagBoxHeight;
             BitFlag1CheckBox.Margin = BitMargin;
@@ -709,21 +902,23 @@ namespace GameEditorStudio
                 {
                     BitFlag1CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag1UncheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) - 1).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
                 else if (BitFlag1CheckBox.Content == EntryClass.EntryTypeBitFlag.BitFlag1UncheckText.ToString())
                 {
                     BitFlag1CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag1CheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) + 1).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
 
-                EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(EntryClass);
+                //SetSelectedEntry(EntryClass);
+                //UpdateEntryProperties(EntryClass);
+                DTEMethods.EntryActivate(EntryClass);
 
             };
             ////////////////////////////////////////////////
             DockPanel BitFlag2 = new();
+            BitFlag2.Background = Brushes.Transparent;
             DockPanel.SetDock(BitFlag2, Dock.Top);
             BitFlag2.Margin = DockMargin;
 
@@ -733,6 +928,7 @@ namespace GameEditorStudio
             BitFlag2Label.HorizontalAlignment = HorizontalAlignment.Left;
 
             Button BitFlag2CheckBox = new Button();
+            BitFlag2CheckBox.Style = Application.Current.Resources["ButtonEntryCheckbox"] as Style;
             BitFlag2CheckBox.MinWidth = BitMinWidth;
             BitFlag2CheckBox.Height = BitFlagBoxHeight;
             BitFlag2CheckBox.Margin = BitMargin;
@@ -749,20 +945,22 @@ namespace GameEditorStudio
                 {
                     BitFlag2CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag2UncheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) - 2).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);                    
+                    SaveEntry(EntryClass);
                 }
                 else if (BitFlag2CheckBox.Content == EntryClass.EntryTypeBitFlag.BitFlag2UncheckText.ToString())
                 {
                     BitFlag2CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag2CheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) + 2).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
-                EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(EntryClass);
+                //SetSelectedEntry(EntryClass);
+                //UpdateEntryProperties(EntryClass);
+                DTEMethods.EntryActivate(EntryClass);
 
             };
             ////////////////////////////////////////////////
             DockPanel BitFlag3 = new();
+            BitFlag3.Background = Brushes.Transparent;
             DockPanel.SetDock(BitFlag3, Dock.Top);
             BitFlag3.Margin = DockMargin;
 
@@ -772,9 +970,10 @@ namespace GameEditorStudio
             BitFlag3Label.HorizontalAlignment = HorizontalAlignment.Left;
 
             Button BitFlag3CheckBox = new Button();
+            BitFlag3CheckBox.Style = Application.Current.Resources["ButtonEntryCheckbox"] as Style;
             BitFlag3CheckBox.MinWidth = BitMinWidth;
             BitFlag3CheckBox.Height = BitFlagBoxHeight;
-            BitFlag3CheckBox.Margin = BitMargin; 
+            BitFlag3CheckBox.Margin = BitMargin;
             BitFlag3CheckBox.HorizontalAlignment = HorizontalAlignment.Right;
             if (EntryClass.IsEntryHidden == true || EntryClass.IsTextInUse == true)
             {
@@ -788,20 +987,22 @@ namespace GameEditorStudio
                 {
                     BitFlag3CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag3UncheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) - 4).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
                 else if (BitFlag3CheckBox.Content == EntryClass.EntryTypeBitFlag.BitFlag3UncheckText.ToString())
                 {
                     BitFlag3CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag3CheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) + 4).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
-                EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(EntryClass);
+                //SetSelectedEntry(EntryClass);
+                //UpdateEntryProperties(EntryClass);
+                DTEMethods.EntryActivate(EntryClass);
 
             };
             ////////////////////////////////////////////////
             DockPanel BitFlag4 = new();
+            BitFlag4.Background = Brushes.Transparent;
             DockPanel.SetDock(BitFlag4, Dock.Top);
             BitFlag4.Margin = DockMargin;
 
@@ -811,6 +1012,7 @@ namespace GameEditorStudio
             BitFlag4Label.HorizontalAlignment = HorizontalAlignment.Left;
 
             Button BitFlag4CheckBox = new Button();
+            BitFlag4CheckBox.Style = Application.Current.Resources["ButtonEntryCheckbox"] as Style;
             BitFlag4CheckBox.MinWidth = BitMinWidth;
             BitFlag4CheckBox.Height = BitFlagBoxHeight;
             BitFlag4CheckBox.Margin = BitMargin;
@@ -827,20 +1029,22 @@ namespace GameEditorStudio
                 {
                     BitFlag4CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag4UncheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) - 8).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
                 else if (BitFlag4CheckBox.Content == EntryClass.EntryTypeBitFlag.BitFlag4UncheckText.ToString())
                 {
                     BitFlag4CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag4CheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) + 8).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
-                EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(EntryClass);
+                //SetSelectedEntry(EntryClass);
+                //UpdateEntryProperties(EntryClass);
+                DTEMethods.EntryActivate(EntryClass);
 
             };
             ////////////////////////////////////////////////
             DockPanel BitFlag5 = new();
+            BitFlag5.Background = Brushes.Transparent;
             DockPanel.SetDock(BitFlag5, Dock.Top);
             BitFlag5.Margin = DockMargin;
 
@@ -850,6 +1054,7 @@ namespace GameEditorStudio
             BitFlag5Label.HorizontalAlignment = HorizontalAlignment.Left;
 
             Button BitFlag5CheckBox = new Button();
+            BitFlag5CheckBox.Style = Application.Current.Resources["ButtonEntryCheckbox"] as Style;
             BitFlag5CheckBox.MinWidth = BitMinWidth;
             BitFlag5CheckBox.Height = BitFlagBoxHeight;
             BitFlag5CheckBox.Margin = BitMargin;
@@ -866,20 +1071,22 @@ namespace GameEditorStudio
                 {
                     BitFlag5CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag5UncheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) - 16).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
                 else if (BitFlag5CheckBox.Content == EntryClass.EntryTypeBitFlag.BitFlag5UncheckText.ToString())
                 {
                     BitFlag5CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag5CheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) + 16).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
-                EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(EntryClass);
+                //SetSelectedEntry(EntryClass);
+                //UpdateEntryProperties(EntryClass);
+                DTEMethods.EntryActivate(EntryClass);
 
             };
             ////////////////////////////////////////////////
             DockPanel BitFlag6 = new();
+            BitFlag6.Background = Brushes.Transparent;
             DockPanel.SetDock(BitFlag6, Dock.Top);
             BitFlag6.Margin = DockMargin;
 
@@ -889,6 +1096,7 @@ namespace GameEditorStudio
             BitFlag6Label.HorizontalAlignment = HorizontalAlignment.Left;
 
             Button BitFlag6CheckBox = new Button();
+            BitFlag6CheckBox.Style = Application.Current.Resources["ButtonEntryCheckbox"] as Style;
             BitFlag6CheckBox.MinWidth = BitMinWidth;
             BitFlag6CheckBox.Height = BitFlagBoxHeight;
             BitFlag6CheckBox.Margin = BitMargin;
@@ -905,20 +1113,22 @@ namespace GameEditorStudio
                 {
                     BitFlag6CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag6UncheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) - 32).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
                 else if (BitFlag6CheckBox.Content == EntryClass.EntryTypeBitFlag.BitFlag6UncheckText.ToString())
                 {
                     BitFlag6CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag6CheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) + 32).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
-                EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(EntryClass);
+                //SetSelectedEntry(EntryClass);
+                //UpdateEntryProperties(EntryClass);
+                DTEMethods.EntryActivate(EntryClass);
 
             };
             ////////////////////////////////////////////////
             DockPanel BitFlag7 = new();
+            BitFlag7.Background = Brushes.Transparent;
             DockPanel.SetDock(BitFlag7, Dock.Top);
             BitFlag7.Margin = DockMargin;
 
@@ -928,6 +1138,7 @@ namespace GameEditorStudio
             BitFlag7Label.HorizontalAlignment = HorizontalAlignment.Left;
 
             Button BitFlag7CheckBox = new Button();
+            BitFlag7CheckBox.Style = Application.Current.Resources["ButtonEntryCheckbox"] as Style;
             BitFlag7CheckBox.MinWidth = BitMinWidth;
             BitFlag7CheckBox.Height = BitFlagBoxHeight;
             BitFlag7CheckBox.Margin = BitMargin;
@@ -944,20 +1155,22 @@ namespace GameEditorStudio
                 {
                     BitFlag7CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag7UncheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) - 64).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
                 else if (BitFlag7CheckBox.Content == EntryClass.EntryTypeBitFlag.BitFlag7UncheckText.ToString())
                 {
                     BitFlag7CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag7CheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) + 64).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
-                EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(EntryClass);
+                //SetSelectedEntry(EntryClass);
+                //UpdateEntryProperties(EntryClass);
+                DTEMethods.EntryActivate(EntryClass);
 
             };
             ////////////////////////////////////////////////
             DockPanel BitFlag8 = new();
+            BitFlag8.Background = Brushes.Transparent;
             DockPanel.SetDock(BitFlag8, Dock.Top);
             BitFlag8.Margin = DockMargin;
 
@@ -967,6 +1180,7 @@ namespace GameEditorStudio
             BitFlag8Label.HorizontalAlignment = HorizontalAlignment.Left;
 
             Button BitFlag8CheckBox = new Button();
+            BitFlag8CheckBox.Style = Application.Current.Resources["ButtonEntryCheckbox"] as Style;
             BitFlag8CheckBox.MinWidth = BitMinWidth;
             BitFlag8CheckBox.Height = BitFlagBoxHeight;
             BitFlag8CheckBox.Margin = BitMargin;
@@ -983,16 +1197,17 @@ namespace GameEditorStudio
                 {
                     BitFlag8CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag8UncheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) - 128).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
                 else if (BitFlag8CheckBox.Content == EntryClass.EntryTypeBitFlag.BitFlag8UncheckText.ToString())
                 {
                     BitFlag8CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag8CheckText;
                     EntryClass.EntryByteDecimal = (Int32.Parse(EntryClass.EntryByteDecimal) + 128).ToString();
-                    SaveEntry(EntryClass.EntryEditor, EntryClass);
+                    SaveEntry(EntryClass);
                 }
-                EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(EntryClass);
+                //SetSelectedEntry(EntryClass);
+                //UpdateEntryProperties(EntryClass);
+                DTEMethods.EntryActivate(EntryClass);
             };
             ////////////////////////////////////////////////
 
@@ -1027,39 +1242,47 @@ namespace GameEditorStudio
             EntryClass.EntryTypeBitFlag.BitFlag8CheckBox = BitFlag8CheckBox;
 
             BitFlags.Children.Add(BitFlag1);
-            BitFlag1.Children.Add(BitFlag1Label);
             BitFlag1.Children.Add(BitFlag1CheckBox);
+            BitFlag1.Children.Add(BitFlag1Label);
+            //BitFlag1.Children.Add(BitFlag1CheckBox);
 
             BitFlags.Children.Add(BitFlag2);
-            BitFlag2.Children.Add(BitFlag2Label);
             BitFlag2.Children.Add(BitFlag2CheckBox);
+            BitFlag2.Children.Add(BitFlag2Label);
+            //BitFlag2.Children.Add(BitFlag2CheckBox);
 
             BitFlags.Children.Add(BitFlag3);
-            BitFlag3.Children.Add(BitFlag3Label);
             BitFlag3.Children.Add(BitFlag3CheckBox);
+            BitFlag3.Children.Add(BitFlag3Label);
+            //BitFlag3.Children.Add(BitFlag3CheckBox);
 
             BitFlags.Children.Add(BitFlag4);
-            BitFlag4.Children.Add(BitFlag4Label);
             BitFlag4.Children.Add(BitFlag4CheckBox);
+            BitFlag4.Children.Add(BitFlag4Label);
+            //BitFlag4.Children.Add(BitFlag4CheckBox);
 
             BitFlags.Children.Add(BitFlag5);
-            BitFlag5.Children.Add(BitFlag5Label);
             BitFlag5.Children.Add(BitFlag5CheckBox);
+            BitFlag5.Children.Add(BitFlag5Label);
+            //BitFlag5.Children.Add(BitFlag5CheckBox);
 
             BitFlags.Children.Add(BitFlag6);
-            BitFlag6.Children.Add(BitFlag6Label);
             BitFlag6.Children.Add(BitFlag6CheckBox);
+            BitFlag6.Children.Add(BitFlag6Label);
+            //BitFlag6.Children.Add(BitFlag6CheckBox);
 
             BitFlags.Children.Add(BitFlag7);
-            BitFlag7.Children.Add(BitFlag7Label);
             BitFlag7.Children.Add(BitFlag7CheckBox);
+            BitFlag7.Children.Add(BitFlag7Label);
+            //BitFlag7.Children.Add(BitFlag7CheckBox);
 
             BitFlags.Children.Add(BitFlag8);
-            BitFlag8.Children.Add(BitFlag8Label);
             BitFlag8.Children.Add(BitFlag8CheckBox);
+            BitFlag8.Children.Add(BitFlag8Label);
+            //BitFlag8.Children.Add(BitFlag8CheckBox);
 
-            if (TheWorkshop.IsPreviewMode == true) 
-            { 
+            if (TheWorkshop.IsPreviewMode == true)
+            {
                 BitFlag1CheckBox.IsEnabled = false;
                 BitFlag2CheckBox.IsEnabled = false;
                 BitFlag3CheckBox.IsEnabled = false;
@@ -1096,68 +1319,16 @@ namespace GameEditorStudio
             //Clicking a flag changes Num and the Bytes value up or down, based on if it's turning On or Off.
             //and thats it!
         }
-                
+
 
         public void CreateMenu(Entry EntryClass, Workshop TheWorkshop)
         {
-            if (EntryClass.IsNameHidden == false) { EntryClass.EntryNameTextBlock.Visibility = Visibility.Visible; }
-            //Default properties if new
             if (EntryClass.EntryTypeMenu == null)
             {
                 EntryClass.EntryTypeMenu = new();
             }
 
-
-            if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile)
-            {
-
-            }
-            if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
-            {
-
-            }
-            if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor)
-            {
-
-            }
-            if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing) 
-            {
-                
-            }
-
-            if (EntryClass.EntryTypeMenu.NothingNameList != null)
-            {//if this already exists, then it stops being a menu, then byte count changes, then goes back to this, we need a "Update list size" check basically.
-                if (EntryClass.Bytes == 1)
-                {
-                    string[] items = EntryClass.EntryTypeMenu.NothingNameList;
-                    Array.Resize(ref items, 256);
-                    EntryClass.EntryTypeMenu.NothingNameList = items;
-                    EntryClass.EntryTypeMenu.ListSize = 256;
-                }
-                if (EntryClass.Bytes == 2)
-                {
-                    string[] items = EntryClass.EntryTypeMenu.NothingNameList;
-                    Array.Resize(ref items, 65536);
-                    EntryClass.EntryTypeMenu.NothingNameList = items;
-                    EntryClass.EntryTypeMenu.ListSize = 65536;
-                }
-            }
-
-            if (EntryClass.EntryTypeMenu.NothingNameList == null)
-            {
-                if (EntryClass.Bytes == 1)
-                {
-                    EntryClass.EntryTypeMenu.NothingNameList = new string[256];
-                    EntryClass.EntryTypeMenu.ListSize = 256;
-                }
-                if (EntryClass.Bytes == 2)
-                {
-                    EntryClass.EntryTypeMenu.NothingNameList = new string[65536];
-                    EntryClass.EntryTypeMenu.ListSize = 65536;
-                }
-                //ListItems = new string[256],
-            }
-
+            //if (TheWorkshop.WorkshopData.LazyIsProjectLoaded == true) { return; }
 
             if (EntryClass.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List)
             {
@@ -1167,51 +1338,110 @@ namespace GameEditorStudio
             {
                 CreateDropDown(EntryClass, TheWorkshop);
             }
-
-            
-
         }
 
 
-        public void CreateList(Entry EntryClass, Workshop TheWorkshop) 
+        public void CreateList(Entry EntryClass, Workshop TheWorkshop)
         {
-            Button Button = new();
-            Button.MinWidth = 100;
-            Button.Height = 24;
-            Button.Margin = new Thickness(0, 0, 3, 0); // Left Top Right Bottom 
-            Button.HorizontalAlignment = HorizontalAlignment.Right;
-            Button.HorizontalContentAlignment = HorizontalAlignment.Left;
-            Button.Padding = new Thickness(4,0,0,0);
+            Button ListButton = new();
+            ToolTipService.SetInitialShowDelay(ListButton, LibraryGES.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(ListButton, LibraryGES.TooltipBetweenDelay);
+            ListButton.MinWidth = 100;
+            ListButton.Height = 30;
+            ListButton.Margin = new Thickness(0, 0, 3, 0); // Left Top Right Bottom 
+            ListButton.HorizontalAlignment = HorizontalAlignment.Right;
+            ListButton.HorizontalContentAlignment = HorizontalAlignment.Left;
+            ListButton.Padding = new Thickness(4, 0, 0, 0);
             if (EntryClass.IsEntryHidden == true || EntryClass.IsTextInUse == true)
             {
-                Button.IsEnabled = false;
+                ListButton.IsEnabled = false;
             }
-            EntryClass.EntryDockPanel.Children.Add(Button);           
-            
+            EntryClass.EntryDockPanel.Children.Add(ListButton);
 
-            EntryClass.EntryTypeMenu.ListButton = Button;
-            Button.Click += (sender, e) =>
+
+            ContextMenu contextMenu = new();
+            ListButton.ContextMenu = contextMenu;
+
+            MenuItem goToEditorMenuItem = new();
+            goToEditorMenuItem.Header = "Go to Linked Editor";            
+            contextMenu.Items.Add(goToEditorMenuItem);
+            goToEditorMenuItem.Click += (sender, e) =>
             {
+                if (ListButton.Tag is TextInfo Iinfo) 
+                {
+                    Editor linkedEditor = EntryClass.EntryTypeMenu.TextTableEditor.LinkedDTEEditor;
+                    linkedEditor.EditorTab.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                    foreach (TreeViewItem treeitem in linkedEditor.DataTableEditorData.EditorLeftBar.TreeView.Items)
+                    {
+                        if (treeitem.Tag == null) { return; }
+
+                        TextInfo treeItemInfo = treeitem.Tag as TextInfo;
+                        if (treeItemInfo == Iinfo)
+                        {
+                            treeitem.IsSelected = true;
+                            treeitem.BringIntoView();
+                            break;
+                        }
+
+                        if (treeItemInfo.IsFolder == true) 
+                        {
+                            foreach (TreeViewItem Ftreeitem in treeitem.Items)
+                            {
+                                if (Ftreeitem.Tag == null) { return; }
+
+                                TextInfo FtreeItemInfo = Ftreeitem.Tag as TextInfo;
+                                if (FtreeItemInfo == Iinfo)
+                                {
+                                    treeitem.IsExpanded = true;
+                                    Ftreeitem.IsSelected = true;
+                                    Ftreeitem.BringIntoView();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            try //Name the editor link
+            {
+                if (EntryClass.EntryTypeMenu.TextTableEditor != null) 
+                {
+                    if (EntryClass.EntryTypeMenu.TextTableEditor.LinkedDTEEditor != null) 
+                    {
+                        goToEditorMenuItem.Header = "Go to Linked Editor" + " (" + EntryClass.EntryTypeMenu.TextTableEditor.LinkedDTEEditor.EditorName + ")";
+                    }
+                }  
+            } catch { }
+
+
+            EntryClass.EntryTypeMenu.ListButton = ListButton;
+            ListButton.Click += (sender, e) =>
+            {
+                //DTEMethods.EntryActivate(EntryClass);
+
+                //SetSelectedEntry(EntryClass);
+                //UpdateEntryProperties(EntryClass);
+                DTEMethods.EntryActivate(EntryClass);
+
+                EntryClass.ParentEditor.DataTableEditorData.EntryClass = EntryClass;
+                DTRightBar RightBar = EntryClass.ParentEditor.DataTableEditorData.EditorRightBar;
                 
 
-                TheWorkshop.EntryClass = EntryClass;
-                EntryBecomeActive(EntryClass);
-                UpdateEntryProperties(EntryClass);
+                EntryClass.ParentEditor.DataTableEditorData.DTEXaml.RightBar.EntryListBox.SelectionChanged -= EntryClass.ParentEditor.DataTableEditorData.DTEXaml.RightBar.EntryListBox_SelectionChanged; // Remove event handler    
+                EntryClass.ParentEditor.DataTableEditorData.DTEXaml.RightBar.EntryListBox.Items.Clear(); // Clear items
 
-                TheWorkshop.EntryListBox.SelectionChanged -= TheWorkshop.EntryListBox_SelectionChanged; // Remove event handler    
-                TheWorkshop.EntryListBox.Items.Clear(); // Clear items
-                
-                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile) 
+                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile)
                 {
                     if (TheWorkshop.IsPreviewMode == true) { return; }
-
-                    for (int i = 0; i < EntryClass.EntryTypeMenu.NameCount; i++)
+                    
+                    TextTable texttable = EntryClass.EntryTypeMenu.TextTableDataFile;
+                    for (int i = 0; i < texttable.TextTableItemCount; i++)
                     {
-                        byte[] thebytes = EntryClass.EntryTypeMenu.GameFile.FileBytes;
+                        byte[] thebytes = texttable.TextTableFile.FileBytes;
 
-                        int thetextsize = EntryClass.EntryTypeMenu.CharCount;
-                        int thetablestart = EntryClass.EntryTypeMenu.Start;
-                        int therowsize = EntryClass.EntryTypeMenu.RowSize;
+                        int thetextsize = texttable.TextTableCharLimit;
+                        int thetablestart = texttable.TextTableStart;
+                        int therowsize = texttable.TextTableRowSize;
 
                         byte[] bytes = new byte[thetextsize];
                         for (int rowindex = 0; rowindex < thetextsize; rowindex++)
@@ -1221,103 +1451,128 @@ namespace GameEditorStudio
 
 
                         CharacterSetManager Decoder = new();
-                        string TheText = Decoder.DecodeReturn(EntryClass.EntryTypeMenu.CharacterSet, bytes);
+                        string TheText = Decoder.DecodeReturn(texttable.TextTableCharacterSet, bytes);
 
                         ListViewItem ListItem = new();
-                        ListItem.Content = (i + EntryClass.EntryTypeMenu.FirstNameID) + ": " + TheText;
-                        TheWorkshop.EntryListBox.Items.Add(ListItem);
+                        ListItem.Content = (i + texttable.TextTableFirstNameID) + ": " + TheText;
+                        ListItem.Tag = texttable.ItemList[i];
+                        EntryClass.ParentEditor.DataTableEditorData.DTEXaml.RightBar.EntryListBox.Items.Add(ListItem);
                     }
+                    RightBar.ListFirstNameID = texttable.TextTableFirstNameID;
                 }
                 if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
                 {
                     if (TheWorkshop.IsPreviewMode == true) { return; }
 
-                    string fullText = Encoding.UTF8.GetString(EntryClass.EntryTypeMenu.GameFile.FileBytes);
+
+                    TextTable texttable = EntryClass.EntryTypeMenu.TextTableTextFile;
+                    string fullText = Encoding.UTF8.GetString(texttable.TextTableFile.FileBytes);
                     string[] lines = fullText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
-                    for (int i = 0; i < EntryClass.EntryTypeMenu.NameCount; i++)
+                    for (int i = 0; i < texttable.TextTableItemCount; i++)
                     {
-                        byte[] thebytes = EntryClass.EntryTypeMenu.GameFile.FileBytes;
+                        byte[] thebytes = texttable.TextTableFile.FileBytes;
 
-                        int index = i + EntryClass.EntryTypeMenu.Start;
+                        int index = i + texttable.TextTableStart;
                         string lineText = (index >= 0 && index < lines.Length) ? lines[index] : "";
 
-
-
                         ListViewItem ListItem = new();
-                        ListItem.Content = (i + EntryClass.EntryTypeMenu.FirstNameID) + ": " + lineText;
-                        TheWorkshop.EntryListBox.Items.Add(ListItem);
-
-
+                        ListItem.Content = (i + texttable.TextTableFirstNameID) + ": " + lineText;
+                        ListItem.Tag = texttable.ItemList[i];
+                        EntryClass.ParentEditor.DataTableEditorData.DTEXaml.RightBar.EntryListBox.Items.Add(ListItem);
                     }
+                    RightBar.ListFirstNameID = texttable.TextTableFirstNameID;
+
                 }
-                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor) 
-                {                    
+                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor)
+                {
+                    TextTable texttable = EntryClass.EntryTypeMenu.TextTableEditor;
+                    if (texttable.LinkedDTEEditor == null) { return; } //This is if the editor it's looking for doesn't exist, didn't load, etc. (Why is this here? Isn't this a critical error?)
 
-                    for (int i = 0; i < EntryClass.EntryTypeMenu.NameCount; i++)
+                    //for (int i = 0; i < texttable.TextTableItemCount; i++)
+                    foreach (TextInfo itemInfo in texttable.LinkedDTEEditor.DataTableEditorData.NameTable.ItemList)
                     {
+                        if (itemInfo.IsFolder == true) {continue; }
+
                         ListViewItem ListItem = new();
+                        ListItem.Tag = itemInfo;
 
-                        string asdf = "ERROR!";
+                        TextBlock itext = new();
 
-                        if (EntryClass.EntryTypeMenu.LinkedEditor != null)
+                        Run Prefix = new((itemInfo.ItemIndex + texttable.LinkedDTEEditor.NameTable.TextTableFirstNameID) + ": ");
+                        itext.Inlines.Add(Prefix);
+
+                        Run myname = new(itemInfo.ItemName);
+                        itext.Inlines.Add(myname);
+                        if (itemInfo.ItemWorkshopTooltip != "")
                         {
-                            foreach (ItemInfo itemInfo in EntryClass.EntryTypeMenu.LinkedEditor.StandardEditorData.EditorLeftDockPanel.ItemList)
-                            {
-                                if (itemInfo.ItemIndex == i)
-                                {
-                                    if (itemInfo.IsFolder == false)
-                                    {
-                                        asdf = itemInfo.ItemName;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            ListItem.Content = (i + EntryClass.EntryTypeMenu.FirstNameID) + ": " + asdf; //EntryClass.EntryTypeMenu.NothingNameList[i]
-                            TheWorkshop.EntryListBox.Items.Add(ListItem);
-                        }
-                        else //This is if the editor is missing or has been deleted, so the program still kinda functions and doesn't crash.
-                        {                           
-
-                            ListItem.Content = (i + EntryClass.EntryTypeMenu.FirstNameID) + ": " + asdf; //EntryClass.EntryTypeMenu.NothingNameList[i]
-                            ListItem.Foreground = Brushes.Red; //For error message
-                            TheWorkshop.EntryListBox.Items.Add(ListItem);
+                            myname.ToolTip = itemInfo.ItemWorkshopTooltip;
+                            myname.TextDecorations = TextDecorations.Underline;
+                            ToolTipService.SetInitialShowDelay(myname, LibraryGES.TooltipInitialDelay);
+                            ToolTipService.SetBetweenShowDelay(myname, LibraryGES.TooltipBetweenDelay);
                         }
 
-                        
+                        if (itemInfo.ItemNote != "")
+                        {
+                            Run mynote = new("   (" + itemInfo.ItemNote + ")");
+                            itext.Inlines.Add(mynote);
+                            mynote.Foreground = Brushes.Orange;
+                        }
+
+
+                        ListItem.Content = itext;
+
+
+                        EntryClass.ParentEditor.DataTableEditorData.DTEXaml.RightBar.EntryListBox.Items.Add(ListItem);
                     }
+                    //RightBar.ListFirstNameID = texttable.TextTableFirstNameID;
+                    RightBar.ListFirstNameID = texttable.LinkedDTEEditor.DataTableEditorData.NameTable.TextTableFirstNameID;                    
+                    
+                    //    else //This is if the editor is missing or has been deleted, so the program still kinda functions and doesn't crash.
+                    //    {
+
+                    //        ListItem.Content = (i + texttable.TextTableFirstNameID) + ": " + iname; //EntryClass.EntryTypeMenu.NothingNameList[i]
+                    //        ListItem.Foreground = Brushes.Red; //For error message
+                    //        EntryClass.ParentEditor.DataTableEditorData.DTEXaml.RightBar.EntryListBox.Items.Add(ListItem);
+                    //    }
+
+
+                    //}
+
+
                 }
                 if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing)
-                {                    
+                {   
 
-                    for (int i = 0; i < EntryClass.EntryTypeMenu.NothingNameList.Length; i++)
+                    TextTable texttable = EntryClass.EntryTypeMenu.TextTableNothing;
+                    foreach (TextInfo textinfo in texttable.ItemList) 
                     {
-                        if (!string.IsNullOrEmpty(EntryClass.EntryTypeMenu.NothingNameList[i]))
-                        {
-                            ListViewItem ListItem = new();
-                            ListItem.Content = i + ": " + EntryClass.EntryTypeMenu.NothingNameList[i];
-                            TheWorkshop.EntryListBox.Items.Add(ListItem);
-                        }
+                        ListViewItem ListItem = new();
+                        ListItem.Content = (textinfo.ItemIndex + texttable.TextTableFirstNameID)  + ": " + textinfo.ItemName;
+                        ListItem.Tag = textinfo;
+                        EntryClass.ParentEditor.DataTableEditorData.DTEXaml.RightBar.EntryListBox.Items.Add(ListItem);
                     }
-                }
-                TheWorkshop.EntryListBox.SelectionChanged += TheWorkshop.EntryListBox_SelectionChanged; // Re-attach event handler  
+                    RightBar.ListFirstNameID = texttable.TextTableFirstNameID;
 
-                
-                foreach (TabItem tabItem in TheWorkshop.MainTabControl.Items) //Open the list menu   //I GOT A WEIRD ERROR DOING UNRELATED STUFF, AND ADDED "USING TABITEM" TO THE TOP, AND IT FIXED IT. I HAVE NO IDEA WHY.
+
+                }
+                EntryClass.ParentEditor.DataTableEditorData.DTEXaml.RightBar.EntryListBox.SelectionChanged += EntryClass.ParentEditor.DataTableEditorData.DTEXaml.RightBar.EntryListBox_SelectionChanged; // Re-attach event handler  
+
+
+                foreach (TabItem tabItem in RightBar.MainTabControl.Items) //Open the list menu   //I GOT A WEIRD ERROR DOING UNRELATED STUFF, AND ADDED "USING TABITEM" TO THE TOP, AND IT FIXED IT. I HAVE NO IDEA WHY.
                 {
                     if (tabItem.Header != null && tabItem.Header.ToString() == "Lists")
                     {
-                        if (TheWorkshop.MainTabControl.SelectedItem is TabItem currentTab) //store current tab to return to it after list.
+                        if (RightBar.MainTabControl.SelectedItem is TabItem currentTab) //store current tab to return to it after list.
                         {
-                            if (currentTab.Header.ToString() != "Lists") 
+                            if (currentTab.Header.ToString() != "Lists")
                             {
-                                TheWorkshop.PreviousTabName = currentTab.Header.ToString();
+                                RightBar.PreviousTabName = currentTab.Header.ToString();
                             }
-                            
+
                         }
                         tabItem.IsSelected = true;
-                        tabItem.Focus();                        
+                        tabItem.Focus();
                         break;
                     }
                 }
@@ -1325,92 +1580,53 @@ namespace GameEditorStudio
 
             };
 
-            if (TheWorkshop.IsPreviewMode == true) { Button.Content = "Preview OK";  return; }
-
-            if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile) 
-            {                
-                EntryClass.EntryTypeMenu.NameList.Clear();
-
-                for (int i = 0; i < EntryClass.EntryTypeMenu.NameCount; i++)
-                {
-                    byte[] thebytes = EntryClass.EntryTypeMenu.GameFile.FileBytes;
-
-                    int thetextsize = EntryClass.EntryTypeMenu.CharCount;
-                    int thetablestart = EntryClass.EntryTypeMenu.Start;
-                    int therowsize = EntryClass.EntryTypeMenu.RowSize;
-
-                    byte[] bytes = new byte[thetextsize];
-                    for (int rowindex = 0; rowindex < thetextsize; rowindex++)
-                    {
-                        bytes[rowindex] = thebytes[thetablestart + (i * therowsize) + rowindex]; //item.itemindex * 
-                    }
-
-
-                    CharacterSetManager Decoder = new();
-                    string TheText = Decoder.DecodeReturn(EntryClass.EntryTypeMenu.CharacterSet, bytes);
-                    
-                    EntryClass.EntryTypeMenu.NameList.Add((i + EntryClass.EntryTypeMenu.FirstNameID) + ": " + TheText);
-                }
-            }
-            if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
-            {               
-
-                string fullText = Encoding.UTF8.GetString(EntryClass.EntryTypeMenu.GameFile.FileBytes);
-                string[] lines = fullText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-
-                EntryClass.EntryTypeMenu.NameList.Clear();
-
-                for (int i = 0; i < EntryClass.EntryTypeMenu.NameCount; i++)
-                {
-                    byte[] thebytes = EntryClass.EntryTypeMenu.GameFile.FileBytes;
-
-                    int index = i; //+ EntryClass.EntryTypeMenu.Start
-                    string lineText = (index >= 0 && index < lines.Length) ? lines[index] : "";
-
-                    EntryClass.EntryTypeMenu.NameList.Add((i + EntryClass.EntryTypeMenu.FirstNameID) + ": " + lineText);
-                }
-
-
-
-            }
-
-            if (TheWorkshop.IsPreviewMode == true) { Button.IsEnabled = false; }
+            if (TheWorkshop.IsPreviewMode == true) { ListButton.Content = "Preview Mode"; return; }
+            if (TheWorkshop.IsPreviewMode == true) { ListButton.IsEnabled = false; }
         }
 
         public void CreateDropDown(Entry EntryClass, Workshop Workshop)
         {
+            //Triggered only during UI creation, when a entry first becomes a menu, and when it changes from a list to a dropdown.
+            //Note that the UI being recreated is now semi-common. 
+
+            
+
             ComboBox comboBox = new();
             comboBox.MinWidth = 100;
             comboBox.Margin = new Thickness(0, 3, 3, 3); // Left Top Right Bottom 
 
+
+
             EntryClass.EntryTypeMenu.Dropdown = comboBox;
             EntryClass.EntryDockPanel.Children.Add(comboBox);
 
+            ToolTipService.SetInitialShowDelay(comboBox, LibraryGES.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(comboBox, LibraryGES.TooltipBetweenDelay);
+
             //if (Workshop.IsPreviewMode == true) { return; }
 
-            
+
             if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.DataFile)
             {
-                if (Workshop.IsPreviewMode == true) 
-                {
-                    //ComboBoxItem comboBoxItem = new();
-                    //comboBoxItem.Content = "disabled...";
-                    //comboBox.Items.Add(comboBoxItem);
-                    //comboBoxItem.IsSelected = true;
+                if (Workshop.IsPreviewMode == true)
+                {   
                     comboBox.IsEnabled = false;
-                    return; 
+                    return;
                 }
 
-                for (int i = 0; i < EntryClass.EntryTypeMenu.NameCount; i++)
+                TextTable texttable = EntryClass.EntryTypeMenu.TextTableDataFile;
+                for (int i = 0; i < texttable.TextTableItemCount; i++)
                 {
                     ComboBoxItem comboBoxItem = new();
-                    byte[] thebytes = EntryClass.EntryTypeMenu.GameFile.FileBytes;
+                    ToolTipService.SetInitialShowDelay(comboBoxItem, LibraryGES.TooltipInitialDelay);
+                    ToolTipService.SetBetweenShowDelay(comboBoxItem, LibraryGES.TooltipBetweenDelay);
+                    byte[] thebytes = texttable.TextTableFile.FileBytes;
 
 
 
-                    int thetextsize = EntryClass.EntryTypeMenu.CharCount;
-                    int thetablestart = EntryClass.EntryTypeMenu.Start;
-                    int therowsize = EntryClass.EntryTypeMenu.RowSize;
+                    int thetextsize = texttable.TextTableCharLimit;
+                    int thetablestart = texttable.TextTableStart;
+                    int therowsize = texttable.TextTableRowSize;
 
                     byte[] bytes = new byte[thetextsize];
                     for (int rowindex = 0; rowindex < thetextsize; rowindex++)
@@ -1420,136 +1636,232 @@ namespace GameEditorStudio
 
 
                     CharacterSetManager Decoder = new();
-                    string TheText = Decoder.DecodeReturn(EntryClass.EntryTypeMenu.CharacterSet, bytes);
+                    string TheText = Decoder.DecodeReturn(texttable.TextTableCharacterSet, bytes);
 
 
 
 
-                    comboBoxItem.Content = (i + EntryClass.EntryTypeMenu.FirstNameID) + ": " + TheText; //EntryClass.EntryTypeMenu.NothingNameList[i]
+                    comboBoxItem.Content = (i + texttable.TextTableFirstNameID) + ": " + TheText; //EntryClass.EntryTypeMenu.NothingNameList[i]
+                    comboBoxItem.Tag = texttable.ItemList[i]; //So we can get the item info later if needed.
                     comboBox.Items.Add(comboBoxItem);
                 }
             }
             if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile)
             {
                 if (Workshop.IsPreviewMode == true)
-                {
-                    //ComboBoxItem comboBoxItem = new();
-                    //comboBoxItem.Content = "disabled...";
-                    //comboBox.Items.Add(comboBoxItem);
-                    //comboBoxItem.IsSelected = true;
+                {                    
                     comboBox.IsEnabled = false;
                     return;
                 }
 
-                string fullText = Encoding.UTF8.GetString(EntryClass.EntryTypeMenu.GameFile.FileBytes);
+
+                TextTable texttable = EntryClass.EntryTypeMenu.TextTableTextFile;
+
+                string fullText = Encoding.UTF8.GetString(texttable.TextTableFile.FileBytes);
                 string[] lines = fullText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
                 //int LineCount = Math.Min(lines.Length, 255);
 
-                for (int i = 0; i < EntryClass.EntryTypeMenu.NameCount; i++)
+                for (int i = 0; i < texttable.TextTableItemCount; i++)
                 {
                     ComboBoxItem comboBoxItem = new();
-                    byte[] thebytes = EntryClass.EntryTypeMenu.GameFile.FileBytes;
+                    ToolTipService.SetInitialShowDelay(comboBoxItem, LibraryGES.TooltipInitialDelay);
+                    ToolTipService.SetBetweenShowDelay(comboBoxItem, LibraryGES.TooltipBetweenDelay);
+                    byte[] thebytes = texttable.TextTableFile.FileBytes;
 
-                    int index = i + EntryClass.EntryTypeMenu.Start;
+                    int index = i + texttable.TextTableStart;
                     string lineText = (index >= 0 && index < lines.Length) ? lines[index] : "";
 
-                    
 
 
 
-                    comboBoxItem.Content = (i + EntryClass.EntryTypeMenu.FirstNameID) + ": " + lineText; //EntryClass.EntryTypeMenu.NothingNameList[i]
+
+                    comboBoxItem.Content = (i + texttable.TextTableFirstNameID) + ": " + lineText; //EntryClass.EntryTypeMenu.NothingNameList[i]
+                    comboBoxItem.Tag = texttable.ItemList[i]; //So we can get the item info later if needed.
                     comboBox.Items.Add(comboBoxItem);
                 }
             }
             if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor)
             {
-                if (Workshop.IsPreviewMode == true)
+                if (Workshop.WorkshopData.IsProjectLoaded == false)
                 {
                     ComboBoxItem previewItem = new();
+                    ToolTipService.SetInitialShowDelay(previewItem, LibraryGES.TooltipInitialDelay);
+                    ToolTipService.SetBetweenShowDelay(previewItem, LibraryGES.TooltipBetweenDelay);
                     comboBox.Items.Add(previewItem);
-                    previewItem.Content = "Preview OK";
+                    previewItem.Content = "Preview Mode";
+                    previewItem.Tag = "Preview";
                     previewItem.Foreground = Brushes.Gray; //Doesn't work, bah...
                     previewItem.IsSelected = true;
                     //return;
                 }
 
-                if (EntryClass.EntryTypeMenu.LinkedEditor == null) { return; } //This is if the editor it's looking for doesn't exist, didn't load, etc. 
 
-                for (int i = 0; i < EntryClass.EntryTypeMenu.NameCount; i++)
+                TextTable texttable = EntryClass.EntryTypeMenu.TextTableEditor;
+                if (texttable == null) { return; } //Bandaid fix for newly created menus because this is the current default. May cause unexpected problems.
+                if (texttable.LinkedDTEEditor == null) { return; }
+                //if (texttable.LinkedDTEEditor == null) { return; } //This is if the editor it's looking for doesn't exist, didn't load, etc. (Why is this here? Isn't this a critical error?)
+                foreach (TextInfo textInfo in texttable.LinkedDTEEditor.NameTable.ItemList)
                 {
+                    if (textInfo.IsFolder == true) { continue; }
                     ComboBoxItem comboBoxItem = new();
+                    ToolTipService.SetInitialShowDelay(comboBoxItem, LibraryGES.TooltipInitialDelay);
+                    ToolTipService.SetBetweenShowDelay(comboBoxItem, LibraryGES.TooltipBetweenDelay);
 
-                    string asdf = "ERROR";
+                    //comboBoxItem.Content = (textInfo.ItemIndex + texttable.TextTableFirstNameID) + ": " + textInfo.ItemName;
+                    comboBoxItem.Content = (textInfo.ItemIndex + texttable.LinkedDTEEditor.NameTable.TextTableFirstNameID) + ": " + textInfo.ItemName;
+                    if (textInfo.ItemWorkshopTooltip != "") { comboBoxItem.ToolTip = textInfo.ItemWorkshopTooltip; }
+                    comboBoxItem.Tag = textInfo; //So we can get the item info later if needed.
+                    comboBox.Items.Add(comboBoxItem);
+                }
 
-                    foreach (ItemInfo itemInfo in EntryClass.EntryTypeMenu.LinkedEditor.StandardEditorData.EditorLeftDockPanel.ItemList)                     
+
+
+
+                //Link to editor right click stuff.
+                ContextMenu contextMenu = new();
+                comboBox.ContextMenu = contextMenu;
+
+                MenuItem goToEditorMenuItem = new();
+                goToEditorMenuItem.Header = "Go to Linked Editor";
+                contextMenu.Items.Add(goToEditorMenuItem);
+                goToEditorMenuItem.Click += (sender, e) =>
+                {
+                    if (texttable.LinkedDTEEditor == null) { return; }
+                    if (comboBox.SelectedItem == null) { return; }
+
+                    ComboBoxItem comboBoxItem = comboBox.SelectedItem as ComboBoxItem;
+                    if (comboBoxItem.Tag == null) { return; }
+
+                    TextInfo itemInfo = comboBoxItem.Tag as TextInfo;
+
+                    Editor linkedEditor = texttable.LinkedDTEEditor;
+                    linkedEditor.EditorTab.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                    foreach (TreeViewItem treeitem in linkedEditor.DataTableEditorData.EditorLeftBar.TreeView.Items)
                     {
-                        if (itemInfo.ItemIndex == i) 
+                        if (treeitem.Tag == null) { continue; }
+
+                        TextInfo treeItemInfo = treeitem.Tag as TextInfo;
+                        if (treeItemInfo == itemInfo)
                         {
-                            if (itemInfo.IsFolder == false) 
+                            treeitem.IsSelected = true;
+                            treeitem.BringIntoView();
+                            break;
+                        }
+                        
+                        if (treeItemInfo.IsFolder == true) 
+                        {
+                            foreach (TreeViewItem Ftreeitem in treeitem.Items)
                             {
-                                asdf = itemInfo.ItemName;
-                                break;
+                                if (Ftreeitem.Tag == null) { continue; }
+
+                                TextInfo FitemInfo = Ftreeitem.Tag as TextInfo;
+                                if (FitemInfo == itemInfo)
+                                {
+                                    treeitem.IsExpanded = true;
+                                    Ftreeitem.IsSelected = true;                                    
+                                    Ftreeitem.BringIntoView();
+                                    break;
+                                }
+
+                                
                             }
                         }
                     }
+                };
+                try { goToEditorMenuItem.Header = "Go to Linked Editor" + " (" + texttable.LinkedDTEEditor.EditorName + ")"; } catch { }
 
 
 
-                    comboBoxItem.Content = (i + EntryClass.EntryTypeMenu.FirstNameID) + ": " + asdf; //EntryClass.EntryTypeMenu.NothingNameList[i]
-                    comboBox.Items.Add(comboBoxItem);
-
-                    
-                }
-
-                
             }
             if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing)
             {
-                if (Workshop.IsPreviewMode == true)
+                if (Workshop.WorkshopData.IsProjectLoaded == false)
                 {
                     ComboBoxItem previewItem = new();
+                    ToolTipService.SetInitialShowDelay(previewItem, LibraryGES.TooltipInitialDelay);
+                    ToolTipService.SetBetweenShowDelay(previewItem, LibraryGES.TooltipBetweenDelay);
                     comboBox.Items.Add(previewItem);
-                    previewItem.Content = "Preview OK";
+                    previewItem.Content = "Preview Mode";
+                    previewItem.Tag = "Preview";
                     previewItem.Foreground = Brushes.Gray; //Doesn't work, bah...
                     previewItem.IsSelected = true;
                     //return;
                 }
 
-                for (int i = 0; i < EntryClass.EntryTypeMenu.NothingNameList.Length; i++)
-                {
-                    if (!string.IsNullOrEmpty(EntryClass.EntryTypeMenu.NothingNameList[i]))
-                    {
-                        ComboBoxItem comboBoxItem = new();
-                        comboBoxItem.Content = i + ": " + EntryClass.EntryTypeMenu.NothingNameList[i];
-                        comboBox.Items.Add(comboBoxItem);
 
-                    }
+
+                TextTable texttable = EntryClass.EntryTypeMenu.TextTableNothing;   
+                foreach (TextInfo textInfo in texttable.ItemList)
+                {
+                    ComboBoxItem comboBoxItem = new();
+                    ToolTipService.SetInitialShowDelay(comboBoxItem, LibraryGES.TooltipInitialDelay);
+                    ToolTipService.SetBetweenShowDelay(comboBoxItem, LibraryGES.TooltipBetweenDelay);
+                    comboBoxItem.Content = (textInfo.ItemIndex + texttable.TextTableFirstNameID) + ": " + textInfo.ItemName;
+                    comboBoxItem.Tag = textInfo; 
+                    comboBox.Items.Add(comboBoxItem);
                 }
             }
 
+            
+            
+            comboBox.MouseDown += (sender, e) =>
+            {
+                e.Handled = true; // Prevents the ComboBox from immediately closing after opening due to losing focus.
+            };
+            comboBox.MouseMove += (sender, e) =>
+            {
+               
+                e.Handled = true; // Prevents the ComboBox from immediately closing after opening due to losing focus.
+            };
 
+
+            ComboBoxItem previewitem = null;
+            comboBox.DropDownOpened += (sender, e) =>
+            {
+                DTEMethods.EntryActivate(EntryClass);
+            };
 
             comboBox.DropDownClosed += (sender, e) =>
             {
-                if (Workshop.IsPreviewMode == true) { return; }
+                if (Workshop.WorkshopData.IsProjectLoaded == false) 
+                {
+                    comboBox.SelectedItem = comboBox.Items[0];
+                    return; 
+                }
 
                 ComboBoxItem comboItem = comboBox.SelectedItem as ComboBoxItem;
                 if (comboItem == null) { return; }
 
-                string input = comboItem.Content as string;
-                if (input == "" || input == null) { return; }
+                TextInfo textInfo = comboItem.Tag as TextInfo;
+                EntryClass.EntryByteDecimal = textInfo.ItemIndex.ToString();
 
-                string[] parts = input.Split(':');
-                string number = parts[0].Trim();
-                EntryClass.EntryByteDecimal = number;
+                SaveEntry(EntryClass);
+                //UpdateEntryProperties(EntryClass);
+                //StandardEditorMethods.EntryActivate(EntryClass);
+                DTEMethods.EntryActivate(EntryClass);
 
-                SaveEntry(EntryClass.EntryEditor, EntryClass);
-                UpdateEntryProperties(EntryClass);
+                comboBox.ToolTip = null;
+                if (comboItem.Tag != null)
+                {
+                    if (comboItem.Tag is TextInfo itemInfo)
+                    {
+                        if (itemInfo.ItemWorkshopTooltip != "") 
+                        {
+                            comboBox.ToolTip = itemInfo.ItemWorkshopTooltip;
+                        }
+                        
+                    }
+                }
+
+
             };
 
 
-            //if (Workshop.IsPreviewMode == true) { comboBox.IsEnabled = false; }
+
+
+
+
 
         }
 
@@ -1573,7 +1885,7 @@ namespace GameEditorStudio
         //////////////////////////////////////////////START OF ENTRY TYPE SWAP////////////////////////////////////////////////////
 
 
-        public void EntryChange(WorkshopData Database, EntrySubTypes NewEntryType, Workshop TheWorkshop, Entry EntryClass)
+        public void ChangeEntryType(WorkshopData Database, EntrySubTypes NewEntryType, Workshop TheWorkshop, Entry EntryClass)
         {
             
 
@@ -1620,13 +1932,13 @@ namespace GameEditorStudio
             //////////////////////Deleting MyEntry modules//////////////////////////////
             //////////////////////Creating MyEntry modules//////////////////////////////
 
-
-
+            if (EntryClass.IsNameHidden == false) { EntryClass.EntryNameTextBlock.Visibility = Visibility.Visible; }
+            if (EntryClass.IsNameHidden == true) { EntryClass.EntryNameTextBlock.Visibility = Visibility.Collapsed; }
 
             if (NewEntryType == Entry.EntrySubTypes.NumberBox) //Step X: Create new Entry Module using Entry.ByteD and any other data relevant to this.
             {
                 CreateNumberBox(TheWorkshop, EntryClass);
-                LoadNumberBox(EntryClass);
+                LoadNumberBox(EntryClass); //Change Entry Type.
                 EntryClass.NewSubType = Entry.EntrySubTypes.NumberBox;
 
             }
@@ -1635,7 +1947,7 @@ namespace GameEditorStudio
             if (NewEntryType == Entry.EntrySubTypes.CheckBox)
             {
                 CreateCheckBox(TheWorkshop, EntryClass);
-                LoadCheckBox(EntryClass);
+                LoadCheckBox(EntryClass); //Change Entry Type.
                 EntryClass.NewSubType = Entry.EntrySubTypes.CheckBox;
             }
 
@@ -1644,40 +1956,39 @@ namespace GameEditorStudio
             if (NewEntryType == Entry.EntrySubTypes.BitFlag)
             {
                 CreateBitFlag(TheWorkshop, EntryClass);
-                LoadBitFlag(EntryClass);
+                LoadBitFlag(EntryClass); //Change Entry Type.
                 EntryClass.NewSubType = Entry.EntrySubTypes.BitFlag;
             }
-
-
+                        
 
             if (NewEntryType == Entry.EntrySubTypes.Menu)
             {
                 CreateMenu(EntryClass, TheWorkshop);
-                LoadMenu(EntryClass, TheWorkshop);
+                LoadMenu(EntryClass); //Change Entry Type.
                 EntryClass.NewSubType = Entry.EntrySubTypes.Menu;
             }
 
-            TheWorkshop.UpdateSymbology(EntryClass); //here because this method oddly doesn't also update entry properties?
+            
+            TheWorkshop.UpdateSymbology(EntryClass); //Update Symbology when Entry Type is changed. Example: Red !!! when a checkbox type is obviously not a bool.
         }
 
 
 
 
-        public void EntryBecomeActive(Entry EntryClass) 
+        public void SetSelectedEntry(Entry EntryClass) 
         {
-            Editor EditorClass = EntryClass.EntryEditor; 
+            Editor EditorClass = EntryClass.ParentEditor; 
 
-            Window parentWindow = Window.GetWindow(EntryClass.EntryDockPanel);
+            //Window parentWindow = Window.GetWindow(EntryClass.EntryDockPanel);
 
-            if (EditorClass.Workshop.ListTab.IsSelected == true) 
+            DTRightBar RightBar = EditorClass.DataTableEditorData.EditorRightBar;
+
+            if (EditorClass.DataTableEditorData.DTEXaml.RightBar.ListTab.IsSelected == true) 
             {
-                EditorClass.Workshop.GeneralTab.IsSelected = true;
-                
-            }
+                RightBar.GeneralTab.IsSelected = true;                
+            }            
 
-            //TabControl tabControlProp2 =  ;
-
-            TabControl tabControlProp = EditorClass.Workshop.FindName("EntryElementProperties") as TabControl;
+            TabControl tabControlProp = RightBar.EntryElementProperties; //The tab control for the Entry Type's Properties.
             foreach (TabItem tabItem in tabControlProp.Items)
             {                
                 if (EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox && tabItem.Header != null && tabItem.Header.ToString() == "NumberBox")
@@ -1702,47 +2013,48 @@ namespace GameEditorStudio
                 }
             }
 
-            Entry PreviousEntry = EditorClass.StandardEditorData.SelectedEntry;
-            EditorClass.StandardEditorData.SelectedEntry = EntryClass; //Note: This MUST be here, After clear EntryClass color, and before set EntryClass Color.  
+            Entry PreviousEntry = EditorClass.DataTableEditorData.EntryClass;
+            EditorClass.DataTableEditorData.EntryClass = EntryClass; //Note: This MUST be here, After clear EntryClass color, and before set EntryClass Color.  
 
+            EntryStyleUpdate(EditorClass.DataTableEditorData);   
 
-            EntryStyleUpdate(PreviousEntry);            
-            EntryStyleUpdate(EntryClass);
-
-            EditorClass.Workshop.PropertiesNameBox.IsEnabled = true;
-            if (EntryClass.IsNameHidden == true) { EditorClass.Workshop.PropertiesNameBox.IsEnabled = false; }
-            
+            RightBar.PropertiesNameBox.IsEnabled = true;
+            if (EntryClass.IsNameHidden == true) { RightBar.PropertiesNameBox.IsEnabled = false; }
 
         }
 
-        public void EntryStyleUpdate(Entry EntryClass) 
+        public void EntryStyleUpdate(DataTableEditorData DTEdata) 
         {
-            Entry TheSelectedEntry = EntryClass.EntryEditor.StandardEditorData.SelectedEntry;
 
-            if (EntryClass != TheSelectedEntry) 
+            foreach (Entry entry in DTEdata.MasterEntryList) 
             {
-                if (EntryClass.IsEntryHidden == false && EntryClass.IsTextInUse == false)
-                {                    
-                    EntryClass.EntryBorder.Style = (Style)Application.Current.Resources["EntryStyle"];
-                }
-                else 
+                if (entry != DTEdata.EntryClass)
                 {
-                    EntryClass.EntryBorder.Style = (Style)Application.Current.Resources["HiddenEntryStyle"];
-                }                
+                    if (entry.IsEntryHidden == false && entry.IsTextInUse == false)
+                    {
+                        entry.EntryBorder.Style = (Style)Application.Current.Resources["EntryStyle"];
+                    }
+                    else
+                    {
+                        entry.EntryBorder.Style = (Style)Application.Current.Resources["HiddenEntryStyle"];
+                    }
+                }
+
+
+                if (entry == DTEdata.EntryClass)
+                {
+                    if (entry.IsEntryHidden == false && entry.IsTextInUse == false)
+                    {
+                        entry.EntryBorder.Style = (Style)Application.Current.Resources["SelectedEntryStyle"];
+                    }
+                    else
+                    {
+                        entry.EntryBorder.Style = (Style)Application.Current.Resources["HiddenSelectedEntryStyle"];
+                    }
+                }
             }
 
-
-            if (EntryClass == TheSelectedEntry)
-            {
-                if (EntryClass.IsEntryHidden == false && EntryClass.IsTextInUse == false)
-                {
-                    EntryClass.EntryBorder.Style = (Style)Application.Current.Resources["SelectedEntryStyle"];
-                }
-                else
-                {
-                    EntryClass.EntryBorder.Style = (Style)Application.Current.Resources["HiddenSelectedEntryStyle"];
-                }
-            }
+            
             
         }
 
@@ -1751,45 +2063,44 @@ namespace GameEditorStudio
         {
             //This used to happen on tree view selection change, but it caused a shit ton of lag. Now it doesn't. if my program starts lagging again, consider if this is responsible! >:(
 
-            Workshop TheWorkshop = EntryClass.EntryEditor.Workshop;
-            Editor EditorClass = EntryClass.EntryEditor;
+            Workshop TheWorkshop = EntryClass.ParentEditor.WorkshopXaml;
+            Editor EditorClass = EntryClass.ParentEditor;
 
+            DTRightBar RightBar = EntryClass.ParentEditor.DataTableEditorData.EditorRightBar;
 
-            LibraryGES.GotoGeneralEntry(TheWorkshop);
+            RightBar.EntryTabItem.IsSelected = true;
 
             //////////////////////////////////////Workship Update//////////////////////////////////////////
-            TheWorkshop.EditorClass = EntryClass.EntryEditor;
-            TheWorkshop.CategoryClass = EntryClass.EntryRow;
-            TheWorkshop.ColumnClass = EntryClass.EntryColumn;
-            TheWorkshop.EntryClass = EntryClass;
+            RightBar.DTEData.CategoryClass = EntryClass.ParentCategory;
+
 
             //////////////////////////////////////Right Bar Settings Update//////////////////////////////////////////
-            TheWorkshop.PropertiesNameBox.Text = EntryClass.Name;   
+            RightBar.PropertiesNameBox.Text = EntryClass.Name;   
             
             if (EntryClass.IsNameHidden == true) 
             {
-                TheWorkshop.HideNameCheckbox.IsChecked = true;
+                RightBar.HideNameCheckbox.IsChecked = true;
             }
             else 
             {
-                TheWorkshop.HideNameCheckbox.IsChecked = false;
+                RightBar.HideNameCheckbox.IsChecked = false;
             }
 
             if (EntryClass.IsEntryHidden == true)
             {
-                TheWorkshop.HideEntryCheckbox.IsChecked = true;
+                RightBar.HideEntryCheckbox.IsChecked = true;
             }
             else
             {
-                TheWorkshop.HideEntryCheckbox.IsChecked = false;
+                RightBar.HideEntryCheckbox.IsChecked = false;
             }            
 
             string FindEntryType = EntryClass.NewSubType.ToString();  //Entry Type Dropdown Menu.
-            foreach (ComboBoxItem item in TheWorkshop.PropertiesEntryType.Items)
+            foreach (ComboBoxItem item in RightBar.PropertiesEntryType.Items)
             {
                 if (item.Content.ToString() == FindEntryType)
                 {
-                    TheWorkshop.PropertiesEntryType.SelectedItem = item;
+                    RightBar.PropertiesEntryType.SelectedItem = item;
                     break;
                 }
             }
@@ -1801,11 +2112,11 @@ namespace GameEditorStudio
             else if (EntryClass.Endianness == "4L") { FindEntryByteSize = "4 Bytes Little Endian"; }
             else if (EntryClass.Endianness == "2B") { FindEntryByteSize = "2 Bytes Big Endian"; }
             else if (EntryClass.Endianness == "4B") { FindEntryByteSize = "4 Bytes Big Endian"; }
-            foreach (ComboBoxItem item in TheWorkshop.PropertiesEntryByteSizeComboBox.Items)
+            foreach (ComboBoxItem item in RightBar.PropertiesEntryByteSizeComboBox.Items)
             {
                 if (item.Content.ToString() == FindEntryByteSize)
                 {
-                    TheWorkshop.PropertiesEntryByteSizeComboBox.SelectedItem = item;
+                    RightBar.PropertiesEntryByteSizeComboBox.SelectedItem = item;
                     break;
                 }
             }
@@ -1814,103 +2125,166 @@ namespace GameEditorStudio
             //////////////////////////////////////Right Bar Submenu Settings Update//////////////////////////////////////////
             if (EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox)
             {                
-                if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Unsigned) { TheWorkshop.NumberboxSignCheckbox.IsChecked = false; }
-                if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Signed) { TheWorkshop.NumberboxSignCheckbox.IsChecked = true; }                
+                if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Unsigned) { RightBar.NumberboxSignCheckbox.IsChecked = false; }
+                if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Signed) { RightBar.NumberboxSignCheckbox.IsChecked = true; }
+                RightBar.NumberboxSuffixTextbox.Text = EntryClass.EntryTypeNumberBox.Suffix;
             }
 
             if (EntryClass.NewSubType == Entry.EntrySubTypes.CheckBox) 
             {
-                TheWorkshop.PropertiesEntryCheckText.Text = EntryClass.EntryTypeCheckBox.TrueText;
-                TheWorkshop.PropertiesEntryUncheckText.Text = EntryClass.EntryTypeCheckBox.FalseText;
+                RightBar.PropertiesEntryCheckText.Text = EntryClass.EntryTypeCheckBox.TrueText;
+                RightBar.PropertiesEntryUncheckText.Text = EntryClass.EntryTypeCheckBox.FalseText;
             }
 
             if (EntryClass.NewSubType == Entry.EntrySubTypes.BitFlag) 
             {
-                TheWorkshop.PropertiesEntryBitFlag1Name.Text = EntryClass.EntryTypeBitFlag.BitFlag1Name;
-                TheWorkshop.PropertiesEntryBitFlag2Name.Text = EntryClass.EntryTypeBitFlag.BitFlag2Name;
-                TheWorkshop.PropertiesEntryBitFlag3Name.Text = EntryClass.EntryTypeBitFlag.BitFlag3Name;
-                TheWorkshop.PropertiesEntryBitFlag4Name.Text = EntryClass.EntryTypeBitFlag.BitFlag4Name; 
-                TheWorkshop.PropertiesEntryBitFlag5Name.Text = EntryClass.EntryTypeBitFlag.BitFlag5Name;
-                TheWorkshop.PropertiesEntryBitFlag6Name.Text = EntryClass.EntryTypeBitFlag.BitFlag6Name;
-                TheWorkshop.PropertiesEntryBitFlag7Name.Text = EntryClass.EntryTypeBitFlag.BitFlag7Name;
-                TheWorkshop.PropertiesEntryBitFlag8Name.Text = EntryClass.EntryTypeBitFlag.BitFlag8Name;
+                RightBar.PropertiesEntryBitFlag1Name.Text = EntryClass.EntryTypeBitFlag.BitFlag1Name;
+                RightBar.PropertiesEntryBitFlag2Name.Text = EntryClass.EntryTypeBitFlag.BitFlag2Name;
+                RightBar.PropertiesEntryBitFlag3Name.Text = EntryClass.EntryTypeBitFlag.BitFlag3Name;
+                RightBar.PropertiesEntryBitFlag4Name.Text = EntryClass.EntryTypeBitFlag.BitFlag4Name; 
+                RightBar.PropertiesEntryBitFlag5Name.Text = EntryClass.EntryTypeBitFlag.BitFlag5Name;
+                RightBar.PropertiesEntryBitFlag6Name.Text = EntryClass.EntryTypeBitFlag.BitFlag6Name;
+                RightBar.PropertiesEntryBitFlag7Name.Text = EntryClass.EntryTypeBitFlag.BitFlag7Name;
+                RightBar.PropertiesEntryBitFlag8Name.Text = EntryClass.EntryTypeBitFlag.BitFlag8Name;
             }
 
 
             if (EntryClass.NewSubType == Entry.EntrySubTypes.Menu)
             {
-                TheWorkshop.DropdownMenuType.IsEnabled = true;
-                if (EntryClass.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.Dropdown) { TheWorkshop.MenuTypeItemDropdown.IsSelected = true; }
-                else if (EntryClass.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List) { TheWorkshop.MenuTypeItemList.IsSelected = true; }
+                RightBar.DropdownMenuType.IsEnabled = true;
+                if (EntryClass.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.Dropdown) { RightBar.MenuTypeItemDropdown.IsSelected = true; }
+                else if (EntryClass.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List) { RightBar.MenuTypeItemList.IsSelected = true; }
+                
             }
             else //failsafe
-            { 
-                TheWorkshop.DropdownMenuType.IsEnabled = false; 
+            {
+                RightBar.DropdownMenuType.IsEnabled = false; 
             }
 
             //////////////////////////////////////Right Bar Hex Data Update//////////////////////////////////////////
-            UpdateEntryHexProperties(TheWorkshop, EditorClass);
+            UpdateEntryHexProperties(EntryClass.ParentEditor.DataTableEditorData);
 
-            //////////////////////////////////////END//////////////////////////////////////////
-            TheWorkshop.UpdateSymbology(EntryClass);
+            //////////////////////////////////////END//////////////////////////////////////////            
+            TheWorkshop.UpdateSymbology(EntryClass); //Update Symbology when Entry Value is changed.
 
         } //End of UpdateEntryProperties Method
 
-        public void UpdateEntryHexProperties(Workshop TheWorkshop, Editor EditorClass) 
+
+        public async void UpdateEntryHexProperties(DataTableEditorData DTEData)
         {
-            //if (TheWorkshop.IsPreviewMode == true) { return; }
 
-            Entry EntryClass = EditorClass.StandardEditorData.SelectedEntry;
+            Entry EntryClass = DTEData.EntryClass;
+            DTRightBar RightBar = DTEData.EditorRightBar;
 
-            TheWorkshop.PropertiesEntryHexAddressTextbox.Text = (EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("X2");
+            if (DTEData.DataTable == null) { return; }
+            
 
+            RightBar.PropertiesEntryHexAddressTextbox.Text = (DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("X2");
 
+            //string thetext = await Task.Run(() => { return (DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("X2"); });
+            //RightBar.PropertiesEntryHexAddressTextbox.Text = thetext;
+
+            /////////////////////If project is loaded or not/////////////////////                        
+            if (DTEData.WorkshopData.IsProjectLoaded == false)
+            {
+                //If NO project
+                RightBar.PropertiesEntry1Byte.Text = "";
+                RightBar.PropertiesEntryHex1Byte.Text = "";
+                RightBar.PropertiesEntry2ByteB.Text = "";
+                RightBar.PropertiesEntryHex2ByteB.Text = "";
+                RightBar.PropertiesEntry2ByteL.Text = "";
+                RightBar.PropertiesEntryHex2ByteL.Text = "";
+                RightBar.PropertiesEntry4ByteB.Text = "";
+                RightBar.PropertiesEntryHex4ByteB.Text = "";
+                RightBar.PropertiesEntry4ByteL.Text = "";
+                RightBar.PropertiesEntryHex4ByteL.Text = "";
+                RightBar.PropertiesEntry1ByteNegative.Text = "";
+                RightBar.PropertiesEntry2ByteBNegative.Text = "";
+                RightBar.PropertiesEntry2ByteLNegative.Text = "";
+                RightBar.PropertiesEntry4ByteBNegative.Text = "";
+                RightBar.PropertiesEntry4ByteLNegative.Text = "";
+
+                RightBar.PropertiesEntry1Byte.IsEnabled = false;
+                RightBar.PropertiesEntryHex1Byte.IsEnabled = false;
+                RightBar.PropertiesEntry2ByteB.IsEnabled = false;
+                RightBar.PropertiesEntryHex2ByteB.IsEnabled = false;
+                RightBar.PropertiesEntry2ByteL.IsEnabled = false;
+                RightBar.PropertiesEntryHex2ByteL.IsEnabled = false;
+                RightBar.PropertiesEntry4ByteB.IsEnabled = false;
+                RightBar.PropertiesEntryHex4ByteB.IsEnabled = false;
+                RightBar.PropertiesEntry4ByteL.IsEnabled = false;
+                RightBar.PropertiesEntryHex4ByteL.IsEnabled = false;
+                RightBar.PropertiesEntry1ByteNegative.IsEnabled = false;
+                RightBar.PropertiesEntry2ByteBNegative.IsEnabled = false;
+                RightBar.PropertiesEntry2ByteLNegative.IsEnabled = false;
+                RightBar.PropertiesEntry4ByteBNegative.IsEnabled = false;
+                RightBar.PropertiesEntry4ByteLNegative.IsEnabled = false;
+                return;
+
+            }
+            else if (DTEData.WorkshopData.IsProjectLoaded == true)
+            {
+                //If there IS a project!
+                RightBar.PropertiesEntry1Byte.IsEnabled = true;
+                RightBar.PropertiesEntryHex1Byte.IsEnabled = true;
+                RightBar.PropertiesEntry2ByteB.IsEnabled = true;
+                RightBar.PropertiesEntryHex2ByteB.IsEnabled = true;
+                RightBar.PropertiesEntry2ByteL.IsEnabled = true;
+                RightBar.PropertiesEntryHex2ByteL.IsEnabled = true;
+                RightBar.PropertiesEntry4ByteB.IsEnabled = true;
+                RightBar.PropertiesEntryHex4ByteB.IsEnabled = true;
+                RightBar.PropertiesEntry4ByteL.IsEnabled = true;
+                RightBar.PropertiesEntryHex4ByteL.IsEnabled = true;
+                RightBar.PropertiesEntry1ByteNegative.IsEnabled = true;
+                RightBar.PropertiesEntry2ByteBNegative.IsEnabled = true;
+                RightBar.PropertiesEntry2ByteLNegative.IsEnabled = true;
+                RightBar.PropertiesEntry4ByteBNegative.IsEnabled = true;
+                RightBar.PropertiesEntry4ByteLNegative.IsEnabled = true;
+            }
 
 
             /////////////////////Data Analyzer/////////////////////
-            //TheWorkshop.PropertiesEntry1Byte.Text = EditorClass.StandardEditorData.FileDataTable.FileBytes[EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
-            if (TheWorkshop.IsPreviewMode == true) { return; }
-            
-            
-            TheWorkshop.PropertiesEntry1Byte.Text = EditorClass.StandardEditorData.FileDataTable.FileBytes[EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
-            TheWorkshop.PropertiesEntryHex1Byte.Text = EditorClass.StandardEditorData.FileDataTable.FileBytes[EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("X2");
+            RightBar.PropertiesEntry1Byte.Text = DTEData.DataTable.FileDataTable.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
+            RightBar.PropertiesEntryHex1Byte.Text = DTEData.DataTable.FileDataTable.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("X2");
 
             try
             {
-                TheWorkshop.PropertiesEntry2ByteB.Text = BitConverter.ToUInt16(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
-                TheWorkshop.PropertiesEntryHex2ByteB.Text = BitConverter.ToUInt16(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("X4");
-
-                ushort value2 = BitConverter.ToUInt16(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+                ushort value2 = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
                 ushort swappedValue2 = (ushort)IPAddress.HostToNetworkOrder((short)value2); // Swap the endianness
-                TheWorkshop.PropertiesEntry2ByteL.Text = swappedValue2.ToString("D"); // Convert the swapped value4 to a string using the desired format
-                TheWorkshop.PropertiesEntryHex2ByteL.Text = swappedValue2.ToString("X4"); // Convert the swapped value4 to a string using the desired format
+
+                RightBar.PropertiesEntry2ByteL.Text = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+                RightBar.PropertiesEntryHex2ByteL.Text = swappedValue2.ToString("X4"); // Convert the swapped value4 to a string using the desired format                
+                RightBar.PropertiesEntry2ByteB.Text = swappedValue2.ToString("D"); // Convert the swapped value4 to a string using the desired format 
+                RightBar.PropertiesEntryHex2ByteB.Text = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("X4");
+
             }
             catch
             {
-                TheWorkshop.PropertiesEntry2ByteB.Text = "END OF FILE";
-                TheWorkshop.PropertiesEntryHex2ByteB.Text = "END OF FILE";
-                TheWorkshop.PropertiesEntry2ByteL.Text = "END OF FILE";
-                TheWorkshop.PropertiesEntryHex2ByteL.Text = "END OF FILE";
+                RightBar.PropertiesEntry2ByteL.Text = "END OF FILE";
+                RightBar.PropertiesEntryHex2ByteL.Text = "END OF FILE";
+                RightBar.PropertiesEntry2ByteB.Text = "END OF FILE";
+                RightBar.PropertiesEntryHex2ByteB.Text = "END OF FILE";
             }
 
             try
             {
-                TheWorkshop.PropertiesEntry4ByteB.Text = BitConverter.ToUInt32(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
-                TheWorkshop.PropertiesEntryHex4ByteB.Text = BitConverter.ToUInt32(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("X8");
-
-                uint value = BitConverter.ToUInt32(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+                uint value = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
                 byte[] valueBytes = BitConverter.GetBytes(value);
                 Array.Reverse(valueBytes);
                 uint swappedValue = BitConverter.ToUInt32(valueBytes, 0);
-                TheWorkshop.PropertiesEntry4ByteL.Text = swappedValue.ToString("D");
-                TheWorkshop.PropertiesEntryHex4ByteL.Text = swappedValue.ToString("X8");
+
+                RightBar.PropertiesEntry4ByteB.Text = swappedValue.ToString("D");
+                RightBar.PropertiesEntryHex4ByteB.Text = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("X8");
+
+                RightBar.PropertiesEntry4ByteL.Text = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+                RightBar.PropertiesEntryHex4ByteL.Text = swappedValue.ToString("X8");
             }
             catch
             {
-                TheWorkshop.PropertiesEntry4ByteB.Text = "END OF FILE";
-                TheWorkshop.PropertiesEntryHex4ByteB.Text = "END OF FILE";
-                TheWorkshop.PropertiesEntry4ByteL.Text = "END OF FILE";
-                TheWorkshop.PropertiesEntryHex4ByteL.Text = "END OF FILE";
+                RightBar.PropertiesEntry4ByteB.Text = "END OF FILE";
+                RightBar.PropertiesEntryHex4ByteB.Text = "END OF FILE";
+                RightBar.PropertiesEntry4ByteL.Text = "END OF FILE";
+                RightBar.PropertiesEntryHex4ByteL.Text = "END OF FILE";
             }
 
 
@@ -1918,66 +2292,303 @@ namespace GameEditorStudio
             // === 1 Byte (Signed) ===
             try
             {
-                sbyte signedByte = (sbyte)EditorClass.StandardEditorData.FileDataTable.FileBytes[
-                    EditorClass.StandardEditorData.DataTableStart +
-                    (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) +
+                sbyte signedByte = (sbyte)DTEData.DataTable.FileDataTable.FileBytes[
+                    DTEData.DataTable.DataTableStart +
+                    (DTEData.TableRowIndex * EntryClass.DataTableRowSize) +
                     EntryClass.RowOffset];
-                TheWorkshop.PropertiesEntry1ByteNegative.Text = signedByte < 0 ? signedByte.ToString("D") : "";
+                RightBar.PropertiesEntry1ByteNegative.Text = signedByte < 0 ? signedByte.ToString("D") : "";
+
+                if (RightBar.PropertiesEntry1ByteNegative.Text == "") //If it can't be read as a negative...
+                {
+                    //RightBar.PropertiesEntry1ByteNegative.Text = "Positive Only";
+                    RightBar.PropertiesEntry1ByteNegative.IsEnabled = false;
+                }
             }
             catch
             {
-                TheWorkshop.PropertiesEntry1ByteNegative.Text = "END OF FILE";
+                RightBar.PropertiesEntry1ByteNegative.Text = "END OF FILE";
             }
 
             // === 2 Byte (Signed) ===
             try
             {
-                int offset2 = EditorClass.StandardEditorData.DataTableStart +
-                              (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) +
+                int offset2 = DTEData.DataTable.DataTableStart +
+                              (DTEData.TableRowIndex * EntryClass.DataTableRowSize) +
                               EntryClass.RowOffset;
 
-                short s2B = BitConverter.ToInt16(EditorClass.StandardEditorData.FileDataTable.FileBytes, offset2);
-                TheWorkshop.PropertiesEntry2ByteBNegative.Text = s2B < 0 ? s2B.ToString("D") : "";
+                short s2L = BitConverter.ToInt16(DTEData.DataTable.FileDataTable.FileBytes, offset2);
+                RightBar.PropertiesEntry2ByteLNegative.Text = s2L < 0 ? s2L.ToString("D") : "";
 
-                byte[] signedBytes2L = EditorClass.StandardEditorData.FileDataTable.FileBytes
+
+                byte[] signedBytes2B = DTEData.DataTable.FileDataTable.FileBytes
                     .Skip(offset2).Take(2).ToArray();
-                Array.Reverse(signedBytes2L);
-                short swappedS2L = BitConverter.ToInt16(signedBytes2L, 0);
-                TheWorkshop.PropertiesEntry2ByteLNegative.Text = swappedS2L < 0 ? swappedS2L.ToString("D") : "";
+                Array.Reverse(signedBytes2B);
+                short swappedS2B = BitConverter.ToInt16(signedBytes2B, 0);
+                RightBar.PropertiesEntry2ByteBNegative.Text = swappedS2B < 0 ? swappedS2B.ToString("D") : "";
+
+
+
+                if (RightBar.PropertiesEntry2ByteBNegative.Text == "") //If it can't be read as a negative...
+                {
+                    //RightBar.PropertiesEntry2ByteBNegative.Text = "Positive Only";
+                    RightBar.PropertiesEntry2ByteBNegative.IsEnabled = false;
+                }
+                if (RightBar.PropertiesEntry2ByteLNegative.Text == "") //If it can't be read as a negative...
+                {
+                    //RightBar.PropertiesEntry2ByteLNegative.Text = "Positive Only";
+                    RightBar.PropertiesEntry2ByteLNegative.IsEnabled = false;
+                }
             }
             catch
             {
-                TheWorkshop.PropertiesEntry2ByteBNegative.Text = "END OF FILE";
-                TheWorkshop.PropertiesEntry2ByteLNegative.Text = "END OF FILE";
+                RightBar.PropertiesEntry2ByteBNegative.Text = "END OF FILE";
+                RightBar.PropertiesEntry2ByteLNegative.Text = "END OF FILE";
             }
 
             // === 4 Byte (Signed) ===
             try
             {
-                int offset4 = EditorClass.StandardEditorData.DataTableStart +
-                              (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) +
+                int offset4 = DTEData.DataTable.DataTableStart +
+                              (DTEData.TableRowIndex * EntryClass.DataTableRowSize) +
                               EntryClass.RowOffset;
 
-                int s4B = BitConverter.ToInt32(EditorClass.StandardEditorData.FileDataTable.FileBytes, offset4);
-                TheWorkshop.PropertiesEntry4ByteBNegative.Text = s4B < 0 ? s4B.ToString("D") : "";
+                int s4L = BitConverter.ToInt32(DTEData.DataTable.FileDataTable.FileBytes, offset4);
+                RightBar.PropertiesEntry4ByteLNegative.Text = s4L < 0 ? s4L.ToString("D") : "";
 
-                byte[] signedBytes4L = EditorClass.StandardEditorData.FileDataTable.FileBytes
+
+                byte[] signedBytes4B = DTEData.DataTable.FileDataTable.FileBytes
                     .Skip(offset4).Take(4).ToArray();
-                Array.Reverse(signedBytes4L);
-                int swappedS4L = BitConverter.ToInt32(signedBytes4L, 0);
-                TheWorkshop.PropertiesEntry4ByteLNegative.Text = swappedS4L < 0 ? swappedS4L.ToString("D") : "";
+                Array.Reverse(signedBytes4B);
+                int swappedS4B = BitConverter.ToInt32(signedBytes4B, 0);
+                RightBar.PropertiesEntry4ByteBNegative.Text = swappedS4B < 0 ? swappedS4B.ToString("D") : "";
+
+
+                if (RightBar.PropertiesEntry4ByteBNegative.Text == "") //If it can't be read as a negative...
+                {
+                    //RightBar.PropertiesEntry4ByteBNegative.Text = "Positive Only";
+                    RightBar.PropertiesEntry4ByteBNegative.IsEnabled = false;
+                }
+                if (RightBar.PropertiesEntry4ByteLNegative.Text == "") //If it can't be read as a negative...
+                {
+                    //RightBar.PropertiesEntry4ByteLNegative.Text = "Positive Only";
+                    RightBar.PropertiesEntry4ByteLNegative.IsEnabled = false;
+                }
             }
             catch
             {
-                TheWorkshop.PropertiesEntry4ByteBNegative.Text = "END OF FILE";
-                TheWorkshop.PropertiesEntry4ByteLNegative.Text = "END OF FILE";
+                RightBar.PropertiesEntry4ByteBNegative.Text = "END OF FILE";
+                RightBar.PropertiesEntry4ByteLNegative.Text = "END OF FILE";
             }
 
-            if (TheWorkshop.TheCrossReference != null)
-            {
-                TheWorkshop.TheCrossReference.FillLearnBox(EditorClass, EntryClass);
-            }
+            DTEData.DTEXaml.RightBar.TheCrossReference.FillLearnBox(DTEData);
         }
+
+        //public async void UpdateEntryHexProperties(DataTableEditorData DTEData) 
+        //{
+
+        //    Entry EntryClass = DTEData.EntryClass;
+        //    DTRightBar RightBar = DTEData.EditorRightBar; 
+
+        //    RightBar.PropertiesEntryHexAddressTextbox.Text = (DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("X2");
+
+        //    /////////////////////If project is loaded or not/////////////////////                        
+        //    if (DTEData.WorkshopData.IsProjectLoaded == false) 
+        //    {
+        //        //If NO project
+        //        RightBar.PropertiesEntry1Byte.Text = "";
+        //        RightBar.PropertiesEntryHex1Byte.Text = "";
+        //        RightBar.PropertiesEntry2ByteB.Text = "";
+        //        RightBar.PropertiesEntryHex2ByteB.Text = "";
+        //        RightBar.PropertiesEntry2ByteL.Text = "";
+        //        RightBar.PropertiesEntryHex2ByteL.Text = "";
+        //        RightBar.PropertiesEntry4ByteB.Text = "";
+        //        RightBar.PropertiesEntryHex4ByteB.Text = "";
+        //        RightBar.PropertiesEntry4ByteL.Text = "";
+        //        RightBar.PropertiesEntryHex4ByteL.Text = "";
+        //        RightBar.PropertiesEntry1ByteNegative.Text = "";
+        //        RightBar.PropertiesEntry2ByteBNegative.Text = "";
+        //        RightBar.PropertiesEntry2ByteLNegative.Text = "";
+        //        RightBar.PropertiesEntry4ByteBNegative.Text = "";
+        //        RightBar.PropertiesEntry4ByteLNegative.Text = "";
+
+        //        RightBar.PropertiesEntry1Byte.IsEnabled = false;
+        //        RightBar.PropertiesEntryHex1Byte.IsEnabled = false;
+        //        RightBar.PropertiesEntry2ByteB.IsEnabled = false;
+        //        RightBar.PropertiesEntryHex2ByteB.IsEnabled = false;
+        //        RightBar.PropertiesEntry2ByteL.IsEnabled = false;
+        //        RightBar.PropertiesEntryHex2ByteL.IsEnabled = false;
+        //        RightBar.PropertiesEntry4ByteB.IsEnabled = false;
+        //        RightBar.PropertiesEntryHex4ByteB.IsEnabled = false;
+        //        RightBar.PropertiesEntry4ByteL.IsEnabled = false;
+        //        RightBar.PropertiesEntryHex4ByteL.IsEnabled = false;
+        //        RightBar.PropertiesEntry1ByteNegative.IsEnabled = false;
+        //        RightBar.PropertiesEntry2ByteBNegative.IsEnabled = false;
+        //        RightBar.PropertiesEntry2ByteLNegative.IsEnabled = false;
+        //        RightBar.PropertiesEntry4ByteBNegative.IsEnabled = false;
+        //        RightBar.PropertiesEntry4ByteLNegative.IsEnabled = false;
+        //        return;
+
+        //    }
+        //    else if (DTEData.WorkshopData.IsProjectLoaded == true)
+        //    {
+        //        //If there IS a project!
+        //        RightBar.PropertiesEntry1Byte.IsEnabled = true;
+        //        RightBar.PropertiesEntryHex1Byte.IsEnabled = true;
+        //        RightBar.PropertiesEntry2ByteB.IsEnabled = true;
+        //        RightBar.PropertiesEntryHex2ByteB.IsEnabled = true;
+        //        RightBar.PropertiesEntry2ByteL.IsEnabled = true;
+        //        RightBar.PropertiesEntryHex2ByteL.IsEnabled = true;
+        //        RightBar.PropertiesEntry4ByteB.IsEnabled = true;
+        //        RightBar.PropertiesEntryHex4ByteB.IsEnabled = true;
+        //        RightBar.PropertiesEntry4ByteL.IsEnabled = true;
+        //        RightBar.PropertiesEntryHex4ByteL.IsEnabled = true;
+        //        RightBar.PropertiesEntry1ByteNegative.IsEnabled = true;
+        //        RightBar.PropertiesEntry2ByteBNegative.IsEnabled = true;
+        //        RightBar.PropertiesEntry2ByteLNegative.IsEnabled = true;
+        //        RightBar.PropertiesEntry4ByteBNegative.IsEnabled = true;
+        //        RightBar.PropertiesEntry4ByteLNegative.IsEnabled = true;
+        //    }
+
+
+        //    /////////////////////Data Analyzer/////////////////////
+        //    RightBar.PropertiesEntry1Byte.Text = DTEData.DataTable.FileDataTable.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
+        //    RightBar.PropertiesEntryHex1Byte.Text = DTEData.DataTable.FileDataTable.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("X2");
+
+        //    try
+        //    {
+        //        ushort value2 = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+        //        ushort swappedValue2 = (ushort)IPAddress.HostToNetworkOrder((short)value2); // Swap the endianness
+
+        //        RightBar.PropertiesEntry2ByteL.Text = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+        //        RightBar.PropertiesEntryHex2ByteL.Text = swappedValue2.ToString("X4"); // Convert the swapped value4 to a string using the desired format                
+        //        RightBar.PropertiesEntry2ByteB.Text = swappedValue2.ToString("D"); // Convert the swapped value4 to a string using the desired format 
+        //        RightBar.PropertiesEntryHex2ByteB.Text = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("X4");
+
+        //    }
+        //    catch
+        //    {
+        //        RightBar.PropertiesEntry2ByteL.Text = "END OF FILE";
+        //        RightBar.PropertiesEntryHex2ByteL.Text = "END OF FILE";
+        //        RightBar.PropertiesEntry2ByteB.Text = "END OF FILE";
+        //        RightBar.PropertiesEntryHex2ByteB.Text = "END OF FILE";                
+        //    }
+
+        //    try
+        //    {
+        //        uint value = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+        //        byte[] valueBytes = BitConverter.GetBytes(value);
+        //        Array.Reverse(valueBytes);
+        //        uint swappedValue = BitConverter.ToUInt32(valueBytes, 0);
+
+        //        RightBar.PropertiesEntry4ByteB.Text = swappedValue.ToString("D");
+        //        RightBar.PropertiesEntryHex4ByteB.Text = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("X8");
+
+        //        RightBar.PropertiesEntry4ByteL.Text = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");  
+        //        RightBar.PropertiesEntryHex4ByteL.Text = swappedValue.ToString("X8");
+        //    }
+        //    catch
+        //    {
+        //        RightBar.PropertiesEntry4ByteB.Text = "END OF FILE";
+        //        RightBar.PropertiesEntryHex4ByteB.Text = "END OF FILE";
+        //        RightBar.PropertiesEntry4ByteL.Text = "END OF FILE";
+        //        RightBar.PropertiesEntryHex4ByteL.Text = "END OF FILE";
+        //    }
+
+
+        //    //Starting here is for attempting to read possible negative values. 
+        //    // === 1 Byte (Signed) ===
+        //    try
+        //    {
+        //        sbyte signedByte = (sbyte)DTEData.DataTable.FileDataTable.FileBytes[
+        //            DTEData.DataTable.DataTableStart +
+        //            (DTEData.TableRowIndex * EntryClass.DataTableRowSize) +
+        //            EntryClass.RowOffset];
+        //        RightBar.PropertiesEntry1ByteNegative.Text = signedByte < 0 ? signedByte.ToString("D") : "";
+
+        //        if (RightBar.PropertiesEntry1ByteNegative.Text == "") //If it can't be read as a negative...
+        //        {
+        //            //RightBar.PropertiesEntry1ByteNegative.Text = "Positive Only";
+        //            RightBar.PropertiesEntry1ByteNegative.IsEnabled = false;
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        RightBar.PropertiesEntry1ByteNegative.Text = "END OF FILE";
+        //    }
+
+        //    // === 2 Byte (Signed) ===
+        //    try
+        //    {
+        //        int offset2 = DTEData.DataTable.DataTableStart +
+        //                      (DTEData.TableRowIndex * EntryClass.DataTableRowSize) +
+        //                      EntryClass.RowOffset;
+
+        //        short s2L = BitConverter.ToInt16(DTEData.DataTable.FileDataTable.FileBytes, offset2);
+        //        RightBar.PropertiesEntry2ByteLNegative.Text = s2L < 0 ? s2L.ToString("D") : "";
+
+
+        //        byte[] signedBytes2B = DTEData.DataTable.FileDataTable.FileBytes
+        //            .Skip(offset2).Take(2).ToArray();
+        //        Array.Reverse(signedBytes2B);
+        //        short swappedS2B = BitConverter.ToInt16(signedBytes2B, 0);                
+        //        RightBar.PropertiesEntry2ByteBNegative.Text = swappedS2B < 0 ? swappedS2B.ToString("D") : ""; 
+
+
+
+        //        if (RightBar.PropertiesEntry2ByteBNegative.Text == "") //If it can't be read as a negative...
+        //        {
+        //            //RightBar.PropertiesEntry2ByteBNegative.Text = "Positive Only";
+        //            RightBar.PropertiesEntry2ByteBNegative.IsEnabled = false;
+        //        }
+        //        if (RightBar.PropertiesEntry2ByteLNegative.Text == "") //If it can't be read as a negative...
+        //        {
+        //            //RightBar.PropertiesEntry2ByteLNegative.Text = "Positive Only";
+        //            RightBar.PropertiesEntry2ByteLNegative.IsEnabled = false;
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        RightBar.PropertiesEntry2ByteBNegative.Text = "END OF FILE";
+        //        RightBar.PropertiesEntry2ByteLNegative.Text = "END OF FILE";
+        //    }
+
+        //    // === 4 Byte (Signed) ===
+        //    try
+        //    {
+        //        int offset4 = DTEData.DataTable.DataTableStart +
+        //                      (DTEData.TableRowIndex * EntryClass.DataTableRowSize) +
+        //                      EntryClass.RowOffset;
+
+        //        int s4L = BitConverter.ToInt32(DTEData.DataTable.FileDataTable.FileBytes, offset4);
+        //        RightBar.PropertiesEntry4ByteLNegative.Text = s4L < 0 ? s4L.ToString("D") : "";
+
+
+        //        byte[] signedBytes4B = DTEData.DataTable.FileDataTable.FileBytes
+        //            .Skip(offset4).Take(4).ToArray();
+        //        Array.Reverse(signedBytes4B);
+        //        int swappedS4B = BitConverter.ToInt32(signedBytes4B, 0);
+        //        RightBar.PropertiesEntry4ByteBNegative.Text = swappedS4B < 0 ? swappedS4B.ToString("D") : "";
+
+
+        //        if (RightBar.PropertiesEntry4ByteBNegative.Text == "") //If it can't be read as a negative...
+        //        {
+        //            //RightBar.PropertiesEntry4ByteBNegative.Text = "Positive Only";
+        //            RightBar.PropertiesEntry4ByteBNegative.IsEnabled = false;
+        //        }
+        //        if (RightBar.PropertiesEntry4ByteLNegative.Text == "") //If it can't be read as a negative...
+        //        {
+        //            //RightBar.PropertiesEntry4ByteLNegative.Text = "Positive Only";
+        //            RightBar.PropertiesEntry4ByteLNegative.IsEnabled = false;
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        RightBar.PropertiesEntry4ByteBNegative.Text = "END OF FILE";
+        //        RightBar.PropertiesEntry4ByteLNegative.Text = "END OF FILE";
+        //    }
+
+        //    DTEData.DTEXaml.RightBar.TheCrossReference.FillLearnBox(DTEData);
+        //}
 
 
 

@@ -41,7 +41,7 @@ namespace GameEditorStudio
         //Also Project data might be relevant to...
     }
 
-    public class ProjectData //The root project data itself. 
+    public class Project //The root project data itself. 
     {
         public Version CreatedVersion { get; set; } = new Version(0, 0); //The GES version this was first created with.
         public string CreatedDate { get; set; } = ""; //The date this was first created.
@@ -53,11 +53,14 @@ namespace GameEditorStudio
         public string ProjectName { get; set; } = "New Project";
         public string ProjectInputDirectory { get; set; }
         public string ProjectOutputDirectory { get; set; }
-        public List<ProjectEventResource> ProjectEventResources { get; set; }
+        public List<ProjectEventResource> ProjectEventResources { get; set; } = new();
+        public List<Document> ProjectDocumentsList { get; set; } = new(); //In the future, move Project Documents to here, from WorkshopData. 
     }
 
     public class WorkshopData //When i later make this a list in true database, remember to make sure workshop common events still load / save / use properly
     {
+        public EntryManager EntryManagerOLD { get; set; } = new(); //This doesn't even need to be here. Remove it later. xd
+
         public Version CreatedVersion { get; set; } = new Version(0, 0); //The GES version this was first created with.
         public string CreatedDate { get; set; } = ""; //The date this was first created.
         public Version SavedVersion { get; set; } = new Version(0, 0); //The last GES version this was used/saved with.
@@ -67,27 +70,36 @@ namespace GameEditorStudio
         public string WorkshopName { get; set; } = ""; //The name of the workshop (IE name of whats selected in Game Library)
         public string WorkshopInputDirectory { get; set; } = ""; //The intended InputDirectory (Folder name) for modding this game. This helps make sure end users aren't guessing what the correct one is.
         public bool ProjectsRequireSameFolderName { get; set; } = true; //If true the project input folder must have the same name as WorkshopInputDirectory.
+
+        public Intro Intro { get; set; } = new ();
         public List<EventResource> WorkshopEventResources { get; set; } = new();
-        public List<ProjectData> ProjectsList { get; set; } = new();
+        public List<Project> ProjectsList { get; set; } = new();
         public List<CommonEvent> WorkshopCommonEvents { get; set; } = new(); //WORKSHOP COMMONS?
         public List<Event> WorkshopEvents { get; set; } = new();
 
 
         //////////////////////////////ADVANCED INFO AFTER OPENING WORKSHOP/////////////////////////////////////////////////////////////
         public Workshop WorkshopXaml { get; set; } //Set when a workshop is actually opened.
-        public Dictionary<string, GameFile> GameFiles { get; set; } = new(); //the term "File" prevents File.Read from working because it thinks "File" is a class. So i Needed another name.    
-        public Dictionary<string, Editor> GameEditors { get; set; } = new(); //Note that "Editors" is a folder name. So this is called "GameEditors".   
-        public EntryManager EntryManager { get; set; } = new(); //This doesn't even need to be here. Remove it later. xd
-
-        public ProjectData ProjectDataItem { get; set; }
+        public List<GameFile> GameFiles { get; set; } = new(); //The name "File" prevents File.Read from working. Anyway, this is every file in the workshop.    
+        public List<Editor> GameEditors { get; set; } = new(); //Note that "Editors" is a folder name. So this is called "GameEditors".   
+        public Project ?SelectedProject { get; set; } // The currently selected project in the home tab. Events use the SELECTED project rather then the LOADED one. 
+        public Project ?LoadedProject { get; set; } // The current project whose game files are loaded into the workshop and editors.
+        public bool IsProjectLoaded { get; set; } = false; //This bool makes it easy to track code diffrences between when a project is, or is not, currently loaded.        
 
 
         //////////////////////////////FOR LATER/////////////////////////////////////////////////////////////
-        public List<Document> Documents { get; set; } = new();
-        //List of (Editor names as strings) (but actually the strings will be...lists or dictionaries?)
+
+        public List<Document> WorkshopDocumentsList { get; set; } = new();
+        public List<Document> ProjectDocumentsList { get; set; } = new(); //Loads when a project loads. (Including load project button in home tab).
+        public Document ?CurrentDocument { get; set; }
     }
 
-
+    public class Intro 
+    {
+        public string DefaultIntroText { get; } = "This is the intro text for this workshop. It can be used to give users important information about modding this game!";
+        public string IntroText { get; set; } = ""; //The intro text for the workshop. This is shown in the Game Library when the workshop is selected.
+        
+    }
 
     public class GameFile //aka Database.GameEditors[X].
     {
@@ -104,39 +116,31 @@ namespace GameEditorStudio
 
     
 
-    public class Editor 
+    public abstract class Editor //Data that every editor has. 
     {
+        public Workshop WorkshopXaml { get; set; } //A backlink to the workshop this editor is in.   
+        public WorkshopData WorkshopData { get; set; } 
+
+        //Editor Specific  Also i eventually need to make some enum to explicitly state what kind of editor this is... 
+        //Actually it does exist, it'e the EditorType above. Clean this up later...
+        public DataTableEditorData DataTableEditorData { get; set; }  //I should remove this as it's already an editor, but 500, 293, 199, 99 references is a lot... Remove this later >_>
+
+        public string EditorName { get; set; } //Not USED in XML (yet)
+        public string EditorKey { get; set; } = PixelWPF.LibraryPixel.GenerateKey();  //XML   This is the key to the editor, used for saving and loading. It is not the name of the editor, but a unique identifier.
+        public UIElement EditorVisual { get; set; } //The Xaml of the editor. IE the actual visual element. 
+
+        //Editor Tab Data
+        public Button ?EditorTab { get; set; } //This being nullable IS used.
+        public Label EditorTabNameLabel { get; set; } //The label inside the Editor Tab. 
+        public Image EditorTabImage { get; set; } //An old mechanic that i may re-add at a later time. Mostly dummied out for now.
+        public string EditorIcon { get; set; } //XML
+
+
+        //Meta Data
         public Version CreatedVersion { get; set; } = new Version(0, 0); //The GES version this was first created with.
         public string CreatedDate { get; set; } = ""; //The date this was first created.
         public Version SavedVersion { get; set; } = new Version(0, 0); //The last GES version this was used/saved with.
         public string SavedDate { get; set; } = ""; // The date this was last used/saved.
-
-
-        public Workshop Workshop { get; set; } //The workshop this editor is in.
-        public string EditorName { get; set; } //Not USED in XML (yet)
-        public string EditorType { get; set; } //XML   types are DataTable and TextEditor  (convert this to enum later...?)
-        public string EditorIcon { get; set; } //XML
-        public string EditorKey { get; set; } //XML   This is the key to the editor, used for saving and loading. It is not the name of the editor, but a unique identifier.
-
-        public DockPanel EditorBackPanel { get; set; }   //The back of the editor.     
-        
-
-        //Button Data
-        public Image EditorImage { get; set; } //fsdfs
-        public Label EditorNameLabel { get; set; }
-        public DockPanel EditorBarDockPanel { get; set; }
-        public Label EditorLabel { get; set; } //The border around the editor button, used to make it look nice.
-        public Button EditorButton { get; set; } //The button tab that opens the editor.
-
-        //Editor Specific  Also i eventually need to make some enum to explicitly state what kind of editor this is... 
-        //Actually it does exist, it'e the EditorType above. Clean this up later...
-        public StandardEditorData StandardEditorData { get; set; } = new(); //Editor type 1.
-        public TextEditorData TextEditorData { get; set; } //Editor type 2.
-
-        public List<Entry> ListOfEntrysUsingMyNames { get; set; } = new(); // Not XML  used to know the list of entrys to update? entrys that have menus who get text from this editor.
-
-
-
     }
 
     

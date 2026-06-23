@@ -17,11 +17,11 @@ using static System.Net.Mime.MediaTypeNames;
 namespace GameEditorStudio
 {
    
-    public partial class SettingsColors : UserControl
+    public partial class SettingsDataTable : UserControl
     {
        
 
-        public SettingsColors()
+        public SettingsDataTable()
         {
             InitializeComponent();
 
@@ -49,15 +49,6 @@ namespace GameEditorStudio
             comboBox.Items.Add("⬤ Green");
             comboBox.Items.Add("⬤ Pink");
             comboBox.Items.Add("⬤ Gray");
-
-
-            //< ComboBoxItem >
-            //< TextBlock Text = "NES: MESEN" Foreground = "Lime" />
-            //</ ComboBoxItem >
-
-
-
-
         }
 
         public void ChangeColorB(ComboBox comboBox) 

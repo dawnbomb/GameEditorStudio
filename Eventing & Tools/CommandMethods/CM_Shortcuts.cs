@@ -16,19 +16,19 @@ namespace GameEditorStudio
             
         }
 
-        public static void OpenProjectFolder(MethodData MethodData)
+        public static void OpenSelectedProjectFolder(MethodData MethodData)
         {
             
-            ProjectData project = null;
+            Project project = null;
 
 
             if (MethodData.GameLibrary != null) //If Library
             {
-                project = MethodData.GameLibrary.ProjectsSelector.SelectedItem as ProjectData;
+                project = MethodData.GameLibrary.ProjectsSelector.SelectedItem as Project;
             }
             else if (MethodData.WorkshopData != null) //If Workshop  //Note this is first so the existance of a workshop gets priority!!!
             {
-                project = MethodData.WorkshopData.ProjectDataItem;
+                project = MethodData.WorkshopData.SelectedProject;
             }
 
 
@@ -42,7 +42,7 @@ namespace GameEditorStudio
                 }
                 else
                 {
-                    PixelWPF.LibraryPixel.NotificationNegative("Error: Project Folder not found.",
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Selected Project Folder not found.",
                         "This is actually a pretty serious error, so you should probably look into fixing it."
                         );
                     //Note that if your looking at the workshop in preview mode, you will always get this error and can ignore it.
@@ -58,18 +58,60 @@ namespace GameEditorStudio
 
         }
 
-        public static void OpenInputFolder(MethodData MethodData)
+        public static void OpenLoadedProjectFolder(MethodData MethodData)
         {
-            ProjectData project = null;
+
+            Project project = null;
+
+
+            if (MethodData.GameLibrary != null) //If Library
+            {
+                project = MethodData.GameLibrary.ProjectsSelector.SelectedItem as Project;
+            }
+            else if (MethodData.WorkshopData != null) //If Workshop  //Note this is first so the existance of a workshop gets priority!!!
+            {
+                project = MethodData.WorkshopData.LoadedProject;
+            }
+
+
+            if (project == null) { return; }
+
+            try
+            {
+                if (Directory.Exists(LibraryGES.ApplicationLocation + "\\Projects\\" + MethodData.WorkshopData.WorkshopName + "\\" + project.ProjectName))
+                {
+                    LibraryGES.OpenFolder(LibraryGES.ApplicationLocation + "\\Projects\\" + MethodData.WorkshopData.WorkshopName + "\\" + project.ProjectName);
+                }
+                else
+                {
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Loaded Project Folder not found.",
+                        "This is actually a pretty serious error, so you should probably look into fixing it."
+                        );
+                    //Note that if your looking at the workshop in preview mode, you will always get this error and can ignore it.
+                    //^ I removed that line because really, it should be my job to make sure thats not even possible to begin with. 
+
+                }
+            }
+            catch
+            {
+
+            }
+
+
+        }
+
+        public static void OpenSelectedProjectInputFolder(MethodData MethodData)
+        {
+            Project project = null;
 
             
             if (MethodData.GameLibrary != null) //If Library
             {
-                project = MethodData.GameLibrary.ProjectsSelector.SelectedItem as ProjectData;
+                project = MethodData.GameLibrary.ProjectsSelector.SelectedItem as Project;
             }
             else if (MethodData.WorkshopData != null) //If Workshop  //Note this is first so the existance of a workshop gets priority!!!
             {
-                project = MethodData.WorkshopData.ProjectDataItem;
+                project = MethodData.WorkshopData.SelectedProject;
             }
 
 
@@ -83,8 +125,49 @@ namespace GameEditorStudio
                 }
                 else
                 {
-                    PixelWPF.LibraryPixel.NotificationNegative("Error: Project Input Folder not found.",
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Selected Project Input Folder not found.",
                         "This is actually a pretty serious error, so you should probably look into fixing it." 
+                        );
+                    //Note that if your looking at the workshop in preview mode, you will always get this error and can ignore it.
+                    //^ I removed that line because really, it should be my job to make sure thats not even possible to begin with. 
+
+                }
+            }
+            catch
+            {
+
+            }
+
+
+        }
+
+        public static void OpenLoadedProjectInputFolder(MethodData MethodData)
+        {
+            Project project = null;
+
+
+            if (MethodData.GameLibrary != null) //If Library
+            {
+                project = MethodData.GameLibrary.ProjectsSelector.SelectedItem as Project;
+            }
+            else if (MethodData.WorkshopData != null) //If Workshop  //Note this is first so the existance of a workshop gets priority!!!
+            {
+                project = MethodData.WorkshopData.LoadedProject;
+            }
+
+
+            if (project == null) { return; }
+
+            try
+            {
+                if (Directory.Exists(project.ProjectInputDirectory))
+                {
+                    LibraryGES.OpenFolder(project.ProjectInputDirectory);
+                }
+                else
+                {
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Loaded Project Input Folder not found.",
+                        "This is actually a pretty serious error, so you should probably look into fixing it."
                         );
                     //Note that if your looking at the workshop in preview mode, you will always get this error and can ignore it.
                     //^ I removed that line because really, it should be my job to make sure thats not even possible to begin with. 
@@ -101,17 +184,17 @@ namespace GameEditorStudio
 
 
 
-        public static void OpenOutputFolder(MethodData MethodData)
+        public static void OpenSelectedProjectOutputFolder(MethodData MethodData)
         {
-            ProjectData project = null;
+            Project project = null;
             
             if (MethodData.GameLibrary != null) //If Library
             {
-                project = MethodData.GameLibrary.ProjectsSelector.SelectedItem as ProjectData;
+                project = MethodData.GameLibrary.ProjectsSelector.SelectedItem as Project;
             }
             else if (MethodData.WorkshopData != null) //If Workshop   //Note this is first so the existance of a workshop gets priority!!!
             {
-                project = MethodData.WorkshopData.ProjectDataItem;
+                project = MethodData.WorkshopData.SelectedProject;
             }
             
 
@@ -127,7 +210,46 @@ namespace GameEditorStudio
                 else
                 {
                     PixelWPF.LibraryPixel.NotificationNegative("Error: Project Output Folder not found.",
-                        "Your projects output folder doesn't seem to exist! :(" +
+                        "Your selected projects output folder doesn't seem to exist! :(" +
+                        "\n\n" +
+                        "If you didn't set one up, saving is SUPPOSED to default to your input folder instead."
+                        );
+                }
+            }
+            catch
+            {
+
+            }
+
+        }
+
+        public static void OpenLoadedProjectOutputFolder(MethodData MethodData)
+        {
+            Project project = null;
+
+            if (MethodData.GameLibrary != null) //If Library
+            {
+                project = MethodData.GameLibrary.ProjectsSelector.SelectedItem as Project;
+            }
+            else if (MethodData.WorkshopData != null) //If Workshop   //Note this is first so the existance of a workshop gets priority!!!
+            {
+                project = MethodData.WorkshopData.LoadedProject;
+            }
+
+
+            if (project == null) { return; }
+
+            try
+            {
+
+                if (Directory.Exists(project.ProjectOutputDirectory))
+                {
+                    LibraryGES.OpenFolder(project.ProjectOutputDirectory);
+                }
+                else
+                {
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Project Output Folder not found.",
+                        "Your loaded projects output folder doesn't seem to exist! :(" +
                         "\n\n" +
                         "If you didn't set one up, saving is SUPPOSED to default to your input folder instead."
                         );

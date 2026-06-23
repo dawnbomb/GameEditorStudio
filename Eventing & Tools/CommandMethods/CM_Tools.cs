@@ -112,7 +112,7 @@ namespace GameEditorStudio
             if (MethodData.ResourceLocations.Count == 0)
             {
                 VistaOpenFileDialog fileDialog = new VistaOpenFileDialog();
-                fileDialog.Title = "Select a file"; // Set the dialog title
+                fileDialog.Title = "Select a NDS rom file to unpack"; // Set the dialog title
                 fileDialog.Filter = "All files (*.*)|*.*"; // Set the file filter
                 if ((bool)fileDialog.ShowDialog()) // Show the file dialog and check if the user clicked OK //this
                 {
@@ -150,9 +150,53 @@ namespace GameEditorStudio
             p.Start();
         }
 
-        
 
-        
+
+
+        public static void EtrianMoriUnpack(MethodData MethodData) //tool free version
+        {
+            string MoriFile = "";
+            string UnpackFolder = "";
+
+
+            VistaOpenFileDialog fileDialog = new VistaOpenFileDialog();
+            fileDialog.Title = "Select a MORI file to unpack"; // Set the dialog title
+            fileDialog.Filter = "All files (*.*)|*.*"; // Set the file filter
+            if ((bool)fileDialog.ShowDialog()) // Show the file dialog and check if the user clicked OK //this
+            {
+                MoriFile = fileDialog.FileName;
+            }
+
+            VistaFolderBrowserDialog folderDialog = new VistaFolderBrowserDialog();
+            //folderDialog.Title = "Select a MORI file to unpack"; // Set the dialog title
+            //fileDialog.Filter = "All files (*.*)|*.*"; // Set the file filter
+            if ((bool)folderDialog.ShowDialog()) // Show the file dialog and check if the user clicked OK //this
+            {
+                UnpackFolder = folderDialog.SelectedPath;
+            }
+
+            if (MoriFile == "" || UnpackFolder == "") { return; }
+            
+            string UntoldUnpackLocation = Database.Tools.Find(thing => thing.Key == "466-639112646363061250-640198343-963").Location; //Nitropacker
+            string UntoldUnpackToolFolder = Path.GetDirectoryName(UntoldUnpackLocation);
+
+            string UnpackCommand = $"\"{UntoldUnpackLocation}\" \"{MoriFile}\" \"{UnpackFolder}\" ";
+            ProcessStartInfo cmd = new ProcessStartInfo();
+            cmd.FileName = "cmd.exe";
+            cmd.Arguments = $"/K \"{UnpackCommand}\"";
+            cmd.WorkingDirectory = $"{UntoldUnpackToolFolder}";
+            //cmd.CreateNoWindow = false;
+            //cmd.UseShellExecute = false;
+            //cmd.RedirectStandardOutput = true;
+            //cmd.RedirectStandardError = true;
+
+            Process p = new Process();
+            p.StartInfo = cmd;
+            p.Start();
+
+            //Process.Start("cmd.exe", $"\"{UntoldUnpackLocation}\" \"{MoriFile}\" \"{UnpackFolder}\" ");
+        }
+
 
 
 

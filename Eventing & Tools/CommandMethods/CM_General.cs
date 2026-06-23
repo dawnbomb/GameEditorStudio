@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WpfHexaEditor.Properties;
+using WpfHexEditor;
 
 namespace GameEditorStudio
 {
@@ -277,7 +277,7 @@ namespace GameEditorStudio
             Process.Start(startInfo);
         }
 
-        public static void CommandPromptDebug(MethodData MethodData) 
+        public static void CommandPromptStayOpen(MethodData MethodData) 
         {
             //This Command needs to sync the FINAL string with the button in eventing so people can trust that the button is giving accurate information.
 

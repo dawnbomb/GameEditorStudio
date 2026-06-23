@@ -34,5 +34,29 @@ namespace GameEditorStudio.Properties {
                 this["ToSVersion"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastWorkshop {
+            get {
+                return ((string)(this["LastWorkshop"]));
+            }
+            set {
+                this["LastWorkshop"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastProject {
+            get {
+                return ((string)(this["LastProject"]));
+            }
+            set {
+                this["LastProject"] = value;
+            }
+        }
     }
 }

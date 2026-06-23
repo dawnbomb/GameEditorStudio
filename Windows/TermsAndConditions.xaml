@@ -27,14 +27,13 @@
                     <Label Content="TERMS AND CONDITIONS  (That you may actually care about)" FontWeight="Bold"/>
                 </DockPanel>
                 <Grid>
-                    <Label Content="You acknowledge and agree to ALL of the following:.&#xA;- ANYONE can make changes to ANYTHING you make with this program. &#xA;- ANYONE can redistribute any versions of anything made using this, modified or not. &#xA;- Workshops &amp; Editors may be added to a master list that anyone can download from.&#xD;&#xA;- You can still credit yourself.&#xA;- Any later changes will keep the obvious spirit of this agreement. &#xA;&#xD;&#xA;And to be really, REALLY clear... &#xA;- If you leak it on accident, it still counts. &#xA;- If someone else leaks it without permission, it still counts. &#xA;- If you sell it and people share it without your permission, it still counts.&#xA;- If something insane happens, it still counts.&#xA;&#xA;This program is intended to make editors and mods everyone can use. Don't be selfish. " HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Label Content="You acknowledge and agree to ALL of the following:.&#xA;- ANYONE can make changes to ANYTHING you make with this program. &#xA;- ANYONE can redistribute any versions of anything made using this, modified or not. &#xA;- Workshops &amp; Editors may be added to a master list that anyone can download from.&#xA;- You can still credit yourself.&#xA;- Any later changes will keep the obvious spirit of this agreement. &#xA;&#xA;And to be really, REALLY clear... &#xA;- If you leak it on accident, it still counts. &#xA;- If someone else leaks it without permission, it still counts. &#xA;- If you sell it and people share it without your permission, it still counts.&#xA;- If something insane happens, it still counts.&#xA;&#xA;This program is intended to make editors and mods for EVERYONE. Don't be selfish!" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                     <Button Content="I AGREE TO THE TERMS AND CONDITIONS." HorizontalAlignment="Left" Margin="151,346,0,0" VerticalAlignment="Top" Height="33" Width="468" Click="ButtonIAgreeToToS"/>
                 </Grid>
 
             </DockPanel>
         </Border>
-        <Label Content="PS: If Romhacking.net or some game banana mod won't let you put&#xD;&#xA;your mod there, reach out to me and i'll host it for you. &#xD;&#xA;(Unless it's a cheat mod for a competative game :p )" HorizontalAlignment="Center" Margin="0,816,0,0" VerticalAlignment="Top"/>
-        <Label Name="VNum" Content="Label" HorizontalAlignment="Left" Margin="10,860,0,0" VerticalAlignment="Bottom"/>
+        <Label Content="PS: If Romhacking.net or some game banana mod won't let you put&#xA;your mod there, reach out to me on discord and i'll host it for you. &#xA;(Unless it's a cheat mod for a competative game :p )" HorizontalAlignment="Center" Margin="0,816,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </UserControl>

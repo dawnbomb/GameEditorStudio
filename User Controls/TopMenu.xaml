@@ -8,17 +8,17 @@
     <DockPanel Background="Transparent" LastChildFill="False">
         <Menu Name="TheMenu" Height="27" DockPanel.Dock="Left" >
             <MenuItem x:Name="WorkshopMenu" Header="File" SubmenuOpened="MenuOpened" >
-                <MenuItem Header="Save Everything" Click="SaveAll"/>
+                <MenuItem Header="Save Everything" Click="SaveAll" Name="MenuSaveEverything" ToolTip="If a project is not loaded, saving will skip past&#xD;editors, game data, and project documents."/>
                 <Separator Style="{DynamicResource DashLineForMenu}"/>
-                <MenuItem Header="Save Editors" Click="SaveEditors" Name="MenuSaveEditors" ToolTip="This saves ONLY the editors. Good for when you axidentally changes some values but you still really wanna save."/>
-                <MenuItem Header="Save Game Data"   Click="SaveGameData" Name="MenuSaveGameData" ToolTip="Game Data is the actual game files that stuff like enemy stats, items stats, etc are on."/>
-                <MenuItem Header="Save Workshop Documents"  Click="SaveWorkshopDocuments" Name="MenuSaveWorkshopDocuments" ToolTip="These are the documents that people get when a workshop is shared with others."/>
-                <MenuItem Header="Save Project Documents"  Click="SaveProjectDocuments" Name="MenuSaveProjectDocuments" ToolTip="These are text files that only you have access to."/>
-                <MenuItem Header="Save Events" Click="SaveEvents" ToolTip="I wanna improve the event system in the future. Hmmm...."/>
+                <MenuItem Header="Save Editors" Click="SaveEditors" Name="MenuSaveEditors" ToolTip="Saves ONLY the editors. &#xD;Good for when you axidentally change some values, &#xD;but you still really want to save the editors."/>
+                <MenuItem Header="Save Game Data"   Click="SaveGameData" Name="MenuSaveGameData" ToolTip="Game Data refers to the actual game files. &#xD;Stuff like enemy stats, items stats, etc."/>
+                <MenuItem Header="Save Workshop Documents"  Click="SaveWorkshopDocuments" Name="MenuSaveWorkshopDocuments" ToolTip="Workshop Documents are shared with other people who use this workshop."/>
+                <MenuItem Header="Save Project Documents  (the loaded project)"  Click="SaveTheLoadedProjectDocuments" Name="MenuSaveProjectDocuments" ToolTip="These are your own personal text files. &#xD;They are not shared with anyone else."/>
+                <MenuItem Header="Save Events" Click="SaveEvents" ToolTip="I wanna improve the event system in the future. Hmmm...." Name="MenuSaveEvents"/>
                 <Separator Style="{DynamicResource DashLineForMenu}"/>
-                <MenuItem Header="Create New Editor"  Click="FileNewEditor" Name="NewEditorItem" ToolTip="Create a new game editor using game files. It also supports getting text from text dumps. "/>
+                <MenuItem Header="Create New Editor"  Click="FileNewEditor" Name="NewEditorItem" ToolTip="Create a new editor."/>
                 <Separator Style="{DynamicResource DashLineForMenu}"/>
-                <MenuItem Header="Export ALL data table editors to excel files." Click="ExportEditors" Name="ItemExportEditors" ToolTip="Google sheets can import excel files, so you could basically put a datamine infodump of gamedata onto the internet. :D" />
+                <MenuItem Header="Export ALL data table editors to excel files." Click="ExportEditors" Name="ItemExportEditors" ToolTip="Note that google sheets can import excel files! &#xD;&#xD;So you could totally use this to upload a game or romhack's info to the internet! :D" />
             </MenuItem>
             <MenuItem x:Name="ToolsMenu" Header="Tools" SubmenuOpened="ToolsMenuOpened">
                 <MenuItem Header = "Tools Setup" Click = "OpenToolsWindow" />
@@ -39,9 +39,10 @@
                 <MenuItem Header="Open Downloads Folder" Click="OpenDownloadsFolder"/>
                 <Separator Style="{DynamicResource DashLineForMenu}"/>
                 <MenuItem Header="Open Workshop Folder" Click="OpenWorkshopFolder"/>
-                <MenuItem x:Name="MenuProjectShortcut" Header="Open Project Folder" Click="OpenProjectFolder"/>
-                <MenuItem x:Name="MenuInputShortcut" Header="Open Project Input Folder" Click="OpenInputFolder"/>
-                <MenuItem x:Name="MenuOutputShortcut" Header="Open Project Output Folder" Click="OpenOutputFolder"/>
+                <Separator Style="{DynamicResource DashLineForMenu}"/>
+                <MenuItem x:Name="MenuProjectShortcut" Header="Open Loaded Project Folder" Click="OpenLoadedProjectFolder"/>
+                <MenuItem x:Name="MenuInputShortcut" Header="Open Loaded Project Input Folder" Click="OpenLoadedProjectInputFolder"/>
+                <MenuItem x:Name="MenuOutputShortcut" Header="Open Loaded Project Output Folder" Click="OpenLoadedProjectOutputFolder"/>
             </MenuItem>
             <MenuItem Name="ExtrasMenu" Header="Extras" Visibility="Collapsed" >
 
@@ -51,11 +52,15 @@
             </MenuItem>
             <MenuItem Header="Help" SubmenuOpened="MenuOpened">
                 <MenuItem Header="Patchnotes"  Click="OpenPatchnotes" PreviewMouseRightButtonDown="OpenPatchnotestxt"/>
+                <MenuItem Header="Discord :)"  Click="OpenDiscord" />
                 <MenuItem Name="DebugMenu" Header="Debug" Foreground="#FF2C2C"   >
+                    <MenuItem Header="Dev: Tools and Events Editor"  Click="OpenDevWindow" Foreground="#FF2C2C"/>
                     <MenuItem Header="⚙ Settings"  Click="OpenSettingsWindow" Foreground="#FF2C2C"/>
-                    <MenuItem Header="Call Notification"  Click="DebugNotification" Foreground="#FF2C2C"/>
-                    <MenuItem Header="DevTools"  Click="OpenDevWindow" Foreground="#FF2C2C"/>
                     <MenuItem Header="HexTest"  Click="OpenHexTest" Foreground="#FF2C2C"/>
+                    <Separator Style="{DynamicResource DashLineForMenu}"/>                    
+                    <MenuItem Header="Call Notification"  Click="DebugNotification" Foreground="#FF2C2C"/>
+                    <MenuItem Header="Call Error Notification"  Click="DebugNotificationError" Foreground="#FF2C2C"/>
+                    <Separator Style="{DynamicResource DashLineForMenu}"/>                    
                     <MenuItem Header="Set 1080P"  Click="Set1080P"/>
                 </MenuItem>
             </MenuItem>
@@ -64,15 +69,18 @@
 
         <DockPanel Background="#FF382E4E" Margin="20,3,0,3" DockPanel.Dock="Left">
             <Label Content="Dec:" Margin="0,-2,0,0"/>
-            <TextBox  Width="110" Margin="0,2,3,2" TextChanged="TextBoxDecConvert" Name="DecBox" ToolTip="A simple Decimal - Hex converter.  &#xD;Googling for a hex calc is really fucking annoying, so i put one right in the HUD."/>
-            <Label Content="HexLil:" Margin="0,-2,0,0"/>
-            <TextBox  Width="110" Margin="5,2,3,2" TextChanged="TextBoxHexLilConvert" Name="HexBoxLil" ToolTip="A simple Decimal - Hex converter.  &#xD;Googling for a hex calc is really fucking annoying, so i put one right in the HUD."/>
-            <Label Content="HexBig:" Margin="0,-2,0,0"/>
-            <TextBox  Width="110" Margin="5,2,3,2" TextChanged="TextBoxHexBigConvert" Name="HexBoxBig" ToolTip="A simple Decimal - Hex converter.  &#xD;Googling for a hex calc is really fucking annoying, so i put one right in the HUD."/>
+            <TextBox  Width="110" Margin="0,2,3,2" TextChanged="TextBoxDecConvert" Name="DecBox" />
+            <Label Content="HexLil:" Margin="0,-2,0,0" ToolTipService.InitialShowDelay="100" ToolTip="Little Endian&#xA;- - - - - - - -&#xA;NES &amp; SNES &#xA;GB &amp; GBC &amp; GBA &#xA;NDS &amp; 3DS&#xA;Switch  &#xA;PS1 &amp; PS2 (NOT PS3)&#xA;PSP &amp; Vita&#xA;PS4 &amp; PS5&#xA;N64 (If .n64)&#xD;&#xA;&#xA;&#xA;Big Endian&#xA;- - - - - - - -&#xA;N64 (If .z64)&#xA;Gamecube&#xA;Wii &amp; Wii U&#xA;PS3"/>
+            <Border Height="2" Width="68" Margin="-86,24,0,0" BorderBrush="#FF8E8E8E"/>
+            <TextBox  Width="110" Margin="5,2,3,2" TextChanged="TextBoxHexLilConvert" Name="HexBoxLil"/>
+            <Label Content="HexBig:" Margin="0,-2,0,0" ToolTipService.InitialShowDelay="100" ToolTip="Little Endian&#xA;- - - - - - - -&#xA;NES &amp; SNES &#xA;GB &amp; GBC &amp; GBA &#xA;NDS &amp; 3DS&#xA;Switch  &#xA;PS1 &amp; PS2 (NOT PS3)&#xA;PSP &amp; Vita&#xA;PS4 &amp; PS5&#xA;N64 (If .n64)&#xD;&#xA;&#xA;&#xA;Big Endian&#xA;- - - - - - - -&#xA;N64 (If .z64)&#xA;Gamecube&#xA;Wii &amp; Wii U&#xA;PS3"/>
+            <Border Height="2" Width="68" Margin="-86,24,0,0" BorderBrush="#FF8E8E8E"/>
+            <TextBox  Width="110" Margin="5,2,3,2" TextChanged="TextBoxHexBigConvert" Name="HexBoxBig" />
         </DockPanel>
 
         <DockPanel Background="Transparent" DockPanel.Dock="Right" LastChildFill="False">
-            <Button DockPanel.Dock="Left" Content="Reshade"  x:Name="HUDReshade" Width="100" Height="30" Click="OpenReshade"  Margin="4,0,4,0" ToolTip="Install a reshade set i made to a game! It's really good!" />
+            <Button Name="LibraryButton" DockPanel.Dock="Left" Content="Back"  Click="ExitWorkshop" Height="30" Width="65" Style="{DynamicResource ButtonError}" ToolTip="Go back to the Library."/>
+            <Button DockPanel.Dock="Left" Content="Reshade"  x:Name="HUDReshade" Width="100" Height="30" Click="OpenReshade" Style="{DynamicResource ButtonError}" Margin="4,0,4,0" ToolTip="Install a reshade set i made to a game! It's really good!" />
             <Button Name="WikiButton" DockPanel.Dock="Left" Content="Wiki"  Click="OpenWiki" Height="30" Width="65" Style="{DynamicResource ButtonError}" ToolTip="Open a small wiki i made of game modding info. It's super useful!"/>
             <Button DockPanel.Dock="Left" Content="Discord :)"  x:Name="HUDButtonDiscord" Width="115" Height="30" Click="OpenDiscord"  Margin="4,0,0,0" ToolTip="Join my discord server! :D"  />
             <Button DockPanel.Dock="Left" Content="Website"  Click="WebsiteButton"  Width="100" Height="30"  Margin="4,0,4,0" ToolTip="Open my website. :D"/>
