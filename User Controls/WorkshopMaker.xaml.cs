@@ -19,7 +19,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
-using Windows.Foundation.Metadata;
 using Path = System.IO.Path;
 
 namespace GameEditorStudio
@@ -175,8 +174,11 @@ namespace GameEditorStudio
 
                 parentContainer.Children.Remove(this);
             }
-
-
+        }
+        
+        private void SaveWorkshopXML() 
+        {
+        
         }
 
 

@@ -23,9 +23,12 @@ using Ookii.Dialogs.Wpf;
 //using static System.Net.WebRequestMethods;
 using static System.Windows.Forms.LinkLabel;
 using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
+using System.Threading;
 
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Path = System.IO.Path;
+using MenuItem = System.Windows.Controls.MenuItem;
+using ContextMenu = System.Windows.Controls.ContextMenu;
 
 namespace GameEditorStudio
 {
@@ -34,11 +37,10 @@ namespace GameEditorStudio
     /// </summary>
     public partial class FileManager : System.Windows.Controls.UserControl
     {
-        public Workshop TheWorkshop { get; set; }
-        public bool IsTextEditor = false;
-        public Editor ThisEditor {  get; set; }
-
-        public bool IsTextFileManager = false;
+        public Workshop WorkshopXaml { get; set; }
+        public bool IsTextEditor { get; set; } = false;        
+        public TextEditorData TextEditorData {  get; set; }
+       
 
 
 
@@ -63,7 +65,7 @@ namespace GameEditorStudio
 
             if (workshopWindow is Workshop workshopControl)
             {
-                TheWorkshop = workshopControl;
+                WorkshopXaml = workshopControl;
                 RefreshFileTree();
 
                 if (IsTextEditor == true)
@@ -76,28 +78,9 @@ namespace GameEditorStudio
             }
 
 
-            //var parentWindow = Window.GetWindow(this);
-            //if (parentWindow is Workshop workshopWindow)
-            //{
-            //    TheWorkshop = workshopWindow;
-            //    RefreshFileTree();
-
-            //    if (IsTextEditor == true)
-            //    {
-            //        ItemsLabel.Content = "Text Files";
-            //        AddFileButton.Content = "Manage";
-            //        AddFileButton.Click -= ButtonAddFileToWorkshop;
-            //        AddFileButton.Click += (s, e) => ButtonManageTextEditorFiles();
-            //    }
-            //}
         }
 
         
-
-        public void SetupForTextEditor() 
-        {
-            IsTextEditor = true;
-        }
 
         public void RefreshFileTree() //System.Windows.Controls.
         {
@@ -115,7 +98,7 @@ namespace GameEditorStudio
 
             if (IsTextEditor == false)
             {
-                foreach (GameFile GameFile in TheWorkshop.WorkshopData.GameFiles.Values)//Error as part of the All 1 Window update
+                foreach (GameFile GameFile in WorkshopXaml.WorkshopData.GameFiles)//Error as part of the All 1 Window update
                 {
                     TreeViewItem TreeViewItem = new TreeViewItem();
 
@@ -134,7 +117,22 @@ namespace GameEditorStudio
             }
             else if (IsTextEditor == true)
             {
-                foreach (GameFile GameFile in ThisEditor.TextEditorData.ListOfGameFiles) 
+                //First we load the text editor's list of game files. 
+                TextEditorData.ListOfGameFiles.Clear();
+                foreach (string filelocation in TextEditorData.GameFileLocations) 
+                {
+                    foreach (GameFile gameFile in WorkshopXaml.WorkshopData.GameFiles)
+                    {
+                        if (gameFile.FileLocation == filelocation)
+                        {
+                            TextEditorData.ListOfGameFiles.Add(gameFile);
+                        }
+                    }
+                }
+
+                
+                //Then we load the text editor's game files into the text editor's tree view. 
+                foreach (GameFile GameFile in TextEditorData.ListOfGameFiles) 
                 {
                     TreeViewItem TreeViewItem = new TreeViewItem();
 
@@ -166,22 +164,22 @@ namespace GameEditorStudio
 
             MenuItem OpenInputFileLocation = new MenuItem();
             ContextMenu.Items.Add(OpenInputFileLocation);
-            OpenInputFileLocation.Header = "  Open File Location (Input Folder)  ";
+            OpenInputFileLocation.Header = "Open File Location (Input Folder)  ";
             OpenInputFileLocation.Click += new RoutedEventHandler(OpenFileInputLocationFunction);
             void OpenFileInputLocationFunction(object sender, RoutedEventArgs e)
             {
-                LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + GameFile.FileLocation);
+                LibraryGES.OpenFileFolder(WorkshopXaml.WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + GameFile.FileLocation);
             }
 
             MenuItem OpenOutputFileLocation = new MenuItem();
             ContextMenu.Items.Add(OpenOutputFileLocation);
-            OpenOutputFileLocation.Header = "  Open File Location (Output Folder)  ";
+            OpenOutputFileLocation.Header = "Open File Location (Output Folder)  ";
             OpenOutputFileLocation.Click += new RoutedEventHandler(OpenFileOutputLocationFunction);
             void OpenFileOutputLocationFunction(object sender, RoutedEventArgs e)
             {
-                LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\" + GameFile.FileLocation);
+                LibraryGES.OpenFileFolder(WorkshopXaml.WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + GameFile.FileLocation);
             }
-            string TheOutputPath = Path.Combine(TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory, GameFile.FileLocation);
+            string TheOutputPath = Path.Combine(WorkshopXaml.WorkshopData.LoadedProject.ProjectOutputDirectory, GameFile.FileLocation);
             if (File.Exists(TheOutputPath))
             {
 
@@ -191,6 +189,25 @@ namespace GameEditorStudio
                 OpenOutputFileLocation.IsEnabled = false;
             }
 
+            MenuItem OpenFileFromInput = new MenuItem();
+            OpenFileFromInput.Header = "Open File (From Input)";
+            ContextMenu.Items.Add(OpenFileFromInput);
+            OpenFileFromInput.Click += OpenTheFileFromInput; // Event handler for click action
+            void OpenTheFileFromInput(object sender, RoutedEventArgs e)
+            {
+                LibraryGES.OpenFile(WorkshopXaml.WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + GameFile.FileLocation);
+
+            }
+
+            MenuItem OpenFileFromOutput = new MenuItem();
+            OpenFileFromOutput.Header = "Open File (From Output)";
+            ContextMenu.Items.Add(OpenFileFromOutput);
+            OpenFileFromOutput.Click += OpenTheFileFromOutput; // Event handler for click action
+            void OpenTheFileFromOutput(object sender, RoutedEventArgs e)
+            {
+                LibraryGES.OpenFile(WorkshopXaml.WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + GameFile.FileLocation);
+
+            }
 
             //MenuItem OpenInHxD = new MenuItem();
             //ContextMenu.Items.Add(OpenInHxD);
@@ -261,27 +278,33 @@ namespace GameEditorStudio
             {
                 DependencyObject? current = this;
 
-                while (current != null && current is not TextSourceManager)
+                while (current != null && current is not TextTableManager)
                 {
                     current = VisualTreeHelper.GetParent(current);
                 }
+                //while (current != null && current is not DataTableManager)
+                //{
+                //    current = VisualTreeHelper.GetParent(current);
+                //}
+               
 
-                if (current is TextSourceManager)
+                if (current is TextTableManager)
                 {
-                    TextSourceManager MyParent = (TextSourceManager)current;
+                    TextTableManager MyParent = (TextTableManager)current;
 
                     if (this == MyParent.FileManagerForTextFiles) 
                     {
-                        TextSourceManager TheThingy = (TextSourceManager)current;
-                        string fullText = Encoding.UTF8.GetString(GameFile.FileBytes);
-                        string[] lines = fullText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+                        TextTableManager TheThingy = (TextTableManager)current;
+                        TheThingy.UpdateTextFileNameListPreview();
+                        //string fullText = Encoding.UTF8.GetString(GameFile.FileBytes);
+                        //string[] lines = fullText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
-                        TheThingy.TextFilePreviewTextbox.Text = ""; // Clear it first if needed
+                        //TheThingy.TextFilePreviewTextbox.Text = ""; // Clear it first if needed
 
-                        for (int i = 0; i < lines.Length; i++)
-                        {
-                            TheThingy.TextFilePreviewTextbox.Text += (i) + ": " + lines[i] + "\n";
-                        }
+                        //for (int i = 0; i < lines.Length; i++)
+                        //{
+                        //    TheThingy.TextFilePreviewTextbox.Text += (i) + ": " + lines[i] + "\n";
+                        //}
                     }
 
                     if (this == MyParent.DataFileManager)
@@ -290,7 +313,16 @@ namespace GameEditorStudio
                     }
 
 
+                }
 
+                if (current is DataTableManager)
+                {
+                    DataTableManager MyParent = (DataTableManager)current;
+
+                    if (this == MyParent.JSONFileManager)
+                    {
+                        MyParent.UpdateJSONTree();
+                    }
 
                 }
             }
@@ -299,10 +331,12 @@ namespace GameEditorStudio
 
         private void ButtonManageTextEditorFiles() 
         {            
-            TextEditorFileManager textEditorFileManager = new TextEditorFileManager(ThisEditor);
-            ThisEditor.TextEditorData.MainGrid.Visibility = Visibility.Collapsed;
-            ThisEditor.EditorBackPanel.Children.Add(textEditorFileManager);
-            //TheTextEditor.TextEditorData. ;
+            TextEditorFileManager textEditorFileManager = new TextEditorFileManager(TextEditorData);
+            TextEditorData.MainGrid.Visibility = Visibility.Collapsed;
+            if (TextEditorData.EditorVisual is TextEditor TE) 
+            {
+                TE.BackPanel.Children.Add(textEditorFileManager);
+            }            
         }
 
         private void TreeGameFilesDrop(object sender, System.Windows.DragEventArgs e)
@@ -322,11 +356,11 @@ namespace GameEditorStudio
 
         private void ButtonAddFileToWorkshop(object sender, RoutedEventArgs e)
         {
-            if (TheWorkshop.WorkshopData == null) { return; }
+            if (WorkshopXaml.WorkshopData == null) { return; }
 
             //VistaOpenFileDialog
             OpenFileDialog openFileDialog = new();
-            string inputDir = TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory;
+            string inputDir = WorkshopXaml.WorkshopData.LoadedProject.ProjectInputDirectory;
             if (Directory.Exists(inputDir))
             {
                 openFileDialog.InitialDirectory = inputDir;
@@ -346,7 +380,7 @@ namespace GameEditorStudio
 
         private void AddWorkshopFile(string fullPath, OpenFileDialog openFileDialog)
         {
-            string inputDir = TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory;
+            string inputDir = WorkshopXaml.WorkshopData.LoadedProject.ProjectInputDirectory;
 
             // Make sure the dropped file is inside the input directory
             if (!fullPath.StartsWith(inputDir, StringComparison.OrdinalIgnoreCase))
@@ -360,18 +394,18 @@ namespace GameEditorStudio
 
             string relativePath = fullPath.Substring(inputDir.Length).TrimStart('\\');
 
-            foreach (KeyValuePair<string, GameFile> gamefile in TheWorkshop.WorkshopData.GameFiles)
+            foreach (GameFile gamefile in WorkshopXaml.WorkshopData.GameFiles)
             {
-                if (gamefile.Key == relativePath)
+                if (gamefile.FileLocation == relativePath)
                 {
                     PixelWPF.LibraryPixel.Notification("Notice: File already in workshop",
                         "FYI: Yes i'm aware that sometimes games will have diffrent folders with identical file names inside them, causing those files to be hard to work with. " +
                         "To deal with this problem, Game Editor Studio allows users to give a Nickname. Files with nicknames are shown as if their Nickname IS their filename. " +
                         "To better understand what just happened involving the file you tried adding to the workshop, here is the workshops information on that file. " +
                         "\n" +
-                        "\nRealname: " + gamefile.Value.FileName +
-                        "\nNickname: " + gamefile.Value.FileNote +
-                        "\nFilepath: " + gamefile.Value.FileLocation +
+                        "\nRealname: " + gamefile.FileName +
+                        "\nNickname: " + gamefile.FileNote +
+                        "\nFilepath: " + gamefile.FileLocation +
                         "\n" +
                         "\n*The file path is relative, based on the input directory of this project and is not an absolute location on your computer. " +
                         "You can access the input directory from Shortcuts -> open input directory."
@@ -383,17 +417,25 @@ namespace GameEditorStudio
 
             try
             {
-                GameFile FileInfo = new()
-                {
-                    FileName = Path.GetFileName(fullPath),
-                    FileLocation = relativePath,
-                    FileBytes = File.ReadAllBytes(fullPath)
-                };
+                GameFile Agamefile = new();
+                Agamefile.FileName = Path.GetFileName(fullPath);
+                Agamefile.FileLocation = relativePath;
+                Agamefile.FileBytes = File.ReadAllBytes(fullPath);               
 
-                TheWorkshop.WorkshopData.GameFiles.Add(FileInfo.FileLocation, FileInfo);
+                WorkshopXaml.WorkshopData.GameFiles.Add(Agamefile);
+                
+                {   //Automatically select the newly added file in the tree view
+                    TreeViewItem TreeViewItem = new TreeViewItem();
+                    TreeViewItem.Tag = Agamefile;
+                    TreeGameFiles.Items.Add(TreeViewItem);
+                    TreeViewItem.IsSelected = true;
+                }
+                
             }
-            catch
+            catch (Exception ex)
             {
+                PixelWPF.LibraryPixel.Notification("Error Details", ex.Message + "\n" + ex.StackTrace);
+
                 PixelWPF.LibraryPixel.Notification("Notice: File not found?",
                     "For some reason the workshop couldn't find the file you selected." +
                     "\n\n" +
@@ -406,72 +448,15 @@ namespace GameEditorStudio
                     );
             }
 
-            TheWorkshop.FileManager.RefreshFileTree();
+            WorkshopXaml.HomeControl.FileManager.RefreshFileTree();
             RefreshFileTree();
         }
 
-        //private void AddWorkshopFile(string fullPath, OpenFileDialog openFileDialog)
-        //{
-        //    string inputDir2 = TheWorkshop.ProjectDataItem.ProjectInputDirectory;
-        //    string Testa = fullPath.Substring(inputDir2.Length).TrimStart('\\');
-        //    foreach (KeyValuePair<string, GameFile> gamefile in TheWorkshop.MyDatabase.GameFiles)
-        //    {
-        //        if (gamefile.Key == Testa)
-        //        {
-        //            LibraryMan.Notification("Notice: File already in workshop",
-        //                "FYI: Yes i'm aware that sometimes games will have diffrent folders with identical file names inside them, causing those files to be hard to work with. " +
-        //                "To deal with this problem, Game Editor Studio allows users to give a Nickname. Files with nicknames are shown as if their Nickname IS their filename. " +
-        //                "To better understand what just happened involving the file you tried adding to the workshop, here is the workshops information on that file. " +
-        //                "\n" +
-        //                "\nRealname: " + gamefile.Value.FileName +
-        //                "\nNickname: " + gamefile.Value.FileNote +
-        //                "\nFilepath: " + gamefile.Value.FileLocation +
-        //                "\n" +
-        //                "\n*The file path is relative, based on the input directory of this project and is not an absolute location on your computer. " +
-        //                "You can access the input directory from Shortcuts -> open input directory."
-        //                );
-
-        //            return;
-        //        }
-        //    }
-
-
-        //    try
-        //    {
-        //        GameFile FileInfo = new();
-
-        //        FileInfo.FileName = Path.GetFileName(openFileDialog.FileName);
-        //        FileInfo.FileLocation = openFileDialog.FileName.Substring(TheWorkshop.ProjectDataItem.ProjectInputDirectory.Length).TrimStart('\\');
-        //        FileInfo.FileBytes = System.IO.File.ReadAllBytes(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + FileInfo.FileLocation);
-
-        //        TheWorkshop.MyDatabase.GameFiles.Add(FileInfo.FileLocation, FileInfo);
-        //    }
-        //    catch
-        //    {
-        //        LibraryMan.Notification("Notice: File not found?",
-        //            "For some reason the workshop couldn't find the file you selected." +
-        //            "\n\n" +
-        //            "Possible causes..." +
-        //            "\n1: You tried adding a file outside the workshops input folder." +
-        //            "\n2: You selected the wrong input folder when first setting up your project." +
-        //            "\n3: Whoever created the workshop picked a bad workshops input folder to begin with." +
-        //            "\n\n" +
-        //            "Note: You can access the input folder from Shortcuts -> open input folder."
-        //            );
-
-        //    }
-
-        //    TheWorkshop.FileManager.RefreshFileTree();
-        //    RefreshFileTree();
-        //}
 
 
         private void FileNoteBoxTextChanged(object sender, TextChangedEventArgs e)
         {
-            //if (e.Key == Key.Enter)
-            //{
-
-            //}
+            
             TreeViewItem treeViewItem = TreeGameFiles.SelectedItem as TreeViewItem;
             if (treeViewItem == null) { return; }
             GameFile GameFile = treeViewItem.Tag as GameFile;
@@ -487,14 +472,14 @@ namespace GameEditorStudio
             FileItemNameBuilder(treeViewItem);
         }
 
-        public void SelectItem(Entry Entry) //Sometimes i can't select a item cause this didn't load yet, so this event makes sure it can.
+        public void SelectFile(GameFile GameFile) //Sometimes i can't select a item cause this didn't load yet, so this event makes sure it can.
         {
             this.Loaded += new RoutedEventHandler(LoadEvent); //This is the event that's called when the window is loaded. 
             void LoadEvent(object sender, RoutedEventArgs e)
             {
                 foreach (TreeViewItem TheItem in TreeGameFiles.Items)
                 {
-                    if (Entry.EntryTypeMenu.GameFile == TheItem.Tag)
+                    if (GameFile == TheItem.Tag)
                     {
                         TheItem.IsSelected = true;
                     }
@@ -505,15 +490,17 @@ namespace GameEditorStudio
 
         private void FileLocationTextboxTextChanged(object sender, TextChangedEventArgs e)
         {
+            if (WorkshopXaml.WorkshopData.IsProjectLoaded == false) { FileLocationTextbox.ToolTip = null; return; }
+
             FileLocationTextbox.ToolTip = "" +
                 "Location: " +
                 "\n" + FileLocationTextbox.Text +
                 "\n\n" +
                 "From Project Input: " +
-                "\n" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\"+ FileLocationTextbox.Text  +
+                "\n" + WorkshopXaml.WorkshopData.LoadedProject.ProjectInputDirectory + "\\"+ FileLocationTextbox.Text  +
                 "\n\n" +
                 "From Project Output: " +
-                "\n" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\"+ FileLocationTextbox.Text; // Update the tooltip to show the file location text
+                "\n" + WorkshopXaml.WorkshopData.LoadedProject.ProjectOutputDirectory + "\\"+ FileLocationTextbox.Text; // Update the tooltip to show the file location text
         }
 
         

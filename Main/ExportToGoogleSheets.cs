@@ -17,39 +17,41 @@ namespace GameEditorStudio
 
         public void ExportAllDataTables(Workshop TheWorkshop)
         {
-            foreach (Editor Editor in TheWorkshop.WorkshopData.GameEditors.Values)
+            foreach (DataTableEditorData DataTableData in TheWorkshop.WorkshopData.GameEditors.OfType<DataTableEditorData>())
             {
-                if (Editor.EditorType == "DataTable") 
-                {
-                    ToGoogleSheet(TheWorkshop, Editor);
-                }
-                
+                ToGoogleSheet(TheWorkshop, DataTableData);
+
             }
         }
 
 
 
-        public void ToGoogleSheet(Workshop TheWorkshop, Editor EditorClass)
+        public void ToGoogleSheet(Workshop TheWorkshop, DataTableEditorData DTEData)
         {
+            if (DTEData.NameTable == null) { return; }
+            if (DTEData.DataTable == null) { return; }
+            //if (DTEData.DescriptionTableList == null) { return;  }
+
             //It exports in Decimal and Hex, and in both origonal game order, and current editor sorted order. 
             //So it exports 4 folders in total, and it's run for every editor, so all 4 folders get exports for every editor in that folders format.
             string EditorDataDecimalCurrent = "";
             string EditorDataHexCurrent = "";
             string EditorDataDecimalOrigonal = "";
             string EditorDataHexOrigonal = "";
-            int Columns = EditorClass.StandardEditorData.DataTableRowSize;
-            var TheFile = EditorClass.StandardEditorData.FileDataTable.FileBytes;
-
 
             //Skip the very top left of the google sheet
-            EditorDataDecimalCurrent = EditorDataDecimalCurrent + " ,"; 
+            EditorDataDecimalCurrent = EditorDataDecimalCurrent + " ,";
             EditorDataHexCurrent = EditorDataHexCurrent + " ,";
             EditorDataDecimalOrigonal = EditorDataDecimalOrigonal + " ,";
             EditorDataHexOrigonal = EditorDataHexOrigonal + " ,";
 
+
+            int Columns = DTEData.DataTableEditorData.DataTable.DataTableRowSize; //crash M2
+            var TheFile = DTEData.DataTableEditorData.DataTable.FileDataTable.FileBytes;
+
             for (int ColumnInRow1 = 0; ColumnInRow1 != Columns; ColumnInRow1++) //Setting up the first row, to get Column / Entry names.
             {
-                foreach (Entry entry in EditorClass.StandardEditorData.MasterEntryList)
+                foreach (Entry entry in DTEData.DataTableEditorData.MasterEntryList)
                 {
                     if (entry.RowOffset == ColumnInRow1)
                     {
@@ -84,7 +86,7 @@ namespace GameEditorStudio
             EditorDataHexOrigonal = EditorDataHexOrigonal + "\r\n";
 
             int Rows = 0;
-            foreach (var Item in EditorClass.StandardEditorData.EditorLeftDockPanel.ItemList)
+            foreach (var Item in DTEData.DataTableEditorData.NameTable.ItemList)
             {
                 if (Item.IsFolder == true)
                 {
@@ -100,12 +102,12 @@ namespace GameEditorStudio
                 for (int c = 0; c != Columns; c++)
                 {
                     //For Decimal Export
-                    string TheByte = TheFile[EditorClass.StandardEditorData.DataTableStart + (Item.ItemIndex * Columns) + c].ToString("X2");
+                    string TheByte = TheFile[DTEData.DataTableEditorData.DataTable.DataTableStart + (Item.ItemIndex * Columns) + c].ToString("X2");
                     int decimalValue = Convert.ToInt32(TheByte, 16);
                     EditorDataDecimalCurrent = EditorDataDecimalCurrent + decimalValue.ToString() + ",";
 
                     //For Hex Export
-                    EditorDataHexCurrent = EditorDataHexCurrent + TheFile[EditorClass.StandardEditorData.DataTableStart + (Item.ItemIndex * Columns) + c].ToString("X2") + ",";
+                    EditorDataHexCurrent = EditorDataHexCurrent + TheFile[DTEData.DataTableEditorData.DataTable.DataTableStart + (Item.ItemIndex * Columns) + c].ToString("X2") + ",";
                 }
                 EditorDataDecimalCurrent = EditorDataDecimalCurrent + "\r\n";
                 EditorDataHexCurrent = EditorDataHexCurrent + "\r\n";
@@ -115,7 +117,7 @@ namespace GameEditorStudio
             //Same as above but for Origonal order.
             for (int Index = 0; Index != Rows; Index++) 
             {
-                foreach (var Item in EditorClass.StandardEditorData.EditorLeftDockPanel.ItemList) 
+                foreach (var Item in DTEData.DataTableEditorData.NameTable.ItemList) 
                 {
                     if (Item.IsFolder == true || Item.ItemIndex != Index)
                     {
@@ -128,12 +130,12 @@ namespace GameEditorStudio
                     for (int c = 0; c != Columns; c++)
                     {
                         //For Decimal Export
-                        string TheByte = TheFile[EditorClass.StandardEditorData.DataTableStart + (Index * Columns) + c].ToString("X2");
+                        string TheByte = TheFile[DTEData.DataTableEditorData.DataTable.DataTableStart + (Index * Columns) + c].ToString("X2");
                         int decimalValue = Convert.ToInt32(TheByte, 16);
                         EditorDataDecimalOrigonal = EditorDataDecimalOrigonal + decimalValue.ToString() + ",";
 
                         //For Hex Export
-                        EditorDataHexOrigonal = EditorDataHexOrigonal + TheFile[EditorClass.StandardEditorData.DataTableStart + (Index * Columns) + c].ToString("X2") + ",";
+                        EditorDataHexOrigonal = EditorDataHexOrigonal + TheFile[DTEData.DataTableEditorData.DataTable.DataTableStart + (Index * Columns) + c].ToString("X2") + ",";
                     }
                     EditorDataDecimalOrigonal = EditorDataDecimalOrigonal + "\r\n";
                     EditorDataHexOrigonal = EditorDataHexOrigonal + "\r\n";
@@ -146,16 +148,16 @@ namespace GameEditorStudio
 
             //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
             Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Decimal (Editor Order)");
-            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Decimal (Editor Order)\\" + EditorClass.EditorName + ".csv", EditorDataDecimalCurrent);
+            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Decimal (Editor Order)\\" + DTEData.EditorName + ".csv", EditorDataDecimalCurrent);
 
             Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Hex (Editor Order)");
-            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Hex (Editor Order)\\" + EditorClass.EditorName + ".csv", EditorDataHexCurrent);
+            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Hex (Editor Order)\\" + DTEData.EditorName + ".csv", EditorDataHexCurrent);
 
             Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Decimal (Origonal Order)");
-            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Decimal (Origonal Order)\\" + EditorClass.EditorName + ".csv", EditorDataDecimalOrigonal);
+            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Decimal (Origonal Order)\\" + DTEData.EditorName + ".csv", EditorDataDecimalOrigonal);
 
             Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Hex (Origonal Order)");
-            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Hex (Origonal Order)\\" + EditorClass.EditorName + ".csv", EditorDataHexOrigonal);
+            System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Hex (Origonal Order)\\" + DTEData.EditorName + ".csv", EditorDataHexOrigonal);
 
             File.Create(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Exported " + DateTime.Now.ToString("MMMM d yyyy h;mmtt") + ".txt").Dispose(); ;
             LibraryGES.OpenFolder(LibraryGES.ApplicationLocation + "\\Editor Exports\\" + TheWorkshop.WorkshopData.WorkshopName);

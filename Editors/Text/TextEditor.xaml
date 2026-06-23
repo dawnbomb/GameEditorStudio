@@ -8,7 +8,7 @@
              d:DesignHeight="750" d:DesignWidth="900">
     <DockPanel Name="BackPanel">
         <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,3,0,2" Height="30">
-            <Button Content="L-ID" Width="70" Margin="264,0,0,0" Click="ToggleLineID" ToolTip="Toggles Line ID Numbers On/Off."/>
+            <Button Name="LineIDToggle" Content="L-ID" Width="70" Margin="264,0,0,0" Click="ToggleLineID" ToolTip="Toggles Line ID Numbers On/Off."/>
         </DockPanel>
         <Grid x:Name="MainGrid" DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>

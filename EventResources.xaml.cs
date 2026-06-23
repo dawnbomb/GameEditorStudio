@@ -54,7 +54,7 @@ namespace GameEditorStudio
             EventResource.Key = PixelWPF.LibraryPixel.GenerateKey();
             GenerateWEventResourceUI(EventResource);
 
-            foreach (ProjectData project in workshopData.ProjectsList)
+            foreach (Project project in workshopData.ProjectsList)
             {
                 ProjectEventResource projectResource = new();
                 projectResource.Key = EventResource.Key;
@@ -75,7 +75,7 @@ namespace GameEditorStudio
             EventResource.Key = PixelWPF.LibraryPixel.GenerateKey();
             GenerateWEventResourceUI(EventResource);
 
-            foreach (ProjectData project in workshopData.ProjectsList)
+            foreach (Project project in workshopData.ProjectsList)
             {
                 ProjectEventResource projectResource = new();
                 projectResource.Key = EventResource.Key;
@@ -95,7 +95,7 @@ namespace GameEditorStudio
             EventResource.Key = PixelWPF.LibraryPixel.GenerateKey();
             GenerateWEventResourceUI(EventResource);
 
-            foreach (ProjectData project in workshopData.ProjectsList)
+            foreach (Project project in workshopData.ProjectsList)
             {
                 ProjectEventResource projectResource = new();
                 projectResource.Key = EventResource.Key;
@@ -117,7 +117,7 @@ namespace GameEditorStudio
             EventResource.Key = PixelWPF.LibraryPixel.GenerateKey();
             GenerateWEventResourceUI(EventResource);
 
-            foreach (ProjectData project in workshopData.ProjectsList)
+            foreach (Project project in workshopData.ProjectsList)
             {
                 ProjectEventResource projectResource = new();
                 projectResource.Key = EventResource.Key;
@@ -226,7 +226,7 @@ namespace GameEditorStudio
                 parentPanel.Children.Remove(MainPanel);
                 workshopData.WorkshopEventResources.Remove(EventResource);
 
-                foreach (ProjectData project in workshopData.ProjectsList)
+                foreach (Project project in workshopData.ProjectsList)
                 {
                     project.ProjectEventResources.RemoveAll(pr => pr.Key == EventResource.Key);
                 }
@@ -484,7 +484,7 @@ namespace GameEditorStudio
             DockPanel.SetDock(MissingLabel, Dock.Left);
             TopPanel.Children.Add(MissingLabel);
             if (EventResource.IsChild == true) { MissingLabel.Visibility = Visibility.Collapsed; }
-            foreach (ProjectData project in workshopData.ProjectsList)
+            foreach (Project project in workshopData.ProjectsList)
             {
                 ProjectEventResource projectEventResource = project.ProjectEventResources.Find(pr => pr.Key == EventResource.Key);
                 if (projectEventResource != null)
@@ -532,7 +532,7 @@ namespace GameEditorStudio
                 //2: It *feels* required if i want to allow the parent to not require a specific folder name,
                 //and also somehow know what parts of the path are to the parent location vs from the parent location. 
 
-                ProjectData UserProject = workshopData.ProjectDataItem;
+                Project UserProject = workshopData.LoadedProject;
 
                 if (UserProject == null) //Setting the user project if its from library.
                 {

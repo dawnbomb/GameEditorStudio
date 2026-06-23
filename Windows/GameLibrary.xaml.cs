@@ -26,15 +26,17 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Linq;
+using Microsoft.VisualBasic;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
-using Windows.System.Preview;
 using static Microsoft.IO.RecyclableMemoryStreamManager;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Path = System.IO.Path;
 //using System.Windows.Shapes;
+
 
 namespace GameEditorStudio
 {
@@ -85,14 +87,22 @@ namespace GameEditorStudio
         {
             InitializeComponent();   
             LibraryGES.ApplicationLocation = AppDomain.CurrentDomain.BaseDirectory;
-            Database.GameLibrary = this; 
+            Database.GameLibrary = this;
 
+            {   //I am intensionally leaving this existing but collapsed, and related code, incase i later want project related stuff existing again in the game library.
+                //ProjectsContent.Visibility = Visibility.Collapsed; //TEMP FOR TESTING
+                ProjectInfoControl.Visibility = Visibility.Collapsed; //TEMP FOR TESTING
+                ProjectResourceControl.Visibility = Visibility.Collapsed; //TEMP FOR TESTING
+            }
+
+            
             #if DEBUG
-            LibraryGES.ApplicationLocation = "D:\\Game Editor Studio"; //"O:\\Teddy\\Game Editor Studio\\Game Editor Studio"; //Where the .exe is supposed to be.                     
+            LibraryGES.ApplicationLocation = "D:\\Game Editor Studio"; //"O:\\Teddy\\Game Editor Studio\\Game Editor Studio"; //Where the .exe is supposed to be.
+            //LibraryGES.ApplicationLocation = "O:\\Teddy\\Work\\Game Editor Studio";
             #endif
 
             LoadDatabase LoadDatabase = new(); //Must happen before Setup Commands, because commands use tools.   
-            LoadDatabase.LoadWiki();
+            //LoadDatabase.LoadWiki();
             LoadDatabase.LoadThemes(); //Loads from Other/Themes - A theme is a list of colors for the UI. Users can create their own color themes. 
             LoadDatabase.LoadToolsList(); //Loads from Other/Tools.xml.            
             LoadDatabase.LoadCommandsList(this); //Loads from Other/Commands.xml.            
@@ -110,15 +120,36 @@ namespace GameEditorStudio
             Dispatcher.InvokeAsync(async () => await PixelWPF.GithubUpdater.CheckForUpdatesAsync("GameEditorStudio", "dawnbomb/GameEditorStudio/releases/latest", LibraryGES.VersionNumber));
 
             MainMenu.MenuLibrarySetup(this);
-            
 
+
+            #if DEBUG
+            foreach (TreeViewItem treeViewItem in LibraryTreeOfWorkshops.Items) 
+            {
+                WorkshopData wdata = treeViewItem.Tag as WorkshopData;
+                if (wdata.WorkshopName == Properties.Settings.Default.LastWorkshop) 
+                {
+                    treeViewItem.IsSelected = true;
+                    foreach (Project Pdata in ProjectsSelector.Items)
+                    {
+                        if (Pdata.ProjectName == Properties.Settings.Default.LastProject) 
+                        {
+                            ProjectsSelector.SelectedItem = Pdata;
+                        }
+                    }
+                }
+                
+            }
+            #endif
+
+            
+            
         }
 
-        
 
 
 
-        
+
+
         private void Row_DoubleClick(object sender, MouseButtonEventArgs e)
         {
              LaunchWorkshop();
@@ -252,6 +283,15 @@ namespace GameEditorStudio
                     {
                         item.IsSelected = true;
                     }
+
+                    ContextMenu contextMenu = new ContextMenu();
+                    item.ContextMenu = contextMenu;
+                    MenuItem openMenuItem = new MenuItem { Header = "Open Document Folder" };
+                    contextMenu.Items.Add(openMenuItem);
+                    openMenuItem.Click += (s, e) =>
+                    {
+                        LibraryGES.OpenFileFolder(folderPath + "\\Text.txt");                        
+                    };
                 }
                 DocumentCountLabel.Content = "(" + LibraryDocumentsTree.Items.Count + ")";
 
@@ -304,7 +344,7 @@ namespace GameEditorStudio
                         );
             }
 
-            if (SelectedWorkshop.ProjectDataItem != null || SelectedWorkshop.WorkshopXaml != null) 
+            if (SelectedWorkshop.LoadedProject != null || SelectedWorkshop.WorkshopXaml != null) 
             {
                 PixelWPF.LibraryPixel.NotificationNegative("Sorry - Please restart Game Editor Studio D;",
                         "As part of adding an upcoming feature to let users select a project AFTER a workshop is loaded and swap between them, i added a crash that happens if you try to open a workshop you previously opened. " +
@@ -318,7 +358,7 @@ namespace GameEditorStudio
             {
                 return;
             }
-            ProjectData UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
+            Project UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
 
             if (!Directory.Exists(UserProject.ProjectInputDirectory)) 
             {
@@ -335,20 +375,40 @@ namespace GameEditorStudio
                 return;
             }
 
+            LoadingPanel.Visibility = Visibility.Visible;
             Workshop TheWorkshop = new Workshop(SelectedWorkshop, UserProject); //Thing One, the workshop     
             Database.GESMain.GESGrid.Children.Add(TheWorkshop);
             
 
-            //Properties.Settings.Default.LastWorkshop = WorkshopName; //Set the workshop name in settings, so it can be used by other parts of the program. 
+            Properties.Settings.Default.LastWorkshop = SelectedWorkshop.WorkshopName; //Set the workshop name in settings, so it can be used by other parts of the program. 
+            Properties.Settings.Default.LastProject = UserProject.ProjectName;
+            Properties.Settings.Default.Save();
+        }
+
+        private async void OpenWorkshopFolder2(object sender, RoutedEventArgs e)
+        {
+            if (SelectedWorkshop == null) { return; }
+            string WorkshopFolderPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + SelectedWorkshop.WorkshopName;
+            //await LibraryGES.OpenFolderAsync(WorkshopFolderPath);
         }
 
         private void LaunchWorkshopPreviewMode(object sender, RoutedEventArgs e)
-        {            
+        {              
+            {//Loading bar code 
+                LoadingFinalPanel.Visibility = Visibility.Collapsed;
+                LoadingPanel.Visibility = Visibility.Visible;
+                Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+            }
+
             bool IsPreviewModeActive = true;
 
             Workshop TheWorkshop = new Workshop(SelectedWorkshop, null, IsPreviewModeActive); //Thing One, the workshop
             Database.GESMain.GESGrid.Children.Add(TheWorkshop);
 
+            Properties.Settings.Default.LastWorkshop = SelectedWorkshop.WorkshopName; //Set the workshop name in settings, so it can be used by other parts of the program. 
+            Properties.Settings.Default.Save();
+
+            LoadingPanel.Visibility = Visibility.Collapsed;
         }
 
 
@@ -428,8 +488,7 @@ namespace GameEditorStudio
 
 
             
-            ProjectData UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
-            MainMenu.ProjectDataItem = UserProject;
+            Project UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
 
             ProjectNameTextbox.Text = UserProject.ProjectName;
             TextBoxInputDirectory.Text = UserProject.ProjectInputDirectory;
@@ -479,7 +538,7 @@ namespace GameEditorStudio
             {                
                 return;
             }
-            ProjectData UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
+            Project UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
             if (UserProject == null) 
             {
                 return;
@@ -704,7 +763,7 @@ namespace GameEditorStudio
                                     
             Directory.CreateDirectory(TheProjectFolder);
 
-            ProjectData NewProjectDataItem = new();
+            Project NewProjectDataItem = new();
             SelectedWorkshop.ProjectsList.Add(NewProjectDataItem); //Add to the list of projects for this workshop.
             NewProjectDataItem.CreatedDate = DateTime.Now.ToString("MMM dd yyyy");
             NewProjectDataItem.CreatedVersion = LibraryGES.VersionNumber;
@@ -727,7 +786,7 @@ namespace GameEditorStudio
 
                 if (ProjectsSelector.SelectedIndex < 0 || LibraryTreeOfWorkshops.SelectedItem == null|| ProjectNameTextbox.Text == "")   {return;}
 
-                ProjectData UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
+                Project UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
                 string oldFolderPath = LibraryGES.ApplicationLocation + "\\Projects\\" + SelectedWorkshop.WorkshopName + "\\" + UserProject.ProjectName;
                 string newFolderPath = LibraryGES.ApplicationLocation + "\\Projects\\" + SelectedWorkshop.WorkshopName + "\\" + ProjectNameTextbox.Text;
 
@@ -736,6 +795,7 @@ namespace GameEditorStudio
                 Directory.Move(oldFolderPath, newFolderPath);// Rename the folder at the old path to the new path
 
                 UserProject.ProjectName = ProjectNameTextbox.Text;
+
 
                 CommandMethodsClass.SaveProjectXML(UserProject, SelectedWorkshop);
 
@@ -752,7 +812,7 @@ namespace GameEditorStudio
 
                 foreach (var item in ProjectsSelector.Items)
                 {
-                    if (item is ProjectData dataItem && dataItem.ProjectName.Equals(ProjectNameTextbox.Text, StringComparison.OrdinalIgnoreCase))
+                    if (item is Project dataItem && dataItem.ProjectName.Equals(ProjectNameTextbox.Text, StringComparison.OrdinalIgnoreCase))
                     {
                         // Found the project, select the row
                         ProjectsSelector.SelectedItem = item;
@@ -801,7 +861,7 @@ namespace GameEditorStudio
                         "If your not sure, I STRONGLY recommend checking the readme, as well as asking around. Well, i mean, you'll know if something is wrong if you launch your project and get a ton of errors. >_>;"
                     );
 
-                    ProjectData UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
+                    Project UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
                     UserProject.ProjectInputDirectory = FolderSelect.SelectedPath;
                     TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
 
@@ -815,7 +875,7 @@ namespace GameEditorStudio
                         "This can only be wrong if you selected a folder with the exact same name, but a diffrent location."
                     );
 
-                    ProjectData UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
+                    Project UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
                     UserProject.ProjectInputDirectory = FolderSelect.SelectedPath;
                     TextBoxInputDirectory.Text = FolderSelect.SelectedPath;                    
 
@@ -865,7 +925,7 @@ namespace GameEditorStudio
             }
             if ((bool)FolderSelect.ShowDialog(Window.GetWindow(this))) //This triggers the folder selection screen, and if the user does not cancel out...
             {
-                ProjectData UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
+                Project UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
                 UserProject.ProjectOutputDirectory = FolderSelect.SelectedPath;
                 TextBoxOutputDirectory.Text = FolderSelect.SelectedPath;
 
@@ -902,7 +962,7 @@ namespace GameEditorStudio
             MethodData MethodData = new();
             MethodData.GameLibrary = this;
             MethodData.WorkshopData = SelectedWorkshop;
-            CommandMethodsClass.OpenProjectFolder(MethodData);
+            CommandMethodsClass.OpenSelectedProjectFolder(MethodData);
         }
 
         private void OpenInput(object sender, RoutedEventArgs e)
@@ -910,7 +970,7 @@ namespace GameEditorStudio
 
             MethodData MethodData = new();
             MethodData.GameLibrary = this;
-            CommandMethodsClass.OpenInputFolder(MethodData);
+            CommandMethodsClass.OpenSelectedProjectInputFolder(MethodData);
 
         }
 
@@ -918,7 +978,7 @@ namespace GameEditorStudio
         {
             MethodData MethodData = new();
             MethodData.GameLibrary = this;
-            CommandMethodsClass.OpenOutputFolder(MethodData);
+            CommandMethodsClass.OpenSelectedProjectOutputFolder(MethodData);
 
         }
 
@@ -937,7 +997,7 @@ namespace GameEditorStudio
             if (result != MessageBoxResult.Yes)
                 return;
 
-            ProjectData UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
+            Project UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
 
             Directory.Delete(
                 Path.Combine(LibraryGES.ApplicationLocation, "Projects", SelectedWorkshop.WorkshopName, UserProject.ProjectName),

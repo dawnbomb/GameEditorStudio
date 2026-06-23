@@ -36,7 +36,7 @@ using System.Xml.Schema;
 using GameEditorStudio.Loading;
 using Microsoft.Windows.Themes;
 using Ookii.Dialogs.Wpf;
-using WpfHexaEditor;
+using WpfHexEditor;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using static GameEditorStudio.Entry;
 using static OfficeOpenXml.ExcelErrorValue;
@@ -56,289 +56,110 @@ namespace GameEditorStudio
 
     public partial class Workshop : UserControl
     {
-        //This is a pertial class.              
+        //This is a partial class.              
         
-        public WorkshopData WorkshopData { get; set; } //The database of....everything to do with an editor.       
+        public WorkshopData WorkshopData { get; set; } //The database of this workshop.  
 
-        public DocumentsUserControl TheDocumentsUserControl { get; set; } //Moved here from Database, but maybe later on, make sure this is even a needed variable?
-
-        public string EditorName { get; set; } = "Blank";
-
-        //Project Info
         public bool IsPreviewMode { get; set; } //VS preview mode. In preview mode, a project folder and input directory are not used, to allow users to preview a workshop. 
         
+        public bool TreeViewSelectionEnabled { get; set; } = true; //Move this later, but both Data Table Editor Left and Right bar use this.
 
-        public TextSourceManager TextSourceManager { get; set; }
+        public TextTableManager TextSourceManager { get; set; }
         public UserControlEditorIcons UCGraphicsEditor { get; set; }
 
-        public Editor EditorClass { get; set; }
-        public Category CategoryClass { get; set; }
-        public Column ColumnClass { get; set; }
-        public Group GroupClass { get; set; }
-        public Entry EntryClass { get; set; }
 
-        public List<Entry> EntryMoveList  {  get; set; } = new();
-
-
-        public string PreviousTabName { get; set; } = ""; //right bar tab to return to when unfocusing listview.
-
-        public UserControlCrossReference TheCrossReference { get; set; }
-
-        public List<ProjectData> Projects { get; set; } = new(); //for selecting projects in the workshop.
-
-        public Workshop(WorkshopData mydata, ProjectData Project, bool IsWorkshopPreviewModeActive = false) //GameLibrary GameLibrary
+        public Workshop(WorkshopData mydata, Project Project, bool IsWorkshopPreviewModeActive = false) //GameLibrary GameLibrary
         {
             InitializeComponent();
 
             WorkshopData = mydata;            
-            WorkshopData.ProjectDataItem = Project;  
             WorkshopData.WorkshopXaml = this;
-
-            IsPreviewMode = IsWorkshopPreviewModeActive;
-
-
-            TheCrossReference = CrossReferenceInfo;
-            TheCrossReference.TheWorkshop = this;
-
-            TheDocumentsUserControl = DocumentsControl;
-            TheDocumentsUserControl.TheWorkshop = this;
-            TheDocumentsUserControl.Database = WorkshopData;
-
-            FileManager.TheWorkshop = this;
-
-            #if DEBUG
-
-#else
-
-#endif
-
+            HomeControl.FileManager.WorkshopXaml = this;
+            WorkshopData.WorkshopXaml.MenusForToolsAndEvents.WorkshopData = WorkshopData; //Menu Set WorkshopData.
+            
             foreach (Command command in Database.Commands)
             {
                 command.WorkshopData = WorkshopData;
             }
-            //var sharedMenusControl = this.FindName("MenusForToolsAndEvents") as SharedMenus;
-            //sharedMenusControl.Tools = this.Tools;
 
-            DoThing();
+            #if DEBUG
 
-            void DoThing() 
-            {
-                (TabTest.FindName("GeneralEditor") as TabItem).Visibility = Visibility.Collapsed;
-                (TabTest.FindName("GeneralRow") as TabItem).Visibility = Visibility.Collapsed;
-                (TabTest.FindName("GeneralColumn") as TabItem).Visibility = Visibility.Collapsed;
-                (TabTest.FindName("GeneralGroup") as TabItem).Visibility = Visibility.Collapsed;
-                (TabTest.FindName("GeneralEntry") as TabItem).Visibility = Visibility.Collapsed;
-                //(TabTest.FindName("GeneralDebug") as TabItem).Visibility = Visibility.Collapsed;
+            #else
+            
+            #endif
+            
+            IsPreviewMode = IsWorkshopPreviewModeActive;
+            WorkshopData.LoadedProject = Project;  
+            if (IsPreviewMode == false)
+            { //LOAD PROJECT 
+                WorkshopData.IsProjectLoaded = true; //FOR NOW
 
-                EntryTab1.Visibility = Visibility.Collapsed;
-                EntryTab2.Visibility = Visibility.Collapsed;
-                EntryTab3.Visibility = Visibility.Collapsed;
-                EntryTab4.Visibility = Visibility.Collapsed;
+                LoadWorkshopDatabaseCode LoadDatabaseB = new();
+                LoadDatabaseB.LoadAllProjectDocuments(WorkshopData);
+                WorkshopData.WorkshopXaml.MenusForToolsAndEvents.SetupTopMenuForProject(WorkshopData.WorkshopXaml);
+
+                FileLoading fileLoading = new();
+                fileLoading.TryLoadAllGameFilesIntoWorkshopDatabase(WorkshopData); //First we load workshop files into the database. }
+
+                HomeControl.HomeLoadProjectButton.Visibility = Visibility.Collapsed; 
+                HomeControl.HomeNewProjectButton.Visibility = Visibility.Collapsed; 
+                HomeControl.HomeUnloadProjectButton.Visibility = Visibility.Collapsed; 
             }
 
             
-
-
-            //<ComboBoxItem Content="NumberBox"/>
-            //< ComboBoxItem Content = "CheckBox" />
-            //< ComboBoxItem Content = "BitFlag" />
-            //< ComboBoxItem Content = "DropDown" />
-            //< ComboBoxItem Content = "List" />
-            //PropertiesEntryType
-            foreach (EntrySubTypes type in Enum.GetValues(typeof(EntrySubTypes)))
-            {
-                PropertiesEntryType.Items.Add(new ComboBoxItem { Content = type.ToString() });
-            }
-
             
-            try
-            {
-                if (IsPreviewMode == false)
-                {
-                    FileLoading fileLoading = new();
-                    fileLoading.LoadAllGameFilesIntoWorkshopDatabase(WorkshopData); //First we load workshop files into the database. }
-                };
-            }
-            catch
-            {
-                MessageBox.Show("The workshop failed to load all files." +
-                    "\n" +
-                    "\nPossible reasons are as follow:" +
-                    "\n1: The input directory is incorrect" +
-                    "\n2: You have moved or renamed some files." +
-                    "\n3: You failed to extract everything you needed to begin with to use the workshop." +
-                    "\n4: The workshop creator has changed the folder / file structure of the workshop." +
-                    "\n" +
-                    "\nIf you can't stop getting this error, don't keep trying, just ask for help. Especially if you can contact the workshop creator." +
-                    "\n" +
-                    "\nThe Program will now close as a safety measure.", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
-
-
-                Application.Current.Shutdown();
-                return;
-            }
             LoadWorkshopDatabaseCode LoadDatabase = new();
             LoadDatabase.LoadEveryEditorXMLIntoWorkshopData(this, WorkshopData); //Then we load the editor info into the database.
-            LoadDatabase.GenerateAllEditorUIs(WorkshopData);
-            //The above method triggers CreateEditor in a loop, creating every editor using the database information.
-
-
-
-
-
-            //Finally we make sure everything is hidden. This is mostly so i don't have to make sure vision is collapsed all the time when developing the program.
-            foreach (KeyValuePair<string, Editor> editor in WorkshopData.GameEditors)
-            {
-                editor.Value.EditorBackPanel.Visibility = Visibility.Collapsed;
-            }
-
+            LoadDatabase.GenerateAllEditorXAML(WorkshopData);
+            LoadDatabase.LoadAllWorkshopDocuments(WorkshopData);           
+            DTEMethods.UpdateHotbarForAllDTEEditors(WorkshopData); //Syncs the hotbar icon state between all DTE editors. 
             
-            GC.RefreshMemoryLimit();//I have no idea if this is useful. Its a new .net8 feature i read that changes the memory limit (automatically) to be bigger if needed.
-            //I know this program lags when loading a menu or editor sometimes, so maybe this will help? 
+            
+            
 
-
-            { //Run the click home event so it always opens to the home page.
-                //FileManager.RefreshFileTree(); //commented out because it causes a crash for some reason
-                HIDEALL();
-                DockPanelHome.Visibility = Visibility.Visible;
-                foreach (Editor editor in WorkshopData.GameEditors.Values)
-                {
-                    editor.EditorButton.Style = (Style)Application.Current.FindResource("ButtonEditorTab");
-
-                }
-                ButtonHome.Style = (Style)Application.Current.FindResource("ButtonCurrentEditorTab");
-                //ButtonHome_Click(ButtonHome, new RoutedEventArgs()); 
-
-            }
 
             if (IsPreviewMode == true) 
             {
-                PropertiesTextboxEditorName.IsEnabled = false;
-                PropertiesEditorReadGameDataFrom.IsEnabled = false;
-                EditorOutputLocationTextbox.IsEnabled = false;
-                OpenInputLocationButton.IsEnabled = false;
-                OpenOutputLocationButton.IsEnabled = false;
-
-                PropertiesEditorNameTableCharacterSetDropdown.IsEnabled = false;
-                PropertiesEditorNameTableStartByte.IsEnabled = false;
-                PropertiesEditorNameTableRowSize.IsEnabled = false;
-                PropertiesEditorNameTableTextSize.IsEnabled = false;
-                PropertiesEditorNameCount.IsEnabled = false;
-
-                DataTableFileBox.IsEnabled = false;
-                PropertiesEditorTableStart.IsEnabled = false;
-                PropertiesEditorTableWidth.IsEnabled = false;
-
-                FileManager.IsEnabled = false;
-
-                PropertiesRowNameBox.IsEnabled = false;
-                PropertiesRowTooltipBox.IsEnabled = false;
-
-                PropertiesColumnNameBox.IsEnabled = false;
-
-                PropertiesGroupNameBox.IsEnabled = false;
-                PropertiesGroupTooltipBox.IsEnabled = false;
-
-                PropertiesNameBox.IsEnabled = false;
-                HideNameCheckbox.IsEnabled = false;
-                HideEntryCheckbox.IsEnabled = false;
-                PropertiesEntryByteSizeComboBox.IsEnabled = false;
-                PropertiesEntryType.IsEnabled = false;
-                NumberboxSignCheckbox.IsEnabled = false;
-                DropdownMenuType.IsEnabled = false;
-                foreach (ComboBoxItem item in DropdownMenuType.Items) { item.IsEnabled = false; }
-                ButtonMenuManager.IsEnabled = false;
-                EntryNoteTextbox.IsEnabled = false;
-
+                //PropertiesTextboxEditorName.IsEnabled = false;
+                //PropertiesEditorReadGameDataFrom.IsEnabled = false;
+                //EditorOutputLocationTextbox.IsEnabled = false;
+                //OpenInputLocationButton.IsEnabled = false;
+                //OpenOutputLocationButton.IsEnabled = false;
+                
+                //PropertiesEditorNameTableCharacterSetDropdown.IsEnabled = false;
+                //PropertiesEditorNameTableStartByte.IsEnabled = false;
+                //PropertiesEditorNameTableRowSize.IsEnabled = false;
+                //PropertiesEditorNameTableTextSize.IsEnabled = false;
+                //PropertiesEditorNameCount.IsEnabled = false;
+                
+                //DataTableFileBox.IsEnabled = false;
+                //PropertiesEditorTableStart.IsEnabled = false;
+                //PropertiesEditorTableWidth.IsEnabled = false;
                 
 
+                //PropertiesRowNameBox.IsEnabled = false;
+                //PropertiesRowTooltipBox.IsEnabled = false;
 
-                IconManagerButton.IsEnabled = false; 
+                //PropertiesGroupNameBox.IsEnabled = false;
+                //PropertiesGroupTooltipBox.IsEnabled = false;
 
-            }
+                //PropertiesNameBox.IsEnabled = false;
+                //HideNameCheckbox.IsEnabled = false;
+                //HideEntryCheckbox.IsEnabled = false;
+                //PropertiesEntryByteSizeComboBox.IsEnabled = false;
+                //PropertiesEntryType.IsEnabled = false;
+                //NumberboxSignCheckbox.IsEnabled = false;
+                //DropdownMenuType.IsEnabled = false;
+                //foreach (ComboBoxItem item in DropdownMenuType.Items) { item.IsEnabled = false; }
+                //ButtonMenuManager.IsEnabled = false;
+                //EntryNoteTextbox.IsEnabled = false;
+                
+                //IconManagerButton.IsEnabled = false; 
+            }            
 
+            GC.RefreshMemoryLimit(); //Not sure if useful, it's a new .net8 feature to automatically increase memory limit as needed. Might reduce lag? Probably won't hurt? 
 
-            ////For Projects Stuff
-            //ProjectsSelector.ItemsSource = Projects;
-            //string ProjectsFolder = LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\"; //"\\LibraryBannerArt.png";   
-            //if (Directory.Exists(ProjectsFolder))
-            //{
-            //    foreach (string TheProjectFolder in Directory.GetDirectories(ProjectsFolder))
-            //    {
-
-            //        using (FileStream fs = new FileStream(TheProjectFolder + "\\Project.xml", FileMode.Open, FileAccess.Read))
-            //        {
-            //            XElement xml = XElement.Load(fs);
-            //            string PName = xml.Element("Name")?.Value;
-            //            string PInput = xml.Element("InputLocation")?.Value;
-            //            string POutput = xml.Element("OutputLocation")?.Value;
-
-            //            List<ProjectEventResource> ProjectEventResources = new();
-            //            var xmlEventResources = xml.Element("ResourceList");
-
-            //            if (xmlEventResources != null)
-            //            {
-            //                //This oIf its empty to begin with, it blanks.
-
-
-            //                //foreach (WorkshopResource EventResource in WorkshopEventResources)
-            //                //{
-            //                //    if (EventResource.ResourceType == "RelativeFile" || EventResource.ResourceType == "RelativeFolder") { continue; }
-
-            //                //    ProjectEventResource projectEventData = new ProjectEventResource
-            //                //    {
-            //                //        ResourceKey = EventResource.WorkshopResourceKey,
-            //                //    };
-            //                //    ProjectEventResources.Add(projectEventData);
-            //                //}
-
-            //                foreach (XElement xmlEventResource in xmlEventResources.Elements("Resource"))
-            //                {
-            //                    string resourceKey = xmlEventResource.Element("Key")?.Value;
-            //                    string location = xmlEventResource.Element("Location")?.Value;
-
-            //                    foreach (ProjectEventResource ProjectResourceData in ProjectEventResources)
-            //                    {
-            //                        if (resourceKey == ProjectResourceData.ResourceKey)
-            //                        {
-            //                            ProjectResourceData.Location = location;
-            //                        }
-            //                    }
-            //                }
-            //            }
-
-            //            Projects.Add(new ProjectDataItem
-            //            {
-            //                ProjectName = PName,
-            //                ProjectInputDirectory = PInput,
-            //                ProjectOutputDirectory = POutput,
-            //                //ProjectEventResources = ProjectEventResources
-            //            });
-            //        }
-
-            //    }
-
-
-
-            //}
-            //CollectionViewSource.GetDefaultView(ProjectsSelector.ItemsSource).Refresh();
-            //if (ProjectsSelector.Items.Count > 0)
-            //{
-            //    // Select the first item
-            //    ProjectsSelector.SelectedItem = ProjectsSelector.Items[0];
-
-            //    // Optionally, scroll the selected item into view
-            //    ProjectsSelector.ScrollIntoView(ProjectsSelector.SelectedItem);
-            //}
-
-
-            ProjectNameTextbox.Text = WorkshopData.ProjectDataItem.ProjectName;
-            TextBoxInputDirectory.Text = WorkshopData.ProjectDataItem.ProjectInputDirectory;
-            TextBoxOutputDirectory.Text = WorkshopData.ProjectDataItem.ProjectOutputDirectory;
-            RefreshProjectEventResourcesUI(WorkshopData.ProjectDataItem);
-
-            MenusForToolsAndEvents.MenuWorkshopSetup(this);
-
+            HomeControl.HomeSetup(WorkshopData); //Sets up the Home Tab.        
         }
 
 
@@ -353,192 +174,21 @@ namespace GameEditorStudio
         private void ButtonHome_Click(object sender, RoutedEventArgs e)
         {
 
-            FileManager.RefreshFileTree();
+            HomeControl.FileManager.RefreshFileTree();
 
             HIDEALL();
-            DockPanelHome.Visibility = Visibility.Visible;
+            //DockPanelHome.Visibility = Visibility.Visible;
 
-            foreach (Editor editor in WorkshopData.GameEditors.Values)
+            foreach (Editor editor in WorkshopData.GameEditors)
             {
-                editor.EditorButton.Style = (Style)Application.Current.FindResource("ButtonEditorTab");
+                editor.EditorTab.Style = (Style)Application.Current.FindResource("ButtonEditorTab");
 
             }
             ButtonHome.Style = (Style)Application.Current.FindResource("ButtonCurrentEditorTab");
 
         }
 
-        
 
-
-
-        public void UpdateEntryDecorationsForAllEditors() 
-        {
-            foreach (var editor in WorkshopData.GameEditors.Values)
-            {
-                if (editor.EditorType != "DataTable") { continue; }
-
-                foreach (var row in editor.StandardEditorData.CategoryList)
-                {
-                    if (row.ColumnList.Count != 0) if( row.ColumnList[0].ItemBaseList.Count != 0) { row.CatBorder.Visibility = Visibility.Collapsed; }
-                    
-
-                    foreach (var column in row.ColumnList)
-                    {
-                        column.ColumnPanel.Visibility = Visibility.Collapsed;
-
-                        foreach (Group group in column.ItemBaseList.OfType<Group>())
-                        {
-                            group.GroupPanel.Visibility = Visibility.Collapsed;
-                        }
-
-                        if (column.ItemBaseList.Count == 0) 
-                        {
-                            column.ColumnPanel.Visibility = Visibility.Visible;
-                        }
-                    }
-
-                    
-                }
-
-                foreach (Entry entry in editor.StandardEditorData.MasterEntryList)
-                {
-                    if (LibraryGES.ShowEntryAddress == true)
-                    {
-                        entry.EntryPrefix.Visibility = Visibility.Visible;
-                    }
-                    else if (LibraryGES.ShowEntryAddress == false)
-                    {
-                        entry.EntryPrefix.Visibility = Visibility.Collapsed;
-                    }
-
-                    try
-                    {
-                        if (LibraryGES.EntryAddressType == "Decimal") //Properties.Settings.Default.EntryPrefix = "Row Offset - Decimal Starting at 0";
-                        {
-                            entry.EntryPrefix.Content = entry.RowOffset + int.Parse(editor.StandardEditorData.TheXaml.EntryAddressOffsetTextbox.Text);
-                        }
-                        else if (LibraryGES.EntryAddressType == "Hex") //Properties.Settings.Default.EntryPrefix = "Row Offset - Hex Starting at 0x00";
-                        {
-                            entry.EntryPrefix.Content = (entry.RowOffset + int.Parse(editor.StandardEditorData.TheXaml.EntryAddressOffsetTextbox.Text)).ToString("X");   //.ToString("X")); // + int.Parse(EntryAddressOffsetTextbox.Text)).ToString("X");
-                        }
-                    }
-                    catch
-                    {
-
-                    }
-
-                    if (LibraryGES.ShowSymbology == true)
-                    {
-                        entry.Symbology.Visibility = Visibility.Visible;
-
-                    }
-                    else if (LibraryGES.ShowSymbology == false)
-                    {
-                        entry.Symbology.Visibility = Visibility.Collapsed;
-                    }
-
-                    /////////// Showing Row/Column/Group //////////////////////
-
-                    if (LibraryGES.ShowHiddenEntrys == false)
-                    {
-                        if (entry.IsEntryHidden == true || entry.IsTextInUse == true || entry.Bytes == 0)
-                        {
-                            entry.EntryBorder.Visibility = Visibility.Collapsed;
-                        }
-                        else 
-                        {
-                            entry.EntryBorder.Visibility = Visibility.Visible;
-                            entry.EntryColumn.ColumnPanel.Visibility = Visibility.Visible;
-                            if (entry.EntryGroup != null) { entry.EntryGroup.GroupPanel.Visibility = Visibility.Visible; }
-
-                            //entry.EntryRow.CategoryDockPanel.Visibility = Visibility.Visible;
-                            entry.EntryRow.CatBorder.Visibility = Visibility.Visible;
-                        }
-                    }
-                    else if (LibraryGES.ShowHiddenEntrys == true && entry.Bytes != 0)
-                    {
-                        entry.EntryBorder.Visibility = Visibility.Visible;
-                        entry.EntryColumn.ColumnPanel.Visibility = Visibility.Visible;                        
-                        if (entry.EntryGroup != null) { entry.EntryGroup.GroupPanel.Visibility = Visibility.Visible; }
-
-                        //entry.EntryRow.CategoryDockPanel.Visibility = Visibility.Visible;
-                        entry.EntryRow.CatBorder.Visibility = Visibility.Visible;
-                    }
-
-                                       
-
-
-                    
-                }
-
-
-
-
-
-
-                
-            }
-
-            if (LibraryGES.DebugShowALL == true) 
-            {
-                DEBUGSHOWALL();
-            }
-            
-        }
-
-        public void DEBUGSHOWALL() 
-        {
-            foreach (var editor in WorkshopData.GameEditors.Values) 
-            {
-                if (editor.EditorType != "DataTable") { continue; }
-
-                foreach (var row in editor.StandardEditorData.CategoryList) 
-                {
-                    row.CatBorder.Visibility = Visibility.Visible;
-
-                    foreach (var column in row.ColumnList)
-                    {
-                        column.ColumnPanel.Visibility = Visibility.Visible;
-
-                        foreach (Group group in column.ItemBaseList.OfType<Group>())
-                        {
-                            group.GroupPanel.Visibility = Visibility.Visible;
-                        }
-                    }
-                }
-
-                foreach (Entry entry in editor.StandardEditorData.MasterEntryList) 
-                {
-                    entry.EntryBorder.Visibility = Visibility.Visible;
-                }
-            }
-        }
-
-
-        public void UpdateLeftBars() 
-        {
-            
-
-            foreach (var editor in WorkshopData.GameEditors) 
-            {
-                if (editor.Value.EditorType != "DataTable") { continue; }
-
-                if (LibraryGES.ShowTranslationPanel == true)
-                {
-                    TheLeftBar asdas = editor.Value.StandardEditorData.EditorLeftDockPanel.UserControl as TheLeftBar;
-                    asdas.TranslationsPanelBorder.Visibility = Visibility.Visible;
-                    //TranslationsPanelBorder
-                }
-                else if (LibraryGES.ShowTranslationPanel == false)
-                {
-                    TheLeftBar asdas = editor.Value.StandardEditorData.EditorLeftDockPanel.UserControl as TheLeftBar;
-                    asdas.TranslationsPanelBorder.Visibility = Visibility.Collapsed;
-                }
-
-            }
-
-            
-        }
 
 
 
@@ -549,1200 +199,6 @@ namespace GameEditorStudio
         //
         //
         //
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////HOME/////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-        private void ProjectSelected(object sender, SelectionChangedEventArgs e)
-        {
-            //if (ProjectsSelector.SelectedIndex < 0 )
-            //{
-            //    ProjectNameTextbox.Text = "";
-            //    TextBoxInputDirectory.Text = "";
-            //    TextBoxOutputDirectory.Text = "";
-            //    //GenerateProjectEventResourceUI(null);
-            //    return;
-            //}
-
-
-            //ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
-            ////MainMenu.ProjectDataItem = UserProject;
-
-            //ProjectNameTextbox.Text = UserProject.ProjectName;
-            //TextBoxInputDirectory.Text = UserProject.ProjectInputDirectory;
-            //TextBoxOutputDirectory.Text = UserProject.ProjectOutputDirectory;
-
-            //ButtonOpenInputFolder.ToolTip = UserProject.ProjectInputDirectory;
-            //ButtonOpenOutputFolder.ToolTip = UserProject.ProjectOutputDirectory;
-            //BorderInputFolder.ToolTip = UserProject.ProjectInputDirectory;
-            //BorderOutputFolder.ToolTip = UserProject.ProjectOutputDirectory;
-
-
-            //if (TextBoxInputDirectory.Text == "")
-            //{
-            //    TextBoxInputDirectory.Text = "Where new projects read files from. :)";
-            //    ButtonOpenInputFolder.ToolTip = null;
-            //    BorderInputFolder.ToolTip = null;
-            //}
-            //if (TextBoxOutputDirectory.Text == "")
-            //{
-            //    TextBoxOutputDirectory.Text = "Where files will be saved to. :)";
-            //    ButtonOpenOutputFolder.ToolTip = null;
-            //    BorderOutputFolder.ToolTip = null;
-            //}
-
-
-            
-
-            ////GenerateProjectEventResourceUI(UserProject);
-            
-
-        }
-
-        private void UpdateProjectXML(ProjectData ProjectData)
-        {
-            //if (ProjectData.ProjectEventResources == null) { ProjectData.ProjectEventResources = new(); }
-
-            //try
-            //{
-            //    XmlWriterSettings settings = new XmlWriterSettings();
-            //    settings.Indent = true;
-            //    settings.IndentChars = ("    ");
-            //    settings.CloseOutput = true;
-            //    settings.OmitXmlDeclaration = true;
-            //    using (XmlWriter writer = XmlWriter.Create(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + ProjectData.ProjectName + "\\" + "Project.xml", settings))
-            //    {
-            //        writer.WriteStartElement("Project"); //This is the root of the XML
-            //        writer.WriteElementString("VersionNumber", LibraryGES.VersionNumber.ToString());
-            //        writer.WriteElementString("VersionDate", LibraryGES.VersionDate);
-            //        writer.WriteElementString("NOTE", "The resources are (Project Event Resources) with a key matching (Workshop Event Resources).");
-            //        writer.WriteElementString("Seperator", "====================================================================================");
-            //        writer.WriteElementString("Name", ProjectData.ProjectName);
-            //        writer.WriteElementString("InputLocation", ProjectData.ProjectInputDirectory);
-            //        writer.WriteElementString("OutputLocation", ProjectData.ProjectOutputDirectory);
-
-            //        writer.WriteStartElement("ResourceList");
-            //        foreach (ProjectEventResource ProjectEventData in ProjectData.ProjectEventResources)
-            //        {
-            //            writer.WriteStartElement("Resource");
-            //            writer.WriteElementString("Name", WorkshopEventResources.Find(thing => thing.WorkshopResourceKey == ProjectEventData.ResourceKey).Name);
-            //            writer.WriteElementString("Key", ProjectEventData.ResourceKey);
-            //            writer.WriteElementString("Location", ProjectEventData.Location);
-            //            writer.WriteEndElement(); //End Event Resources
-            //        }
-            //        writer.WriteEndElement(); //End Event Resources
-
-            //        writer.WriteEndElement(); //End Project  AKA the Root of the XML   
-            //        writer.Flush(); //Ends the XML
-            //    }
-            //}
-            //catch
-            //{
-
-            //}
-
-            ////DataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
-            //string TheProjectFolder = LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + ProjectData.ProjectName + "\\";
-
-            //if (Directory.Exists(TheProjectFolder + "\\" + "Documents" + "\\"))  //Documents Folder
-            //{
-            //}
-            //else
-            //{
-            //    Directory.CreateDirectory(TheProjectFolder + "\\" + "Documents" + "\\");
-            //}
-
-            //if (Directory.Exists(TheProjectFolder + "\\" + "\\Documents\\LoadOrder.txt")) //LoadOrder.txt file
-            //{
-
-            //}
-            //else
-            //{
-            //    System.IO.File.WriteAllText(TheProjectFolder + "\\" + "\\Documents\\LoadOrder.txt", " ");
-            //}
-
-
-
-        }
-
-        private void ChangeProjectName(object sender, KeyEventArgs e)
-        {
-            //if (e.Key == Key.Enter)
-            //{
-
-            //    if (ProjectsSelector.SelectedIndex < 0 || ProjectNameTextbox.Text == "") { return; } //|| LibraryTreeOfWorkshops.SelectedItem == null
-
-            //    ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
-            //    string oldFolderPath = LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + UserProject.ProjectName;
-            //    string newFolderPath = LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopName + "\\" + ProjectNameTextbox.Text;
-
-            //    if (oldFolderPath == newFolderPath) { return; }
-
-            //    Directory.Move(oldFolderPath, newFolderPath);// Rename the folder at the old path to the new path
-
-            //    UserProject.ProjectName = ProjectNameTextbox.Text;
-
-            //    UpdateProjectXML(UserProject);
-
-
-
-
-            //    TreeViewItem selectedItem = LibraryTreeOfWorkshops.ItemContainerGenerator.ContainerFromItem(LibraryTreeOfWorkshops.SelectedItem) as TreeViewItem;
-            //    if (selectedItem != null) //This stuff makes it so the data grid updates.
-            //    {
-            //        selectedItem.IsSelected = false;
-            //        selectedItem.IsSelected = true;
-            //    }
-
-
-            //    foreach (var item in ProjectsSelector.Items)
-            //    {
-            //        if (item is ProjectDataItem dataItem && dataItem.ProjectName.Equals(ProjectNameTextbox.Text, StringComparison.OrdinalIgnoreCase))
-            //        {
-            //            // Found the project, select the row
-            //            ProjectsSelector.SelectedItem = item;
-            //            ProjectsSelector.ScrollIntoView(item); // Optional: Scroll to the item if it's not visible
-            //            break; // Stop the loop as we found the item
-            //        }
-            //    }
-            //}
-        }
-
-        private void OpenProjectFolder(object sender, RoutedEventArgs e)
-        {
-            MethodData MethodData = new();
-            MethodData.WorkshopData = WorkshopData;
-            CommandMethodsClass.OpenProjectFolder(MethodData);
-        }
-
-        private void OpenProjectInputFolder(object sender, RoutedEventArgs e)
-        {
-            MethodData MethodData = new();
-            MethodData.WorkshopData = WorkshopData;
-            CommandMethodsClass.OpenInputFolder(MethodData);
-        }
-       
-        private void OpenProjectOutputFolder(object sender, RoutedEventArgs e)
-        {
-            MethodData MethodData = new();
-            MethodData.WorkshopData = WorkshopData;
-            CommandMethodsClass.OpenOutputFolder(MethodData);
-        }
-
-        private void SetProjectOutputFolder(object sender, RoutedEventArgs e)
-        {
-            if (WorkshopData.ProjectDataItem == null) { return; }
-
-            VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog(); //This starts folder selection using Ookii.Dialogs.WPF NuGet Package
-            FolderSelect.Description = "Please select where files will save to."; //This sets a description to help remind the user what their looking for.
-            FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.        
-            {   //Smart seleting the folder to start in.
-                string outputPath = TextBoxOutputDirectory.Text + "\\";
-                DirectoryInfo? current = new DirectoryInfo(outputPath);
-                while (current != null && !current.Exists)
-                {
-                    current = current.Parent;
-                }
-                if (current != null)
-                {
-                    FolderSelect.SelectedPath = current.FullName + "\\";
-                }
-            }
-            if ((bool)FolderSelect.ShowDialog(Window.GetWindow(this))) //This triggers the folder selection screen, and if the user does not cancel out...
-            {                
-                WorkshopData.ProjectDataItem.ProjectOutputDirectory = FolderSelect.SelectedPath;
-                TextBoxOutputDirectory.Text = FolderSelect.SelectedPath;
-
-                UpdateProjectXML(WorkshopData.ProjectDataItem);//ProjectName, Input, Output     
-
-            }
-        }
-
-
-        private void SetProjectInputDirectory(object sender, RoutedEventArgs e)
-        {
-            //if (ProjectsSelector.SelectedIndex < 0) //|| LibraryTreeOfWorkshops.SelectedItem == null
-            //{
-            //    return;
-            //}
-
-            //VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog();//This starts folder selection using Ookii.Dialogs.WPF NuGet Package
-            //FolderSelect.Description = "Please select the folder named " + WorkshopInputDirectory; //This sets a description to help remind the user what their looking for.
-            //FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.
-            //{   //Smart seleting the folder to start in.
-            //    string inputPath = TextBoxInputDirectory.Text + "\\";
-            //    DirectoryInfo? current = new DirectoryInfo(inputPath);
-            //    while (current != null && !current.Exists)
-            //    {
-            //        current = current.Parent;
-            //    }
-            //    if (current != null)
-            //    {
-            //        FolderSelect.SelectedPath = current.FullName + "\\";
-            //    }
-            //}
-
-            //if ((bool)FolderSelect.ShowDialog(this)) //This triggers the folder selection screen, and if the user does not cancel out...
-            //{
-
-            //    //if (System.IO.File.ReadAllText(ExePath + "\\Workshops\\" + WorkshopName + "\\" +  WorkshopInputDirectory) == Path.GetFileName(FolderSelect.SelectedPath))
-            //    if (WorkshopProjectsRequireSameFolderName == false)
-            //    {
-            //        PixelWPF.LibraryPixel.NotificationPositive("You MAYBE selected the correct folder?",
-            //            "This workshop doesn't require a specific folder name to be selected. " +
-            //            "This is usually set when the input folder is one that users commonly want to be able to rename. " +
-            //            "\n\n" +
-            //            "If your not sure, I STRONGLY recommend checking the readme, as well as asking around. Well, i mean, you'll know if something is wrong if you launch your project and get a ton of errors. >_>;"
-            //        );
-
-            //        ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
-            //        UserProject.ProjectInputDirectory = FolderSelect.SelectedPath;
-            //        TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
-
-            //        UpdateProjectXML(UserProject);//ProjectName, Input, Output
-
-            //    }
-            //    else if (WorkshopInputDirectory == Path.GetFileName(FolderSelect.SelectedPath) && WorkshopProjectsRequireSameFolderName == true)
-            //    {
-            //        PixelWPF.LibraryPixel.NotificationPositive("You selected the correct folder!",
-            //            "The folder name you selected is the same as the one this workshop is looking for. " +
-            //            "This can only be wrong if you selected a folder with the exact same name, but a diffrent location."
-            //        );
-
-            //        ProjectDataItem UserProject = Projects[ProjectsSelector.SelectedIndex];
-            //        UserProject.ProjectInputDirectory = FolderSelect.SelectedPath;
-            //        TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
-
-            //        UpdateProjectXML(UserProject);//ProjectName, Input, Output
-
-
-            //    }
-            //    else
-            //    {
-            //        PixelWPF.LibraryPixel.NotificationNegative("Error: Wrong folder selected!",
-            //            "This workshop is looking for you to select a folder named \"" + WorkshopInputDirectory + "\"." +
-            //            "\n\n" +
-            //            "If your confused, check the README, or see if there are any helpful discords.");
-
-
-            //    }
-
-
-
-
-            //}
-        }
-
-
-
-        public void RefreshProjectEventResourcesUI(ProjectData UserProject)
-        {
-            LabelForMissingProjectResources.Visibility = Visibility.Collapsed;
-            ProjectEventResourcesPanel.Children.Clear();
-
-            if (UserProject == null)
-            {
-                return;
-            }
-
-            foreach (EventResource WorkshopEventResource in WorkshopData.WorkshopEventResources)
-            {
-                if (WorkshopEventResource.IsChild == true)
-                {
-                    continue;
-                }
-                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.CMDText)
-                {
-                    continue;
-                }
-
-
-
-
-                DockPanel MainPanel = new();
-                ProjectEventResourcesPanel.Children.Add(MainPanel);
-                DockPanel.SetDock(MainPanel, Dock.Top);
-                MainPanel.Margin = new Thickness(4, 2, 4, 7);
-
-                DockPanel TopPanel = new();
-                DockPanel.SetDock(TopPanel, Dock.Top);
-                MainPanel.Children.Add(TopPanel);
-                TopPanel.LastChildFill = false;
-
-                DockPanel BottomPanel = new();
-                DockPanel.SetDock(BottomPanel, Dock.Top);
-                MainPanel.Children.Add(BottomPanel);
-
-
-
-                Label Label = new();
-                TopPanel.Children.Add(Label);
-                DockPanel.SetDock(Label, Dock.Left);
-                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File && WorkshopEventResource.IsChild == false)
-                { Label.Content = "🗎   " + WorkshopEventResource.Name; }
-                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false)
-                { Label.Content = "📁 " + WorkshopEventResource.Name; }
-                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.CMDText && WorkshopEventResource.IsChild == false)
-                { Label.Content = "✎ " + WorkshopEventResource.Name; }
-
-                Button OpenButton = new();
-                TopPanel.Children.Add(OpenButton);
-                DockPanel.SetDock(OpenButton, Dock.Right);
-                OpenButton.Height = 30;
-                OpenButton.Content = " Open ";
-
-                Button BrowseButton = new();
-                TopPanel.Children.Add(BrowseButton);
-                DockPanel.SetDock(BrowseButton, Dock.Right);
-                BrowseButton.Width = 100;
-                BrowseButton.Height = 30;
-                BrowseButton.Margin = new Thickness(0, 0, 4, 0);
-                BrowseButton.Content = "Browse...";
-
-
-
-                //< Border CornerRadius = "8" BorderBrush = "Black"  BorderThickness = "1.5" Padding = "2" Background = "#FF18191B" >  < !--Background = "White"-- >
-                //        < TextBox x: Name = "ProjectNameTextbox" DockPanel.Dock = "Top" Margin = "0,0,0,0" Text = "New Project" KeyDown = "ChangeProjectName" Padding = "4"  BorderThickness = "0" />
-                // </ Border >
-
-                Border TextBorder = new Border();
-                BottomPanel.Children.Add(TextBorder);
-                TextBorder.CornerRadius = new CornerRadius(8);
-                TextBorder.BorderBrush = Brushes.Black;
-                TextBorder.BorderThickness = new Thickness(1.5);
-                TextBorder.Padding = new Thickness(2);
-                TextBorder.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#FF18191B"));
-
-                TextBox Textbox = new TextBox();
-                TextBorder.Child = Textbox;
-                Textbox.Padding = new Thickness(4);
-                Textbox.BorderThickness = new Thickness(0);
-                Textbox.Margin = new Thickness(0);
-                DockPanel.SetDock(Textbox, Dock.Left);
-                Textbox.IsEnabled = false;
-                foreach (ProjectEventResource ProjectEventData in UserProject.ProjectEventResources) //Copy 3
-                {
-                    if (WorkshopEventResource.Key == ProjectEventData.Key)
-                    {
-                        Textbox.Text = ProjectEventData.Location;
-                        TextBorder.ToolTip = ProjectEventData.Location;
-                    }
-
-                }
-
-
-                OpenButton.Click += (sender, e) =>
-                {
-                    if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File && WorkshopEventResource.IsChild == false)
-                    {
-                        LibraryGES.OpenFileFolder(Textbox.Text);
-                    }
-                    else if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false)
-                    {
-                        LibraryGES.OpenFolder(Textbox.Text);
-                    }
-                };
-
-                Label MissingLabel = new();
-                TopPanel.Children.Add(MissingLabel);
-                MissingLabel.Content = "Location Error!";
-                MissingLabel.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#FF440A0A"));
-                MissingLabel.Foreground = (SolidColorBrush)(new BrushConverter().ConvertFrom("#FFFF1800"));
-                MissingLabel.Padding = new Thickness(3, 1, 3, 3);
-                MissingLabel.BorderThickness = new Thickness(0);
-                MissingLabel.Height = 25;
-                MissingLabel.Margin = new Thickness(10, 0, 0, 0);
-                MissingLabel.Visibility = Visibility.Collapsed;
-                DockPanel.SetDock(Textbox, Dock.Left);
-                {
-                    //This all deals with making it clear to the user that resources are not set properly. 
-                    if (Textbox.Text != "" && !File.Exists(Textbox.Text) && WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File && WorkshopEventResource.IsChild == false) //If file does NOT exist!
-                    {
-                        LabelForMissingProjectResources.Visibility = Visibility.Visible;
-                        MissingLabel.Visibility = Visibility.Visible;
-
-                    }
-                    if (Textbox.Text != "" && !Directory.Exists(Textbox.Text) && WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false) //If folder does NOT exist!
-                    {
-                        LabelForMissingProjectResources.Visibility = Visibility.Visible;
-                        MissingLabel.Visibility = Visibility.Visible;
-
-                    }
-                    string finalPart = Path.GetFileName(Textbox.Text);
-                    if (Textbox.Text != "" && File.Exists(Textbox.Text) && WorkshopEventResource.RequiredName == true && finalPart != WorkshopEventResource.Location && WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File && WorkshopEventResource.IsChild == false) //If file does NOT exist!
-                    {
-                        LabelForMissingProjectResources.Visibility = Visibility.Visible;
-                        MissingLabel.Visibility = Visibility.Visible;
-
-                    }
-                    if (Textbox.Text != "" && Directory.Exists(Textbox.Text) && WorkshopEventResource.RequiredName == true && finalPart != WorkshopEventResource.Location && WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false) //If folder does NOT exist!
-                    {
-                        LabelForMissingProjectResources.Visibility = Visibility.Visible;
-                        MissingLabel.Visibility = Visibility.Visible;
-
-                    }
-                }
-
-
-
-                BrowseButton.Click += (sender, e) =>
-                {
-                    string TheString = "";
-
-                    if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File && WorkshopEventResource.IsChild == false)
-                    { TheString = LibraryGES.GetSelectedFilePath("Select a File"); }  //TYPE IF
-                    if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false)
-                    { TheString = LibraryGES.GetSelectedFolderPath("Select a Folder"); }  //TYPE IF
-
-
-
-                    if (TheString != null && TheString != "")
-                    {
-                        if (WorkshopEventResource.RequiredName == true)
-                        {
-                            if (Path.GetFileName(TheString) == WorkshopEventResource.Location)
-                            {
-                                Textbox.Text = TheString;
-
-
-                                foreach (ProjectEventResource ProjectEventResource in UserProject.ProjectEventResources) //Copy 1
-                                {
-                                    if (WorkshopEventResource.Key == ProjectEventResource.Key)
-                                    {
-                                        ProjectEventResource.Location = TheString;
-                                        MissingLabel.Visibility = Visibility.Collapsed;
-
-                                        CommandMethodsClass.SaveProjectXML(UserProject, WorkshopData);
-                                    }
-
-                                }
-
-
-                            }
-                            else
-                            {
-                                PixelWPF.LibraryPixel.NotificationNegative("Wrong File/Folder Selected", "This resource is set to require a specific name." +
-                                    "\n\nRequired Name:" +
-                                    "\n" + WorkshopEventResource.Location);
-                                //MessageBox.Show("You selected the wrong resource." +
-                                //    "\nSometimes a resource can require an exact matching name, this is one of those times." +
-                                //"\nYou must " + TheString + " with the name " + WorkshopEventResource.RequiredName, "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
-                            }
-                        }
-                        else
-                        {
-                            Textbox.Text = TheString;
-                            foreach (ProjectEventResource ProjectEventResource in UserProject.ProjectEventResources) //Copy 2
-                            {
-                                if (WorkshopEventResource.Key == ProjectEventResource.Key)
-                                {
-                                    ProjectEventResource.Location = TheString;
-                                    MissingLabel.Visibility = Visibility.Collapsed;
-                                    CommandMethodsClass.SaveProjectXML(UserProject, WorkshopData);
-                                }
-
-                            }
-                        }
-
-
-                    }
-
-                };
-
-            }
-        }
-
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////HOME/////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //
-        //
-        //        
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////EDITOR PROPERTIES//////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        public bool thing = false;
-               
-
-        private void TextboxChangeEditorName(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                if (PropertiesTextboxEditorName.Text == "") 
-                {
-                    PropertiesTextboxEditorName.Text = EditorClass.EditorName;
-                    return; //If the user tries to set the editor name to nothing, just return.
-                }
-
-                WorkshopData.GameEditors.Remove(EditorClass.EditorName);
-                EditorClass.EditorName = PropertiesTextboxEditorName.Text;
-                EditorClass.EditorNameLabel.Content = EditorClass.EditorName;
-                WorkshopData.GameEditors.Add(EditorClass.EditorName, EditorClass);
-                
-                UpdateEditorButton(EditorClass);
-            }
-        }
-        
-
-        //NOTE: I did a LOT of research on sprites sizes, and 60 is PERFECT for a editor icon size. 
-        //it's very rare for icons to be 70+ that are hard to crop, and everything 30 under can be multiplied in size. 
-        //While icons size 42 probably can't be cropped and doubled, it's close enough to be on-style.
-        //meanwhile vs 50 max, not only do we get sprites size 50~60+ with cropping, but more small sprites can multiply their size to average out more effectivly. 
-
-        public void UpdateEditorButton(Editor AnEditor)
-        {
-            //if (EditorClass.EditorName != "")
-            //{
-            //    EditorClass.EditorNameLabel.Content = EditorClass.EditorName;
-            //}
-            //else if(EditorClass.EditorName == "")
-            //{
-            //    EditorClass.EditorNameLabel.Content = "??? " + En;
-            //}
-
-
-            return;
-
-            System.Windows.Controls.Image image = AnEditor.EditorImage;
-
-            BitmapSource bitmap = image.Source as BitmapSource; 
-            int scale = CalculateIntegerScale(bitmap.PixelWidth, bitmap.PixelHeight, 120, 90);
-
-            int CalculateIntegerScale(int originalWidth, int originalHeight, int maxWidth, int maxHeight)
-            {
-                int scaleX = maxWidth / originalWidth;
-                int scaleY = maxHeight / originalHeight;
-                int scale = Math.Min(scaleX, scaleY);
-                return Math.Max(1, scale); // Never go below 1x
-            }
-
-            {
-                image.Source = bitmap;
-                image.Width = bitmap.PixelWidth * scale;
-                image.Height = bitmap.PixelHeight * scale;
-                image.Stretch = Stretch.None;
-                image.HorizontalAlignment = HorizontalAlignment.Center;
-                image.VerticalAlignment = VerticalAlignment.Center;
-                //image.HorizontalAlignment = HorizontalAlignment.Left;
-                //image.VerticalAlignment = VerticalAlignment.Top;
-                image.SnapsToDevicePixels = true;
-                image.UseLayoutRounding = true;  // https://learn.microsoft.com/en-us/dotnet/api/system.windows.frameworkelement.uselayoutrounding?view=windowsdesktop-9.0
-                //image.ClipToBounds = true;  //This actually caused problems where the leftmost and topmost pixel lines were being minorly shrunk to like half size (subpixel nonsense)
-
-                //image.MaxWidth = 120;
-                //image.MaxHeight = 90;
-
-                //image.MinWidth = 75;
-                //image.MaxHeight = 75;    
-                //image.MinWidth = 60;
-                //image.MaxHeight = 62;                
-                //AnEditor.EditorDock2.MinWidth = 85;
-
-                RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.NearestNeighbor);
-
-                image.Margin = new Thickness(3, 3, 3, 0);
-                image.Stretch = Stretch.UniformToFill;
-            }
-                        
-
-            //image.MaxWidth = 0;
-            //AnEditor.EditorDock2.MaxWidth = 9999999;
-            //AnEditor.EditorDock2.UpdateLayout(); 
-
-            //double DockWidth = AnEditor.EditorDock2.ActualWidth;
-
-            //image.MaxWidth = 100;
-            //image.MaxHeight = 100;
-            //AnEditor.EditorDock2.MaxWidth = DockWidth;
-            //AnEditor.EditorDock2.UpdateLayout();
-
-            //If Dock is wider then 100 AND image width, make the text wrap to line 2. 
-
-            //{
-            //    AnEditor.EditorImage.MinWidth = 60;
-            //    AnEditor.EditorImage.MaxHeight = 62;
-            //    AnEditor.EditorImage.HorizontalAlignment = HorizontalAlignment.Center;
-            //    AnEditor.EditorImage.VerticalAlignment = VerticalAlignment.Center;
-            //    AnEditor.EditorImage.ClipToBounds = true;
-            //    AnEditor.EditorImage.SnapsToDevicePixels = true;
-            //    AnEditor.EditorImage.UseLayoutRounding = true; // https://learn.microsoft.com/en-us/dotnet/api/system.windows.frameworkelement.uselayoutrounding?view=windowsdesktop-9.0
-            //    RenderOptions.SetBitmapScalingMode(AnEditor.EditorImage, BitmapScalingMode.NearestNeighbor);
-
-            //    AnEditor.EditorImage.Margin = new Thickness(0, 0, 0, 0);
-            //}
-
-            //AnEditor.EditorImage.Stretch = Stretch.UniformToFill;
-
-            //AnEditor.EditorImage.MaxWidth = 0;
-            //AnEditor.EditorDock2.MaxWidth = 9999999;
-            //AnEditor.EditorDock2.UpdateLayout();
-
-            //double DockWidth = AnEditor.EditorDock2.ActualWidth;
-
-            //AnEditor.EditorImage.MaxWidth = double.PositiveInfinity;
-            //AnEditor.EditorDock2.MaxWidth = DockWidth;
-            //AnEditor.EditorDock2.UpdateLayout();
-
-            //if (AnEditor.EditorImage.ActualHeight > 62)
-            //{
-            //    AnEditor.EditorImage.Stretch = Stretch.Uniform;
-            //}
-
-
-
-            //AnEditor.EditorImage.StretchDirection = StretchDirection.UpOnly;
-        }
-
-
-        private void ChangeEditorMainTableStartByte(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                
-                int NewStart = Int32.Parse(PropertiesEditorTableStart.Text);
-                int OldStart = EditorClass.StandardEditorData.DataTableStart;
-                int NumMod = NewStart - OldStart;
-
-
-
-
-                //This next ForEach part makes it so if any of the new final 3 bytes of what would be the new offsets are part
-                //of a merged entry, that the table start change is canceled. 
-
-                foreach (Entry entry in EditorClass.StandardEditorData.MasterEntryList)
-                {
-                    //This makes a number called Hoi. Hoi is the new Row offset, if the editor actually changed the start byte of the file it's editing.
-                    //if it underflows, it adds tablewidth. If it overflows, it removes tablewidth. So it's always a number inside GameTableSize.
-                    int Hoi = entry.RowOffset + -NumMod;
-                    if (Hoi < 0) { Hoi = Hoi + EditorClass.StandardEditorData.DataTableRowSize; }
-                    if (Hoi > EditorClass.StandardEditorData.DataTableRowSize - 1) { Hoi = Hoi - EditorClass.StandardEditorData.DataTableRowSize; }
-
-                    if (Hoi == EditorClass.StandardEditorData.DataTableRowSize - 1) //If the new Zero minus One'th entry is already part of a size 2 entry, cancel.
-                    {
-                        if (entry.Bytes == 2)
-                        {
-                            PropertiesEditorTableStart.Text = OldStart.ToString();
-                            return;
-                        }
-
-                    }
-
-                    //If the new Zero -1, or -2, or -3 entrys are already part of a size 4 entry, cancel.
-                    if (Hoi == EditorClass.StandardEditorData.DataTableRowSize - 1 || Hoi == EditorClass.StandardEditorData.DataTableRowSize - 2 || Hoi == EditorClass.StandardEditorData.DataTableRowSize - 3)
-                    {
-                        if (entry.Bytes == 4)
-                        {
-                            PropertiesEditorTableStart.Text = OldStart.ToString();
-                            return;
-                        }
-
-                    }
-                }
-
-
-                //We have not triggered a cancelation, and are now going to actually change the table start.
-
-                EditorClass.StandardEditorData.DataTableStart = NewStart; //Changes the starting byte of the editor's table, to the new one the user wanted.
-                foreach (Entry entry in EditorClass.StandardEditorData.MasterEntryList)
-                {
-                    entry.RowOffset = entry.RowOffset + -NumMod;
-                    if (entry.RowOffset < 0) { entry.RowOffset = entry.RowOffset + EditorClass.StandardEditorData.DataTableRowSize; }
-                    if (entry.RowOffset > EditorClass.StandardEditorData.DataTableRowSize - 1) { entry.RowOffset = entry.RowOffset - EditorClass.StandardEditorData.DataTableRowSize; }
-                    entry.EntryPrefix.Content = entry.RowOffset.ToString();
-
-                    WorkshopData.EntryManager.LoadEntry(this, EditorClass, entry);
-                }
-                
-            }
-
-            // +/- 1 to all offsets?
-            // If NewOffset > RowSize: NewOffset - RowSize and reload ByteValue + Entry
-        }
-
-
-
-
-
-
-
-        private void ChangeNameTableStartByte(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                int Num = int.Parse(PropertiesEditorNameTableStartByte.Text);
-
-                if (Num < 0)
-                {
-
-                    PropertiesEditorNameTableStartByte.Text = EditorClass.StandardEditorData.NameTableStart.ToString();
-                    PixelWPF.LibraryPixel.NotificationNegative("Error: Start byte cannot be less then 0",
-                        "I'm not sure why you tried to do this, but it's obviously not allowed. " +
-                        "\n\n" +
-                        "If this was not a mistake and there is a reason i don't understand why this would ever be desired, " +
-                        "you can tell me on discord and i'll consider not explicitly preventing this behavior." +
-                        "\n\n" +
-                        "The textbox has been reset to it's previous value. "
-                        );
-                    
-                    return;
-                }
-
-
-
-
-                EditorClass.StandardEditorData.NameTableStart = Num;
-                CharacterSetManager CharacterManager = new();
-                CharacterManager.Decode(this, EditorClass, "Items");
-                
-                foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView))
-                {
-                    ItemInfo ItemInfo = TreeViewItem.Tag as ItemInfo;
-                    ItemNameBuilder(TreeViewItem);
-
-                }
-            }
-        }
-
-
-        
-
-        private void EditorCharacterSetDropdownClose(object sender, EventArgs e)
-        {
-            if (IsPreviewMode == true) { return; }
-
-            if (EditorClass.StandardEditorData.NameTableCharacterSet == PropertiesEditorNameTableCharacterSetDropdown.Text) 
-            {
-                return;
-            }
-
-
-            EditorClass.StandardEditorData.NameTableCharacterSet = PropertiesEditorNameTableCharacterSetDropdown.Text;
-            CharacterSetManager CharacterManager = new();
-            CharacterManager.Decode(this, EditorClass, "Items");
-                       
-
-            foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView))
-            {
-                ItemInfo ItemInfo = TreeViewItem.Tag as ItemInfo;
-                ItemNameBuilder(TreeViewItem);
-
-            }
-        }
-        //string Error = "";
-        //Notification f2 = new(Error);
-        //f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-        //f2.ShowDialog();
-
-
-        private void ChangeNameTableTextSize(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                int Num = int.Parse(PropertiesEditorNameTableTextSize.Text);
-
-                if (Num < 0)
-                {
-
-                    PropertiesEditorNameTableTextSize.Text = EditorClass.StandardEditorData.NameTableTextSize.ToString();
-                    PixelWPF.LibraryPixel.NotificationNegative("Error: Name Table Text Size cannot be less then 0",
-                        "This value is how many letters / characters are being read from a file. " +
-                        "Hopefully it is obvious why this number cannot be less then 0." +
-                        "\n\n" +
-                        "The textbox has been reset to it's previous value. "
-                        );                    
-                    return;
-                }
-
-
-
-                EditorClass.StandardEditorData.NameTableTextSize = Num;
-                //CharacterSetAscii SetAscii = new();
-                //SetAscii.DecodeAscii(EditorClass, EditorClass.NameTableFile.FileBytes);
-                CharacterSetManager CharacterManager = new();
-                CharacterManager.Decode(this, EditorClass, "Items");
-                foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView))
-                {
-                    ItemInfo ItemInfo = TreeViewItem.Tag as ItemInfo;
-                    ItemNameBuilder(TreeViewItem);
-
-                }
-            }
-        }
-
-        private void ChangeNameTableRowSize(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                int Num = int.Parse(PropertiesEditorNameTableRowSize.Text);
-
-                if (Num < 0)
-                {
-
-                    PropertiesEditorNameTableRowSize.Text = EditorClass.StandardEditorData.NameTableRowSize.ToString();
-                    PixelWPF.LibraryPixel.NotificationNegative("Error: Name Row Size cannot be less then 0.",
-                        "If you got confused, the Row Size is how many bytes are in 1 FULL Row of a table, not just how many bytes of text your dealing with." +
-                        "\n\n" +
-                        "Fow example..." +
-                        "\n01 02 03 04 05 00 00 00" +
-                        "\n01 02 03 04 05 00 00 00" +
-                        "\n\n" +
-                        "The Row Size here is 8, but the text size is 5. (Well actually text size is probably 7, The max text size + a 00 byte)" +
-                        "\n\n" +
-                        "The textbox has been reset to it's previous value. "
-                        );
-                    return;
-                }
-
-
-
-                EditorClass.StandardEditorData.NameTableRowSize = Num;
-                //CharacterSetAscii SetAscii = new();
-                //SetAscii.DecodeAscii(EditorClass, EditorClass.NameTableFile.FileBytes);
-                CharacterSetManager CharacterManager = new();
-                CharacterManager.Decode(this, EditorClass, "Items");                
-                foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView))
-                {
-                    ItemInfo ItemInfo = TreeViewItem.Tag as ItemInfo;
-                    ItemNameBuilder(TreeViewItem);
-
-                }
-            }
-        }
-
-        
-        private bool CheckValidDataTableInfo()
-        {
-            string value = null;
-            try
-            {
-                byte[] TheFileBytes = EntryClass.EntryEditor.StandardEditorData.FileDataTable.FileBytes;
-                int StartByte = int.Parse(PropertiesEditorTableStart.Text);
-                int RowSize = int.Parse(PropertiesEditorTableWidth.Text);   
-                int RowCount = int.Parse(PropertiesEditorNameCount.Text);  //Aka name count.
-                value = TheFileBytes[StartByte + (RowCount * RowSize) + (RowSize-1)].ToString("D");
-                return true;
-                
-            }
-            catch
-            {
-                //Note: Compare each against their source in EntryClass to see if they even match and callout the actual problem.
-                PixelWPF.LibraryPixel.NotificationNegative("Error!",
-                    "This checks if the data table has any actual data located at byte (Data Table Start Byte + (NameCount * RowSize)). " +
-                    "It seems like thats beyond the end of the data table file (data that doesn't exist). " +
-                    "This data is used to fill out entrys, so it's important that it actually exists :P" +
-                    "\n\n" +
-                    "List of possible causes..." +
-                    "\n1: You were editing the start byte and set it starting way to far into the file." +
-                    "\n2: You were editing row size and set it way to large" +
-                    "\n3: You were editing Name Count and set more names then the data table actually has." +
-                    "\n4: You were editing some combination of the three and put in the wrong numbers." +
-                    "\n\n" +
-                    "Note: Your change was stopped / reverted. Also this is not a problem with the program, it's a safeguard. "
-                    );
-
-                PropertiesEditorTableStart.Text = EditorClass.StandardEditorData.DataTableStart.ToString();
-                PropertiesEditorTableWidth.Text = EditorClass.StandardEditorData.DataTableRowSize.ToString();
-                PropertiesEditorNameCount.Text = EditorClass.StandardEditorData.NameTableItemCount.ToString();
-                PropertiesEditorNameTableTextSize.Text = EditorClass.StandardEditorData.NameTableTextSize.ToString();
-                PropertiesEditorNameTableRowSize.Text = EditorClass.StandardEditorData.NameTableRowSize.ToString();
-                PropertiesEditorNameTableStartByte.Text = EditorClass.StandardEditorData.NameTableStart.ToString();
-
-                if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.TextFile) { PropertiesEditorNameCount.Text = (EditorClass.StandardEditorData.NameTableItemCount - 1).ToString(); }
-
-                return false;
-            }
-        }
-
-        private void ChangeNameTableNameCount(object sender, KeyEventArgs e)
-        {
-            //value = EntryClass.EntryEditor.SWData.FileDataTable.FileBytes[EntryClass.EntryEditor.SWData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
-
-            if (e.Key == Key.Enter)
-            {
-                bool Valid = CheckValidDataTableInfo();
-                if (Valid == false) { return; }
-
-
-                //All counts are treated as -1, in order to make it so humans can better understand items. This way item 22 is the one with number 22, not 23. (Due to 0 being a number)
-                int NewNameCount = Int32.Parse(PropertiesEditorNameCount.Text);
-                int OldNameCount = EditorClass.StandardEditorData.NameTableItemCount - 1;
-                int Diffrence = NewNameCount - OldNameCount;
-                if (NewNameCount < 1)
-                {
-                    PixelWPF.LibraryPixel.Notification("Notice: Lol no.",
-                    "As a precautionary measure against any accidents, attempting to delete ALL items is not allowed." +
-                    "\n\n" +
-                    "The textbox has been reset to it's previous value. "
-                    );                    
-
-                    PropertiesEditorNameCount.Text = OldNameCount.ToString();
-                    return;
-                }
-
-                if (Diffrence > 0) //If more names
-                {
-
-                    ////This part would be to prevent crash if new name count goes beyond max possible name count of file. 
-                    //int MaxNames = 4;
-                    //if (NewNameCount > MaxNames) 
-                    //{
-                    //    string Error = "You tried to add more names then even exist in the file." +
-                    //    "\n" +
-                    //    "\n";
-                    //    Notification f2 = new(Error);
-                    //    f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                    //    f2.ShowDialog();
-                    //    PropertiesEditorNameCount.Text = OldNameCount.ToString();
-                    //    return;
-                    //}
-
-                    for (int i = OldNameCount; i != NewNameCount; i++)
-                    {
-                        TreeViewItem TreeItem = new();
-                        ItemInfo ItemInfo = new();
-                        TreeItem.Tag = ItemInfo;
-                        ItemInfo.ItemIndex = i + 1;
-
-
-
-                        EditorClass.StandardEditorData.EditorLeftDockPanel.ItemList.Add(ItemInfo);
-                        EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.Items.Add(TreeItem);
-
-
-                    }
-
-
-                    //CharacterSetAscii Encoding = new();
-                    //Encoding.DecodeAscii(EditorClass, EditorClass.NameTableFile.FileBytes);
-                    CharacterSetManager CharacterManager = new();
-                    CharacterManager.Decode(this, EditorClass, "Items");                    
-                    foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView))
-                    {
-                        ItemInfo ItemInfo = TreeViewItem.Tag as ItemInfo;
-                        ItemNameBuilder(TreeViewItem);
-
-                    }
-
-                    EditorClass.StandardEditorData.NameTableItemCount = NewNameCount + 1;
-
-
-                }
-                else if (Diffrence < 0) //If less names
-                {
-                    //Delete treeview items that have offsets X~Y.
-                    //
-                    for (int i = Diffrence; i != 0; i++)
-                    {
-                        int Target = OldNameCount + 1 + i; //i is a negative so we add it to lower the number.
-                        foreach (TreeViewItem Item in EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.Items)
-                        {
-                            ItemInfo ItemInfo = Item.Tag as ItemInfo;
-                            if (ItemInfo.ItemIndex == Target)
-                            {
-                                EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.Items.Remove(Item);
-                                EditorClass.StandardEditorData.EditorLeftDockPanel.ItemList.Remove(ItemInfo);
-                                break;
-                            }
-                            if (ItemInfo.IsFolder == true)
-                            {
-                                foreach (TreeViewItem childItem in Item.Items)
-                                {
-                                    ItemInfo childItemInfo = childItem.Tag as ItemInfo;
-                                    if (childItemInfo.ItemIndex == Target)
-                                    {
-                                        // If the child item has the target index, remove it
-                                        Item.Items.Remove(childItem);
-                                        EditorClass.StandardEditorData.EditorLeftDockPanel.ItemList.Remove(childItemInfo);
-                                        break;
-                                    }
-                                }
-
-                            }
-
-                        }
-
-
-                    }
-                    EditorClass.StandardEditorData.NameTableItemCount = NewNameCount + 1;
-
-                }
-            }
-        }
-
-
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////EDITOR PROPERTIES//////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //
-        //
-        //
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////LEFT BAR ITEM PROPERTIES////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-        public void CreateFolder(TreeView TreeView, TreeViewItem TreeViewItem) 
-        {
-            ItemInfo TreeViewItemInfo = TreeViewItem.Tag as ItemInfo;
-            if (TreeViewItemInfo.IsFolder == true || TreeViewItemInfo.IsChild == true) { return; }
-
-            TreeViewSelectionEnabled = false;
-
-
-            int selectedIndex = TreeView.ItemContainerGenerator.IndexFromContainer(TreeViewItem);   
-            TreeView.Items.Remove(TreeViewItem);
-
-            TreeViewItem FolderItem = new TreeViewItem();
-            ItemInfo FolderItemInfo = new();
-            FolderItem.Tag = FolderItemInfo;
-
-            FolderItemInfo.ItemName = "New Folder";
-            FolderItemInfo.IsFolder = true;
-            if (TreeViewItem.Tag is ItemInfo itemInfo)
-            {
-                itemInfo.IsChild = true;
-            }
-
-            
-            TreeView.Items.Insert(selectedIndex, FolderItem);
-            FolderItem.Items.Add(TreeViewItem);
-            ItemNameBuilder(FolderItem); //Created the Header text as a TextBlockItem
-
-
-            FolderItem.IsExpanded = true;
-            TreeViewSelectionEnabled = true;
-            TreeViewItem.IsSelected = true;
-
-            ContextMenu contextMenu = new ContextMenu();
-            
-            MenuItem MenuItemDeleteFolder = new MenuItem();
-            MenuItemDeleteFolder.Header = "Delete Folder (If Empty)";
-            MenuItemDeleteFolder.Click += (sender, e) => DeleteFolder(TreeView, FolderItem);
-            contextMenu.Items.Add(MenuItemDeleteFolder);
-
-            FolderItem.ContextMenu = contextMenu;
-        }
-
-        public void DeleteFolder(TreeView TreeView, TreeViewItem TreeViewItem) 
-        {
-            ItemInfo TreeViewItemInfo = TreeViewItem.Tag as ItemInfo;
-            if (TreeViewItemInfo.IsFolder == false || TreeViewItem.Items.Count > 0) { return; } 
-
-            TreeViewSelectionEnabled = false;            
-            TreeView.Items.Remove(TreeViewItem);
-            TreeViewSelectionEnabled = true;
-        }
-       
-
-        
-
-        public void ItemNameBuilder(TreeViewItem TreeItem) 
-        {
-            ItemInfo ItemInfo = TreeItem.Tag as ItemInfo;
-            TextBlock TextBlockItem = new TextBlock();
-
-            if (ItemInfo.IsFolder == false)
-            {
-                if (LibraryGES.ShowItemIndex == true)
-                {
-                    Run RunIndex = new Run();
-                    RunIndex.Text = ItemInfo.ItemIndex + ": ";
-                    TextBlockItem.Inlines.Add(RunIndex);
-                }                
-
-                
-            }
-
-            if (ItemInfo.IsFolder == true)
-            {
-                Run RunFolder = new Run();
-                RunFolder.Foreground = Brushes.Yellow;
-                RunFolder.Text = "📁";
-                TextBlockItem.Inlines.Add(RunFolder);
-
-                Run RunFolderCount = new Run();
-                RunFolderCount.Text = "(" + TreeItem.Items.Count.ToString() + ") ";
-                TextBlockItem.Inlines.Add(RunFolderCount);
-                                
-            }
-
-            Run RunMain = new Run();
-            RunMain.Text = ItemInfo.ItemName;
-            TextBlockItem.Inlines.Add(RunMain);
-
-            Run RunNote = new Run();
-            RunNote.Text = " " + ItemInfo.ItemNote;
-            RunNote.Foreground = Brushes.Orange; // Set the foreground to red   DeepSkyBlue
-            TextBlockItem.Inlines.Add(RunNote);
-
-            if (ItemInfo.ItemWorkshopTooltip == "")
-            {
-                TreeItem.ToolTip = null;
-                RunMain.TextDecorations = null;
-
-            }
-            if (ItemInfo.ItemWorkshopTooltip != "") 
-            { 
-                TreeItem.ToolTip = ItemInfo.ItemWorkshopTooltip;
-                RunMain.TextDecorations = TextDecorations.Underline;
-            }
-
-
-            TreeItem.Header = TextBlockItem;
-
-            foreach (Editor TheEditor in WorkshopData.GameEditors.Values) //Super quick and dirty way to update entrys from other editors that are using this editors names. (Menu Link To Editor)
-            {
-                if (TheEditor.EditorType == "DataTable") 
-                {
-                    foreach (Entry entry in TheEditor.StandardEditorData.MasterEntryList)
-                    {
-                        if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor && entry.EntryTypeMenu.LinkedEditor != null)
-                        {
-                            if (entry.EntryTypeMenu.LinkedEditor == EditorClass)
-                            {
-                                if (entry.EntryByteDecimal == null) { return; } //This stops a blank from being created for a dropdown because its loading before the ByteDecimal is loaded, but also probably other misc problems.
-                                                                                   //IE i should totally not have this code chunk here, but im still to lazy to impliment this properly, so here goes this ultra bad answer i will regret later! :D
-
-                                WorkshopData.EntryManager.EntryChange(WorkshopData, EntrySubTypes.Menu, this, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
-                            }
-                        }
-                    }
-                    
-                }
-            }
-        }               
-
-        public bool TreeViewSelectionEnabled = true;
-
-        
-
-        
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////LEFT BAR ITEM PROPERTIES////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //
-        //
-        //
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////PAGE PROPERTIES///////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////PAGE PROPERTIES///////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //
         //
         //
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1752,57 +208,43 @@ namespace GameEditorStudio
         public void CreateNewRowAbove(Category TheCat)
         {
             Category NewRow = new();
-            NewRow.SWData = TheCat.SWData;
+            NewRow.DTEData = TheCat.DTEData;
 
-            int TheIndex = TheCat.SWData.CategoryList.IndexOf(TheCat);
-            NewRow.SWData.CategoryList.Insert(TheIndex, NewRow);
+            int TheIndex = TheCat.DTEData.CategoryList.IndexOf(TheCat);
+            NewRow.DTEData.CategoryList.Insert(TheIndex, NewRow);
 
 
-            StandardEditorSetup CreateSWEditorCode = new();
+            DTESetup CreateSWEditorCode = new();
             CreateSWEditorCode.CreateCategory(NewRow);
-
-
-            Column ColumnClass = new();
-            NewRow.ColumnList.Add(ColumnClass);
-            ColumnClass.ColumnRow = NewRow;
-            CreateSWEditorCode.CreateColumn(ColumnClass);
-
         }
 
 
         public void CreateNewRowBelow(Category TheCat)
         {
             Category NewRow = new();
-            NewRow.SWData = TheCat.SWData;
+            NewRow.DTEData = TheCat.DTEData;
 
-            int TheIndex = TheCat.SWData.CategoryList.IndexOf(TheCat) + 1;
-            NewRow.SWData.CategoryList.Insert(TheIndex, NewRow);
+            int TheIndex = TheCat.DTEData.CategoryList.IndexOf(TheCat) + 1;
+            NewRow.DTEData.CategoryList.Insert(TheIndex, NewRow);
 
 
-            StandardEditorSetup CreateSWEditorCode = new();
+            DTESetup CreateSWEditorCode = new();
             CreateSWEditorCode.CreateCategory(NewRow);
-
-
-            Column ColumnClass = new();
-            NewRow.ColumnList.Add(ColumnClass);
-            ColumnClass.ColumnRow = NewRow;
-            CreateSWEditorCode.CreateColumn(ColumnClass);
-
         }
 
         public void MoveRowUp(Category TheCat) 
         {
-            int primaryIndex = TheCat.SWData.MainDockPanel.Children.IndexOf(TheCat.CatBorder);
+            int primaryIndex = TheCat.DTEData.MainDockPanel.Children.IndexOf(TheCat.CatBorder);
             if (primaryIndex != 0)
             {
                 var secondaryIndex = primaryIndex - 1;
-                Category primary = TheCat.SWData.CategoryList[primaryIndex];
-                Category secondary = TheCat.SWData.CategoryList[secondaryIndex];
+                Category primary = TheCat.DTEData.CategoryList[primaryIndex];
+                Category secondary = TheCat.DTEData.CategoryList[secondaryIndex];
 
-                TheCat.SWData.MainDockPanel.Children.Remove(primary.CatBorder);
-                TheCat.SWData.CategoryList.RemoveAt(primaryIndex);
-                TheCat.SWData.MainDockPanel.Children.Insert(secondaryIndex, primary.CatBorder);
-                TheCat.SWData.CategoryList.Insert(secondaryIndex, primary);
+                TheCat.DTEData.MainDockPanel.Children.Remove(primary.CatBorder);
+                TheCat.DTEData.CategoryList.RemoveAt(primaryIndex);
+                TheCat.DTEData.MainDockPanel.Children.Insert(secondaryIndex, primary.CatBorder);
+                TheCat.DTEData.CategoryList.Insert(secondaryIndex, primary);
 
             }
         }
@@ -1810,60 +252,37 @@ namespace GameEditorStudio
 
         public void MoveRowDown(Category TheCat) 
         {
-            int primaryIndex = TheCat.SWData.MainDockPanel.Children.IndexOf(TheCat.CatBorder);
-            if (primaryIndex + 1 < TheCat.SWData.CategoryList.Count)
+            int primaryIndex = TheCat.DTEData.MainDockPanel.Children.IndexOf(TheCat.CatBorder);
+            if (primaryIndex + 1 < TheCat.DTEData.CategoryList.Count)
             {
                 var secondaryIndex = primaryIndex + 1;
-                Category primary = TheCat.SWData.CategoryList[primaryIndex];
-                Category secondary = TheCat.SWData.CategoryList[secondaryIndex];
+                Category primary = TheCat.DTEData.CategoryList[primaryIndex];
+                Category secondary = TheCat.DTEData.CategoryList[secondaryIndex];
 
-                TheCat.SWData.MainDockPanel.Children.Remove(primary.CatBorder);
-                TheCat.SWData.CategoryList.RemoveAt(primaryIndex);
-                TheCat.SWData.MainDockPanel.Children.Insert(primaryIndex + 1, primary.CatBorder);
-                TheCat.SWData.CategoryList.Insert(secondaryIndex, primary);
+                TheCat.DTEData.MainDockPanel.Children.Remove(primary.CatBorder);
+                TheCat.DTEData.CategoryList.RemoveAt(primaryIndex);
+                TheCat.DTEData.MainDockPanel.Children.Insert(primaryIndex + 1, primary.CatBorder);
+                TheCat.DTEData.CategoryList.Insert(secondaryIndex, primary);
 
             }
         }
 
         public void RowDelete(Category TheCat) 
         {
-            if (TheCat.ColumnList.Count == 0 || (TheCat.ColumnList.Count == 1 && TheCat.ColumnList[0].ItemBaseList.Count == 0) )
+            DTEMethods.UpdateEditorGrids(TheCat.DTEData);
+            if (TheCat.GridItems.Count == 0)
             {
-                TheCat.SWData.MainDockPanel.Children.Remove(TheCat.CatBorder);
-                TheCat.SWData.CategoryList.Remove(TheCat);
-                LibraryGES.GotoRightBarGeneralTab(this);
+                TheCat.DTEData.MainDockPanel.Children.Remove(TheCat.CatBorder);
+                TheCat.DTEData.CategoryList.Remove(TheCat);
+                //LibraryGES.GotoRightBarGeneralTab(this);
             }
-            
-            //Add a IF: count all entrys in all columns in this row, and do IF that is 0.
-            //Be careful about other Rows updating their Row order!
+            DTEMethods.UpdateEditorGrids(TheCat.DTEData);
+            //Possibly delete this and make row reletion automatic.
+            //Although, a user might lose important information in a category tooltip. 
+
         }
 
 
-
-
-        private void PropertiesRowNameBox_KeyDownEnter(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                CategoryClass.CategoryName = PropertiesRowNameBox.Text;
-                CategoryClass.CategoryLabel.Content = PropertiesRowNameBox.Text;
-            }
-        }
-
-        private void PropertiesRowTooltipBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            CategoryClass.Tooltip = PropertiesRowTooltipBox.Text;            
-            if (PropertiesRowTooltipBox.Text == "")
-            {
-                CategoryClass.TooltipGrid.ToolTip = null;
-                CategoryClass.CategoryUnderline.Visibility = Visibility.Collapsed;
-            }
-            else 
-            {
-                CategoryClass.TooltipGrid.ToolTip = CategoryClass.Tooltip;
-                CategoryClass.CategoryUnderline.Visibility = Visibility.Visible;
-            }
-        }
 
 
 
@@ -1874,590 +293,15 @@ namespace GameEditorStudio
         //
         //
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////COLUMN PROPERTIES/////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////GOOGLE SHEETS///////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-        public void CreateNewColumnRight(Column TheColumn)
-        {
-            Column Column = new();
-            Column.ColumnRow = TheColumn.ColumnRow;
-
-            int TheIndex = TheColumn.ColumnRow.ColumnList.IndexOf(TheColumn) + 1;
-            Column.ColumnRow.ColumnList.Insert(TheIndex, Column);
-
-
-            StandardEditorSetup CreateSWEditorCode = new();
-            CreateSWEditorCode.CreateColumn(Column);
-
-        }
-
-        public void CreateNewColumnLeft(Column TheColumn)
-        {
-            Column Column = new();
-            Column.ColumnRow = TheColumn.ColumnRow;
-
-            int TheIndex = TheColumn.ColumnRow.ColumnList.IndexOf(TheColumn);
-            Column.ColumnRow.ColumnList.Insert(TheIndex, Column);
-
-
-            StandardEditorSetup CreateSWEditorCode = new();
-            CreateSWEditorCode.CreateColumn(Column);
-
-        }
-
-        public void ColumnDelete(Column TheColumn)
-        {
-            if (TheColumn.ItemBaseList.Count == 0)
-            {
-                TheColumn.ColumnRow.CategoryDockPanel.Children.Remove(TheColumn.ColumnPanel);
-                TheColumn.ColumnRow.ColumnList.Remove(TheColumn);
-
-                //LibraryMan.GotoGeneralEditor(this);
-                
-
-            }
-
-
-            if (TheColumn.ColumnRow.ColumnList.Count == 0)
-            {
-                TheColumn.ColumnRow.SWData.MainDockPanel.Children.Remove(TheColumn.ColumnRow.CatBorder);
-                TheColumn.ColumnRow.SWData.CategoryList.Remove(TheColumn.ColumnRow);
-            }
-            
-
-            //I need to delete from memory?
-
-            //I WILL need to be careful about other columns updating their column order, because it WILL be used for the order they are drawn in? 
-            //wait but rows dont actually save their order as a number to XML. ???
-
-        }
-
-
-
-        private void PropertiesColumnNameTextBox_KeyDown(object sender, KeyEventArgs e)
-        {           
-
-            if (e.Key == Key.Enter)
-            {
-                ColumnClass.ColumnName = PropertiesColumnNameBox.Text;
-                ColumnClass.ColumnLabel.Content = PropertiesColumnNameBox.Text;
-
-            }
-        }
-
-
-
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////COLUMN PROPERTIES///////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //
-        //
-        //
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////GROUP PROPERTIES///////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        private void PropertiesGroupNameTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                GroupClass.GroupName = PropertiesGroupNameBox.Text;
-                GroupClass.GroupLabel.Content = PropertiesGroupNameBox.Text;
-                
-
-            }
-        }
-
-        private void PropertiesGroupTooltipTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            GroupClass.GroupTooltip = PropertiesGroupTooltipBox.Text;
-
-            //Hook into a Update Group Tooltip method.
-            if (PropertiesGroupTooltipBox.Text == "") 
-            {
-                GroupClass.GroupUnderline.Visibility = Visibility.Collapsed;
-                GroupClass.TooltipGrid.ToolTip = null;
-            }
-            if (PropertiesGroupTooltipBox.Text != "")
-            {
-                GroupClass.GroupUnderline.Visibility = Visibility.Visible;
-                GroupClass.TooltipGrid.ToolTip = GroupClass.GroupTooltip;
-            }
-        }
-        
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////GROUP PROPERTIES////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //
-        //
-        //
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////ENTRY PROPERTIES///////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-        private void PropertiesEntryNameBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                EntryClass.Name = PropertiesNameBox.Text;
-                
-                UpdateEntryName(EntryClass);
-
-
-            }
-        }
-
-        public void UpdateEntryName(Entry TheEntry) 
-        {           
-
-
-            WorkshopData.EntryManager.LoadEntry(this, EditorClass, EntryClass);
-
-            StandardEditorMethods.UpdateEntryName(EntryClass);
-
-            //Dispatcher.InvokeAsync(() => StandardEditorMethods.LabelWidth(EntryClass.EntryColumn), System.Windows.Threading.DispatcherPriority.Loaded);
-            StandardEditorMethods.LabelWidth(EntryClass.EntryColumn);
-        }
-        
-
-        private void HideNameCheckboxChecked(object sender, RoutedEventArgs e)
-        {
-            EntryClass.IsNameHidden = true;
-            PropertiesNameBox.IsEnabled = false;
-            StandardEditorMethods.UpdateEntryName(EntryClass);
-            //EntryClass.EntryLabel.Visibility = Visibility.Collapsed;
-        }
-
-        private void HideNameCheckboxUnchecked(object sender, RoutedEventArgs e)
-        {
-            EntryClass.IsNameHidden = false;
-            PropertiesNameBox.IsEnabled = true;
-            StandardEditorMethods.UpdateEntryName(EntryClass);
-            //EntryClass.EntryLabel.Visibility = Visibility.Visible;
-        }
-
-        private void HideEntryCheckboxChecked(object sender, RoutedEventArgs e)
-        {
-            //If saving is disabled, changes to this entry will not be saved.
-            //This is useful to explicitly prevent users from messing with things that crash the game.
-            //Also can be used for other reasons.            
-
-            EntryClass.IsEntryHidden = true;            
-            EditorClass.StandardEditorData.SelectedEntry.EntryBorder.Style = (Style)Application.Current.Resources["HiddenSelectedEntryStyle"];
-            WorkshopData.EntryManager.EntryChange(WorkshopData, EntryClass.NewSubType, this, EntryClass);
-            
-            //NOTE: These also trigger when a entry is selected, because the checkbox is updated.
-        }
-
-        private void HideEntryCheckboxUnchecked(object sender, RoutedEventArgs e)
-        {
-           
-            EntryClass.IsEntryHidden = false;
-            if (EntryClass.IsTextInUse == false) 
-            {
-                EditorClass.StandardEditorData.SelectedEntry.EntryBorder.Style = (Style)Application.Current.Resources["SelectedEntryStyle"]; 
-            }            
-            WorkshopData.EntryManager.EntryChange(WorkshopData, EntryClass.NewSubType, this, EntryClass);
-        }
-
-        
-
-        private void PropertiesEntryType_DropDownClosed(object sender, EventArgs e)
-        {
-            string asdf = PropertiesEntryType.Text;
-            EntrySubTypes NewEntryType = (EntrySubTypes)Enum.Parse(typeof(EntrySubTypes), asdf);
-
-            if (NewEntryType == Entry.EntrySubTypes.Menu) //Cancel method IF: A Menu-Type entry wants to become size-4.
-            {
-                if (PropertiesEntryByteSizeComboBox.Text == "4 Bytes Little Endian" || PropertiesEntryByteSizeComboBox.Text == "4 Bytes Big Endian")
-                {
-
-                    string FindEntryType = EntryClass.NewSubType.ToString();  //Entry Type Dropdown Menu.
-                    foreach (ComboBoxItem item in PropertiesEntryType.Items)
-                    {
-                        if (item.Content.ToString() == FindEntryType)
-                        {
-                            PropertiesEntryType.SelectedItem = item;
-                            break;
-                        }
-                    }
-                    
-                    return;
-                }
-            }
-            
-
-            WorkshopData.EntryManager.EntryChange(WorkshopData, NewEntryType, this, EntryClass);
-
-            EntryManager EManager = new();
-            EManager.EntryBecomeActive(EntryClass);
-            EManager.UpdateEntryProperties(EditorClass.StandardEditorData.SelectedEntry);
-        }
-
-
-
-        private void PropertiesEntryByteSizeComboBox_DropDownClosed(object sender, EventArgs e)
-        {
-            if (EntryClass.Endianness != PropertiesEntryByteSizeComboBox.Text) //Cancel method IF: The combobox text did not change.
-            {
-                string FindEntryByteSize = "Dummy";
-                if (EntryClass.Endianness == "1") { FindEntryByteSize = "1 Byte"; } //This makes it so the entrys current type appears in the properties dropdown.
-                if (EntryClass.Endianness == "2L") { FindEntryByteSize = "2 Bytes Little Endian"; }
-                if (EntryClass.Endianness == "2B") { FindEntryByteSize = "2 Bytes Big Endian"; }
-
-
-                //Cancel method IF: Entry is attempting to merge with an already merged entry.
-                if (PropertiesEntryByteSizeComboBox.Text == "2 Bytes Little Endian" || PropertiesEntryByteSizeComboBox.Text == "2 Bytes Big Endian")
-                {
-                    foreach (Entry entry in EditorClass.StandardEditorData.MasterEntryList)
-                    {
-                        if (entry.RowOffset == EntryClass.RowOffset + 1)
-                        {
-                            if (entry.Bytes == 2)
-                            {
-                                PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                PixelWPF.LibraryPixel.NotificationNegative("Error: Entry not merged.",
-                                    "You cannot merge an entry, with an entry that is already merged with something else. " +
-                                    "\n\n" +
-                                    "If your confused, entrys merge with those next in offset decimal order, not those that are just under them in the UI. "
-                                    );
-                                return;
-                            }
-                            if (entry.IsEntryHidden == true || entry.IsTextInUse == true)
-                            {
-                                PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                PixelWPF.LibraryPixel.NotificationNegative("Error: Entry not merged.",
-                                    "You cannot merge an entry, with an entry that is disabled. " +
-                                    "\n\n" +
-                                    "Disabled entrys have a red color tint and users can't edit them. " +
-                                    "Entrys can be disabled for a few reasons. One, they are disabled automatically if they are text used in the editor. " +
-                                    "Two, an editor maker can choose to disable them manually. As for why, there are any number of reasons, but one example " +
-                                    "is if editing that information causes the game to crash. " +
-                                    "\n\n" +
-                                    "You can manually un-disable the entry, but entrys related to text will automatically re-disable themself when the editor loads back up, " +
-                                    "even if you save them as non-disabled."
-                                    );
-                                return;
-                            }
-                        }
-                    }
-                    
-                }
-
-                //Cancel method IF: Entry is attempting to merge with an already merged entry.
-                if (PropertiesEntryByteSizeComboBox.Text == "4 Bytes Little Endian" || PropertiesEntryByteSizeComboBox.Text == "4 Bytes Big Endian")
-                {
-                    foreach (Entry entry in EditorClass.StandardEditorData.MasterEntryList)
-                    {
-                        if (entry.RowOffset == EntryClass.RowOffset + 1 || entry.RowOffset == EntryClass.RowOffset + 2 || entry.RowOffset == EntryClass.RowOffset + 3)
-                        {
-                            if (entry.Bytes == 2 || entry.Bytes == 4)
-                            {
-                                PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                PixelWPF.LibraryPixel.NotificationNegative("Error: Entry not merged.",
-                                   "You cannot merge an entry, with an entry that is already merged with something else. " +
-                                   "\n\n" +
-                                   "Atleast one of the 4 bytes / entrys you were attempting to merge with, is already merged. " +
-                                   "If your confused, entrys merge with those next in offset decimal order, not those that are just under them in the UI. "
-                                    );
-                                return;
-                            }
-                            if (entry.IsEntryHidden == true || entry.IsTextInUse == true)
-                            {
-                                PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                                PixelWPF.LibraryPixel.NotificationNegative("Error: Entry not merged.",
-                                    "You cannot merge an entry, with an entry that is disabled. " +
-                                    "\n\n" +
-                                    "atleast one of the 4 entrys you were trying to merge, is disabled." +
-                                    "\n\n" +
-                                    "Disabled entrys have a red color tint and users can't edit them. " +
-                                    "Entrys can be disabled for a few reasons. One, they are disabled automatically if they are text used in the editor. " +
-                                    "Two, an editor maker can choose to disable them manually. As for why, there are any number of reasons, but one example " +
-                                    "is if editing that information causes the game to crash. " +
-                                    "\n\n" +
-                                    "You can manually un-disable the entry, but entrys related to text will automatically re-disable themself when the editor loads back up, " +
-                                    "even if you save them as non-disabled."
-                                );
-                                return;
-                            }
-                        }
-                    }
-                    
-                }
-
-
-
-
-
-                if (EntryClass.NewSubType == Entry.EntrySubTypes.Menu) //Cancel method IF: A Menu-Type entry wants to become size-4.
-                {
-                    if (PropertiesEntryByteSizeComboBox.Text == "4 Bytes Little Endian" || PropertiesEntryByteSizeComboBox.Text == "4 Bytes Big Endian")
-                    {
-
-                        foreach (ComboBoxItem item in PropertiesEntryByteSizeComboBox.Items)
-                        {
-                            if (item.Content.ToString() == FindEntryByteSize)
-                            {
-                                PropertiesEntryByteSizeComboBox.SelectedItem = item;
-                                break;
-                            }
-                        }
-
-                        PixelWPF.LibraryPixel.NotificationNegative("Not yet available D:",
-                                    "I have no idea how to make a UI for a 4 byte menu that isn't ridiculously laggy, so i'm just not letting you do this until i figure it out, sorry! x3" +
-                                    "\n\n" +
-                                    "You can still make a 2 byte menu, and i've never seen a game with a menu that actually has more then the 65535 options to select, so i'm hoping this isn't a real problem for you. If it is, reach out to me on discord." +
-                                    "\n\n" +
-                                    "Anyway, i'm aware some games will just have a 4 byte menu anyway where it doesn't use bytes 3 and 4. You can set the 3rd and 4th entry to hidden and the editor will still look proper :)" +
-                                    "" +
-                                    ""
-                        );
-
-                        return;
-                    }
-                }
-
-                int OldSize = EntryClass.Bytes;
-                int NewSize = 999;
-                string NewSizeS = "x";
-
-
-                if (PropertiesEntryByteSizeComboBox.Text == "1 Byte") { NewSize = 1; NewSizeS = "1"; }
-                if (PropertiesEntryByteSizeComboBox.Text == "2 Bytes Little Endian") { NewSize = 2; NewSizeS = "2L"; }
-                if (PropertiesEntryByteSizeComboBox.Text == "4 Bytes Little Endian") { NewSize = 4; NewSizeS = "4L"; }
-                if (PropertiesEntryByteSizeComboBox.Text == "2 Bytes Big Endian") { NewSize = 2; NewSizeS = "2B"; }
-                if (PropertiesEntryByteSizeComboBox.Text == "4 Bytes Big Endian") { NewSize = 4; NewSizeS = "4B"; }
-
-                List<Entry> targets = new();
-
-                if (EntryClass.RowOffset <= EditorClass.StandardEditorData.DataTableRowSize - NewSize) //Cancel method IF: New size would overflow off the end of GameTableSize
-                {
-
-
-                    EntryClass.Endianness = NewSizeS;
-                    EntryClass.Bytes = NewSize;
-
-                    if (EntryClass.EntryTypeMenu != null) 
-                    {
-                        if (EntryClass.EntryTypeMenu.NothingNameList != null)
-                        {
-                            if (NewSize == 1)
-                            {
-                                string[] items = EntryClass.EntryTypeMenu.NothingNameList;
-                                Array.Resize(ref items, 256);
-                                EntryClass.EntryTypeMenu.NothingNameList = items;
-                                EntryClass.EntryTypeMenu.ListSize = 256;
-                            }
-                            if (NewSize == 2)
-                            {
-                                string[] items = EntryClass.EntryTypeMenu.NothingNameList;
-                                Array.Resize(ref items, 65536);
-                                EntryClass.EntryTypeMenu.NothingNameList = items;
-                                EntryClass.EntryTypeMenu.ListSize = 65536;
-                            }
-                            //if (NewSize == 4)
-                            //{
-                            //    string[] items = EntryClass.EntryTypeMenu.NothingNameList;
-                            //    Array.Resize(ref items, 4294967296);
-                            //    EntryClass.EntryTypeMenu.NothingNameList = items;
-                            //    EntryClass.EntryTypeMenu.ListSize = 4294967296;
-                            //}
-                        }
-                    }
-
-
-
-
-
-                    //EntryData.ReloadEntry(Database, EditorClass, EntryClass);
-                    WorkshopData.EntryManager.LoadEntry(this, EditorClass, EntryClass);
-
-
-
-                    //i need to add a check to make sure the next entrys are currently ALL ByteSize 1, if even one is not, cancel the process.
-
-
-                    //Below is what happens to OTHER ENTRYS, NOT the main entry having it's size changed.
-
-
-                    
-
-
-                    List<int> list = new();
-
-                    //if Old smaller then new
-                    if (OldSize < NewSize)
-                    {
-                        foreach (int i in Enumerable.Range(Math.Min(OldSize, NewSize), Math.Abs(OldSize - NewSize)))
-                        {
-                            list.Add(EntryClass.RowOffset + i);
-                        }
-                        foreach (var num in list)
-                        {
-                            foreach (var entry in EditorClass.StandardEditorData.MasterEntryList)
-                            {
-                                if (entry.RowOffset == num) //Search for entry with offset+1 over current entry.  Offset+X
-                                {
-                                    entry.Endianness = "0";
-                                    entry.Bytes = 0;
-                                    WorkshopData.EntryManager.LoadEntry(this, EditorClass, entry);
-                                    entry.EntryBorder.Visibility = Visibility.Collapsed;
-
-                                    targets.Add(entry);
-
-                                }
-                            }
-                        }
-                    }
-
-                    //This makes sure when a entry is hidden / merged, that it is relocated to wherever the primary entry is.
-                    
-
-                    ////if Old bigger then new
-                    if (OldSize > NewSize)
-                    {
-                        foreach (int i in Enumerable.Range(Math.Min(OldSize, NewSize), Math.Abs(OldSize - NewSize))) //.OrderByDescending(x => x)
-                        {
-                            list.Add(EntryClass.RowOffset + i);
-                        }
-                        foreach (var num in list)
-                        {
-                            foreach (Entry entry in EditorClass.StandardEditorData.MasterEntryList)
-                            {
-                                if (entry.RowOffset == num) //Search for entry with offset+1 over current entry.  Offset+X
-                                {
-                                    entry.Endianness = "1";
-                                    entry.Bytes = 1;
-                                    WorkshopData.EntryManager.LoadEntry(this, EditorClass, entry);
-                                    //EntryData.ReloadEntry(Database, EditorClass, entry);
-                                    entry.EntryBorder.Visibility = Visibility.Visible;
-
-                                    targets.Add(entry);
-
-                                }
-                            }
-                            
-                        }
-                    }
-
-
-                    foreach (var entry in targets)
-                    {
-
-                        if (entry.EntryGroup == null)
-                        {
-                            entry.EntryColumn.ItemBaseList.Remove(entry);
-                            entry.EntryColumn.ColumnPanel.Children.Remove(entry.EntryBorder);
-                        }
-                        if (entry.EntryGroup != null)
-                        {
-                            entry.EntryGroup.EntryList.Remove(entry);
-                            entry.EntryGroup.GroupPanel.Children.Remove(entry.EntryBorder);
-                            entry.EntryGroup = null;
-                        }
-
-                        if (EntryClass.EntryGroup == null)
-                        {
-                            int EntryLocation = ColumnClass.ColumnPanel.Children.IndexOf(EntryClass.EntryBorder) - 1; //Counting starts at 1, but the first child is 0.
-                            int Diffrence = entry.RowOffset - EntryClass.RowOffset;
-                            ColumnClass.ItemBaseList.Insert(EntryLocation + Diffrence, entry);
-                            ColumnClass.ColumnPanel.Children.Insert(EntryLocation + Diffrence + 1, entry.EntryBorder);
-                        }
-                        if (EntryClass.EntryGroup != null)
-                        {
-                            int EntryLocation = EntryClass.EntryGroup.GroupPanel.Children.IndexOf(EntryClass.EntryBorder) - 1; //Counting starts at 1, but the first child is 0.
-                            int Diffrence = entry.RowOffset - EntryClass.RowOffset;
-                            EntryClass.EntryGroup.EntryList.Insert(EntryLocation + Diffrence, entry);
-                            EntryClass.EntryGroup.GroupPanel.Children.Insert(EntryLocation + Diffrence + 1, entry.EntryBorder);
-                        }
-
-
-
-
-                        entry.EntryRow = EntryClass.EntryRow;  //  PageClass.RowList[rowIndex + 1];
-                        entry.EntryColumn = EntryClass.EntryColumn;   //PageClass.RowList[rowIndex + 1].ColumnList[0];
-
-                        if (EntryClass.EntryGroup != null)
-                        {
-                            entry.EntryGroup = EntryClass.EntryGroup;
-                        }
-                    }
-
-
-
-                    //I am currently not allowing size 4+ of Lists, i don't know that any game that uses more then 65K options to select from in one menu.
-                    //I ACTUALLY NEED TO ADD THIS. ITS NOT ABOUT GAMES NOT NEEDING IT, IT'S ABOUT THAT THE FUCKING DO IT ANYWAY, AND NOT SUPPORTING IT MAKES EDITORS LOOK UGLY!!! (AND IS MISLEADING TO USERS!)
-
-                    //if (NewSize == 4)
-                    //{
-                    //    string[] items = EntryClass.ListItems;
-                    //    Array.Resize(ref items, 4294967296);
-                    //    EntryClass.ListItems = items;
-                    //}
-
-
-
-
-                }//end of IF Row Overflow  //Makes sure byte size only changes if it won't overflow off the end of GameTableSize
-                else
-                {
-                    PropertiesEntryByteSizeComboBox.Text = FindEntryByteSize;
-                }
-
-            }//End of IF
-
-            UpdateSymbology(EntryClass);
-            UpdateEntryDecorationsForAllEditors();
-            
-        }
-
-
-
-
-        
-
-        private void SetNumberboxUnsigned(object sender, RoutedEventArgs e)
-        {   
-            EntryClass.EntryTypeNumberBox.NewNumberSign = EntryTypeNumberBox.TheNumberSigns.Unsigned;
-
-            EntryManager EntryManager = new();
-            EntryManager.LoadEntry(this, EditorClass, EntryClass);
-
-            if (TheCrossReference != null)
-            {
-                TheCrossReference.FillLearnBox(EditorClass, EntryClass);
-            }
-        }
-
-        private void SetNumberboxSigned(object sender, RoutedEventArgs e)
-        {
-            EntryClass.EntryTypeNumberBox.NewNumberSign = EntryTypeNumberBox.TheNumberSigns.Signed;
-
-            EntryManager EntryManager = new();
-            EntryManager.LoadEntry(this, EditorClass, EntryClass);
-
-            if (TheCrossReference != null)
-            {
-                TheCrossReference.FillLearnBox(EditorClass, EntryClass);
-            }
-        }
-
-
-
-
-        /////////////////////////////////////// END OF ENTRY DATA ///////////////////////////////////
-        /////////////////////////////////////// GOOGLE SHEETS ///////////////////////////////////////
 
 
         public void HIDEMOST() 
         {
-            DockPanelHome.Visibility = Visibility.Collapsed;
+            //DockPanelHome.Visibility = Visibility.Collapsed;
 
 
             if (UCGraphicsEditor != null) { MidGrid.Children.Remove(UCGraphicsEditor); }
@@ -2467,11 +311,10 @@ namespace GameEditorStudio
 
         public void HIDEALL() 
         {
-            foreach (KeyValuePair<string, Editor> editor in WorkshopData.GameEditors)
+            foreach (Editor editor in WorkshopData.GameEditors)
             {
-                editor.Value.EditorBackPanel.Visibility = Visibility.Collapsed;
+                editor.EditorVisual.Visibility = Visibility.Collapsed;
             }
-            DockPanelHome.Visibility = Visibility.Collapsed;          
 
             if (UCGraphicsEditor != null) { MidGrid.Children.Remove(UCGraphicsEditor); }
             if (TextSourceManager != null) { MidGrid.Children.Remove(TextSourceManager); }
@@ -2481,9 +324,6 @@ namespace GameEditorStudio
 
         }
 
-        
-
-        
 
         
                 
@@ -2506,304 +346,38 @@ namespace GameEditorStudio
             // Mark the event as handled so it doesn't propagate further
             e.Handled = true;
         }
-
         
-                
-
-        private void ApplyFormulaToEntryAcrossAllItems(object sender, RoutedEventArgs e)
-        {
-            //Almost everything here uses doubles instead of ints to make ABSOLUTELY FUCKING SURE nothing EVER goes out of range, even when adding more value types or using large negatives from super robot wars / disgaea.
-            //FormulaComboBox
-            //FormulaTextBox
-
-            if (IsPreviewMode == true) { return; }
-
-            if (EntryClass.IsEntryHidden == true || EntryClass.IsTextInUse == true) { return; } //prevents users from axidentally modding values that should be otherwise already disabled.
-            if (EntryClass.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Signed) { return; }
-
-            //if (EntryClass.EntryByteSize != "1") { return; } //temporary
-
-            int FinalItem = 0;
-            try
-            {                
-                if (EditorClass.StandardEditorData.NameTableItemCount != 0) { FinalItem = EditorClass.StandardEditorData.NameTableItemCount; }
-                if (EditorClass.StandardEditorData.NameTableItemCount == 0)
-                {
-                    int ItemCount = 0;
-                    foreach (var Item in EditorClass.StandardEditorData.EditorLeftDockPanel.ItemList)
-                    {
-                        if (Item.IsFolder == false)
-                        {
-                            ItemCount++;
-                        }
-                    }
-                    FinalItem = ItemCount;
-                }
-                FinalItem = FinalItem - int.Parse(FormulaDoNotModTextBox.Text); //Allows users to NOT mod the final X number of items in the list.
-            }
-            catch 
-            {
-                PixelWPF.LibraryPixel.NotificationNegative("Error: ",
-                    "An error happened during the first step of auto-mod. " +
-                    "In this step, it simply tries to count how many items it's going to mod. " +
-                    "This error can probably only appear if the editor is not getting it's item names from an actual game file. " +
-                    "\n\n" +
-                    "Anyway, Auto-mod will now cancel. Nothing has been changed."
-                    );
-                return;
-            }
-            
-            
-            for (int i = 0; i < FinalItem; i++) 
-            {
-
-                try 
-                {
-                    //Get Current Value Step
-                    double CurrentValue = 0; //Will cause conflicts with negative numbers so im ignoring them for now. (Maybe i can support negative byte sizes 1 and 2 easily though ?)                
-                    if (EntryClass.Endianness == "1")
-                    {
-                        EntryClass.EntryByteDecimal = EditorClass.StandardEditorData.FileDataTable.FileBytes[EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
-                        CurrentValue = EditorClass.StandardEditorData.FileDataTable.FileBytes[EditorClass.StandardEditorData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset];
-                    }
-                    if (EntryClass.Endianness == "2B")
-                    {
-                        EntryClass.EntryByteDecimal = BitConverter.ToUInt16(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
-                        CurrentValue = BitConverter.ToUInt16(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
-                    }
-                    if (EntryClass.Endianness == "4B")
-                    {
-                        EntryClass.EntryByteDecimal = BitConverter.ToUInt32(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
-                        CurrentValue = BitConverter.ToUInt32(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
-                    }
-                    if (EntryClass.Endianness == "2L")
-                    {
-                        ushort WrongValue = BitConverter.ToUInt16(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
-                        CurrentValue = (ushort)IPAddress.HostToNetworkOrder((short)WrongValue); // Swaps the endianness
-                    }
-                    if (EntryClass.Endianness == "4L")
-                    {
-                        uint value = BitConverter.ToUInt32(EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (EditorClass.StandardEditorData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
-                        byte[] valueBytes = BitConverter.GetBytes(value);    // Swaps the endianness
-                        Array.Reverse(valueBytes);                           // Swaps the endianness
-                        CurrentValue = BitConverter.ToUInt32(valueBytes, 0); // Swaps the endianness
-                    }
-
-                    //set above as IF size 1
-                    //make more for IF size 2L 2B 4L 4B
-                    double NewValue = 0;
-
-                    if (FormulaComboBox.Text == "Multiply") //Multiply Step
-                    {
-                        double multiplier = 1;
-                        string formulaText = FormulaTextBox.Text.Trim().TrimEnd('%');
-
-                        if (double.TryParse(formulaText, out double percentage)) //the max size of a double is 9 quadrillion, so it should never cause any size limit errors.
-                        {
-                            multiplier = percentage / 100;
-                        }
-                        else
-                        {
-                            return;
-                        }
-
-                        double MathResult = CurrentValue * multiplier;
-                        NewValue = (double)Math.Round(MathResult);
-
-                    }
-
-                    if (FormulaComboBox.Text == "Add") //Add Step
-                    {
-                        NewValue = CurrentValue + double.Parse(FormulaTextBox.Text);
-                    }
-
-                    if (FormulaComboBox.Text == "Subtract") //Subtract Step
-                    {
-                        NewValue = CurrentValue - double.Parse(FormulaTextBox.Text);
-                    }
-
-                    //MIN Step
-                    if (FormulaMinTextBox.Text != "" && FormulaMinTextBox.Text != null) { if (NewValue < double.Parse(FormulaMinTextBox.Text)) { NewValue = double.Parse(FormulaMinTextBox.Text); } }
-                    if (NewValue < 0) { NewValue = 0; } //True Min Step
-
-                    //MAX Step
-                    if (FormulaMaxTextBox.Text != "" && FormulaMaxTextBox.Text != null) { if (NewValue > double.Parse(FormulaMaxTextBox.Text)) { NewValue = double.Parse(FormulaMaxTextBox.Text); } }
-                    if (EntryClass.Endianness == "1" && NewValue > 255) { NewValue = 255; } //True Max Step
-                    if (EntryClass.Endianness == "2B" && NewValue > 65535) { NewValue = 65535; }
-                    if (EntryClass.Endianness == "2L" && NewValue > 65535) { NewValue = 65535; }
-                    if (EntryClass.Endianness == "4B" && NewValue > 4294967295) { NewValue = 4294967295; }
-                    if (EntryClass.Endianness == "4L" && NewValue > 4294967295) { NewValue = 4294967295; }
-
-
-
-
-
-                    //Saving Step
-                    string Result = NewValue.ToString();
-
-                    if (EntryClass.Endianness == "1")  // This is saving 1 Byte Size?   // First 1 byte save
-                    {
-                        Byte.TryParse(Result, out byte value8);
-                        { ByteManager.ByteWriter(value8, EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset); }
-                    }
-                    if (EntryClass.Endianness == "2L")
-                    {
-                        UInt16.TryParse(Result, out ushort value16);
-                        value16 = (ushort)IPAddress.HostToNetworkOrder((short)value16); // Swap the endianness
-                        { ByteManager.ByteWriter(value16, EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 2 byte save
-
-
-                    }
-                    if (EntryClass.Endianness == "4L")
-                    {
-                        UInt32.TryParse(Result, out uint value32);
-                        byte[] valueBytes = BitConverter.GetBytes(value32); // Swap the endianness
-                        Array.Reverse(valueBytes); // Swap the endianness
-                        value32 = BitConverter.ToUInt32(valueBytes, 0); // Swap the endianness
-                        { ByteManager.ByteWriter(value32, EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 4 byte save
-
-                    }
-                    if (EntryClass.Endianness == "2B")
-                    {
-                        UInt16.TryParse(Result, out ushort value16);
-                        { ByteManager.ByteWriter(value16, EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 2 byte save
-                    }
-                    if (EntryClass.Endianness == "4B")
-                    {
-                        UInt32.TryParse(Result, out uint value32);
-                        { ByteManager.ByteWriter(value32, EditorClass.StandardEditorData.FileDataTable.FileBytes, EditorClass.StandardEditorData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset); } //First 4 byte save
-                    }
-
-                    //FormulaMinTextBox
-                    //FormulaMaxTextBox
-                }
-                catch 
-                {
-                    PixelWPF.LibraryPixel.NotificationNegative("Error: ???",
-                        "An error happened during the actual modifying of data in memory." +
-                        "\nThis means some of the items have been changed, and others have not." +
-                        "\nNothing has been saved to actual files on the computer, so don't worry." +
-                        "\n" +
-                        "\nHowever, this is a very serious error. It is strongly recommended you close the program WITHOUT saving your game files." +
-                        "\n" +
-                        "\nI chose not to automatically force crash the program, to give you a chance to save some non-game file related things first. " +
-                        "before you close everything, in the workshop menu you may save your documents, common events, and editors, but absolutely do not save your game files. " +
-                        "If you do, you will save them with only some items being changed, but not all of them." 
-                    );
-                    return;
-                }
-
-
-            }
-
-
-
-
-
-
-
-        }
-
-        
-
-        public void EntryListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (IsPreviewMode == true) { return; }
-
-            ListViewItem ListItem = EntryListBox.SelectedItem as ListViewItem;
-            //TextBlock TheBlock = ListItem.Content as TextBlock;
-            string selectedItem = ListItem.Content.ToString();
-
-            EntryClass.EntryTypeMenu.ListButton.Content = selectedItem; //TheBlock;
-
-            //Emanager.SaveList(EntryClass);
-            string input = (string)EntryClass.EntryTypeMenu.ListButton.Content; //selectedItem; //
-            string[] parts = input.Split(':');
-            string number = parts[0].Trim();
-            EntryClass.EntryByteDecimal = number; // Console.WriteLine(number); // Output: 24
-
-
-            WorkshopData.EntryManager.SaveEntry(EntryClass.EntryEditor, EntryClass);
-            WorkshopData.EntryManager.UpdateEntryProperties(EditorClass.StandardEditorData.SelectedEntry);
-
-
-            foreach (TabItem tabItem in MainTabControl.Items)
-            {
-                if (tabItem.Header != null && tabItem.Header.ToString() == PreviousTabName)
-                {
-                    tabItem.IsSelected = true;
-                    break;
-                }
-            }
-
-        }
-
-        
-
-        private void DoThing2(object sender, RoutedEventArgs e)
-        {
-            HIDEMOST();
-            TextSourceManager TheUserControl = new TextSourceManager();
-            MidGrid.Children.Add(TheUserControl);
-            TheUserControl.SetupForMenu(EntryClass, EntryListBox, WorkshopData, this);
-            TextSourceManager = TheUserControl;
-        }
-
-
-        private void ToggleItemIDNumberVisibility(object sender, RoutedEventArgs e)
-        {
-            if (LibraryGES.ShowItemIndex == false)
-            {
-                LibraryGES.ShowItemIndex = true;
-            }
-            else if (LibraryGES.ShowItemIndex == true)
-            {
-                LibraryGES.ShowItemIndex = false;  
-            }
-            
-            foreach (var editor in WorkshopData.GameEditors)
-            {
-                if (editor.Value.EditorType == "DataTable")
-                {   
-                    foreach (TreeViewItem TreeItem in LibraryGES.GetALLTreeViewItems(editor.Value.StandardEditorData.EditorLeftDockPanel.TreeView))
-                    {
-                        ItemNameBuilder(TreeItem);
-                    }
-                }
-
-            }
-        }
-
-
-        private void EntryNoteTextboxTextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (EditorClass == null) { return; }
-            EditorClass.StandardEditorData.SelectedEntry.WorkshopTooltip = EntryNoteTextbox.Text;
-            StandardEditorMethods.UpdateEntryName(EditorClass.StandardEditorData.SelectedEntry);
-        }
-
-        private void PropertiesMenuType_DropDownClosed(object sender, EventArgs e)
-        {            
-            if (DropdownMenuType.Text == "Dropdown") { EntryClass.EntryTypeMenu.MenuType = EntryTypeMenu.MenuTypes.Dropdown; }
-            else if (DropdownMenuType.Text == "List") { EntryClass.EntryTypeMenu.MenuType = EntryTypeMenu.MenuTypes.List; }
-              
-            WorkshopData.EntryManager.EntryChange(WorkshopData, EntrySubTypes.Menu, this, EntryClass);
-        }
-
-        private void ListLostFocus(object sender, RoutedEventArgs e)
-        {            
-            
-        }
 
 
         public void UpdateSymbology(Entry EntryClass)
-        {            
-            EntryClass.Symbology.Content = "";
-            EntryClass.Symbology.Width = 48;
-            EntryClass.Symbology.Foreground = Brushes.White;
-            EntryClass.Symbology.FontSize = 20;
+        {
+            if (LibraryGES.ShowSymbology == true)
+            {
+                EntryClass.Symbology.Visibility = Visibility.Visible;
+            }
+            if (LibraryGES.ShowSymbology == false)
+            {
+                EntryClass.Symbology.Visibility = Visibility.Collapsed;
+            }
 
-            if (IsPreviewMode == true) { return; }
+            DataTableEditorData DTEData = EntryClass.ParentEditor.DataTableEditorData;
+
+            
+
+            EntryClass.Symbology.Content = "No";
+            EntryClass.Symbology.Width = 48;
+            EntryClass.Symbology.Foreground = Brushes.Gray;
+            EntryClass.Symbology.FontSize = 20;
+            EntryClass.Symbology.ToolTip = "Symbology does not work in preview mode. \nPlease load a project.";
+
+            EntryClass.Symbology.Margin = new Thickness(-3, 0, -7, 0);
+            ToolTipService.SetInitialShowDelay(EntryClass.Symbology, 100);
+            ToolTipService.SetBetweenShowDelay(EntryClass.Symbology, 100);            
+
+            if (WorkshopData.IsProjectLoaded == false) { return; }            
+            if (EntryClass.ParentEditor.DataTableEditorData.NameTable == null) { return; } //This was to test nameless editors, remove later.
+
+            
             if (EntryClass.Bytes == 0) { return; }
             //TheWorkshop.PropertiesEntry1Byte.Text = EditorClass.SWData.FileDataTable.FileBytes[EditorClass.SWData.DataTableStart + (EditorClass.SWData.TableRowIndex * EntryClass.RowSize) + EntryClass.RowOffset].ToString("D");
 
@@ -2824,7 +398,7 @@ namespace GameEditorStudio
                 bool IsCheckbox = true;
                 string HalfColor = "#907654";//Between red and gold, the 50% / "Ehhhhh" color.  //cd5032
 
-                for (int i = 0; i < EntryClass.EntryEditor.StandardEditorData.NameTableItemCount; i++)
+                for (int i = 0; i < DTEData.NameTable.TextTableItemCount; i++)
                 {
                     string value = null;
                     try 
@@ -2832,29 +406,31 @@ namespace GameEditorStudio
 
                         if (EntryClass.Endianness == "1")
                         {
-                            value = EntryClass.EntryEditor.StandardEditorData.FileDataTable.FileBytes[EntryClass.EntryEditor.StandardEditorData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
+                            value = DTEData.DataTable.FileDataTable.FileBytes[DTEData.DataTable.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
                         }
                         else if (EntryClass.Endianness == "2B")
                         {
-                            value = BitConverter.ToUInt16(EntryClass.EntryEditor.StandardEditorData.FileDataTable.FileBytes, EntryClass.EntryEditor.StandardEditorData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+                            ushort value2 = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+                            ushort swappedValue2 = (ushort)IPAddress.HostToNetworkOrder((short)value2); // Swap the endianness
+                            value = swappedValue2.ToString("D");
+                            
                         }
                         else if (EntryClass.Endianness == "2L")
                         {
-                            ushort value2 = BitConverter.ToUInt16(EntryClass.EntryEditor.StandardEditorData.FileDataTable.FileBytes, EntryClass.EntryEditor.StandardEditorData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
-                            ushort swappedValue2 = (ushort)IPAddress.HostToNetworkOrder((short)value2); // Swap the endianness
-                            value = swappedValue2.ToString("D");
+                            value = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
                         }
                         else if (EntryClass.Endianness == "4B")
                         {
-                            value = BitConverter.ToUInt32(EntryClass.EntryEditor.StandardEditorData.FileDataTable.FileBytes, EntryClass.EntryEditor.StandardEditorData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
-                        }
-                        else if (EntryClass.Endianness == "4L")
-                        {
-                            uint valueK = BitConverter.ToUInt32(EntryClass.EntryEditor.StandardEditorData.FileDataTable.FileBytes, EntryClass.EntryEditor.StandardEditorData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+                            uint valueK = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
                             byte[] valueBytes = BitConverter.GetBytes(valueK);
                             Array.Reverse(valueBytes);
                             uint swappedValue = BitConverter.ToUInt32(valueBytes, 0);
                             value = swappedValue.ToString("D");
+                        }
+                        else if (EntryClass.Endianness == "4L")
+                        {
+                            value = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+                                                        
                         }
 
                     } 
@@ -2862,7 +438,7 @@ namespace GameEditorStudio
                     {
                         PixelWPF.LibraryPixel.Notification("Error: Symbology caused a crash.",
                             "List of possible causes..." +
-                            "\n1: Creating a new editor where the list of names is more then the actual data." +
+                            "\n1: Setting a new Name Table or Data Table where the list of names in the name table is more then the possible rows of the data table's attached file. (Trys to read beyond end of file)." +
                             "\n2: ?????." +
                             "\n" +
                             "\nNote: Please report this."
@@ -2895,11 +471,7 @@ namespace GameEditorStudio
                     IsCheckbox = AllValues.All(v => v == 0 || v == 1);
 
                 }
-
-                ToolTipService.SetInitialShowDelay(EntryClass.Symbology, 100);
-                ToolTipService.SetBetweenShowDelay(EntryClass.Symbology, 100);
                                 
-                EntryClass.Symbology.Margin = new Thickness(-3, 0, -7, 0);
 
                 bool IsMostlyX = AllValues.GroupBy(x => x).Any(g => (double)g.Count() / AllValues.Count >= 0.8);
                 bool IsHalfX = AllValues.GroupBy(x => x).Any(g => (double)g.Count() / AllValues.Count >= 0.5);
@@ -3006,7 +578,7 @@ namespace GameEditorStudio
                 else if (PureBitFlags == true) //Is bitflag
                 {
                     EntryClass.Symbology.Foreground = Brushes.Orange;
-                    EntryClass.Symbology.Content = " BF";
+                    EntryClass.Symbology.Content = " ⚑";
                     EntryClass.Symbology.ToolTip = "This is a pure bitflag.\n\n100% of values (that are not 0 or 1) are exactly 2,4,8,16,32,64, or 128.\nAtleast 10% of values are 1 or 0, and atleast 10% are 2,4,8,16,32,64, or 128.";
                 }
                 else if (MostlyBitFlag == true) //Is bitflag // && EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox
@@ -3109,14 +681,7 @@ namespace GameEditorStudio
 
 
 
-                if (LibraryGES.ShowSymbology == true)
-                {
-                    EntryClass.Symbology.Visibility = Visibility.Visible;
-                }
-                if (LibraryGES.ShowSymbology == false)
-                {
-                    EntryClass.Symbology.Visibility = Visibility.Collapsed;
-                }
+                
 
 
             }
@@ -3125,268 +690,6 @@ namespace GameEditorStudio
 
         }
 
-        private void OpenWorkshopInputButton(object sender, RoutedEventArgs e)
-        {            
-            LibraryGES.OpenFileFolder(PropertiesEditorReadGameDataFrom.Text);
-        }
-
-        private void OpenWorkshopOutputButton(object sender, RoutedEventArgs e)
-        {            
-            LibraryGES.OpenFileFolder(EditorOutputLocationTextbox.Text);
-        }
-
-        private void OpenIconManager(object sender, RoutedEventArgs e)
-        {
-            HIDEMOST();
-            UserControlEditorIcons TheUserControl = new UserControlEditorIcons();
-            MidGrid.Children.Add(TheUserControl);
-            UCGraphicsEditor = TheUserControl;
-
-
-
-
-            //Button IconButton = new();
-            //IconButton.Content = " Icon Editor ";
-            //IconButton.Click += delegate
-            //{
-            //    TheWorkshop.HIDEMOST();
-            //    UserControlEditorIcons TheUserControl = new UserControlEditorIcons();
-            //    TheWorkshop.MidGrid.Children.Add(TheUserControl);
-            //    TheWorkshop.UCGraphicsEditor = TheUserControl;
-            //};
-            //EditorHeader.Children.Add(IconButton);
-            //IconButton.HorizontalAlignment = HorizontalAlignment.Right;
-            //IconButton.Margin = new Thickness(4);
-            //if (TheWorkshop.IsPreviewMode == true) { IconButton.IsEnabled = false; }
-        }
-
-        private void Bitflag1NameTextboxTextChanged(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                EntryClass.EntryTypeBitFlag.BitFlag1Name = PropertiesEntryBitFlag1Name.Text;
-                UpdateEntryName(EntryClass);
-            }
-        }
-
-        private void Bitflag2NameTextboxTextChanged(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                EntryClass.EntryTypeBitFlag.BitFlag2Name = PropertiesEntryBitFlag2Name.Text;
-                UpdateEntryName(EntryClass);
-            }
-        }
-
-        private void Bitflag3NameTextboxTextChanged(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                EntryClass.EntryTypeBitFlag.BitFlag3Name = PropertiesEntryBitFlag3Name.Text;
-                UpdateEntryName(EntryClass);
-            }
-        }
-
-        private void Bitflag4NameTextboxTextChanged(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                EntryClass.EntryTypeBitFlag.BitFlag4Name = PropertiesEntryBitFlag4Name.Text;
-                UpdateEntryName(EntryClass);
-            }
-        }
-
-        private void Bitflag5NameTextboxTextChanged(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                EntryClass.EntryTypeBitFlag.BitFlag5Name = PropertiesEntryBitFlag5Name.Text;
-                UpdateEntryName(EntryClass);
-            }
-        }
-
-        private void Bitflag6NameTextboxTextChanged(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                EntryClass.EntryTypeBitFlag.BitFlag6Name = PropertiesEntryBitFlag6Name.Text;
-                UpdateEntryName(EntryClass);
-            }
-        }
-
-        private void Bitflag7NameTextboxTextChanged(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                EntryClass.EntryTypeBitFlag.BitFlag7Name = PropertiesEntryBitFlag7Name.Text;
-                UpdateEntryName(EntryClass);
-            }
-        }
-
-        private void Bitflag8NameTextboxTextChanged(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                EntryClass.EntryTypeBitFlag.BitFlag8Name = PropertiesEntryBitFlag8Name.Text;
-                UpdateEntryName(EntryClass);
-            }
-        }
-
-        private void OpenNameTableInHxD(object sender, RoutedEventArgs e)
-        {
-            foreach (Tool tool in Database.Tools)
-            {
-                if (tool.Key == "638835886790069008-583706364-23567425")
-                {
-                    if (!File.Exists(tool.Location))
-                    {
-                        PixelWPF.LibraryPixel.Notification("HxD Hex Editor is not available!", "To use HxD Hex Editor with Game Editor Studio, go to the Tools menu and set the location of HxD Hex Editor. ");
-                        return;
-                    }
-
-                    if (EditorClass.StandardEditorData.FileNameTable == null)
-                    {
-                        return;
-                    }
-
-                    string filelocation = WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\" + EditorClass.StandardEditorData.FileNameTable.FileLocation;
-                    if (!File.Exists(filelocation))
-                    {
-                        filelocation = WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.FileNameTable.FileLocation;
-                    }
-
-                    if (!File.Exists(filelocation) || !File.Exists(tool.Location) || EditorClass.StandardEditorData.FileNameTable.FileLocation == null)
-                    {
-                        return;
-                    }
-
-                    MethodData methodData = new MethodData();
-                    methodData.ResourceLocations.Add(tool.Location);
-                    methodData.ResourceLocations.Add(filelocation);
-                    CommandMethodsClass.RunProgramwithfile(methodData);
-
-                    break;
-                }
-            }
-        }
-
-        private void OpenNameTableIn010(object sender, RoutedEventArgs e)
-        {
-            foreach (Tool tool in Database.Tools)
-            {
-                if (tool.Key == "638835886790068999-832829574-642210583")
-                {
-                    if (!File.Exists(tool.Location)) 
-                    {
-                        PixelWPF.LibraryPixel.Notification("010 Editor is not available!","To use 010 Editor with Game Editor Studio, go to the Tools menu and set the location of 010 Editor. ");
-                        return;
-                    }
-                    
-
-                    if (EditorClass.StandardEditorData.FileNameTable == null)
-                    {
-                        return;
-                    }
-
-                    string filelocation = WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\" + EditorClass.StandardEditorData.FileNameTable.FileLocation;
-                    if (!File.Exists(filelocation))
-                    {
-                        filelocation = WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.FileNameTable.FileLocation;
-                    }
-
-                    if (!File.Exists(filelocation) || !File.Exists(tool.Location))
-                    {
-                        return;
-                    }
-
-                    MethodData methodData = new MethodData();
-                    methodData.ResourceLocations.Add(tool.Location);
-                    methodData.ResourceLocations.Add(filelocation);
-                    CommandMethodsClass.RunProgramwithfile(methodData);
-
-                    break;
-                }
-            }
-        }
-        private void OpenDataTableInHxD(object sender, RoutedEventArgs e)
-        {
-            foreach (Tool tool in Database.Tools)
-            {
-                if (tool.Key == "638835886790069008-583706364-23567425")
-                {
-                    if (!File.Exists(tool.Location))
-                    {
-                        PixelWPF.LibraryPixel.Notification("HxD Hex Editor is not available!", "To use HxD Hex Editor with Game Editor Studio, go to the Tools menu and set the location of HxD Hex Editor. ");
-                        return;
-                    }
-
-                    if (EditorClass.StandardEditorData.FileDataTable == null)
-                    {
-                        return;
-                    }
-
-                    string filelocation = WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\" + EditorClass.StandardEditorData.FileDataTable.FileLocation;
-                    if (!File.Exists(filelocation))
-                    {
-                        filelocation = WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.FileDataTable.FileLocation;
-                    }
-
-                    if (!File.Exists(filelocation) || !File.Exists(tool.Location))
-                    {
-                        return;
-                    }
-
-                    MethodData methodData = new MethodData();
-                    methodData.ResourceLocations.Add(tool.Location);
-                    methodData.ResourceLocations.Add(filelocation);
-                    CommandMethodsClass.RunProgramwithfile(methodData);
-
-                    break;
-                }
-            }
-        }
-        private void OpenDataTableIn010(object sender, RoutedEventArgs e)
-        {                        
-            foreach (Tool tool in Database.Tools) 
-            {
-                if (tool.Key == "638835886790068999-832829574-642210583") 
-                {
-                    if (!File.Exists(tool.Location))
-                    {
-                        PixelWPF.LibraryPixel.Notification("010 Editor is not available!", "To use 010 Editor with Game Editor Studio, go to the Tools menu and set the location of 010 Editor. ");
-                        return;
-                    }
-
-                    if (EditorClass.StandardEditorData.FileDataTable == null)
-                    {
-                        return;
-                    }
-
-                    string filelocation = WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\" + EditorClass.StandardEditorData.FileDataTable.FileLocation;
-                    if (!File.Exists(filelocation) )
-                    {
-                        filelocation = WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.FileDataTable.FileLocation;
-                    }
-
-                    if (!File.Exists(filelocation) || !File.Exists(tool.Location)) 
-                    {
-                        return;
-                    }
-
-                    MethodData methodData = new MethodData();
-                    methodData.ResourceLocations.Add(tool.Location);
-                    methodData.ResourceLocations.Add(filelocation);
-                    CommandMethodsClass.RunProgramwithfile(methodData);
-
-                    break;
-                }
-            }            
-            
-        }
-
-        
-
-        
     }
 
     public class NumberCount

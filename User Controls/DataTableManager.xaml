@@ -1,0 +1,146 @@
+﻿<UserControl x:Class="GameEditorStudio.DataTableManager"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d" 
+             d:DesignHeight="850" d:DesignWidth="1300">
+    <Border>
+        <DockPanel Style="{DynamicResource DockList}" >
+            <!--Margin="10,30,10,10"-->
+            <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top" Margin="0,0,0,0">
+                <DockPanel Style="{DynamicResource ContentBar}" LastChildFill="False">
+                    <Label Content="Data Table Info (Weapon / Spell / Item / etc data)" FontWeight="Bold" DockPanel.Dock="Left"/>
+                    <Button Content="Exit without saving" Margin="0,2,10,2"  DockPanel.Dock="Right" Click="ButtonExitWithoutSaving"  Width="206"/>
+
+                    <ComboBox x:Name="ComboBoxTableType" DockPanel.Dock="Right" Margin="4" Width="300" DropDownClosed="DataSourceDropdownClosed">
+                        <ComboBoxItem Content="Link to Data File" Name="DataFile" IsSelected="True"/>
+                        <ComboBoxItem Content="Link to Advanced" Name="Advanced"/>
+                        <ComboBoxItem Content="Link to Json (Unreal Engine)" Name="JSON"/>
+                        <ComboBoxItem Content="Link to XML (Unity)" Name="XML"/>                        
+                    </ComboBox>
+                    <Label Content="Data Source:" DockPanel.Dock="Right" />
+                </DockPanel>
+            </Border>
+
+            <TabControl>
+                <TabItem Header="Link to Data Table" Name="TabDataFile">
+                    <Grid x:Name="CreateEditorPartDataTable" Background="#FF373737" >
+
+                        <DockPanel Background="Transparent">
+                            <local:FileManager x:Name="FileManager" HorizontalAlignment="Left" Width="269" Margin="0,0,8,0"  />
+                        </DockPanel>
+
+                        <Border Margin="275,10,0,0" DockPanel.Dock="Top" Height="560" VerticalAlignment="Top" HorizontalAlignment="Left" Width="276">
+                            <DockPanel>
+                                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                    <DockPanel Style="{DynamicResource ContentBar}">
+                                        <Label Content="Editor Info" FontWeight="Bold"/>
+                                    </DockPanel>
+                                </Border>
+
+                                <Grid>
+                                    <Label Content="Base Address" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top"/>
+                                    <TextBox x:Name="TextBoxDataTableBaseAddress" HorizontalAlignment="Left" Margin="146,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0"/>
+                                    <Label Content="Row Size" HorizontalAlignment="Left" Margin="0,32,0,0" VerticalAlignment="Top"/>
+                                    <TextBox x:Name="TextBoxDataTableRowSize" HorizontalAlignment="Left" Margin="146,40,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0"/>
+
+
+
+                                    <Label Content="Note: Mistakes here &#xD;&#xA;can't be fixed later, &#xD;&#xA;but you could always &#xD;&#xA;just remake the editor." HorizontalAlignment="Left" Margin="10,106,0,0" VerticalAlignment="Top"/>
+                                    <Button Content="Debug" x:Name="DataTableDebugButton" Click="DebugButtonClick" Margin="146,73,0,0" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120"/>
+                                </Grid>
+
+                            </DockPanel>
+                        </Border>
+
+
+
+
+                        <Border Margin="556,10,10,0" Height="560" VerticalAlignment="Top">
+                            <DockPanel>
+                                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                    <DockPanel  Style="{DynamicResource ContentBar}">
+                                        <Label Content="Helpful Info!" FontWeight="Bold"/>
+                                    </DockPanel>
+                                </Border>
+
+                                <ScrollViewer>
+                                    <Grid>
+                                        <Label Content="Table Base Address Help: (in 010 editor) &#xA;(1) highlight the start byte of the table &#xA;(2) you can see it at the bottom right.   &#xA;Note: This program wants DECIMAL, NOT HEX! &#xA;So the correct Base Address in this&#xA;example is 128, not 80h." HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
+                                        <Label Content="Table Row Size Help: (How wide 1 row is)&#xD;&#xA;(3) Highlight 1 full row of the table. &#xA;The row size will be shown at the bottom left. &#xA;&#xA;Reminder: Decimal values only, not hex!&#xD;&#xA;so here the correct value is 120, not 78h" HorizontalAlignment="Center" Margin="0,427,0,0" VerticalAlignment="Top"/>
+                                        <Separator Height="10" Margin="0,415,0,0" VerticalAlignment="Top"/>
+                                        <Image HorizontalAlignment="Left" Height="256" Margin="10,571,0,0" VerticalAlignment="Top" Width="412" Source="/User Controls/Tutorial New Workshop Get Base Address Part 3.png"/>
+                                        <Image HorizontalAlignment="Left" Height="140" Margin="10,161,0,0" VerticalAlignment="Top" Width="314" Source="/User Controls/Tutorial New Workshop Get Base Address.png"/>
+                                        <Image HorizontalAlignment="Left" Height="101" Margin="4,311,0,0" VerticalAlignment="Top" Width="458" Source="/User Controls/Tutorial New Workshop Get Base Address Part 2.png"/>
+                                    </Grid>
+                                </ScrollViewer>
+
+
+                            </DockPanel>
+                        </Border>
+
+
+                        <Button Content="Save and Close" Click="ButtonSaveDataTable" HorizontalAlignment="Left" Margin="556,608,0,0" VerticalAlignment="Top" Height="34" Width="212"  FontSize="20"/>
+                        <Button Content="Set no table and save" Click="ButtonDeleteDataTable" HorizontalAlignment="Left" Margin="541,688,0,0" VerticalAlignment="Top" Height="34" Width="242"  FontSize="20"/>
+
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Link to Advanced" Name="TabAdvanced">
+                    <Grid Background="#FF373737">
+                        <DockPanel Background="Transparent">
+                            <local:FileManager x:Name="FileManagerAdvanced" HorizontalAlignment="Left" Width="269" Margin="0,0,8,0"  />
+                        </DockPanel>
+                        <TextBox Text="IF I EVER ADD THIS,&#xD;&#xA;DONT FORGET THAT THE&#xD;&#xA;ENTRY CROSS REFERENCE&#xD;&#xA;(INFO PANEL) TRIES TO READ&#xD;&#xA;THE DATA TABLE IN ROWS&#xD;&#xA;AND COLUMNS.&#xD;&#xA;&#xD;&#xA;(Maybe just disable it for&#xD;&#xA;advanced...?)&#xD;&#xA;&#xD;&#xA;- - - - - - - - - - - - - -&#xD;&#xA;Also Symbology does this to&#xD;&#xA;but indirectly. It reads &#xD;&#xA;Data Table Rows = to the &#xD;&#xA;current name table item count.&#xD;&#xA;&#xD;&#xA;(I could always just disable&#xD;&#xA;this as well for advanced..?)&#xD;&#xA;" Margin="744,106,115,169"  />
+                        <Border Margin="289,58,494,36">
+                            <ScrollViewer >
+                                <Grid>
+
+                                </Grid>
+                            </ScrollViewer>
+                        </Border>
+
+                    </Grid>
+
+                </TabItem>
+                <TabItem Header="Link to JSON" Name="TabJSON">
+                    <Grid Background="#FF373737">
+                        <DockPanel Background="Transparent" Margin="0,0,1025,0">
+                            <local:FileManager x:Name="JSONFileManager" Width="269" HorizontalAlignment="Left" />
+                        </DockPanel>
+                        <Border Margin="969,58,66,36">
+                            <ScrollViewer >
+                                <Grid>
+
+                                </Grid>
+                            </ScrollViewer>
+                        </Border>
+                        <TreeView Name="JSONTree" Margin="307,41,0,232" HorizontalAlignment="Left" Width="462"/>
+                        <Button Content="Save and Close" Width="214" Margin="527,664,0,80" HorizontalAlignment="Left"  Style="{DynamicResource ButtonError}"/>
+                        <Button Content="Set no table and save" Click="ButtonDeleteDataTable" HorizontalAlignment="Left" Margin="527,720,0,0" VerticalAlignment="Top" Height="34" Width="242"  FontSize="20"/>
+                    </Grid>
+
+                </TabItem>
+                <TabItem Header="Link to XML" Name="TabXML">
+                    <Grid Background="#FF373737">
+                        <DockPanel Background="Transparent">
+                            <local:FileManager x:Name="FileManagerXML" HorizontalAlignment="Left" Width="269" Margin="0,0,8,0"  />
+                        </DockPanel>
+                        <TextBox Text="IF I EVER ADD THIS,&#xD;&#xA;DONT FORGET THAT THE&#xD;&#xA;ENTRY CROSS REFERENCE&#xD;&#xA;(INFO PANEL) TRIES TO READ&#xD;&#xA;THE DATA TABLE IN ROWS&#xD;&#xA;AND COLUMNS.&#xD;&#xA;&#xD;&#xA;(Maybe just disable it for&#xD;&#xA;advanced...?)&#xD;&#xA;&#xD;&#xA;- - - - - - - - - - - - - -&#xD;&#xA;Also Symbology does this to&#xD;&#xA;but indirectly. It reads &#xD;&#xA;Data Table Rows = to the &#xD;&#xA;current name table item count.&#xD;&#xA;&#xD;&#xA;(I could always just disable&#xD;&#xA;this as well for advanced..?)&#xD;&#xA;" Margin="744,106,115,169"  />
+                        <Border Margin="289,58,494,36">
+                            <ScrollViewer >
+                                <Grid>
+
+                                </Grid>
+                            </ScrollViewer>
+                        </Border>
+
+                    </Grid>
+
+                </TabItem>
+            </TabControl>
+
+        </DockPanel>
+    </Border>
+</UserControl>

@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="GameEditorStudio.TIPS"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d" 
+             d:DesignWidth="800">
+    <!--d:DesignHeight="450" d:DesignWidth="800"-->
+    
+    <Border CornerRadius="10,10,10,10" BorderBrush="#FF6B1C82" BorderThickness="1.5,1.5,1.5,1.5" Background="#FF1A001D">
+        <DockPanel Background="Transparent" LastChildFill="False" Height="28">
+            <!--<Label Content="TIP:" DockPanel.Dock="Left" Margin="5,-6,0,0" />-->
+            <Label Name="TipTextLabel" Content="This is the tips bar!" DockPanel.Dock="Left" Foreground="#FFFF8000" Margin="5,-6,0,0" />
+            <Button Content="X" DockPanel.Dock="Right" Width="30" Margin="0,1,10,1" Click="CloseButtonClick"/>
+        </DockPanel>  
+    </Border>
+</UserControl>

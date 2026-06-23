@@ -1,30 +1,30 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using static GameEditorStudio.Entry;
-
-
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.IO;
+using Microsoft.VisualBasic;
 using Microsoft.Win32;
+using static GameEditorStudio.Entry;
 
 namespace GameEditorStudio
 {
@@ -33,9 +33,10 @@ namespace GameEditorStudio
     /// </summary>
     public partial class TheLeftBar : UserControl
     {
-        Workshop TheWorkshop { get; set; }
-        WorkshopData Database { get; set; }
-        Editor EditorClass { get; set; }
+        
+        Workshop WorkshopXaml { get; set; }
+        WorkshopData WorkshopData { get; set; }
+        DataTableEditorData DTEData { get; set; }
 
         bool FirstTime { get; set; } = true;
         bool _mousePressedOnItem { get; set; } = false;
@@ -50,54 +51,82 @@ namespace GameEditorStudio
         private List<TreeViewItem>? draggedItems { get; set; }
         private TreeViewItem? originallySelectedItem { get; set; }
 
+        private Point _dragStartPoint;
+        private bool _isPotentialDrag;
+        private List<TreeViewItem> _preparedDraggedItems;
+
         private void ItemsTree_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (TheWorkshop.IsPreviewMode == true) { return; }
+            if (WorkshopXaml.IsPreviewMode == true) return;
 
             var clickedItem = VisualUpwardSearch<TreeViewItem>(e.OriginalSource as DependencyObject);
-            if (clickedItem == null)
-                return;
+            if (clickedItem == null) return;
 
+            // Record the starting point of the click
+            _dragStartPoint = e.GetPosition(null);
+            _isPotentialDrag = true;
+
+            // Logic to figure out WHICH items would be dragged (Shift-selection logic)
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
             {
                 var selectedItem = ItemsTree.SelectedItem as TreeViewItem ?? FindTreeViewItem(ItemsTree, ItemsTree.SelectedItem);
-                if (selectedItem == null)
-                    return;
-
-                originallySelectedItem = selectedItem; // <--- Save original selection
-
-                var itemsAtLevel = GetItemsAtSameLevel(selectedItem);
-                int index1 = itemsAtLevel.IndexOf(selectedItem);
-                int index2 = itemsAtLevel.IndexOf(clickedItem);
-                if (index1 == -1 || index2 == -1)
-                    return;
-
-                int start = Math.Min(index1, index2);
-                int end = Math.Max(index1, index2);
-                draggedItems = itemsAtLevel.GetRange(start, end - start + 1);
-
-                if (!AllSameParent(draggedItems))
+                if (selectedItem != null)
                 {
-                    draggedItems = null;
-                    return;
+                    var itemsAtLevel = GetItemsAtSameLevel(selectedItem);
+                    int index1 = itemsAtLevel.IndexOf(selectedItem);
+                    int index2 = itemsAtLevel.IndexOf(clickedItem);
+
+                    if (index1 != -1 && index2 != -1)
+                    {
+                        int start = Math.Min(index1, index2);
+                        int end = Math.Max(index1, index2);
+                        var range = itemsAtLevel.GetRange(start, end - start + 1);
+
+                        if (AllSameParent(range))
+                        {
+                            _preparedDraggedItems = range;
+                        }
+                    }
                 }
             }
             else
             {
-                draggedItems = new List<TreeViewItem> { clickedItem };
-                originallySelectedItem = clickedItem; // <--- Save original selection
+                _preparedDraggedItems = new List<TreeViewItem> { clickedItem };
             }
+        }
 
-            if (draggedItems.Count > 0)
-            {
-                DragDrop.DoDragDrop(ItemsTree, draggedItems, DragDropEffects.Move);
-            }
+        private void ItemsTree_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_isPotentialDrag || e.LeftButton != MouseButtonState.Pressed) return;
 
-            if (clickedItem.HasItems)
+            Point currentPosition = e.GetPosition(null);
+            Vector diff = _dragStartPoint - currentPosition;
+
+            if (Math.Abs(diff.X) > 12 || Math.Abs(diff.Y) > 12)
             {
-                clickedItem.IsExpanded = !clickedItem.IsExpanded;
-                //e.Handled = true; // prevent default double-click expand behavior
+                _isPotentialDrag = false;
+
+                if (_preparedDraggedItems != null && _preparedDraggedItems.Count > 0)
+                {
+                    // Start the drag
+                    DragDrop.DoDragDrop(ItemsTree, _preparedDraggedItems, DragDropEffects.Move);
+
+                    // Important: After the drag finishes, re-confirm selection
+                    if (_preparedDraggedItems.Count > 0)
+                    {
+                        _preparedDraggedItems[0].IsSelected = true;
+                        _preparedDraggedItems[0].Focus();
+                    }
+
+                    _preparedDraggedItems = null;
+                }
             }
+        }
+
+        private void ItemsTree_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _isPotentialDrag = false;
+            _preparedDraggedItems = null;
         }
 
         private void ItemsTree_DragOver(object sender, DragEventArgs e)
@@ -123,7 +152,7 @@ namespace GameEditorStudio
             if (targetItem == null)
                 return;
 
-            var targetInfo = targetItem.Tag as ItemInfo;
+            var targetInfo = targetItem.Tag as TextInfo;
             if (targetInfo == null)
                 return;
 
@@ -132,7 +161,7 @@ namespace GameEditorStudio
                 return;
 
             // === Rule 1: Prevent dropping a folder under any item that is already a child ===
-            if (targetInfo.IsChild && itemsToMove.Any(i => (i.Tag as ItemInfo)?.IsFolder == true))
+            if (targetInfo.IsChild && itemsToMove.Any(i => (i.Tag as TextInfo)?.IsFolder == true))
                 return;
 
             // Prevent dropping onto self or descendants
@@ -173,7 +202,7 @@ namespace GameEditorStudio
             {
                 siblingsCollection.Insert(insertIndex, draggedItem);
 
-                if (draggedItem.Tag is ItemInfo info)
+                if (draggedItem.Tag is TextInfo info)
                     info.IsChild = newIsChild;
 
                 insertIndex++;
@@ -189,16 +218,67 @@ namespace GameEditorStudio
             originallySelectedItem = null;
             draggedItems = null;
             
-            foreach (TreeViewItem TreeViewItemK in LibraryGES.GetALLTreeViewItems(EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView))
+            foreach (TreeViewItem TreeViewItemK in LibraryGES.GetALLTreeViewItems(DTEData.EditorLeftBar.TreeView))
             {
-                TheWorkshop.ItemNameBuilder(TreeViewItemK); //Doing this here to make sure folder item counts work as intended.
+                DTEData.DTEXaml.ItemNameBuilder(TreeViewItemK); //Doing this here to make sure folder item counts work as intended.
             }
 
             e.Handled = true;
+
+            UpdateNamesItemListOrder();
+            //DTEData.DTEXaml.GenerateUI();
+            DTEMethods.ReloadALLMenuEntrys(WorkshopData);
         }
 
+        private void UpdateNamesItemListOrder()
+        {
+            // 1. Create a temporary list to hold the new order
+            List<TextInfo> newOrderedList = new List<TextInfo>();
 
-        
+            // 2. Start the recursive scan from the root of the TreeView
+            foreach (var item in ItemsTree.Items)
+            {
+                if (item is TreeViewItem tvi)
+                {
+                    ScanTreeViewRecursive(tvi, newOrderedList);
+                }
+            }
+
+            // 3. Update the main data source
+            DTEData.NameTable.ItemList = newOrderedList;
+
+            // Update the count to reflect the new list size
+            DTEData.NameTable.TextTableItemCount = newOrderedList.Count;
+        }
+
+        private void ScanTreeViewRecursive(TreeViewItem parentItem, List<TextInfo> resultList)
+        {
+            if (parentItem.Tag is TextInfo info)
+            {
+                // Add the current item to the list
+                resultList.Add(info);
+
+                // If this is a folder, it might have children
+                if (info.IsFolder)
+                {
+                    // Clear the old children list and prepare for the new order
+                    info.MyChildren = new List<TextInfo>();
+
+                    foreach (var child in parentItem.Items)
+                    {
+                        if (child is TreeViewItem childTvi && childTvi.Tag is TextInfo childInfo)
+                        {
+                            // Add to the parent's children collection
+                            info.MyChildren.Add(childInfo);
+
+                            // Continue scanning deeper (in case of nested folders)
+                            ScanTreeViewRecursive(childTvi, resultList);
+                        }
+                    }
+                }
+            }
+        }
+
 
         // Helper: Get TreeViewItem's parent TreeViewItem (null if root level)
         private TreeViewItem? GetParentTreeViewItem(TreeViewItem item)
@@ -296,32 +376,99 @@ namespace GameEditorStudio
             return null;
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         public TheLeftBar() //
         {
             InitializeComponent();                  
             
         }
 
-        public void LeftBarSetup(Workshop AWorkshop, WorkshopData ADatabase, Editor AEditor) 
+        private void UpdateItem()
         {
-            TheWorkshop = AWorkshop;
-            Database = ADatabase;
-            EditorClass = AEditor;
+            if (WorkshopXaml.IsPreviewMode == true) { return; }
+            TreeViewItem selectedItem = DTEData.EditorLeftBar.TreeView.SelectedItem as TreeViewItem;
+            if (selectedItem == null && selectedItem.Tag == null) { return; }
 
-            EditorClass.StandardEditorData.EditorLeftDockPanel.UserControl = this;
-            EditorClass.StandardEditorData.EditorLeftDockPanel.SearchBar = SearchBar;
-            EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView = ItemsTree;
-            EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNameTextBox = ItemNameTextbox;
-            EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNoteTextbox = ItemNoteTextbox;
-            EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNotepadTextbox = ItemNotepadTextbox;
+            TextInfo ItemInfo = selectedItem.Tag as TextInfo;
+
+            ItemInfo.ItemName = ItemNameTextbox.Text;
+            ItemInfo.ItemNote = ItemNoteTextbox.Text;
+            DTEData.DTEXaml.ItemNameBuilder(selectedItem);
 
 
-            if (TheWorkshop.IsPreviewMode == true)
+
+            if (DTEData.NameTable.TextTableLinkType != TextTable.TextTableLinkTypes.Nothing)
+            {
+                if (ItemInfo.IsFolder == false && DTEData.NameTable.TextTableFile.FileLocation != "" && DTEData.NameTable.TextTableFile.FileLocation != null) //The NameTableFilePath check prevents crashing when saving a note when the editor gets names from user instead of from file.
+                {
+                    CharacterSetManager CharacterSetManager = new();
+                    CharacterSetManager.EncodeItem(DTEData, ItemInfo);
+                }
+            }
+
+            DTEMethods.ReloadALLMenuEntrys(WorkshopData); //Reload menus so menus using this editors name order get updated. 
+        }
+
+        public void SetupDataTableEditorLeftBar(WorkshopData ADatabase, DataTableEditorData TheDataTableEditorData) 
+        {            
+            WorkshopData = ADatabase;
+            WorkshopXaml = WorkshopData.WorkshopXaml;
+            DTEData = TheDataTableEditorData;
+
+            DTEData.EditorLeftBar.LeftBarXaml = this;
+            DTEData.EditorLeftBar.SearchBar = SearchBar;
+            DTEData.EditorLeftBar.TreeView = ItemsTree;
+            DTEData.EditorLeftBar.ItemNameTextBox = ItemNameTextbox;
+            DTEData.EditorLeftBar.ItemNoteTextbox = ItemNoteTextbox;
+            DTEData.EditorLeftBar.ItemNotepadTextbox = ItemNotepadTextbox;
+
+
+            if (ADatabase.IsProjectLoaded == false)
             {
                 SearchBar.IsEnabled = false;
+                ItemsTree.IsEnabled = false;
+
                 ItemNameTextbox.IsEnabled = false;
                 ItemNoteTextbox.IsEnabled = false;
                 ItemNotepadTextbox.IsEnabled = false;
+                
+            }
+            if (ADatabase.IsProjectLoaded == true)
+            {
+                SearchBar.IsEnabled = true;
+                ItemsTree.IsEnabled = true;
+
+                ItemNameTextbox.IsEnabled = true;
+                ItemNoteTextbox.IsEnabled = true;
+                ItemNotepadTextbox.IsEnabled = true;
             }
 
 
@@ -342,42 +489,20 @@ namespace GameEditorStudio
 
             ItemsSetup();
 
+            
             ItemsTree.PreviewMouseLeftButtonDown += ItemsTree_PreviewMouseLeftButtonDown;
             ItemsTree.Drop += ItemsTree_Drop;
             ItemsTree.DragOver += ItemsTree_DragOver;
 
+            ItemsTree.PreviewMouseMove += ItemsTree_PreviewMouseMove;
+            ItemsTree.PreviewMouseLeftButtonUp += ItemsTree_PreviewMouseLeftButtonUp;
+
             // Allow dropping on tree view items
             ItemsTree.AllowDrop = true;
 
+            
+            
 
-
-            //This part makes it so every editor auto-selects it's first option.
-            //I should clean this up later but it took so long to get working at all i don't care right now.            
-            statusChangedHandler = (sender, e) =>
-            {
-                if (EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
-                {
-                    EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.ItemContainerGenerator.StatusChanged -= statusChangedHandler;
-                    item = EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.ItemContainerGenerator.ContainerFromIndex(0) as TreeViewItem;
-                    if (item != null)
-                    {
-                        item.IsSelected = true;
-                    }
-                }
-            };
-
-            if (EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated)
-            {
-                EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.ItemContainerGenerator.StatusChanged += statusChangedHandler;
-            }
-            else
-            {
-                item = EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.ItemContainerGenerator.ContainerFromIndex(0) as TreeViewItem;
-                if (item != null)
-                {
-                    item.IsSelected = true;
-                }
-            }
 
 
             ContextMenu contextMenu = new ContextMenu();
@@ -395,9 +520,328 @@ namespace GameEditorStudio
             //MenuItemCreateNewItem2.Click += (sender, e) => TheWorkshop.ExportItemNamesCurrentToTextFile(EditorClass);
         }
 
+        private void ItemsSetup()
+        {
+            TextInfo previouslySelectedItemTag = null;
+            {
+                TreeViewItem previousItem = DTEData.EditorLeftBar.TreeView.SelectedItem as TreeViewItem;
+                if (previousItem != null)
+                {
+                    TextInfo ApreviousItemTag = previousItem.Tag as TextInfo;
+                    if (ApreviousItemTag.IsFolder == false) { previouslySelectedItemTag = ApreviousItemTag; }
+                }
+            }
+
+            DTEData.EditorLeftBar.TreeView.Items.Clear();
+
+            if (DTEData.NameTable != null)
+            {
+                foreach (TextInfo ItemInfo in DTEData.NameTable.ItemList)
+                {
+                    TreeViewItem TreeItem = new();
+                    TreeItem.Tag = ItemInfo;
+                    ItemInfo.TreeItem = TreeItem;
+                    //This literally just sets the tree item header, but theres actually a lot of item customiation so
+                    //it gets it's own method in workshop.cs so the user can customize it then re-run the method.
+                    DTEData.DTEXaml.ItemNameBuilder(TreeItem);
+
+                    if (ItemInfo.IsChild == true)
+                    {
+                        TreeViewItem finalItem = (TreeViewItem)ItemsTree.Items.GetItemAt(ItemsTree.Items.Count - 1);
+                        finalItem.Items.Add(TreeItem);
+                    }
+                    else
+                    {
+                        ItemsTree.Items.Add(TreeItem);
+                    }
+
+
+                    ContextMenu contextMenu = new ContextMenu();
+                    TreeItem.ContextMenu = contextMenu;
+
+                    if (ItemInfo.IsFolder == false)
+                    {
+                        MenuItem MenuItemCreateFolder = new MenuItem();
+                        MenuItemCreateFolder.Header = "Create Folder (If not in folder)";
+                        MenuItemCreateFolder.Click += (sender, e) => CreateFolder(ItemsTree, TreeItem);
+                        contextMenu.Items.Add(MenuItemCreateFolder);
+                    }
+                    else if (ItemInfo.IsFolder == true)
+                    {
+                        MenuItem MenuItemDeleteFolder = new MenuItem();
+                        MenuItemDeleteFolder.Header = "Delete Folder (If Empty)";
+                        MenuItemDeleteFolder.Click += (sender, e) => DeleteFolder(ItemsTree, TreeItem);
+                        contextMenu.Items.Add(MenuItemDeleteFolder);
+                    }
+
+
+
+                    void CreateFolder(TreeView TreeView, TreeViewItem TreeViewItem)
+                    {
+                        TextInfo TreeViewItemInfo = TreeViewItem.Tag as TextInfo;
+                        if (TreeViewItemInfo.IsFolder == true || TreeViewItemInfo.IsChild == true) { return; }
+
+                        DTEData.WorkshopXaml.TreeViewSelectionEnabled = false;
+
+
+                        int selectedIndex = TreeView.ItemContainerGenerator.IndexFromContainer(TreeViewItem);
+                        TreeView.Items.Remove(TreeViewItem);
+
+                        TreeViewItem FolderItem = new TreeViewItem();
+                        TextInfo FolderItemInfo = new();
+                        FolderItem.Tag = FolderItemInfo;
+
+                        FolderItemInfo.ItemName = "New Folder";
+                        FolderItemInfo.IsFolder = true;
+                        if (TreeViewItem.Tag is TextInfo itemInfo)
+                        {
+                            itemInfo.IsChild = true;
+                        }
+
+
+                        TreeView.Items.Insert(selectedIndex, FolderItem);
+                        FolderItem.Items.Add(TreeViewItem);
+                        DTEData.DTEXaml.ItemNameBuilder(FolderItem); //Created the Header text as a TextBlockItem
+
+
+                        FolderItem.IsExpanded = true;
+                        DTEData.WorkshopXaml.TreeViewSelectionEnabled = true;
+                        TreeViewItem.IsSelected = true;
+
+                        ContextMenu contextMenu = new ContextMenu();
+
+                        MenuItem MenuItemDeleteFolder = new MenuItem();
+                        MenuItemDeleteFolder.Header = "Delete Folder (If Empty)";
+                        MenuItemDeleteFolder.Click += (sender, e) => DeleteFolder(TreeView, FolderItem);
+                        contextMenu.Items.Add(MenuItemDeleteFolder);
+
+                        FolderItem.ContextMenu = contextMenu;
+                    }
+
+                    void DeleteFolder(TreeView TreeView, TreeViewItem TreeViewItem)
+                    {
+                        TextInfo TreeViewItemInfo = TreeViewItem.Tag as TextInfo;
+                        if (TreeViewItemInfo.IsFolder == false || TreeViewItem.Items.Count > 0) { return; }
+
+                        DTEData.WorkshopXaml.TreeViewSelectionEnabled = false;
+                        TreeView.Items.Remove(TreeViewItem);
+                        DTEData.WorkshopXaml.TreeViewSelectionEnabled = true;
+                    }
+
+                }
+            }
+
+
+
+
+            foreach (TreeViewItem TreeViewItemK in LibraryGES.GetALLTreeViewItems(DTEData.EditorLeftBar.TreeView))
+            {
+                DTEData.DTEXaml.ItemNameBuilder(TreeViewItemK); //Doing this again here to make sure folder item counts work as intended.
+            }
+
+
+            //Select the first name item in the left bar. 
+            foreach (TreeViewItem item in ItemsTree.Items)
+            {
+                TextInfo textinfo = item.Tag as TextInfo;
+                try
+                {
+                    if (textinfo.IsFolder == false)
+                    {
+                        item.IsSelected = true;
+                        break;
+                    }
+                    if (textinfo.IsFolder == true)
+                    {
+                        bool found = false;
+                        foreach (TreeViewItem Fitem in item.Items)
+                        {
+                            TextInfo Ftextinfo = Fitem.Tag as TextInfo;
+                            try
+                            {
+                                if (Ftextinfo.IsFolder == false)
+                                {
+                                    Fitem.IsSelected = true;
+                                    found = true;
+                                    item.IsExpanded = true;
+                                    break;
+                                }
+                            }
+                            catch
+                            {
+                                continue; //If this ever triggers it's almost certinly an error and needs to be fixed. 
+                            }
+                        }
+                        if (found == true) { break; }
+                        continue;
+                    }
+
+
+                }
+                catch //just in case, idk why this would ever trigger though...?
+                {
+                    continue; //If this ever triggers it's almost certinly an error and needs to be fixed. 
+                }
+
+            }
+
+            if (previouslySelectedItemTag != null)
+            {
+                foreach (TreeViewItem TreeViewItemP in LibraryGES.GetALLTreeViewItems(DTEData.EditorLeftBar.TreeView))
+                {
+
+                    TextInfo ThisItemTag = TreeViewItemP.Tag as TextInfo;
+                    if (ThisItemTag.IsFolder == false)
+                    {
+                        if (previouslySelectedItemTag == ThisItemTag) { TreeViewItemP.IsSelected = true; break; }
+                    }
+                }
+            }
+
+
+
+        }
+
+        private async void ItemsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) //When the selected item is changed, we save the current item entry info, and load the new items info.
+        {
+            if (WorkshopXaml.TreeViewSelectionEnabled == false) //I disable selection effects sometimes when modifying items in the collection while it is open.
+            {
+                return;
+            }
+            DTEData.DTEXaml.DescriptionsBottomBar.Visibility = Visibility.Collapsed;
+
+            var selectedItem = e.NewValue as TreeViewItem;
+            if (selectedItem == null) { return; }
+
+            TextInfo data = selectedItem.Tag as TextInfo;
+            DTEData.EditorLeftBar.ItemNameTextBox.Text = data.ItemName.TrimEnd('\0');
+            DTEData.EditorLeftBar.ItemNoteTextbox.Text = data.ItemNote;
+            DTEData.EditorLeftBar.ItemNotepadTextbox.Text = data.ItemWorkshopTooltip;
+            UpdateNameCharacterCount();
+
+            if (DTEData.DescriptionTableList.Count > 0)
+            {
+                DTEData.DTEXaml.DescriptionsBottomBar.Visibility = Visibility.Visible;
+                CharacterSetManager CharacterSetManager = new();
+                CharacterSetManager.DecodeDescriptions(WorkshopXaml, DTEData);
+
+                //This updates the char count. Yes this is shit to put this code here, no i don't care. 
+                {
+
+                    if (DTEData.DescriptionTableList[0].DescriptionTableTextBox != null) //If for load project... (Remove later?)
+                    {
+                        string NewText = DTEData.DescriptionTableList[0].DescriptionTableTextBox.Text; //+ e.Text;
+                        Encoding encoding;
+                        if (DTEData.DescriptionTableList[0].TextTableCharacterSet == "ASCII+ANSI") { encoding = Encoding.ASCII; }
+                        else if (DTEData.DescriptionTableList[0].TextTableCharacterSet == "Shift-JIS") { encoding = Encoding.GetEncoding("shift_jis"); }
+                        else { return; }
+                        int NewByteSize = encoding.GetByteCount(NewText);
+
+                        if (DTEData.DescriptionTableList[0].TextTableLinkType == TextTable.TextTableLinkTypes.DataFile)
+                        {
+                            DTEData.DTEXaml.DescriptionCharCount.Content = "Chars: " + NewByteSize + " / " + DTEData.DescriptionTableList[0].TextTableCharLimit;
+                        }
+                        if (DTEData.DescriptionTableList[0].TextTableLinkType == TextTable.TextTableLinkTypes.Advanced)
+                        {
+                            foreach (TextInfo textInfo in DTEData.DescriptionTableList[0].ItemList)
+                            {
+                                if (data.ItemIndex == textInfo.ItemIndex)
+                                {
+                                    int Padding = textInfo.RowEnd + 1 - textInfo.RowStart;
+
+                                    DTEData.DTEXaml.DescriptionCharCount.Content = "Chars: " + NewByteSize + " / " + Padding;
+                                }
+                            }
+                        }
+
+
+                    }
+
+                    if (WorkshopData.IsProjectLoaded == false) { DTEData.DTEXaml.DescriptionCharCount.Content = "Not available in preview mode..."; }
+
+                } // End of Update Char Count.
+
+
+            }
+
+            if (selectedItem.Items.Count == 0) //This might cause bugs later with 0 child folders.
+            {
+                DTEData.TableRowIndex = data.ItemIndex;
+
+                EntryManager EManager = new();
+
+                for (int i = 0; i < DTEData.MasterEntryList.Count; i++) //Changed from a foreach to a for loop, it reduced vesperia items load time from 6700ms to 6300ms. 
+                {
+                    Entry entry = DTEData.MasterEntryList[i];
+
+                    if (entry.NewSubType == Entry.EntrySubTypes.NumberBox)
+                    {
+                        entry.EntryTypeNumberBox.NumberBoxCanSave = false;
+                    }
+
+                    
+                    EManager.LoadEntry(DTEData, entry);
+
+                    //if (FirstTime == false)
+                    //{
+                    //    //Task.Run(() => {  EManager.UpdateEntryHexProperties(DTEData); }  );  
+                    //    //EManager.UpdateEntryHexProperties(DTEData); //This also updates the cross reference sheet.
+                    //}
+
+                    if (entry.NewSubType == Entry.EntrySubTypes.NumberBox)
+                    {
+                        entry.EntryTypeNumberBox.NumberBoxCanSave = true;
+                    }
+                }
+
+
+                //TheWorkshop.EntryProperties.Visibility = Visibility.Collapsed;
+                //TheWorkshop.ItemProperties.Visibility = Visibility.Visible;
+                //FirstTime = false;
+
+                if (FirstTime == false)
+                {
+                    //Task.Run(() => {  EManager.UpdateEntryHexProperties(DTEData); }  );  
+                    EManager.UpdateEntryHexProperties(DTEData); //This also updates the cross reference sheet.
+                }
+                //EManager.UpdateEntryHexProperties(DTEData); //This also updates the cross reference sheet.
+                FirstTime = false;
+            }
+
+            //TranslationsPanel translationsPanel = this.TranslationsPanel;
+            //await translationsPanel.UpdateTranslationsPanel(data);
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         private void ExportItemNamesOrigonalToTextFile()
         {
-            List<ItemInfo> allItems = new List<ItemInfo>();
+            List<TextInfo> allItems = new List<TextInfo>();
 
             Stack<TreeViewItem> stack = new Stack<TreeViewItem>();
             for (int i = ItemsTree.Items.Count - 1; i >= 0; i--)
@@ -406,7 +850,7 @@ namespace GameEditorStudio
             while (stack.Count > 0)
             {
                 TreeViewItem item = stack.Pop();
-                ItemInfo itemInfo = item.Tag as ItemInfo;
+                TextInfo itemInfo = item.Tag as TextInfo;
                 if (itemInfo != null && !itemInfo.IsFolder)
                 {
                     allItems.Add(itemInfo);
@@ -454,7 +898,7 @@ namespace GameEditorStudio
             {
                 TreeViewItem item = stack.Pop();
 
-                ItemInfo itemInfo = item.Tag as ItemInfo;
+                TextInfo itemInfo = item.Tag as TextInfo;
                 if (itemInfo != null)
                 {
                     // still skip folders
@@ -486,70 +930,7 @@ namespace GameEditorStudio
         }
 
 
-        private void ItemsSetup() 
-        {
-            
-
-            foreach (ItemInfo ItemInfo in EditorClass.StandardEditorData.EditorLeftDockPanel.ItemList)
-            {
-                TreeViewItem TreeItem = new();
-                TreeItem.Tag = ItemInfo;
-                ItemInfo.TreeItem = TreeItem;
-                //This literally just sets the tree item header, but theres actually a lot of item customiation so
-                //it gets it's own method in workshop.cs so the user can customize it then re-run the method.
-                TheWorkshop.ItemNameBuilder(TreeItem);
-
-
-                ContextMenu contextMenu = new ContextMenu();
-
-                if (ItemInfo.IsFolder == false)
-                {
-                    MenuItem MenuItemCreateFolder = new MenuItem();
-                    MenuItemCreateFolder.Header = "Create Folder (If not in folder)";
-                    MenuItemCreateFolder.Click += (sender, e) => TheWorkshop.CreateFolder(ItemsTree, TreeItem);
-                    contextMenu.Items.Add(MenuItemCreateFolder);
-                }
-                else if (ItemInfo.IsFolder == true)
-                {
-                    MenuItem MenuItemDeleteFolder = new MenuItem();
-                    MenuItemDeleteFolder.Header = "Delete Folder (If Empty)";
-                    MenuItemDeleteFolder.Click += (sender, e) => TheWorkshop.DeleteFolder(ItemsTree, TreeItem);
-                    contextMenu.Items.Add(MenuItemDeleteFolder);
-                }
-
-
-
-                TreeItem.ContextMenu = contextMenu;
-
-
-
-
-
-
-
-                if (ItemInfo.IsChild == true)
-                {
-                    TreeViewItem finalItem = (TreeViewItem)ItemsTree.Items.GetItemAt(ItemsTree.Items.Count - 1);
-                    finalItem.Items.Add(TreeItem);
-                }
-                else
-                {
-                    ItemsTree.Items.Add(TreeItem);
-                }
-
-
-                
-
-                
-
-            }
-
-            
-            foreach (TreeViewItem TreeViewItemK in LibraryGES.GetALLTreeViewItems(EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView))
-            {
-                TheWorkshop.ItemNameBuilder(TreeViewItemK); //Doing this again here to make sure folder item counts work as intended.
-            }
-        }
+        
 
 
 
@@ -572,10 +953,10 @@ namespace GameEditorStudio
                     {
                         ItemsTree.Items.Filter = (item) =>
                         {
-                            if (((TreeViewItem)item).Tag is ItemInfo itemInfo)
+                            if (((TreeViewItem)item).Tag is TextInfo itemInfo)
                             {
                                 // Search for the search text within the item name
-                                if (itemInfo.ItemName.Contains(searchText))
+                                if (itemInfo.ItemName.Contains(searchText, StringComparison.OrdinalIgnoreCase) || itemInfo.ItemNote.Contains(searchText, StringComparison.OrdinalIgnoreCase) || itemInfo.ItemWorkshopTooltip.Contains(searchText, StringComparison.OrdinalIgnoreCase))
                                 {
                                     return true;
                                 }
@@ -583,9 +964,9 @@ namespace GameEditorStudio
                                 // Check the children of the current TreeViewItem
                                 foreach (var childItem in ((TreeViewItem)item).Items)
                                 {
-                                    if (childItem is TreeViewItem childTreeViewItem && childTreeViewItem.Tag is ItemInfo childInfo)
+                                    if (childItem is TreeViewItem childTreeViewItem && childTreeViewItem.Tag is TextInfo childInfo)
                                     {
-                                        if (childInfo.ItemName.Contains(searchText))
+                                        if (childInfo.ItemName.Contains(searchText, StringComparison.OrdinalIgnoreCase) || childInfo.ItemNote.Contains(searchText, StringComparison.OrdinalIgnoreCase) || childInfo.ItemWorkshopTooltip.Contains(searchText, StringComparison.OrdinalIgnoreCase))
                                         {
                                             return true;
                                         }
@@ -609,6 +990,8 @@ namespace GameEditorStudio
 
         private void ItemNameboxPreviewKeyDown(object sender, KeyEventArgs e)
         {
+            if (ItemsTree.SelectedItem == null) { return; }
+
             if (e.Key == Key.Space || (e.Key >= Key.A && e.Key <= Key.Z) || (e.Key >= Key.D0 && e.Key <= Key.D9))
             {
                 string NewText;
@@ -627,23 +1010,38 @@ namespace GameEditorStudio
                 }
 
                 Encoding encoding;
-                if (EditorClass.StandardEditorData.NameTableCharacterSet == "ASCII+ANSI") { encoding = Encoding.ASCII; }
-                else if (EditorClass.StandardEditorData.NameTableCharacterSet == "Shift-JIS") { encoding = Encoding.GetEncoding("shift_jis"); }
+                if (DTEData.NameTable.TextTableCharacterSet == "ASCII+ANSI") { encoding = Encoding.ASCII; }
+                else if (DTEData.NameTable.TextTableCharacterSet == "Shift-JIS") { encoding = Encoding.GetEncoding("shift_jis"); }
                 else { return; }
                 int NewByteSize = encoding.GetByteCount(NewText);
 
-                if (NewByteSize > EditorClass.StandardEditorData.NameTableTextSize)
+                if (NewByteSize > DTEData.NameTable.TextTableCharLimit && DTEData.NameTable.TextTableLinkType != TextTable.TextTableLinkTypes.Advanced)
                 {                    
                     e.Handled = true;  // Mark the event as handled so the input is ignored
                 }
-                else {  }
+                else if (DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.Advanced) 
+                {
+                    TreeViewItem selectedItem = DTEData.DataTableEditorData.EditorLeftBar.TreeView.SelectedItem as TreeViewItem;
+                    if (selectedItem == null) return;
+                    TextInfo selectedInfo = selectedItem.Tag as TextInfo;
+                    if (selectedInfo == null) return;
+
+                    int CharLimit = selectedInfo.RowEnd + 1 - selectedInfo.RowStart;
+
+                    if (NewByteSize > CharLimit) 
+                    {
+                        e.Handled = true;
+                    }
+                    
+                }
                 
             }
             
         }
 
         private void ItemNameboxKeyDown(object sender, KeyEventArgs e)
-        {            
+        {
+            if (ItemsTree.SelectedItem == null) { return; }
 
             if (e.Key == Key.Enter)
             {
@@ -653,6 +1051,8 @@ namespace GameEditorStudio
 
         private void ItemNoteboxKeyDown(object sender, KeyEventArgs e)
         {
+            if (ItemsTree.SelectedItem == null) { return; }
+
             if (e.Key == Key.Enter)
             {
                 UpdateItem();
@@ -661,144 +1061,77 @@ namespace GameEditorStudio
 
         private void ItemNameboxTextChanged(object sender, TextChangedEventArgs e)
         {
+            if (ItemsTree.SelectedItem == null) { return; }
+
             UpdateNameCharacterCount();
         }        
 
-        private void UpdateItem() 
-        {
-            if (TheWorkshop.IsPreviewMode == true) { return; }
-            TreeViewItem selectedItem = EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.SelectedItem as TreeViewItem;
-            if (selectedItem == null && selectedItem.Tag == null) { return; }
-
-            ItemInfo ItemInfo = selectedItem.Tag as ItemInfo;
-
-            ItemInfo.ItemName = ItemNameTextbox.Text;
-            ItemInfo.ItemNote = ItemNoteTextbox.Text;
-            TheWorkshop.ItemNameBuilder(selectedItem);
-
-            if (EditorClass.StandardEditorData.NameTableLinkType != StandardEditorData.NameTableLinkTypes.Nothing)
-            {
-                if (ItemInfo.IsFolder == false && EditorClass.StandardEditorData.FileNameTable.FileLocation != "" && EditorClass.StandardEditorData.FileNameTable.FileLocation != null) //The NameTableFilePath check prevents crashing when saving a note when the editor gets names from user instead of from file.
-                {
-                    CharacterSetManager CharacterSetManager = new();
-                    CharacterSetManager.Encode(TheWorkshop, EditorClass, "Item", ItemInfo);
-                }
-            }
-
-            //This code chunk is my ultra lazy way to update every Dropdown & List across all editors the moment any item changes its name incase that data is used in them.
-            foreach (var TheEditor in Database.GameEditors.Values)  
-            {
-                foreach (Entry entry in TheEditor.StandardEditorData.MasterEntryList) 
-                {
-                    if (entry.NewSubType == EntrySubTypes.Menu)
-                    {
-
-                        Database.EntryManager.EntryChange(Database, EntrySubTypes.Menu, TheWorkshop, entry);
-                    }
-                }
-                
-            }
-
-
-        }
+        
 
         
 
         private void NotepadTextChanged(object sender, TextChangedEventArgs e)
         {
-            TreeViewItem selectedItem = EditorClass.StandardEditorData.EditorLeftDockPanel.TreeView.SelectedItem as TreeViewItem;
+            if (ItemsTree.SelectedItem == null) { return; }
+
+            TreeViewItem selectedItem = DTEData.DataTableEditorData.EditorLeftBar.TreeView.SelectedItem as TreeViewItem;
             if (selectedItem != null)
             {
                 //selectedItem.ToolTip = ItemNotepadTextbox.Text;
                 // Get the selected ItemInfo class
-                ItemInfo selectedInfo = selectedItem.Tag as ItemInfo;
+                TextInfo selectedInfo = selectedItem.Tag as TextInfo;
                 if (selectedInfo != null)
                 {
                     // Update the Name property with the text from the TextBox
                     selectedInfo.ItemWorkshopTooltip = ItemNotepadTextbox.Text;
-                    TheWorkshop.ItemNameBuilder(selectedItem);
+                    DTEData.DTEXaml.ItemNameBuilder(selectedItem);
                 }
             }
-        }
-
-        private async void ItemsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) //When the selected item is changed, we save the current item entry info, and load the new items info.
-        {             
-            if (TheWorkshop.TreeViewSelectionEnabled == false) //I disable selection effects sometimes when modifying items in the collection while it is open.
-            {
-                return;
-            } 
-
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
-            var selectedItem = e.NewValue as TreeViewItem;
-            ItemInfo data = selectedItem.Tag as ItemInfo;
-            EntryManager EManager = new();
-
-
-
-            EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNameTextBox.Text = data.ItemName.TrimEnd('\0');
-            EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNoteTextbox.Text = data.ItemNote;
-            EditorClass.StandardEditorData.EditorLeftDockPanel.ItemNotepadTextbox.Text = data.ItemWorkshopTooltip;
-            UpdateNameCharacterCount();
-
-            if (EditorClass.StandardEditorData.DescriptionTableList.Count > 0)
-            {
-                CharacterSetManager CharacterSetManager = new();
-                CharacterSetManager.DecodeDescriptions(TheWorkshop, EditorClass);
-            }
-
-            if (selectedItem.Items.Count == 0) //This might cause bugs later with 0 child folders.
-            {
-                EditorClass.StandardEditorData.TableRowIndex = data.ItemIndex;
-
-                for (int i = 0; i < EditorClass.StandardEditorData.MasterEntryList.Count; i++) //Changed from a foreach to a for loop, it reduced vesperia items load time from 6700ms to 6300ms. 
-                {
-                    Entry entry = EditorClass.StandardEditorData.MasterEntryList[i];
-
-                    if (entry.NewSubType == Entry.EntrySubTypes.NumberBox)
-                    {
-                        entry.EntryTypeNumberBox.NumberBoxCanSave = false;
-                    }
-
-                    EManager.LoadEntry(TheWorkshop, EditorClass, entry);
-
-                    if (FirstTime == false)
-                    {
-                        //EManager.UpdateEntryProperties(TheWorkshop, EditorClass);
-                        EManager.UpdateEntryHexProperties(TheWorkshop, EditorClass);
-                    }
-
-                    if (entry.NewSubType == Entry.EntrySubTypes.NumberBox)
-                    {
-                        entry.EntryTypeNumberBox.NumberBoxCanSave = true;
-                    }
-                }
-
-
-                //TheWorkshop.EntryProperties.Visibility = Visibility.Collapsed;
-                //TheWorkshop.ItemProperties.Visibility = Visibility.Visible;
-                FirstTime = false;
-            }
-
-            //TranslationsPanel translationsPanel = this.TranslationsPanel;
-            //await translationsPanel.UpdateTranslationsPanel(data);
-
-            stopwatch.Stop();
-            Debug.WriteLine($"[Timer] Item Select took {stopwatch.ElapsedMilliseconds} ms");
-        }
+        }       
 
 
 
         private void UpdateNameCharacterCount() 
         {
-            if (TheWorkshop.IsPreviewMode == true)
+            if (WorkshopXaml.IsPreviewMode == true)
             {
                 return;
             }
 
-            LabelCharacterCount.Content = "Chars: " + (ItemNameTextbox.Text.Length).ToString() + " / " + EditorClass.StandardEditorData.NameTableTextSize.ToString(); //(ItemNameTextbox.Text.Length + 1)
+            LabelCharacterCount.Content = "";
 
-            if (EditorClass.StandardEditorData.FileNameTable == null) { LabelCharacterCount.Content = "Fake Name List"; }
+            try 
+            {
+
+                if (DTEData.NameTable.TextTableFile == null)
+                {
+                    LabelCharacterCount.Content = "Fake Name List";
+                }
+                if (DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.DataFile || DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.TextFile)
+                {
+                    LabelCharacterCount.Content = "Chars: " + (ItemNameTextbox.Text.Length).ToString() + " / " + DTEData.NameTable.TextTableCharLimit.ToString(); //(ItemNameTextbox.Text.Length + 1)
+                }
+                if (DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.Advanced)
+                {
+                    TreeViewItem selectedItem = DTEData.DataTableEditorData.EditorLeftBar.TreeView.SelectedItem as TreeViewItem;
+                    if (selectedItem == null) return;
+                    TextInfo selectedInfo = selectedItem.Tag as TextInfo;
+                    if (selectedInfo == null) return;
+
+                    int CharLimit = selectedInfo.RowEnd + 1 - selectedInfo.RowStart; //DTEData.NameTable.TextTableTextSize
+
+                    LabelCharacterCount.Content = "Chars: " + (ItemNameTextbox.Text.Length).ToString() + " / " + CharLimit.ToString(); //(ItemNameTextbox.Text.Length + 1)
+                }
+
+                
+
+                
+            }
+            catch 
+            { 
+                
+            }
+            
         }
 
 

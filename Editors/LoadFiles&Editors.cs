@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.TextFormatting;
+using System.Windows.Threading;
+
 //using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Linq;
@@ -33,7 +35,14 @@ namespace GameEditorStudio.Loading
                 foreach (string line in File.ReadAllLines(loadOrderPath))
                 {
                     if (!string.IsNullOrWhiteSpace(line))
-                        loadOrderKeys.Add(line.Trim());
+                    {
+                        // Split the line by whitespace and take the first entry
+                        // StringSplitOptions.RemoveEmptyEntries handles multiple spaces between the key and the comment
+                        string keyOnly = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
+                        if (!string.IsNullOrEmpty(keyOnly))
+                            loadOrderKeys.Add(keyOnly);
+                    }
                 }
             }
 
@@ -81,87 +90,10 @@ namespace GameEditorStudio.Loading
                 }
             }
 
-
-            //   //All my old code below. Keeping it for reference just in case AI messed something up.
-            
-            //List<string> ListOfEditorKeys = new();
-            //List<KeyValuePair<string, string>> FolderNameEditorKeyPairs = new();
-
-            //string EditorsText = LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + "LoadOrder.txt";
-
-            //if (File.Exists(EditorsText))
-            //{
-            //    string[] lines = File.ReadAllLines(EditorsText);
-            //    foreach (string line in lines)
-            //    {
-            //        if (!string.IsNullOrWhiteSpace(line))
-            //        {
-            //            ListOfEditorKeys.Add(line);
-            //        }
-            //    }
-            //}
-
-            //{
-            //    //PART 1: Loading editors from LordOrder.txt
-
-            //    foreach (string EditorKey in ListOfEditorKeys)
-            //    {
-            //        string TargetXML = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors", EditorKey, "Editor.xml");
-            //        if (File.Exists(TargetXML))
-            //        {
-            //            LoadEditorXML(TheWorkshop, Database, TargetXML);
-
-            //        }
-            //    }
-
-            //    ////AI code rewrite
-            //    //string editorsRoot = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors");
-            //    //foreach (string EditorKey in ListOfEditorKeys)
-            //    //{
-            //    //    foreach (string editorFolder in Directory.GetDirectories(editorsRoot))
-            //    //    {
-            //    //        string targetXML = Path.Combine(editorFolder, "Editor.xml");
-            //    //        if (!File.Exists(targetXML))
-            //    //            continue;
-
-            //    //        XElement xml = XElement.Load(targetXML);
-            //    //        string xmlKey = xml.Element("Key")?.Value;
-
-            //    //        if (xmlKey == EditorKey)
-            //    //        {
-            //    //            LoadEditorXML(TheWorkshop, Database, targetXML);
-            //    //            break; // stop searching folders for this key
-            //    //        }
-            //    //    }
-            //    //}
-            //}
-
-            //{
-            //    //Database.GameEditors   and  Editor.EditorKey
-
-            //    //PART 2: Loading any editors that are new (Did not exist in the LoadOrder.txt) (IE new editors you imported from somewhere)
-            //    string[] EditorFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors").Select(Path.GetFileName).ToArray();
-            //    foreach (string FolderName in EditorFolderNames)
-            //    {
-            //        if (!ListOfEditorKeys.Contains(FolderName))
-            //        {
-            //            string TargetXML = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors", FolderName, "Editor.xml");
-            //            LoadEditorXML(TheWorkshop, Database, TargetXML);
-            //        }
-            //        //CreateButton(TheWorkshop);
-            //    }
-
-            //}
-
-            //Here we finish loading standard editor XMLs. These are split into 2 parts so all editors load their names first (so Menu Links to another editor's name list works properly)
-            foreach (Editor TheEditor in Database.GameEditors.Values) 
+            foreach (DataTableEditorData DataTableData in Database.GameEditors.OfType<DataTableEditorData>()) 
             {
-                if (TheEditor.EditorType == "DataTable") 
-                {
-                    LoadStandardEditor EditorSetup = new();
-                    EditorSetup.LoadDataTableXMLIntoDatabasePART2(TheWorkshop, Database, TheEditor);                    
-                    
-                }
+                LoadStandardEditor EditorSetup = new();
+                EditorSetup.LoadDataTableXMLIntoDatabasePART2(TheWorkshop, Database, DataTableData);
             }
 
             
@@ -193,28 +125,124 @@ namespace GameEditorStudio.Loading
             }
         }
 
-        public void GenerateAllEditorUIs(WorkshopData database) 
+        public void GenerateAllEditorXAML(WorkshopData database) 
         {
             //This happens after all editors load their data because some UI elements of an editor link to the loaded data of another editor. 
 
-            foreach (Editor TheEditor in database.GameEditors.Values)
+            double max = database.GameEditors.Count;
+            double loadcounter = 0;
+            Database.GameLibrary.LoadingProgressBar.Maximum = 100;
+            Database.GameLibrary.LoadingProgressBar.Value = 0;
+            Database.GameLibrary.LoadingPartText.Content = "Generating Game Editors...";
+            
+            foreach (Editor TheEditor in database.GameEditors)
             {
-                TabButtonMaker MakeEditorButton = new();
-                MakeEditorButton.CreateTabButton(database, TheEditor); 
+                Database.GameLibrary.LoadingStatusText.Content = TheEditor.EditorName + " (" + (loadcounter + 1).ToString() + "/" + database.GameEditors.Count + ")";
+                Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
 
-                if (TheEditor.EditorType == "DataTable")
+                if (TheEditor is DataTableEditorData DTeditor)
                 {
-                    StandardEditor standardEditor = new(database, TheEditor); //Generates the Editor UI using Editor data.
+                    DataTableEditor standardEditor = new(database, DTeditor); //Generates the Editor UI using Editor data.
                 }
-                if (TheEditor.EditorType == "TextEditor")
+                if (TheEditor is TextEditorData texteditordata) //
                 {
-                    TextEditor ATextEditor = new TextEditor(database, TheEditor);
+                    TextEditor ATextEditor = new TextEditor(database, texteditordata);                    
+                }
+                loadcounter++;
+                double percent = (loadcounter / max) * 100;
+                int calc = (int)percent;
+                Database.GameLibrary.LoadingProgressBar.Value = calc;
+                                
+            }
+            Database.GameLibrary.LoadingStatusText.Content = "Done~";
+            Database.GameLibrary.LoadingFinalPanel.Visibility = Visibility.Visible;
+            Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+            Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+            Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+            Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+            Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+            Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+        }
+
+
+
+        public void LoadAllWorkshopDocuments(WorkshopData WorkshopData) 
+        {
+            string[] WorkshopDocumentOrder = File.ReadLines(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + "LoadOrder.txt").ToArray();
+            string[] WorkshopDocumentFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
+            foreach (string name in WorkshopDocumentOrder)
+            {
+                if (WorkshopDocumentFolderNames.Contains(name))
+                {
+                    Document TheDocument = new Document
+                    {
+                        Name = name,
+                        Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + name + "\\Text.txt")
+                    };
+                    WorkshopData.WorkshopDocumentsList.Add(TheDocument); // Adding the document object to the list
+                }
+            }
+            foreach (string name in WorkshopDocumentFolderNames)//The, add any new documents to the document tree in alphabetical order.
+            {
+                if (!WorkshopDocumentOrder.Contains(name))
+                {
+                    Document TheDocument = new Document
+                    {
+                        Name = name,
+                        Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + name + "\\Text.txt")
+                    };
+                    WorkshopData.WorkshopDocumentsList.Add(TheDocument); // Adding the document object to the list                 
+
                 }
             }
 
-            database.WorkshopXaml.UpdateEntryDecorationsForAllEditors();
         }
 
+        public void LoadAllProjectDocuments(WorkshopData WorkshopData)
+        {
+            WorkshopData.ProjectDocumentsList.Clear();
+
+            if (WorkshopData.IsProjectLoaded == false) 
+            {                
+                return;
+            }
+
+            string[] ProjectDocumentOrder = File.ReadLines(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + "LoadOrder.txt").ToArray();
+            string[] ProjectDocumentFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
+            foreach (string name in ProjectDocumentOrder)//The last known list of documents for this workshop, in the order they were saved in.
+            {
+                if (ProjectDocumentFolderNames.Contains(name))
+                {
+                    Document TheDocument = new Document
+                    {
+                        Name = name,
+                        Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + name + "\\Text.txt")
+                    };
+                    WorkshopData.ProjectDocumentsList.Add(TheDocument); // Adding the document object to the list
+
+                }
+            }
+            foreach (string name in ProjectDocumentFolderNames)//The, add any new documents to the document tree in alphabetical order.
+            {
+                if (!ProjectDocumentOrder.Contains(name))
+                {
+                    Document TheDocument = new Document
+                    {
+                        Name = name,
+                        Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + name + "\\Text.txt")
+                    };
+                    WorkshopData.ProjectDocumentsList.Add(TheDocument); // Adding the document object to the list
+
+                }
+            }
+        }
 
 
     }

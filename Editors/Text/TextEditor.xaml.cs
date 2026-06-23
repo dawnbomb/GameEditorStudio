@@ -20,35 +20,63 @@ namespace GameEditorStudio
     /// </summary>
     public partial class TextEditor : UserControl
     {
-        public TextEditor(WorkshopData Database, Editor Editor)
+        WorkshopData WorkshopData { get; set; }
+
+        public TextEditor(WorkshopData Database, TextEditorData TextEditorData)
         {
             InitializeComponent();
 
-            if (Editor.EditorBackPanel != null) 
-            {
-                Database.WorkshopXaml.MidGrid.Children.Remove(Editor.EditorBackPanel);                
-            }
+            //This
+            WorkshopData = Database;
+            
+            //My Data
+            TextEditorData.TextEditorXaml = this;
+            TextEditorData.EditorVisual = this;
+            TextEditorData.TextFileManager = TextFileManager;
+            TextEditorData.MainGrid = MainGrid;
 
-            Editor.EditorBackPanel = BackPanel;
+            //File Manager
+            TextFileManager.IsTextEditor = true;
+            TextFileManager.TextEditorData = TextEditorData;
+            TextFileManager.WorkshopXaml = Database.WorkshopXaml;
+            TextFileManager.TreeGameFiles.SelectedItemChanged += TESTTHING;
+                        
+            //Tab
+            TabButtonMaker MakeEditorButton = new();
+            MakeEditorButton.CreateEditorTab(TextEditorData);
+            MakeEditorButton.UpdateEditorRightClickMenu(TextEditorData);
+
+            //Finally, we appear!
             Database.WorkshopXaml.MidGrid.Children.Add(this);
 
-            TextFileManager.IsTextEditor = true;
-            TextFileManager.ThisEditor = Editor;
-            Editor.TextEditorData.TextFileManager = TextFileManager;
+            GenerateUI();
+        }
+
+        public void GenerateUI() 
+        {
+            TextFileManager.RefreshFileTree();
+
+            if (WorkshopData.IsProjectLoaded == true)
+            {
+                TheTextBox.IsEnabled = true;
+                TheLineBox.IsEnabled = true;
+                TextFileManager.IsEnabled = true;
+            }
+            if (WorkshopData.IsProjectLoaded == false) 
+            {
+                TheTextBox.IsEnabled = false;
+                TheLineBox.IsEnabled = false;
+                TextFileManager.IsEnabled = false;
+            }
             
-
-            Editor.TextEditorData.MainGrid = MainGrid;
-
-
-            TextFileManager.TreeGameFiles.SelectedItemChanged += TESTTHING;
         }
 
         private void TESTTHING(object sender, RoutedEventArgs e)
         {
             TreeViewItem Item = TextFileManager.TreeGameFiles.SelectedItem as TreeViewItem;
-            if (Item == null) { TheTextBox.Text = "";  return; }
+            if (Item == null) { TheTextBox.Text = ""; TheLineBox.Clear(); return; }
             GameFile GameFile = Item.Tag as GameFile;
-            if (GameFile == null) { TheTextBox.Text = ""; return; }
+            if (GameFile == null) { TheTextBox.Text = ""; TheLineBox.Clear(); return; }
 
             //TheTextBox.Text = GameFile.FileBytes;
             string fullText = Encoding.UTF8.GetString(GameFile.FileBytes);
@@ -71,13 +99,9 @@ namespace GameEditorStudio
             {
                 TheLineBox.AppendText((i + 1).ToString() + Environment.NewLine);
 
-
             }
 
-
-
-
-            //TheTextBox.Text;
+            GameFile.FileBytes = Encoding.UTF8.GetBytes(TheTextBox.Text);
         }
 
         private void ToggleLineID(object sender, RoutedEventArgs e)
@@ -85,10 +109,12 @@ namespace GameEditorStudio
             if (TheLineBox.Visibility == Visibility.Visible) 
             {
                 TheLineBox.Visibility = Visibility.Collapsed;
+                LineIDToggle.Foreground = Brushes.Gray;
             }
             else
             {
                 TheLineBox.Visibility = Visibility.Visible;
+                LineIDToggle.Foreground = Brushes.White;
             }
         }
     }

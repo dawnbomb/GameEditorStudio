@@ -14,7 +14,7 @@ using System.Xml;
 using System.Xml.Linq;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing;
-using WpfHexaEditor.Properties;
+using WpfHexEditor;
 using static System.Net.WebRequestMethods;
 using static Microsoft.IO.RecyclableMemoryStreamManager;
 using File = System.IO.File;
@@ -415,7 +415,7 @@ namespace GameEditorStudio
                                     }
                                 }
 
-                                ProjectData projectDataItem = new();
+                                Project projectDataItem = new();
                                 workshopData.ProjectsList.Add(projectDataItem);
 
                                 projectDataItem.ProjectName = PName;

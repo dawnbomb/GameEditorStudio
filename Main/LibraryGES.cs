@@ -10,28 +10,40 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Ookii.Dialogs.Wpf;
-using Windows.UI.Notifications;
 
 namespace GameEditorStudio
 {
     public static class LibraryGES
     {        
-        
-        public static string VersionDate { get; set; } = "January 26 2026";
-        public static Version VersionNumber { get; set; } = new Version(0, 2, 8); //Version Numbers (in order) are Major.Minor.Build.Revision
+        //Notes on static classes and memory leaks.
+        //First off, in C# it is just unintended memory retention instead of an actual leak like in C++, but thats besides the point...
+        //A memory leak is when something stays in memory, despite seemingly no references to it existing anymore.
+        //Normally, in C#, the garbage collector kills anything the moment it nolonger has any references, but...
+        //If a variable is here (in programming, a variable you keep like string X {get; set;} is also known as a field) then it is ALWAYS in memory.
+        //For basic variables like int, bool, they basically can't have a memory leak.
+        //BUT, if for example a holder of something, like a LIST is here, then when something is removed from the holder(list), it still stays in memory even though it's not in the list.
+        //So basically, just don't use Lists, Dictionaries, or other similuar variables that hold other variables inside a static class.
+        //Or if i do, just be aware they DO cause a memory leak, so only do it very sparingly >_>; 
+        //Note: while ints and bools are safe, a string that is replaced, the only string still technically exists in memory. But a string is so tiny in RAM that it probably doesn't matter.
+
+        public static string VersionDate { get; set; } = "June 23 2026";
+        public static Version VersionNumber { get; set; } = new Version(0, 3, 0, 1); //Version Numbers (in order) are Major.Minor.Build.Revision
         //Major is big releases.
         //Minor is new features / content.
         //Build is for Bugfixes or small changes.
         //Revision is for code rewrites that dont* affect the user. *SHOULDN'T AFFECT THE USER >:(
+                
 
-
+        public static int RowSize { get; set; } = 38;
         public static bool ShowEntryAddress { get; set; } = false; 
         public static string EntryAddressType { get; set; } = "Decimal";
         //public static bool CollectionPrefix { get; set; } = true;
-        public static bool ShowItemIndex { get; set; } = false;
+        public static bool ShowItemIndex { get; set; } = true;
         public static bool ShowHiddenEntrys { get; set; } = false;
         public static bool ShowSymbology { get; set; } = false;
         public static bool ShowTranslationPanel { get; set; } = false;
+        public static bool EntrysDropAbove { get; set; } = true; //Decides if new entrys drop above the selected entry, or below.
+        public static bool EntryFrameIsVisible { get; set; } = true; 
 
         public static bool DebugShowALL { get; set; } = false;
         //END
@@ -58,6 +70,8 @@ namespace GameEditorStudio
         static public Color ValueDisabled { get; set; } = ColorGray;
         static public Color ValueText { get; set; } = ColorGray;
         static public Color ValueName { get; set; } = ColorGray;
+
+
 
 
         public static void SwitchToColorTheme(ColorTheme Theme)
@@ -186,6 +200,21 @@ namespace GameEditorStudio
             }
 
             
+        }
+
+        public static void OpenFile(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            if (!File.Exists(path))
+                return;
+
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = path;
+            startInfo.UseShellExecute = true; // REQUIRED to use default app
+
+            Process.Start(startInfo);
         }
 
         public static void OpenFileFolder(string path)
@@ -394,7 +423,7 @@ namespace GameEditorStudio
 
                 if (TheEventResource.ParentKey == "") //If not relative, get path from project!
                 {
-                    foreach (ProjectEventResource ProjectEventResource in TheMenu.ProjectDataItem.ProjectEventResources)
+                    foreach (ProjectEventResource ProjectEventResource in TheMenu.WorkshopData.SelectedProject.ProjectEventResources)
                     {
                         if (Pair.Value == ProjectEventResource.Key)
                         {
@@ -405,7 +434,7 @@ namespace GameEditorStudio
                 }
                 if (TheEventResource.ParentKey != "") //If relative, lets get 2 and combine!
                 {
-                    foreach (ProjectEventResource ProjectEventResource in TheMenu.ProjectDataItem.ProjectEventResources)
+                    foreach (ProjectEventResource ProjectEventResource in TheMenu.WorkshopData.SelectedProject.ProjectEventResources)
                     {
                         if (TheEventResource.ParentKey == ProjectEventResource.Key)
                         {
@@ -422,62 +451,26 @@ namespace GameEditorStudio
             return MethodData;
         }
 
-        public static void GotoGeneralHide(Workshop TheWorkshop) //On Delete Editor
-        {
-            var generalRowTab = TheWorkshop.TabTest.Visibility = Visibility.Hidden;
-        }
 
-        public static void GotoRightBarGeneralTab(Workshop TheWorkshop) 
+        public static UIElement SetGridData(UIElement Element) 
         {
-            var GeneralTabControl = TheWorkshop.TabTest.Visibility = Visibility.Visible;
-
-            var generalRowTab = TheWorkshop.TabTest.FindName("GeneralEditor") as TabItem;
-            if (generalRowTab == null)
-            {
-                throw new InvalidOperationException("Tab item 'GeneralEditor' not found.");
-            }
-            generalRowTab.IsSelected = true;
+            Grid.SetRow(Element, 3);
+            Grid.SetColumn(Element, 1);
+            Grid.SetRowSpan(Element, 3);
+            Grid.SetColumnSpan(Element, 5);
+            return Element;
         }
-
-        public static void GotoGeneralRow(Workshop TheWorkshop)
-        {
-            var generalRowTab = TheWorkshop.TabTest.FindName("GeneralRow") as TabItem;
-            if (generalRowTab == null)
-            {
-                throw new InvalidOperationException("Tab item 'GeneralRow' not found.");
-            }
-            generalRowTab.IsSelected = true;
-        }
-
-        public static void GotoGeneralColumn(Workshop TheWorkshop)
-        {
-            var generalRowTab = TheWorkshop.TabTest.FindName("GeneralColumn") as TabItem;
-            if (generalRowTab == null)
-            {
-                throw new InvalidOperationException("Tab item 'GeneralColumn' not found.");
-            }
-            generalRowTab.IsSelected = true;
-        }
-        public static void GotoGeneralEntry(Workshop TheWorkshop)
-        {
-            var generalRowTab = TheWorkshop.TabTest.FindName("GeneralEntry") as TabItem;
-            if (generalRowTab == null)
-            {
-                throw new InvalidOperationException("Tab item 'GeneralEntry' not found.");
-            }
-            generalRowTab.IsSelected = true;
-        }
-
+        
 
 
 
         public static GameFile GetGameFileUsingLocation(WorkshopData Database, string Location) 
         {
-            foreach (KeyValuePair<string, GameFile> GameFile in Database.GameFiles)
+            foreach (GameFile GameFile in Database.GameFiles)
             {                
-                if (Location == GameFile.Value.FileLocation)
+                if (Location == GameFile.FileLocation)
                 {
-                    return GameFile.Value;
+                    return GameFile;
                 }                                
             }
             

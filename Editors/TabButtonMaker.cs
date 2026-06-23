@@ -9,7 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using WpfHexaEditor;
+using WpfHexEditor;
 
 namespace GameEditorStudio
 {
@@ -18,13 +18,13 @@ namespace GameEditorStudio
 
 
 
-        public async Task CreateTabButton(WorkshopData WorkshopData, Editor EditorClass) //This is the editor button at the top
+        public async Task CreateEditorTab(Editor EditorClass) //This is the editor button at the top
         {
+            WorkshopData WorkshopData = EditorClass.WorkshopData;
             Workshop TheWorkshop = WorkshopData.WorkshopXaml;
 
-            EditorClass.EditorImage = new();
-
-            EditorClass.EditorImage.Visibility = Visibility.Collapsed;
+            EditorClass.EditorTabImage = new();
+            EditorClass.EditorTabImage.Visibility = Visibility.Collapsed;
 
             //if (EditorClass.EditorIcon != null)
             //{
@@ -38,18 +38,26 @@ namespace GameEditorStudio
             //    EditorClass.EditorImage.Source = new BitmapImage(new Uri(string.Format(LibraryMan.ApplicationLocation + "\\Other\\Icons\\Question Mark.png")));
 
             //}
-
-            
-
                         
 
             Button EditorTabButton = new();
-            EditorClass.EditorButton = EditorTabButton;
+            EditorClass.EditorTab = EditorTabButton;
             EditorTabButton.Margin = new Thickness(0, 0, 4, 0);
             EditorTabButton.AllowDrop = true;
             EditorTabButton.Tag = EditorClass;
             DockPanel.SetDock(EditorTabButton, Dock.Left);
             TheWorkshop.EditorBar.Children.Add(EditorTabButton);
+
+
+            Label TheEditorNameLabel = new();
+            EditorClass.EditorTabNameLabel = TheEditorNameLabel;
+            TheEditorNameLabel.VerticalAlignment = VerticalAlignment.Bottom;
+            TheEditorNameLabel.HorizontalAlignment = HorizontalAlignment.Center;
+            TheEditorNameLabel.Content = EditorClass.EditorName;
+            TheEditorNameLabel.Margin = new Thickness(3, 0, 3, 0);
+
+            EditorTabButton.Content = TheEditorNameLabel;
+
 
             Point _dragStart;     
             EditorTabButton.PreviewMouseLeftButtonDown += (sender, e) =>  // Capture the drag start position early
@@ -73,55 +81,51 @@ namespace GameEditorStudio
                 }
             };
 
-            EditorTabButton.Drop += (sender, e) =>
+            EditorTabButton.Drop += (sender, e) => //I had Gemeni recode this as part of a code refactor from dictionarys to lists. 
             {
                 if (e.Data.GetDataPresent("MoveEditor"))
                 {
-                    Button DropInput = (Button)e.Data.GetData("MoveEditor");
-                    Button target = (Button)sender;
+                    Button draggedButton = (Button)e.Data.GetData("MoveEditor");
+                    Button targetButton = (Button)sender;
 
-                    if (DropInput == target) return;
+                    if (draggedButton == targetButton) return;
 
+                    // 1. Update the UI (The Visual Buttons in the bar)
                     var panel = TheWorkshop.EditorBar;
-                    panel.Children.Remove(DropInput);
-                    int index = panel.Children.IndexOf(target) + 1;
-                    panel.Children.Insert(index, DropInput);
+                    panel.Children.Remove(draggedButton);
+                    int uiIndex = panel.Children.IndexOf(targetButton) + 1;
+                    panel.Children.Insert(uiIndex, draggedButton);
 
-                    {   //When i gave editor buttons a new look, somehow i broke this and i have no idea how. I just asked GPT to gimme something that works. I can remake this for readability later. T.T
-                        var editors = WorkshopData.GameEditors;
-                        var entries = editors.ToList();
-                        string draggedKey = entries.First(kv => kv.Value == (Editor)DropInput.Tag).Key;
-                        string targetKey = entries.First(kv => kv.Value == (Editor)target.Tag).Key;
-                        var draggedEntry = entries.First(kv => kv.Key == draggedKey);
-                        entries.Remove(draggedEntry);
-                        int targetIndex = entries.FindIndex(kv => kv.Key == targetKey);
-                        entries.Insert(targetIndex + 1, draggedEntry);
-                        editors.Clear();
-                        foreach (var kv in entries)
-                        {
-                            editors.Add(kv.Key, kv.Value);
-                        }
+                    // 2. Update the Data (The actual List<Editor>)
+                    // We get the Editor objects from the Button Tags
+                    Editor draggedEditor = (Editor)draggedButton.Tag;
+                    Editor targetEditor = (Editor)targetButton.Tag;
+
+                    var editors = WorkshopData.GameEditors;
+
+                    // Remove the dragged editor from its current spot
+                    if (editors.Remove(draggedEditor))
+                    {
+                        // Find where the target editor is now
+                        int targetIndex = editors.IndexOf(targetEditor);
+
+                        // Insert the dragged editor right after the target
+                        editors.Insert(targetIndex + 1, draggedEditor);
                     }
-                    
                 }
             };
-                        
 
 
 
 
-            Label TheEditorNameLabel = new();
-            EditorClass.EditorLabel = TheEditorNameLabel;
-            TheEditorNameLabel.VerticalAlignment = VerticalAlignment.Bottom;
-            TheEditorNameLabel.HorizontalAlignment = HorizontalAlignment.Center;
-            TheEditorNameLabel.Content = EditorClass.EditorName;
-            EditorClass.EditorNameLabel = TheEditorNameLabel;
-            TheEditorNameLabel.Margin = new Thickness(3, 0, 3, 0);
+
+            
 
 
             EditorTabButton.Click += (sender, e) =>
             {
                 Editor TheEditorClass = EditorClass;
+                
 
                 if (TheEditorClass == null)
                 {
@@ -129,9 +133,9 @@ namespace GameEditorStudio
                 }
 
                 {   //Set tab colors.                    
-                    foreach (Editor editor in WorkshopData.GameEditors.Values)
+                    foreach (Editor editor in WorkshopData.GameEditors)
                     {
-                        editor.EditorButton.Style = (Style)Application.Current.FindResource("ButtonEditorTab");
+                        editor.EditorTab.Style = (Style)Application.Current.FindResource("ButtonEditorTab");
 
                     }
                     TheWorkshop.ButtonHome.Style = (Style)Application.Current.FindResource("ButtonEditorTab");
@@ -141,152 +145,262 @@ namespace GameEditorStudio
 
 
                 TheWorkshop.HIDEALL();
-                TheEditorClass.EditorBackPanel.Visibility = Visibility.Visible;
+                TheEditorClass.EditorVisual.Visibility = Visibility.Visible;
+                                
+                
 
-                LibraryGES.GotoRightBarGeneralTab(TheWorkshop);
+                
 
-                TheWorkshop.PropertiesTextboxEditorName.Text = TheEditorNameLabel.Content.ToString();
-
-                if (EditorClass.EditorType == "DataTable")
+                if (EditorClass is DataTableEditorData DTEData)
                 {
-                    if (TheWorkshop.IsPreviewMode == false)
+                    DTRightBar RightBar = DTEData.EditorRightBar;
+
+                    
+
+                    RightBar.PropertiesTextboxEditorName.Text = EditorClass.EditorName;
+
+                    DTEData.EditorRightBar.DocumentsControl.TabClicked();
+                    RightBar.EditorTabItem.IsSelected = true;
+
+                    //Data Table Stuff.
+                    if (DTEData.DataTable == null) 
                     {
-                        TheWorkshop.DataTableFileBox.Text = TheEditorClass.StandardEditorData.FileDataTable.FileName;
+                        //Disable right bar data table textboxes (because there is no data table)
+                        RightBar.PropertiesEditorTableStart.IsEnabled = false;
+                        RightBar.OpenInputLocationButton.IsEnabled = false;
+                        RightBar.OpenOutputLocationButton.IsEnabled = false;
+                        RightBar.BtnDataTblOutputOpenHxD.IsEnabled = false;
+                        RightBar.PropertiesEditorReadGameDataFrom.Text = "No Data Table Set";
+                        RightBar.EditorOutputLocationTextbox.Text = "No Data Table Set";
+                        RightBar.BtnDataTblOutputOpen010.IsEnabled = false;
                     }
-                    else
+                    if (DTEData.DataTable != null) 
                     {
-                        TheWorkshop.DataTableFileBox.Text = "PREVIEW MODE";
-                    }
-
-                    TheWorkshop.PropertiesEditorTableStart.Text = TheEditorClass.StandardEditorData.DataTableStart.ToString();
-                    TheWorkshop.PropertiesEditorTableWidth.Text = TheEditorClass.StandardEditorData.DataTableRowSize.ToString();
-
-                    TheWorkshop.PropertiesEditorNameTableTextSize.Text = TheEditorClass.StandardEditorData.NameTableTextSize.ToString();
-                    TheWorkshop.PropertiesEditorNameTableStartByte.Text = TheEditorClass.StandardEditorData.NameTableStart.ToString();
-                    TheWorkshop.PropertiesEditorNameTableRowSize.Text = TheEditorClass.StandardEditorData.NameTableRowSize.ToString();
-                    TheWorkshop.PropertiesEditorNameCount.Text = (TheEditorClass.StandardEditorData.NameTableItemCount - 1).ToString();
-
-                    if (EditorClass.StandardEditorData.NameTableLinkType == StandardEditorData.NameTableLinkTypes.DataFile)
-                    {
-                        TheWorkshop.LabelCharacterSet.Visibility = Visibility.Visible;
-                        TheWorkshop.PropertiesEditorNameTableCharacterSetDropdown.Visibility = Visibility.Visible;
-                        TheWorkshop.LabelRowSize.Visibility = Visibility.Visible;
-                        TheWorkshop.PropertiesEditorNameTableRowSize.Visibility = Visibility.Visible;
-                        TheWorkshop.LabelTextSize.Visibility = Visibility.Visible;
-                        TheWorkshop.PropertiesEditorNameTableTextSize.Visibility = Visibility.Visible;
-
-                        TheWorkshop.LabelStart.Visibility = Visibility.Visible;
-                        TheWorkshop.PropertiesEditorNameTableStartByte.Visibility = Visibility.Visible;
-                        TheWorkshop.LabelStart.Content = "Start Byte";
-                    }
-                    if (EditorClass.StandardEditorData.NameTableLinkType == StandardEditorData.NameTableLinkTypes.TextFile)
-                    {
-                        TheWorkshop.LabelCharacterSet.Visibility = Visibility.Collapsed;
-                        TheWorkshop.PropertiesEditorNameTableCharacterSetDropdown.Visibility = Visibility.Collapsed;
-                        TheWorkshop.LabelRowSize.Visibility = Visibility.Collapsed;
-                        TheWorkshop.PropertiesEditorNameTableRowSize.Visibility = Visibility.Collapsed;
-                        TheWorkshop.LabelTextSize.Visibility = Visibility.Collapsed;
-                        TheWorkshop.PropertiesEditorNameTableTextSize.Visibility = Visibility.Collapsed;
-
-                        TheWorkshop.LabelStart.Visibility = Visibility.Visible;
-                        TheWorkshop.PropertiesEditorNameTableStartByte.Visibility = Visibility.Visible;
-                        TheWorkshop.LabelStart.Content = "First Line";
-                    }
-                    if (EditorClass.StandardEditorData.NameTableLinkType == StandardEditorData.NameTableLinkTypes.Nothing)
-                    {
-                        TheWorkshop.NameTableFileBox.Text = "Fake Name List";
-
-                        TheWorkshop.LabelCharacterSet.Visibility = Visibility.Collapsed;
-                        TheWorkshop.PropertiesEditorNameTableCharacterSetDropdown.Visibility = Visibility.Collapsed;
-                        TheWorkshop.LabelRowSize.Visibility = Visibility.Collapsed;
-                        TheWorkshop.PropertiesEditorNameTableRowSize.Visibility = Visibility.Collapsed;
-                        TheWorkshop.LabelTextSize.Visibility = Visibility.Collapsed;
-                        TheWorkshop.PropertiesEditorNameTableTextSize.Visibility = Visibility.Collapsed;
-
-                        TheWorkshop.LabelStart.Visibility = Visibility.Collapsed;
-                        TheWorkshop.PropertiesEditorNameTableStartByte.Visibility = Visibility.Collapsed;
+                        //Enable right bar data table textboxes (because there is no data table)
+                        RightBar.PropertiesEditorTableStart.IsEnabled = true;
+                        RightBar.OpenInputLocationButton.IsEnabled = true;
+                        RightBar.OpenOutputLocationButton.IsEnabled = true;
+                        RightBar.BtnDataTblOutputOpenHxD.IsEnabled = true;
+                        RightBar.BtnDataTblOutputOpen010.IsEnabled = true;
 
 
-                    }
-
-                    foreach (var item in TheWorkshop.PropertiesEditorNameTableCharacterSetDropdown.Items)
-                    {
-
-                        if (item is ComboBoxItem comboBoxItem && comboBoxItem.Content.ToString() == TheEditorClass.StandardEditorData.NameTableCharacterSet)
+                        if (TheWorkshop.IsPreviewMode == false)
                         {
-                            TheWorkshop.PropertiesEditorNameTableCharacterSetDropdown.SelectedItem = comboBoxItem;
-                            break;
-                        }
-                    }
+                            if (TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory != "")
+                            {
+                                RightBar.PropertiesEditorReadGameDataFrom.Text = TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + DTEData.DataTable.FileDataTable.FileLocation;
+                            }
+                            else
+                            {
+                                RightBar.PropertiesEditorReadGameDataFrom.Text = "You didn't set a project input folder, or it nolonger exists. :(";
+                            }
 
-                    if (TheWorkshop.IsPreviewMode == false)
-                    {
-                        if (TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory != "")
-                        {
-                            TheWorkshop.PropertiesEditorReadGameDataFrom.Text = TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + TheEditorClass.StandardEditorData.FileDataTable.FileLocation;
+                            if (TheWorkshop.WorkshopData.LoadedProject.ProjectOutputDirectory != "")
+                            {
+                                RightBar.EditorOutputLocationTextbox.Text = TheWorkshop.WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + DTEData.DataTable.FileDataTable.FileLocation;
+                            }
+                            else
+                            {
+                                RightBar.EditorOutputLocationTextbox.Text = "You didn't set a project output folder, or it nolonger exists. :(";
+                            }
                         }
                         else
                         {
-                            TheWorkshop.PropertiesEditorReadGameDataFrom.Text = "You didn't set a project input folder, or it nolonger exists. :(";
+                            RightBar.PropertiesEditorReadGameDataFrom.Text = "Your in preview mode!";
+                            RightBar.EditorOutputLocationTextbox.Text = "Your in preview mode!";
                         }
 
-                        if (TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory != "")
+                        //Seperator////////////
+
+                        if (TheWorkshop.IsPreviewMode == false)
                         {
-                            TheWorkshop.EditorOutputLocationTextbox.Text = TheWorkshop.WorkshopData.ProjectDataItem.ProjectOutputDirectory + "\\" + TheEditorClass.StandardEditorData.FileDataTable.FileLocation;
+                            RightBar.DataTableFileBox.Text = DTEData.DataTable.FileDataTable.FileName;
                         }
                         else
                         {
-                            TheWorkshop.EditorOutputLocationTextbox.Text = "You didn't set a project output folder, or it nolonger exists. :(";
+                            RightBar.DataTableFileBox.Text = "PREVIEW MODE";
+                        }
+
+                        RightBar.PropertiesEditorTableStart.Text = DTEData.DataTable.DataTableStart.ToString();
+                        RightBar.PropertiesEditorTableWidth.Text = DTEData.DataTable.DataTableRowSize.ToString();
+
+                        RightBar.EntryNoteTextbox.Text = DTEData.EntryClass.WorkshopTooltip;
+
+                        RightBar.DTEData.EntryClass = DTEData.EntryClass; //This is the entry that is currently selected in the editor.
+                        RightBar.DTEData.CategoryClass = RightBar.DTEData.EntryClass.ParentCategory; //This is the category that is currently selected in the editor.
+                        if (RightBar.DTEData.EntryClass.ParentGroup != null)
+                        {
+                            RightBar.DTEData.GroupClass = RightBar.DTEData.EntryClass.ParentGroup; //Set the Selected Group.
                         }
                     }
-                    else
+
+                    //Name Table Stuff.
+                    if (DTEData.NameTable == null) 
                     {
-                        TheWorkshop.PropertiesEditorReadGameDataFrom.Text = "Your in preview mode!";
-                        TheWorkshop.EditorOutputLocationTextbox.Text = "Your in preview mode!";
-                    }
-
-
-
-
-
-                    if (EditorClass.StandardEditorData.FileNameTable != null)
+                        //Disable right bar name textboxes (because there is no name table)
+                        RightBar.PropertiesEditorNameTableCharacterSetDropdown.IsEnabled = false;
+                        RightBar.PropertiesEditorNameTableStartByte.IsEnabled = false;
+                        RightBar.PropertiesEditorNameTableRowSize.IsEnabled = false;
+                        RightBar.PropertiesEditorNameTableTextSize.IsEnabled = false;
+                        RightBar.PropertiesEditorFirstNameNumber.IsEnabled = false;
+                        RightBar.PropertiesEditorNameCount.IsEnabled = false;
+                        RightBar.BtnNameTblOutputOpenHxD.IsEnabled = false;
+                        RightBar.BtnNameTblOutputOpen010.IsEnabled = false;
+                    }                        
+                    if (DTEData.NameTable != null) 
                     {
-                        TheWorkshop.PropertiesEditorNameTableTextSize.IsEnabled = true;
-                        TheWorkshop.PropertiesEditorNameTableStartByte.IsEnabled = true;
-                        TheWorkshop.PropertiesEditorNameTableRowSize.IsEnabled = true;
-                        TheWorkshop.PropertiesEditorNameCount.IsEnabled = true;
-                        TheWorkshop.PropertiesEditorNameTableCharacterSetDropdown.IsEnabled = true;
-                        TheWorkshop.NameTableFileBox.Text = TheEditorClass.StandardEditorData.FileNameTable.FileName;
+                        //Enable right bar name textboxes (because there is a name table)
+                        RightBar.PropertiesEditorNameTableCharacterSetDropdown.IsEnabled = true;
+                        RightBar.PropertiesEditorNameTableStartByte.IsEnabled = true;
+                        RightBar.PropertiesEditorNameTableRowSize.IsEnabled = true;
+                        RightBar.PropertiesEditorNameTableTextSize.IsEnabled = true;
+                        RightBar.PropertiesEditorFirstNameNumber.IsEnabled = true;
+                        RightBar.PropertiesEditorNameCount.IsEnabled = true;
+                        RightBar.BtnNameTblOutputOpenHxD.IsEnabled = true;
+                        RightBar.BtnNameTblOutputOpen010.IsEnabled = true;
+
+
+                        //Set basic info
+                        RightBar.PropertiesEditorNameTableTextSize.Text = DTEData.NameTable.TextTableCharLimit.ToString();
+                        RightBar.PropertiesEditorNameTableStartByte.Text = DTEData.NameTable.TextTableStart.ToString();
+                        RightBar.PropertiesEditorNameTableRowSize.Text = DTEData.NameTable.TextTableRowSize.ToString();
+                        RightBar.PropertiesEditorNameCount.Text = (DTEData.NameTable.TextTableItemCount).ToString();
+                        RightBar.PropertiesEditorFirstNameNumber.Text = DTEData.NameTable.TextTableFirstNameID.ToString();
+
+                        if (DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.DataFile)
+                        {
+                            RightBar.LabelCharacterSet.Visibility = Visibility.Visible;
+                            RightBar.PropertiesEditorNameTableCharacterSetDropdown.Visibility = Visibility.Visible;
+                            RightBar.LabelRowSize.Visibility = Visibility.Visible;
+                            RightBar.PropertiesEditorNameTableRowSize.Visibility = Visibility.Visible;
+                            RightBar.LabelTextSize.Visibility = Visibility.Visible;
+                            RightBar.PropertiesEditorNameTableTextSize.Visibility = Visibility.Visible;
+
+                            RightBar.LabelStart.Visibility = Visibility.Visible;
+                            RightBar.PropertiesEditorNameTableStartByte.Visibility = Visibility.Visible;
+                            RightBar.LabelStart.Content = "Start Byte";
+                        }
+                        if (DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.Advanced)
+                        {
+                            RightBar.LabelCharacterSet.Visibility = Visibility.Visible;
+                            RightBar.PropertiesEditorNameTableCharacterSetDropdown.Visibility = Visibility.Visible;
+                            RightBar.LabelRowSize.Visibility = Visibility.Collapsed;
+                            RightBar.PropertiesEditorNameTableRowSize.Visibility = Visibility.Collapsed;
+                            RightBar.LabelTextSize.Visibility = Visibility.Collapsed;
+                            RightBar.PropertiesEditorNameTableTextSize.Visibility = Visibility.Collapsed;
+
+                            RightBar.LabelStart.Visibility = Visibility.Collapsed;
+                            RightBar.PropertiesEditorNameTableStartByte.Visibility = Visibility.Collapsed;
+                            RightBar.LabelStart.Content = "Start Byte";
+
+                            RightBar.PropertiesEditorNameCount.IsEnabled = false;
+                        }
+                        if (DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.TextFile)
+                        {
+                            RightBar.LabelCharacterSet.Visibility = Visibility.Collapsed;
+                            RightBar.PropertiesEditorNameTableCharacterSetDropdown.Visibility = Visibility.Collapsed;
+                            RightBar.LabelRowSize.Visibility = Visibility.Collapsed;
+                            RightBar.PropertiesEditorNameTableRowSize.Visibility = Visibility.Collapsed;
+                            RightBar.LabelTextSize.Visibility = Visibility.Collapsed;
+                            RightBar.PropertiesEditorNameTableTextSize.Visibility = Visibility.Collapsed;
+
+                            RightBar.LabelStart.Visibility = Visibility.Visible;
+                            RightBar.PropertiesEditorNameTableStartByte.Visibility = Visibility.Visible;
+                            RightBar.LabelStart.Content = "First Line";
+                        }
+                        if (DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.Nothing)
+                        {
+                            RightBar.NameTableFileBox.Text = "Fake Name List";
+
+                            RightBar.LabelCharacterSet.Visibility = Visibility.Collapsed;
+                            RightBar.PropertiesEditorNameTableCharacterSetDropdown.Visibility = Visibility.Collapsed;
+                            RightBar.LabelRowSize.Visibility = Visibility.Collapsed;
+                            RightBar.PropertiesEditorNameTableRowSize.Visibility = Visibility.Collapsed;
+                            RightBar.LabelTextSize.Visibility = Visibility.Collapsed;
+                            RightBar.PropertiesEditorNameTableTextSize.Visibility = Visibility.Collapsed;
+
+                            RightBar.LabelStart.Visibility = Visibility.Collapsed;
+                            RightBar.PropertiesEditorNameTableStartByte.Visibility = Visibility.Collapsed;
+
+
+                        }
+
+                        foreach (var item in RightBar.PropertiesEditorNameTableCharacterSetDropdown.Items)
+                        {
+
+                            if (item is ComboBoxItem comboBoxItem && comboBoxItem.Content.ToString() == DTEData.NameTable.TextTableCharacterSet)
+                            {
+                                RightBar.PropertiesEditorNameTableCharacterSetDropdown.SelectedItem = comboBoxItem;
+                                break;
+                            }
+                        }
+
+
+
+                        if (DTEData.NameTable.TextTableFile != null)
+                        {
+                            RightBar.PropertiesEditorNameTableTextSize.IsEnabled = true;
+                            RightBar.PropertiesEditorNameTableStartByte.IsEnabled = true;
+                            RightBar.PropertiesEditorNameTableRowSize.IsEnabled = true;
+                            RightBar.PropertiesEditorNameTableCharacterSetDropdown.IsEnabled = true;
+                            RightBar.NameTableFileBox.Text = DTEData.NameTable.TextTableFile.FileName;
+
+                        }
+                        else
+                        {
+                            RightBar.PropertiesEditorNameTableTextSize.IsEnabled = false;
+                            RightBar.PropertiesEditorNameTableStartByte.IsEnabled = false;
+                            RightBar.PropertiesEditorNameTableRowSize.IsEnabled = false;
+                            RightBar.PropertiesEditorNameCount.IsEnabled = false;
+                            RightBar.PropertiesEditorNameTableCharacterSetDropdown.IsEnabled = false;
+                        }
 
                     }
-                    else
+                    if (WorkshopData.IsProjectLoaded == false) 
                     {
-                        TheWorkshop.PropertiesEditorNameTableTextSize.IsEnabled = false;
-                        TheWorkshop.PropertiesEditorNameTableStartByte.IsEnabled = false;
-                        TheWorkshop.PropertiesEditorNameTableRowSize.IsEnabled = false;
-                        TheWorkshop.PropertiesEditorNameCount.IsEnabled = false;
-                        TheWorkshop.PropertiesEditorNameTableCharacterSetDropdown.IsEnabled = false;
+                        //Name Table
+                        RightBar.NameTableManagerButton.IsEnabled = false;
+                        RightBar.BtnNameTblOutputOpenHxD.IsEnabled = false;
+                        RightBar.BtnNameTblOutputOpen010.IsEnabled = false;
+                        RightBar.PropertiesEditorFirstNameNumber.IsEnabled = false;
+
+                        //Data Table
+                        RightBar.DataTableManagerButton.IsEnabled = false;
+                        RightBar.BtnDataTblOutputOpenHxD.IsEnabled = false;
+                        RightBar.BtnDataTblOutputOpen010.IsEnabled = false;
+                        RightBar.PropertiesEditorTableStart.IsEnabled = false;
+                        RightBar.PropertiesEditorReadGameDataFrom.IsEnabled = false;
+                        RightBar.OpenInputLocationButton.IsEnabled = false;
+                        RightBar.EditorOutputLocationTextbox.IsEnabled = false;
+                        RightBar.OpenOutputLocationButton.IsEnabled = false;
+
+                        //Description Table
+                        RightBar.DescriptionTableManagerButton.IsEnabled = false;
+
                     }
-
-                    TheWorkshop.EntryNoteTextbox.Text = TheEditorClass.StandardEditorData.SelectedEntry.WorkshopTooltip;
-
-
-
-                    //var UC = TheEditorClass.SWData.EditorLeftDockPanel.UserControl as TheLeftBar;
-                    //UC.LabelCharsMax.Content = TheEditorClass.SWData.NameTableTextSize.ToString();
-
-                    //this is 2x and was moved here from below. 
-                    TheWorkshop.EntryClass = TheEditorClass.StandardEditorData.SelectedEntry; //This is the entry that is currently selected in the editor.
-                    TheWorkshop.ColumnClass = TheWorkshop.EntryClass.EntryColumn;
-                    TheWorkshop.CategoryClass = TheWorkshop.ColumnClass.ColumnRow; //This is the category that is currently selected in the editor.
-                    if (TheWorkshop.EntryClass.EntryGroup != null)
+                    if (WorkshopData.IsProjectLoaded == true) 
                     {
-                        TheWorkshop.GroupClass = TheWorkshop.EntryClass.EntryGroup; //This is the group that is currently selected in the editor.
+                        //Name Table
+                        RightBar.NameTableManagerButton.IsEnabled = true;
+
+                        //Data Table
+                        RightBar.DataTableManagerButton.IsEnabled = true;
+                        RightBar.PropertiesEditorReadGameDataFrom.IsEnabled = true;
+                        RightBar.EditorOutputLocationTextbox.IsEnabled = true;
+
+                        //Description Table
+                        RightBar.DescriptionTableManagerButton.IsEnabled = true;
                     }
+                    
+
+                    
+
+
+                    
                 }
 
 
-                TheWorkshop.EditorClass = TheEditorClass; //this used to be EditorClass = TheEditorClass; and i changed it because i might have meant this, but also maybe not and i made a new bug?
+                //TheWorkshop.EditorClass = TheEditorClass; //
                 
                 
                 //2x was moved from here to above.
@@ -294,200 +408,9 @@ namespace GameEditorStudio
 
             };
 
-            ContextMenu contextMenu = new ContextMenu();
-            EditorTabButton.ContextMenu = contextMenu;
-
-            MenuItem ReloadEditor = new MenuItem(); //Upcoming, but disabled for now. 
-            ReloadEditor.Header = "Reload Editor";
-            ReloadEditor.Click += ReloadEditor_Click; // Event handler for click action
-            //contextMenu.Items.Add(ReloadEditor);
-            void ReloadEditor_Click(object sender, RoutedEventArgs e)
-            {
-                FileLoading fileLoading = new();
-                fileLoading.ReloadAllEditorFiles(EditorClass);
+            
 
 
-
-                StandardEditor standardEditor = new(WorkshopData, EditorClass);
-
-                //???
-                //Trigger ReloadFile in a FileManager.cs for every File in use by a editor...
-                //Trigger ReloadEditor in some kind of EditorManager.cs file?
-                //Be mindful about linked menus...
-            }
-
-
-            if (EditorClass.EditorType == "DataTable") 
-            {
-                MenuItem OpenEditor = new MenuItem();
-                OpenEditor.Header = "Open Editor Folder";
-                OpenEditor.Click += OpenEditorFolder_Click; // Event handler for click action
-                contextMenu.Items.Add(OpenEditor);
-                void OpenEditorFolder_Click(object sender, RoutedEventArgs e)
-                {
-                    string EditorFolderPath = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors", EditorClass.EditorName);
-                    LibraryGES.OpenFolder(EditorFolderPath);
-                }
-
-                MenuItem OpenNTFile = new MenuItem();
-                OpenNTFile.Header = "Open Name Table File Folder";
-                OpenNTFile.Click += OpenNTFile_Click; // Event handler for click action
-                contextMenu.Items.Add(OpenNTFile);
-                void OpenNTFile_Click(object sender, RoutedEventArgs e)
-                {
-                    LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.FileNameTable.FileLocation);
-                }
-                if (EditorClass.StandardEditorData.NameTableLinkType == StandardEditorData.NameTableLinkTypes.Nothing) { OpenNTFile.IsEnabled = false; }
-
-                MenuItem OpenDTFile = new MenuItem();
-                OpenDTFile.Header = "Open Data Table File Folder";
-                OpenDTFile.Click += OpenDTFile_Click; // Event handler for click action
-                contextMenu.Items.Add(OpenDTFile);
-                void OpenDTFile_Click(object sender, RoutedEventArgs e)
-                {                    
-                    LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\"+ EditorClass.StandardEditorData.FileDataTable.FileLocation);
-                }
-
-
-                MenuItem OpenDescriptionFolder = new MenuItem();
-                OpenDescriptionFolder.Header = "Open Description Table File Folder";
-                contextMenu.Items.Add(OpenDescriptionFolder);
-                OpenDescriptionFolder.IsEnabled = false;
-                try 
-                {
-                    if (EditorClass.StandardEditorData.DescriptionTableList != null)
-                    {
-                        if (EditorClass.StandardEditorData.DescriptionTableList[0] != null)
-                        {
-                            if (EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable.FileLocation != null)
-                            {
-                                if (EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable.FileLocation != "")
-                                {
-                                    
-                                    OpenDescriptionFolder.Click += OpenDTFolder_Click; // Event handler for click action                                   
-                                    void OpenDTFolder_Click(object sender, RoutedEventArgs e)
-                                    {
-                                        LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.StandardEditorData.DescriptionTableList[0].FileTextTable.FileLocation);
-                                    }
-                                    OpenDescriptionFolder.IsEnabled = true;
-                                }
-
-                            }
-                        }
-                    }
-                } 
-                catch 
-                {
-                
-                }
-                
-
-                
-                
-
-                //if (EditorClass.SWData.ExtraTableList[0] != null && EditorClass.SWData.ExtraTableList[0].FileTextTable.FileLocation != null && EditorClass.SWData.ExtraTableList[0].FileTextTable.FileLocation != "") 
-                //{
-                //    MenuItem OpenDescriptionFolder = new MenuItem();
-                //    OpenDescriptionFolder.Header = "Open Description Table File Location";
-                //    OpenDescriptionFolder.Click += OpenDTFolder_Click; // Event handler for click action
-                //    contextMenu.Items.Add(OpenDescriptionFolder);
-                //    void OpenDTFolder_Click(object sender, RoutedEventArgs e)
-                //    {
-                //        LibraryMan.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.SWData.ExtraTableList[0].FileTextTable.FileLocation);
-                //    }
-                //}
-
-
-
-            }
-
-            MenuItem DeleteEditorItem = new MenuItem();
-            DeleteEditorItem.Header = "Delete Editor";
-            DeleteEditorItem.Click += DeleteEditorClick; // Event handler for click action
-            contextMenu.Items.Add(DeleteEditorItem);
-
-            void DeleteEditorClick(object sender, RoutedEventArgs e)
-            {
-                foreach (KeyValuePair<string, Editor> editor in WorkshopData.GameEditors)
-                {
-                    if (editor.Value == EditorClass)
-                    {
-                        System.Windows.Forms.DialogResult dr = System.Windows.Forms.MessageBox.Show("Are you sure you want to delete this editor?", "Delete Editor", (System.Windows.Forms.MessageBoxButtons)MessageBoxButton.YesNo);
-
-                        if (dr == System.Windows.Forms.DialogResult.Yes)
-                        {
-                            try
-                            {
-                                TheWorkshop.EditorBar.Children.Remove(EditorClass.EditorBarDockPanel);
-
-                                //EditorsTree.Items.Remove(editor.Value.EditorTreeViewitem); //editor.Key
-
-                                WorkshopData.GameEditors.Remove(editor.Key);
-                                TheWorkshop.MidGrid.Children.Remove(editor.Value.EditorBackPanel);
-                                TheWorkshop.EditorBar.Children.Remove(EditorTabButton);
-                                LibraryGES.GotoGeneralHide(TheWorkshop);
-
-
-                                //also hide the details panel for entrys / column / row etc?
-
-                                //Directory.Delete(ExePath + "\\Workshops\\" + WorkshopName + "\\Editors\\" + editor.Key, true);
-                                //Returns the view to home should be here.
-
-
-
-                            }
-                            catch (IOException ex)
-                            {
-                                // File is being used, so it cannot be deleted
-                                Console.WriteLine("File is being used: " + ex.Message);
-                            }
-                        }
-
-                    }
-                }
-            }
-
-
-
-
-
-            EditorTabButton.Content = TheEditorNameLabel;
-            //DockPanel.SetDock(TheEditorNameLabel, Dock.Bottom);
-            //EditorDock2.Children.Add(TheEditorNameLabel);
-
-
-
-
-
-
-            //DockPanel.SetDock(EditorBorder, Dock.Left);
-            //TheWorkshop.EditorBar.Children.Add(EditorBorder);
-            //EditorBorder.Child = EditorDock;
-
-
-
-
-
-            //DockPanel.SetDock(EditorDock, Dock.Left);
-            //TheWorkshop.EditorBar.Children.Add(EditorDock);
-
-
-            ////EditorBorder.BorderThickness = new Thickness(2);
-            ////EditorDock.Children.Add(EditorBorder);
-
-            ////EditorBorder.Child = EditorDock2;
-            ////EditorDock2.Background = (Brush)(new BrushConverter().ConvertFrom("#191919"));
-
-            //DockPanel.SetDock(TheEditorNameLabel, Dock.Bottom);
-            //EditorDock2.Children.Add(TheEditorNameLabel);
-            //DockPanel.SetDock(EditorClass.EditorImage, Dock.Top);
-            //EditorDock2.Children.Add(EditorClass.EditorImage);
-
-            //EditorClass.EditorDock2 = EditorDock2;
-
-            //EditorBorder.Style = (Style)Application.Current.Resources["EditorButtonBorder"];
-
-            //TheEditorNameLabel.Visibility = Visibility.Collapsed;
 
             //Make sure its actually rendering all 60x60
             //Maybe expand the size of the entire dock panel 
@@ -526,9 +449,350 @@ namespace GameEditorStudio
 
             await Task.Delay(1); //This makes the buttons actually load so that the size update can properly run (it uses the currently rendered size of the dockpanel / image)
 
-            TheWorkshop.UpdateEditorButton(EditorClass);
+            UpdateEditorTab(EditorClass); //Does nothing ATM, was used for old tabs get sprites idea.
+
+            
+        }
+
+        public void UpdateEditorTab(Editor AnEditor)
+        {
+            //NOTE: I did a LOT of research on sprites sizes, and 60 is PERFECT for a editor icon size. 
+            //it's very rare for icons to be 70+ that are hard to crop, and everything 30 under can be multiplied in size. 
+            //While icons size 42 probably can't be cropped and doubled, it's close enough to be on-style.
+            //meanwhile vs 50 max, not only do we get sprites size 50~60+ with cropping, but more small sprites can multiply their size to average out more effectivly. 
+
+            //if (EditorClass.EditorName != "")
+            //{
+            //    EditorClass.EditorNameLabel.Content = EditorClass.EditorName;
+            //}
+            //else if(EditorClass.EditorName == "")
+            //{
+            //    EditorClass.EditorNameLabel.Content = "??? " + En;
+            //}
+
+
+            return;
+
+            System.Windows.Controls.Image image = AnEditor.EditorTabImage;
+
+            BitmapSource bitmap = image.Source as BitmapSource;
+            int scale = CalculateIntegerScale(bitmap.PixelWidth, bitmap.PixelHeight, 120, 90);
+
+            int CalculateIntegerScale(int originalWidth, int originalHeight, int maxWidth, int maxHeight)
+            {
+                int scaleX = maxWidth / originalWidth;
+                int scaleY = maxHeight / originalHeight;
+                int scale = Math.Min(scaleX, scaleY);
+                return Math.Max(1, scale); // Never go below 1x
+            }
+
+            {
+                image.Source = bitmap;
+                image.Width = bitmap.PixelWidth * scale;
+                image.Height = bitmap.PixelHeight * scale;
+                image.Stretch = Stretch.None;
+                image.HorizontalAlignment = HorizontalAlignment.Center;
+                image.VerticalAlignment = VerticalAlignment.Center;
+                //image.HorizontalAlignment = HorizontalAlignment.Left;
+                //image.VerticalAlignment = VerticalAlignment.Top;
+                image.SnapsToDevicePixels = true;
+                image.UseLayoutRounding = true;  // https://learn.microsoft.com/en-us/dotnet/api/system.windows.frameworkelement.uselayoutrounding?view=windowsdesktop-9.0
+                //image.ClipToBounds = true;  //This actually caused problems where the leftmost and topmost pixel lines were being minorly shrunk to like half size (subpixel nonsense)
+
+                //image.MaxWidth = 120;
+                //image.MaxHeight = 90;
+
+                //image.MinWidth = 75;
+                //image.MaxHeight = 75;    
+                //image.MinWidth = 60;
+                //image.MaxHeight = 62;                
+                //AnEditor.EditorDock2.MinWidth = 85;
+
+                RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.NearestNeighbor);
+
+                image.Margin = new Thickness(3, 3, 3, 0);
+                image.Stretch = Stretch.UniformToFill;
+            }
+
+
+            //image.MaxWidth = 0;
+            //AnEditor.EditorDock2.MaxWidth = 9999999;
+            //AnEditor.EditorDock2.UpdateLayout(); 
+
+            //double DockWidth = AnEditor.EditorDock2.ActualWidth;
+
+            //image.MaxWidth = 100;
+            //image.MaxHeight = 100;
+            //AnEditor.EditorDock2.MaxWidth = DockWidth;
+            //AnEditor.EditorDock2.UpdateLayout();
+
+            //If Dock is wider then 100 AND image width, make the text wrap to line 2. 
+
+            //{
+            //    AnEditor.EditorImage.MinWidth = 60;
+            //    AnEditor.EditorImage.MaxHeight = 62;
+            //    AnEditor.EditorImage.HorizontalAlignment = HorizontalAlignment.Center;
+            //    AnEditor.EditorImage.VerticalAlignment = VerticalAlignment.Center;
+            //    AnEditor.EditorImage.ClipToBounds = true;
+            //    AnEditor.EditorImage.SnapsToDevicePixels = true;
+            //    AnEditor.EditorImage.UseLayoutRounding = true; // https://learn.microsoft.com/en-us/dotnet/api/system.windows.frameworkelement.uselayoutrounding?view=windowsdesktop-9.0
+            //    RenderOptions.SetBitmapScalingMode(AnEditor.EditorImage, BitmapScalingMode.NearestNeighbor);
+
+            //    AnEditor.EditorImage.Margin = new Thickness(0, 0, 0, 0);
+            //}
+
+            //AnEditor.EditorImage.Stretch = Stretch.UniformToFill;
+
+            //AnEditor.EditorImage.MaxWidth = 0;
+            //AnEditor.EditorDock2.MaxWidth = 9999999;
+            //AnEditor.EditorDock2.UpdateLayout();
+
+            //double DockWidth = AnEditor.EditorDock2.ActualWidth;
+
+            //AnEditor.EditorImage.MaxWidth = double.PositiveInfinity;
+            //AnEditor.EditorDock2.MaxWidth = DockWidth;
+            //AnEditor.EditorDock2.UpdateLayout();
+
+            //if (AnEditor.EditorImage.ActualHeight > 62)
+            //{
+            //    AnEditor.EditorImage.Stretch = Stretch.Uniform;
+            //}
+
+
+
+            //AnEditor.EditorImage.StretchDirection = StretchDirection.UpOnly;
+        }
+
+        public void UpdateEditorRightClickMenu(Editor EditorClass)
+        {
+            WorkshopData WorkshopData = EditorClass.WorkshopData;
+            Workshop TheWorkshop = WorkshopData.WorkshopXaml;
+
+            ContextMenu NewContextMenu = new ContextMenu();
+            EditorClass.EditorTab.ContextMenu = NewContextMenu;
+
+            MenuItem ReloadEditor = new MenuItem(); //Upcoming, but disabled for now. 
+            ReloadEditor.Header = "Reload Editor (Not finished)";
+            ReloadEditor.Click += ReloadEditor_Click; // Event handler for click action
+            //contextMenu.Items.Add(ReloadEditor);
+            void ReloadEditor_Click(object sender, RoutedEventArgs e)
+            {
+                FileLoading fileLoading = new();
+                fileLoading.ReloadAllEditorFiles(EditorClass);
+
+
+
+                DataTableEditor standardEditor = new(WorkshopData, EditorClass);
+
+                //???
+                //Trigger ReloadFile in a FileManager.cs for every File in use by a editor...
+                //Trigger ReloadEditor in some kind of EditorManager.cs file?
+                //Be mindful about linked menus...
+            }
+                        
+
+            MenuItem OpenEditor = new MenuItem();
+            OpenEditor.Header = "Open Editor Folder";
+            OpenEditor.Click += OpenEditorFolder_Click; // Event handler for click action
+            NewContextMenu.Items.Add(OpenEditor);
+            void OpenEditorFolder_Click(object sender, RoutedEventArgs e)
+            {
+                string EditorFolderPath = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", TheWorkshop.WorkshopData.WorkshopName, "Editors", EditorClass.EditorName);
+                LibraryGES.OpenFolder(EditorFolderPath);
+            }
+
+            MenuItem OpenEditorXML = new MenuItem();
+            OpenEditorXML.Header = "Open Editor.XML";
+            NewContextMenu.Items.Add(OpenEditorXML);
+            OpenEditorXML.Click += OpenTheEditorXML; // Event handler for click action
+            void OpenTheEditorXML(object sender, RoutedEventArgs e)
+            {
+                LibraryGES.OpenFile(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Editors\\" + EditorClass.EditorName + "\\Editor.xml");
+
+            }
+
+            MenuItem DeleteEditorItem = new MenuItem();
+            DeleteEditorItem.Header = "Delete Editor";
+            DeleteEditorItem.Click += DeleteEditorClick; // Event handler for click action
+            NewContextMenu.Items.Add(DeleteEditorItem);
+            void DeleteEditorClick(object sender, RoutedEventArgs e)
+            {
+                foreach (Editor editor in WorkshopData.GameEditors.ToArray()) //.ToArray() lets me add/remove from a list during a foreach loop.
+                {
+                    if (editor == EditorClass)
+                    {
+                        System.Windows.Forms.DialogResult dr = System.Windows.Forms.MessageBox.Show("Are you sure you want to delete this editor?", "Delete Editor", (System.Windows.Forms.MessageBoxButtons)MessageBoxButton.YesNo);
+
+                        if (dr == System.Windows.Forms.DialogResult.Yes)
+                        {
+                            try
+                            {
+                                WorkshopData.GameEditors.Remove(editor);
+                                TheWorkshop.MidGrid.Children.Remove(editor.EditorVisual);
+                                TheWorkshop.EditorBar.Children.Remove(editor.EditorTab);
+                                //LibraryGES.GotoGeneralHide(TheWorkshop);
+
+                                TheWorkshop.ButtonHome.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+
+                            }
+                            catch (IOException ex)
+                            {
+                                // File is being used, so it cannot be deleted
+                                Console.WriteLine("File is being used: " + ex.Message);
+                            }
+                        }
+
+                    }
+                }
+            }
+
+
+
+            if (EditorClass is DataTableEditorData DTEData)
+            {
+                Separator separator = new();
+                separator.SetResourceReference(Separator.StyleProperty, "DashLineForMenu");
+                NewContextMenu.Items.Add(separator);
+
+                MenuItem OpenNTFile = new MenuItem();
+                OpenNTFile.Header = "Open Name Table File Folder (Input)";
+                OpenNTFile.Click += OpenNTFile_Click; // Event handler for click action
+                NewContextMenu.Items.Add(OpenNTFile);
+                void OpenNTFile_Click(object sender, RoutedEventArgs e)
+                {
+                    LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + DTEData.NameTable.TextTableFile.FileLocation);
+                }
+                if (DTEData.NameTable == null) { OpenNTFile.IsEnabled = false; }
+                else if (DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.Nothing) { OpenNTFile.IsEnabled = false; }
+
+                MenuItem OpenNTFileOutput = new MenuItem();
+                OpenNTFileOutput.Header = "Open Name Table File Folder (Output)";
+                OpenNTFileOutput.Click += OpenNTFileOutput_Click; // Event handler for click action
+                NewContextMenu.Items.Add(OpenNTFileOutput);
+                void OpenNTFileOutput_Click(object sender, RoutedEventArgs e)
+                {
+                    LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + DTEData.NameTable.TextTableFile.FileLocation);
+                }
+                if (DTEData.NameTable == null) { OpenNTFileOutput.IsEnabled = false; }
+                else if (DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.Nothing) { OpenNTFileOutput.IsEnabled = false; }
+
+                MenuItem OpenDTFile = new MenuItem();
+                OpenDTFile.Header = "Open Data Table File Folder (Input)";
+                OpenDTFile.Click += OpenDTFile_Click; // Event handler for click action
+                NewContextMenu.Items.Add(OpenDTFile);
+                void OpenDTFile_Click(object sender, RoutedEventArgs e)
+                {
+                    LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + DTEData.DataTable.FileDataTable.FileLocation);
+                }
+                if (DTEData.DataTable == null) { OpenDTFile.IsEnabled = false; }
+
+                MenuItem OpenDTFileOutput = new MenuItem();
+                OpenDTFileOutput.Header = "Open Data Table File Folder (Output)";
+                OpenDTFileOutput.Click += OpenDTFileOutput_Click; // Event handler for click action
+                NewContextMenu.Items.Add(OpenDTFileOutput);
+                void OpenDTFileOutput_Click(object sender, RoutedEventArgs e)
+                {
+                    LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + DTEData.DataTable.FileDataTable.FileLocation);
+                }
+                if (DTEData.DataTable == null) { OpenDTFileOutput.IsEnabled = false; }
+
+                MenuItem OpenDescriptionFolder = new MenuItem();
+                OpenDescriptionFolder.Header = "Open Description Table File Folder (Input)";
+                OpenDescriptionFolder.Click += OpenDTFolder_Click; // Event handler for click action  
+                NewContextMenu.Items.Add(OpenDescriptionFolder);                
+                void OpenDTFolder_Click(object sender, RoutedEventArgs e)
+                {
+                    LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + DTEData.DescriptionTableList[0].TextTableFile.FileLocation);
+                }
+                OpenDescriptionFolder.IsEnabled = false;
+                try
+                {
+                    if (DTEData.DescriptionTableList != null)
+                    {
+                        if (DTEData.DescriptionTableList[0] != null)
+                        {
+                            if (DTEData.DescriptionTableList[0].TextTableFile != null)
+                            {
+                                if (DTEData.DescriptionTableList[0].TextTableFile.FileLocation != null)
+                                {
+                                    if (DTEData.DescriptionTableList[0].TextTableFile.FileLocation != "")
+                                    {
+                                        OpenDescriptionFolder.IsEnabled = true;
+                                    }
+                                }
+                            }                            
+                        }
+                    }
+                }
+                catch
+                {
+                    OpenDescriptionFolder.IsEnabled = false;
+                }
+
+
+                MenuItem OpenDescriptionFolderOutput = new MenuItem();
+                OpenDescriptionFolderOutput.Header = "Open Description Table File Folder (Output)";
+                OpenDescriptionFolderOutput.Click += OpenDTFolderOutput_Click; // Event handler for click action   
+                NewContextMenu.Items.Add(OpenDescriptionFolderOutput);                
+                void OpenDTFolderOutput_Click(object sender, RoutedEventArgs e)
+                {
+                    LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + DTEData.DescriptionTableList[0].TextTableFile.FileLocation);
+                }
+                OpenDescriptionFolderOutput.IsEnabled = false;
+                try
+                {
+                    if (DTEData.DescriptionTableList != null)
+                    {
+                        if (DTEData.DescriptionTableList[0] != null)
+                        {
+                            if (DTEData.DescriptionTableList[0].TextTableFile != null)
+                            {
+                                if (DTEData.DescriptionTableList[0].TextTableFile.FileLocation != null)
+                                {
+                                    if (DTEData.DescriptionTableList[0].TextTableFile.FileLocation != "")
+                                    {
+                                        OpenDescriptionFolderOutput.IsEnabled = true;
+                                    }
+                                }
+                            }                            
+                        }
+                    }
+                }
+                catch
+                {
+                    OpenDescriptionFolderOutput.IsEnabled = false;
+                }
+
+
+
+
+
+
+
+                //if (EditorClass.SWData.ExtraTableList[0] != null && EditorClass.SWData.ExtraTableList[0].FileTextTable.FileLocation != null && EditorClass.SWData.ExtraTableList[0].FileTextTable.FileLocation != "") 
+                //{
+                //    MenuItem OpenDescriptionFolder = new MenuItem();
+                //    OpenDescriptionFolder.Header = "Open Description Table File Location";
+                //    OpenDescriptionFolder.Click += OpenDTFolder_Click; // Event handler for click action
+                //    contextMenu.Items.Add(OpenDescriptionFolder);
+                //    void OpenDTFolder_Click(object sender, RoutedEventArgs e)
+                //    {
+                //        LibraryMan.OpenFileFolder(TheWorkshop.ProjectDataItem.ProjectInputDirectory + "\\" + EditorClass.SWData.ExtraTableList[0].FileTextTable.FileLocation);
+                //    }
+                //}
+
+
+
+            }
+
+            if (EditorClass is TextEditorData texteditor)
+            {
+                //Separator separator = new();
+                //NewContextMenu.Items.Add(separator);
+            }
 
 
         }
+            
     }
 }

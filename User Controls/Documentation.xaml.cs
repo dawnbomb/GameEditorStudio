@@ -33,17 +33,12 @@ namespace GameEditorStudio
     public partial class DocumentsUserControl : UserControl
     {
         //public string ExePath = "";
-        public WorkshopData Database { get; set; }
+        public WorkshopData WorkshopData { get; set; }
 
         public Workshop TheWorkshop { get; set; }
-        TreeViewItem CurrentTreeItem { get; set; } //The currently selected document
-        Document CurrentDocument { get; set; }
-
-        public string Mode { get; set; } = "WorkshopDocuments";
-        List<Document> DocumentsWorkshop { get; set; }
-        List<Document> DocumentsProject { get; set; }
-        //string[] WorkshopDocumentOrder;
-        //string[] WorkshopDocumentFolderNames;
+        TreeViewItem ?CurrentTreeItem { get; set; } //The currently selected document
+       
+                
 
         //TODO:
         //Menu Save Workshop Documents from workshop
@@ -55,126 +50,61 @@ namespace GameEditorStudio
 
         public DocumentsUserControl()
         {
-            InitializeComponent();
+            InitializeComponent();            
             
-            this.Loaded += new RoutedEventHandler(LoadEvent);
         }
 
-        public void LoadEvent(object sender, RoutedEventArgs e)
+        public void TabClicked()
         {
-            if (DocumentsWorkshop != null || DocumentsProject != null || TheWorkshop == null) 
-            {
-                return;
-            }
+            
+            WorkshopDocumentsTreeView.Items.Clear();
+            ProjectDocumentsTreeView.Items.Clear();
 
-            //TheWorkshop = LibraryGES.GetParentWorkshop(this);
-
-            //var workshopWindow = VisualTreeHelper.GetParent(this);
-            //while (workshopWindow != null && workshopWindow is not Workshop)
-            //{
-            //    workshopWindow = VisualTreeHelper.GetParent(workshopWindow);
-            //}
-            //if (workshopWindow is Workshop workshopControl)
-            //{
-            //    TheWorkshop = workshopControl;
-            //}
-
-            DocumentsWorkshop = new List<Document>();
-            DocumentsProject = new List<Document>();
-
-            //if (TheWorkshop.IsPreviewMode == true)
-            //{
-            //    NewWorkDocButton.IsEnabled = false;
-            //    NewProjDocButton.IsEnabled = false;
-            //    DocumentNameBox.IsEnabled = false;
-            //    DocumentTextBox.IsEnabled = false;
-            //    //return;
-            //}
-
-
-            //Database = TheWorkshop.WorkshopData;   
-            //Database.WorkshopXaml.TheDocumentsUserControl = this;
-
-
-
-            string[] WorkshopDocumentOrder = File.ReadLines(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents\\" + "LoadOrder.txt").ToArray();
-            string[] WorkshopDocumentFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
-            foreach (string name in WorkshopDocumentOrder)
-            {
-                if (WorkshopDocumentFolderNames.Contains(name))
-                {
-                    Document TheDocument = new Document { Name = name, Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents\\" + name + "\\Text.txt") };
-                    DocumentsWorkshop.Add(TheDocument); // Adding the document object to the list
-                }
-            }
-            foreach (string name in WorkshopDocumentFolderNames)//The, add any new documents to the document tree in alphabetical order.
-            {
-                if (!WorkshopDocumentOrder.Contains(name))
-                {
-                    Document TheDocument = new Document { Name = name, Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents\\" + name + "\\Text.txt") };
-                    DocumentsWorkshop.Add(TheDocument); // Adding the document object to the list                 
-
-                }
-            }
-            foreach (Document WorkDoc in DocumentsWorkshop)
+            foreach (Document WorkDoc in WorkshopData.WorkshopDocumentsList)
             {
                 CreateTreeItem(WorkDoc, WorkshopDocumentsTreeView, ProjectDocumentsTreeView);
             }
 
-
             if (TheWorkshop.IsPreviewMode == true) { return; }
-
-            string[] ProjectDocumentOrder = File.ReadLines(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents\\" + "LoadOrder.txt").ToArray();
-            string[] ProjectDocumentFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
-            foreach (string name in ProjectDocumentOrder)//The last known list of documents for this workshop, in the order they were saved in.
+            
+            foreach (Document ProjDoc in WorkshopData.ProjectDocumentsList)
             {
-                if (ProjectDocumentFolderNames.Contains(name))
-                {
-                    Document TheDocument = new Document { Name = name, Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents\\" + name + "\\Text.txt") };
-                    DocumentsProject.Add(TheDocument); // Adding the document object to the list
-
-                }
+                CreateTreeItem(ProjDoc, ProjectDocumentsTreeView, WorkshopDocumentsTreeView);
             }
-            foreach (string name in ProjectDocumentFolderNames)//The, add any new documents to the document tree in alphabetical order.
-            {
-                if (!ProjectDocumentOrder.Contains(name))
-                {
-                    Document TheDocument = new Document { Name = name, Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents\\" + name + "\\Text.txt") };
-                    DocumentsProject.Add(TheDocument); // Adding the document object to the list
-
-                }
-            }
-            foreach (Document WorkDoc in DocumentsProject)
-            {
-                CreateTreeItem(WorkDoc, ProjectDocumentsTreeView, WorkshopDocumentsTreeView);
-            }
-
-
-
-
 
 
         }
-
-
-
 
         
 
         private void ButtonNewWorkshopDocument(object sender, RoutedEventArgs e)
         {
             Document Document = new();
-            DocumentsWorkshop.Add(Document);
+            WorkshopData.WorkshopDocumentsList.Add(Document);
             CreateTreeItem(Document, WorkshopDocumentsTreeView, ProjectDocumentsTreeView);
 
+            foreach (TreeViewItem Item in WorkshopDocumentsTreeView.Items)
+            {
+                if (Item.Tag as Document == Document)
+                {
+                    Item.IsSelected = true;
+                }
+            }
         }
 
         private void ButtonNewProjectDocument(object sender, RoutedEventArgs e)
         {
             Document Document = new();
-            DocumentsProject.Add(Document);
+            WorkshopData.ProjectDocumentsList.Add(Document);
             CreateTreeItem(Document, ProjectDocumentsTreeView, WorkshopDocumentsTreeView);
 
+            foreach (TreeViewItem Item in ProjectDocumentsTreeView.Items)
+            {
+                if (Item.Tag as Document == Document)
+                {
+                    Item.IsSelected = true;
+                }
+            }
         }
 
 
@@ -200,26 +130,37 @@ namespace GameEditorStudio
             }
 
             TreeViewItem.Header = TheDocument.Name;
+            TreeViewItem.Tag = TheDocument;
             tree.Items.Add(TreeViewItem);
 
             TreeViewItem.Selected += (sender, e) =>
             {
-                if (CurrentDocument != null)
-                {
-                    SaveDocumentToMemory();
-                }
+                //if (CurrentDocument != null)
+                //{
+                //    SaveCurrentDocumentToMemory();
+                //}
 
+                //CurrentDocument = TheDocument;
+                //CurrentTreeItem = TreeViewItem;
 
-                DocumentNameBox.Text = TheDocument.Name;
-                DocumentTextBox.Text = TheDocument.Text;
-                CurrentDocument = TheDocument;
-                CurrentTreeItem = TreeViewItem;
+                //if (CurrentDocument == null) 
+                //{
+                //    DocumentNameBox.IsEnabled = false;
+                //    DocumentTextBox.IsEnabled = false;
+                //    DocumentNameBox.Text = "";
+                //    DocumentTextBox.Text = "";
+                //}
 
-                TreeViewItem selectedItem = OtherTree.SelectedItem as TreeViewItem;
-                if (selectedItem != null)
-                {
-                    selectedItem.IsSelected = false;
-                }
+                //DocumentNameBox.Text = TheDocument.Name;
+                //DocumentTextBox.Text = TheDocument.Text;
+                
+                
+
+                //TreeViewItem selectedItem = OtherTree.SelectedItem as TreeViewItem;
+                //if (selectedItem != null)
+                //{
+                //    selectedItem.IsSelected = false;
+                //}
 
             };
 
@@ -239,8 +180,8 @@ namespace GameEditorStudio
             void MenuItem1_Click(object sender, RoutedEventArgs e)
             {
                 // Handle the click event for MenuItem1
-                DocumentsWorkshop.Remove(TheDocument);
-                DocumentsProject.Remove(TheDocument);
+                WorkshopData.WorkshopDocumentsList.Remove(TheDocument);
+                WorkshopData.ProjectDocumentsList.Remove(TheDocument);
                 tree.Items.Remove(TreeViewItem); //DocumentsTreeView.SelectedItem
             }
 
@@ -282,204 +223,92 @@ namespace GameEditorStudio
 
             }
 
-
+            if(WorkshopData.CurrentDocument == TheDocument) { TreeViewItem.IsSelected = true; }
         }
 
-
-        public void SaveDocumentToMemory()
+        private void WTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (CurrentDocument != null) 
-            {
-                CurrentDocument.Text = DocumentTextBox.Text;
-            }
-            
+            if (WorkshopDocumentsTreeView.SelectedItem == null && ProjectDocumentsTreeView.SelectedItem == null) { SelectDocument(null); }
+            if (WorkshopDocumentsTreeView.SelectedItem == null)  { return; }
+
+            TreeViewItem OtherSelectedItem = ProjectDocumentsTreeView.SelectedItem as TreeViewItem;
+            if (OtherSelectedItem != null) { OtherSelectedItem.IsSelected = false; }
+            TreeViewItem MySelectedItem = WorkshopDocumentsTreeView.SelectedItem as TreeViewItem;
+            CurrentTreeItem = MySelectedItem;
+            SelectDocument(MySelectedItem.Tag as Document);  //e.NewValue;
         }
 
-
-
-
-
-        public void ButtonNewSaveAll(object sender, RoutedEventArgs e)
+        private void PTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            SaveAllDocumentsWorkshop();
-            SaveAllDocumentsProject();
+            if (WorkshopDocumentsTreeView.SelectedItem == null && ProjectDocumentsTreeView.SelectedItem == null) { SelectDocument(null); }
+            if (ProjectDocumentsTreeView.SelectedItem == null) { return; }
+
+            TreeViewItem OtherSelectedItem = WorkshopDocumentsTreeView.SelectedItem as TreeViewItem;
+            if (OtherSelectedItem != null) { OtherSelectedItem.IsSelected = false; }
+            TreeViewItem MySelectedItem = ProjectDocumentsTreeView.SelectedItem as TreeViewItem;
+            CurrentTreeItem = MySelectedItem;
+            SelectDocument(MySelectedItem.Tag as Document);
         }
 
-        public void SaveAllDocumentsWorkshop() 
+        private void SelectDocument(Document newdocument)
         {
-            SaveDocumentToMemory();
-            try
+            if (newdocument == null) 
             {
-                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\DOCocumentationFolderTest");
-                foreach (Document Document in DocumentsWorkshop)
-                {
-                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\DOCocumentationFolderTest\\" + Document.Name);
-                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\DOCocumentationFolderTest\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
-
-                }
-                Directory.Delete(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\DOCocumentationFolderTest", true);
-
-                //Assuming there was no errors, the next chunk actually saves the documents.
-                //Instead of trying to properly deal with the logistics of renamed document folders, we just blow up the entire Documents folder and recreate it.       
-
-                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents");
-
-                string DocumentOrder = "";
-                foreach (Document Document in DocumentsWorkshop)
-                {
-                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents\\" + Document.Name);
-                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
-                    DocumentOrder = DocumentOrder + Document.Name + "\n";
-                }
-                System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\Documents\\" + "LoadOrder.txt", DocumentOrder);
-
-
+                CurrentTreeItem = null;
+                WorkshopData.CurrentDocument = null;
+                DocumentNameBox.IsEnabled = false;
+                DocumentTextBox.IsEnabled = false;
+                DocumentNameBox.Text = "";
+                DocumentTextBox.Text = "";
+                return;
             }
-            catch
+            if (newdocument != null) 
             {
-                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TheWorkshop.WorkshopData.WorkshopName + "\\DOCocumentationFolderTest");
+                WorkshopData.CurrentDocument = newdocument;
+                DocumentNameBox.IsEnabled = true;
+                DocumentTextBox.IsEnabled = true;
+                DocumentNameBox.Text = newdocument.Name;
+                DocumentTextBox.Text = newdocument.Text;
+                return;
+            }  
 
-                PixelWPF.LibraryPixel.NotificationNegative("Error: WORKSHOP Documentation not saved.",
-                    "An error occured during the \"Saving Documentation\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +
-                    "\n\n" +
-                    "As you were probably saving more then only your documentation, you'll be happy to hear that each part of saving is handled seperately. " +
-                    "This means there is NO CHANCE that any other parts of the saving operation are affected, such as when also saving editors or saving workshop files. " +
-                    "\n\n" +
-                    "Documentats are saved using the names you give them to actual folders. " +
-                    "This can cause problems as each operating system has a diffrent list of symbols it doesn't allow folder names to use. " +
-                    "For safety, we first simulate what would happen IF it actually saved anything, " +
-                    "by creating a temporary dummy folder and saving everything to that temporary folder. " +
-                    "This way there is no chance your actual document folder will get corrupted or result in any other serious error. :)" +
-                    "\n\n" +
-                    "As your seeing this error, it means your operating system doesn't like atleast one of the symbols you tried using in a documents name. " +
-                    "Try to avoid symbols like @, #, $, %, &, *, \\, /, :, ;, etc. Also most operating systems DO allow spaces in folder names, so the problem isn't that. " +
-                    "\n\n" +
-                    "Try changing the names of any documents you think might have caused the error, and then try saving your documents again. " +
-                    "\n\n" +
-                    "Yes, the problem is the document NAMES, not the text inside them."
-                    );
-            }
-        }
-        public void SaveAllDocumentsProject() 
-        {
-            SaveDocumentToMemory();
-            try
-            {
-
-                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave");
-                foreach (Document Document in DocumentsProject)
-                {
-                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave\\" + Document.Name);
-                    File.WriteAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
-
-                }
-
-                Directory.Delete(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave", true);
-                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents");
-                //Assuming there was no errors, the next chunk actually saves the documents.
-                //Instead of trying to properly deal with the logistics of renamed document folders, we just blow up the entire Documents folder and recreate it.       
-
-
-                //Directory.CreateDirectory(TheWorkshop.ExePath + "\\Workshops\\" + TheWorkshop.WorkshopName + "\\Documents");
-                string DocumentOrder = "";
-                foreach (Document Document in DocumentsProject)
-                {
-                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents\\" + Document.Name);
-                    File.WriteAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
-                    DocumentOrder = DocumentOrder + Document.Name + "\n";
-
-                }
-                File.WriteAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\Documents\\" + "LoadOrder.txt", DocumentOrder);
-
-
-
-
-            }
-            catch
-            {
-                LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Projects\\" + TheWorkshop.WorkshopData.WorkshopName + "\\" + TheWorkshop.WorkshopData.ProjectDataItem.ProjectName + "\\ProjectFolderTestSave");
-
-                PixelWPF.LibraryPixel.NotificationNegative("Error: PROJECT Documentation not saved.",
-                    "An error occured during the \"Saving Documentation\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +
-                    "\n\n" +
-                    "As you were probably saving more then only your documentation, you'll be happy to hear that each part of saving is handled seperately. " +
-                    "This means there is NO CHANCE that any other parts of the saving operation are affected, such as when also saving editors or saving workshop files. " +
-                    "\n\n" +
-                    "Documentats are saved using the names you give them to actual folders. " +
-                    "This can cause problems as each operating system has a diffrent list of symbols it doesn't allow folder names to use. " +
-                    "For safety, we first simulate what would happen IF it actually saved anything, " +
-                    "by creating a temporary dummy folder and saving everything to that temporary folder. " +
-                    "This way there is no chance your actual document folder will get corrupted or result in any other serious error. :)" +
-                    "\n\n" +
-                    "As your seeing this error, it means your operating system doesn't like atleast one of the symbols you tried using in a documents name. " +
-                    "Try to avoid symbols like @, #, $, %, &, *, \\, /, :, ;, etc. Also most operating systems DO allow spaces in folder names, so the problem isn't that. " +
-                    "\n\n" +
-                    "Try changing the names of any documents you think might have caused the error, and then try saving your documents again. " +
-                    "\n\n" +
-                    "Yes, the problem is the document NAMES, not the text inside them."
-                    );
-                
-            }
         }
 
 
-
-        private void DocumentTreePreviewMouseMove(object sender, MouseEventArgs e)
-        {
-            //if (e.LeftButton == MouseButtonState.Pressed && Keyboard.IsKeyUp(Key.LeftShift))
-            //{
-            //    var treeView = (TreeView)sender;
-            //    var treeViewItem = GetTreeViewItemAtPoint(treeView, e.GetPosition(treeView));
-            //    if (treeViewItem != null)
-            //    {
-            //        var data = new DataObject("MoveDocumentItem", treeViewItem);
-            //        DragDrop.DoDragDrop(treeViewItem, data, DragDropEffects.Move);
-            //    }
-            //}
-
-            //TreeViewItem GetTreeViewItemAtPoint(ItemsControl control, Point point)
-            //{
-            //    var hitTestResult = VisualTreeHelper.HitTest(control, point);
-            //    var visualHit = hitTestResult?.VisualHit;
-            //    while (visualHit != null)
-            //    {
-            //        if (visualHit is TreeViewItem treeViewItem)
-            //        {
-            //            return treeViewItem;
-            //        }
-
-            //        visualHit = VisualTreeHelper.GetParent(visualHit);
-            //    }
-
-            //    return null;
-            //}
-        }
 
         private void DocumentNameBox_KeyDown(object sender, KeyEventArgs e)
         {
+            if (WorkshopData == null) { return; }
+            if (WorkshopData.CurrentDocument == null) { return; }
+
             if (e.Key == Key.Enter)
             {
-                if (CurrentTreeItem != null) 
+                if (CurrentTreeItem != null)
                 {
                     CurrentTreeItem.Header = DocumentNameBox.Text;
-                    CurrentDocument.Name = DocumentNameBox.Text;
-                }               
-
+                    SaveCurrentDocumentToMemory();
+                }
 
             }
         }
+
+        private void DocumentTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (WorkshopData == null) { return; }
+            if (WorkshopData.CurrentDocument == null) { return; }
+            SaveCurrentDocumentToMemory();
+        }
+
+        public void SaveCurrentDocumentToMemory()
+        {
+            if (WorkshopData.CurrentDocument == null) { return; }
+
+            WorkshopData.CurrentDocument.Name = DocumentNameBox.Text;
+            WorkshopData.CurrentDocument.Text = DocumentTextBox.Text;
+        }
+
+        
     }
-
-
-
-
-
-
-
-    
-
-
-
 
 
 }

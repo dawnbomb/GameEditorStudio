@@ -54,7 +54,8 @@ namespace GameEditorStudio
             HashSet<string> createdTabs = new HashSet<string>();
 
             foreach (Command Command in Database.Commands)
-            {                
+            {
+                if (Command.Category == "Hidden") { continue; }
 
                 // Check if the tab has already been created, and if so, continue to the next command
                 if (createdTabs.Contains(Command.Category))
@@ -146,10 +147,10 @@ namespace GameEditorStudio
 
         public void SetupGroups()
         {
-            foreach (TreeViewItem item in CategoryTree.Items)
+            foreach (TreeViewItem CatTreeItem in CategoryTree.Items)
             {
                 //ScrollViewer ScrollViewer = (ScrollViewer)Tab.Content;
-                Grid MainTabGrid = item.Tag as Grid;
+                Grid MainTabGrid = CatTreeItem.Tag as Grid;
                 DockPanel LeftDock = null;
                 DockPanel RightDock = null;
 
@@ -177,13 +178,15 @@ namespace GameEditorStudio
 
                 foreach (Command Command in Database.Commands)
                 {
+                    if (Command.Group == "Hidden") { continue; }
+
                     //if (Command.Key == "638907232781932877-460670541-291625304") { continue; }  //skip over command prompt
 
-                    if (item.Header.ToString() == Command.Category)
+                    if (CatTreeItem.Header.ToString() == Command.Category)
                     {
                         if (Command.Group == null || Command.Group == "") { continue; }
 
-                        if (!DockList.Any(dockPanel => dockPanel.Name == Command.Group))
+                        if (!DockList.Any(dockPanel => dockPanel.Tag.ToString() == Command.Group))
                         {
                             Border Border = new();
                             Border.Background = (Brush)FindResource("ContentBarBack");
@@ -200,7 +203,8 @@ namespace GameEditorStudio
                             DockPanel GroupPanel = new();
                             GroupPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
 
-                            GroupPanel.Name = Command.Group.ToString();
+                            //GroupPanel.Name = Command.Group.ToString();
+                            GroupPanel.Tag = Command.Group.ToString();
                             GroupPanel.LastChildFill = false;
                             GroupPanel.Margin = new Thickness(0, 0, 0, 5);
                             DockList.Add(GroupPanel);
@@ -229,7 +233,8 @@ namespace GameEditorStudio
                         };
 
 
-                        DockPanel FoundDockPanel = DockList.FirstOrDefault(dp => dp.Name == Command.Group.ToString());
+                        //DockPanel FoundDockPanel = DockList.FirstOrDefault(dp => dp.Name == Command.Group.ToString());
+                        DockPanel FoundDockPanel = DockList.FirstOrDefault(dp => dp.Tag.ToString() == Command.Group.ToString());
                         FoundDockPanel.Children.Add(TheCommandButton);
 
 

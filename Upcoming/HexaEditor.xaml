@@ -3,11 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:GameEditorStudio"
-             xmlns:hex="clr-namespace:WpfHexaEditor;assembly=WPFHexaEditor"
-             xmlns:control="clr-namespace:WpfHexaEditor;assembly=WPFHexaEditor"
+             xmlns:local="clr-namespace:GameEditorStudio"             
+             xmlns:hex="clr-namespace:WpfHexEditor.HexEditor;assembly=WpfHexEditor.HexEditor"
              mc:Ignorable="d" 
              d:DesignHeight="900" d:DesignWidth="1400">
+
+    <!--xmlns:hex="clr-namespace:WpfHexEditor;assembly=WpfHexEditor"
+xmlns:control="clr-namespace:WpfHexEditor;assembly=WpfHexEditor"-->
 
     <Grid>
         <!--<control:HexEditor Height="504" VerticalAlignment="Top" HorizontalAlignment="Left" Width="638"/>

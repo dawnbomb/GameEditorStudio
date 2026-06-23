@@ -153,10 +153,12 @@ namespace GameEditorStudio
                 TreeViewItem TheItem = ColorThemeTree.Items.GetItemAt(0) as TreeViewItem;
                 TheItem.IsSelected = true;
             }
+
+
+
             
-
-
         }
+
 
         private void UpdateDataGrid(ColorTheme theme)
         {
@@ -399,7 +401,10 @@ namespace GameEditorStudio
             LibraryGES.SwitchToColorTheme(Theme);
         }
 
-        
+        private void ButtonBackClick(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 
 

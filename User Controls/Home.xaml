@@ -1,0 +1,236 @@
+﻿<UserControl x:Class="GameEditorStudio.Home"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d" 
+             d:DesignHeight="750" d:DesignWidth="1400">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="500"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <!--<RowDefinition Height="36"/>-->
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border  DockPanel.Dock="Top" Grid.ColumnSpan="5" Margin="0,4,0,4">
+            <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" Background="#FF181827">
+                <Label Content="Loaded Project:" FontWeight="Bold" Margin="0,-5,0,-5"  FontSize="30"/>
+                <Label Name="LabelCurrentProject" Content="NONE (Editors use this)"  Margin="0,-2,0,-5" Foreground="#FFF17900" FontSize="30"/>
+
+                <Label Content="Selected Project:" FontWeight="Bold" Margin="50,-5,0,-5"  FontSize="30"/>
+                <Label Name="LabelSelectedProject" Content="NONE (Events use this)"  Margin="0,-2,0,-5" Foreground="#FF00A7FF" FontSize="30"/>
+            </DockPanel>
+        </Border>
+
+        <local:FileManager x:Name="FileManager"  Grid.Column="0" Grid.Row="1"/>
+
+        <ContentControl Grid.Row="1" Grid.Column="4">
+            <TabControl >
+                <TabItem Header="Home" Name="HomeTab">
+                    <DockPanel Background="#FF212121">
+                        <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                            <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" >
+                                <Label Content="Intro" FontWeight="Bold"  />
+                                <Button Content="Edit" Margin="3"/>
+                            </DockPanel>
+                        </Border>
+                        <ScrollViewer>
+                            <DockPanel Name="IntroPanel" Background="#FF1F1F1F">
+                                <TextBox TextWrapping="Wrap" Text="" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False" />
+                            </DockPanel>                            
+                        </ScrollViewer>
+
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="HomeOld" Name="HomeTabOld">
+                    <DockPanel Background="#FF212121">
+                        <ScrollViewer>
+                            <TextBox TextWrapping="Wrap" Text="HELLO AND WELCOME! :D &#xA;This &quot;home page&quot; is a new idea. Previously i made you load your game files before entering a workshop, but now a workshop opens in &quot;preview mode&quot;. This lets you look at the editors without loading a project (without needing any game files). &#xA;&#xA;Preview mode being new means it's both unpolished, and probably has bugs or can crash. Just don't do anything weird in preview mode until i improve it. &gt;_&gt;. &#xA;&#xA;So anyway, to make a mod for this game, first create a &quot;project&quot;. Then set the project's Input Folder (Where the unmodded game files are) and output folder (where your modded game files will save to). When you click load project, any game files the editors need are loaded in (and a full list is shown on the left). &#xA;----------------------------------- &#xA;ABOUT EVENTS AND PROJECT RESOURCES:&#xA;&#xA;&quot;Events&quot; (Located at the top menu) are something users can create, they are a code-free way to create commands or macros if you will. &#xA;&#xA;Some event commands (like &quot;Run Game With Emulator&quot;) can use files other then the game files (for example, an emulator's .exe). I randomly decided these extras would be called &quot;Project Resources&quot;. &#xA;&#xA;Now, you CAN use the editors just fine without setting up any Project Resources, BUUTTT...What about when the game you want to mod first needs you to extract or unpack the game files before you can set them as the input folder? &#xA;&#xA;Well, then workshop creator might make an event to extract or unpack game files! But that means you would want to use the event before even loading a project! (you need to set an input folder to load a project)&#xA;&#xA;So how do i solve this? Well..., as a temporary answer to this problem, the events menu at the top uses the currently SELECTED project's resources, and NOT the currently loaded project's resources. &#xA;&#xA;This way, you can create a new project, set any needed files as project resources, run whatever file unpack event, and then finally set the unpacked files as the input folder. :)&#xA;&#xA;I will make a more elegant answer to this problem... later &gt;_&gt;" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False" />
+                        </ScrollViewer>
+                        
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="Documents">
+
+                </TabItem>
+            </TabControl>
+        </ContentControl>
+        
+        
+        <DockPanel Grid.Column="2" Grid.Row="1" Margin="10,0,10,0" LastChildFill="True" Background="{x:Null}">
+
+            <ContentControl DockPanel.Dock="Top" MinHeight="100"  >
+                <DockPanel  Background="#FF212121">
+                    <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
+                        <Label Content="Projects / Mods" FontWeight="Bold" />
+                        <Button Name="HomeNewProjectButton" Click="NewProjectButton" DockPanel.Dock="Right" Content="New"  Height="30" MinWidth="50" Margin="0,3,10,2" Width="60" ToolTip="Create a new Mod / Project."  />
+                    </DockPanel>
+                    
+                    <!--<DataGrid  HeadersVisibility="None" x:Name="ProjectsSelector" AutoGenerateColumns="False" DockPanel.Dock="Right" VerticalAlignment="Stretch" IsReadOnly="True" SelectionChanged="ProjectSelected" FontSize="15"  >
+                        <DataGrid.Columns >
+                            <DataGridTextColumn Header="Projects" Binding="{Binding ProjectName}" Width="*" />
+                        </DataGrid.Columns>
+
+
+                        <DataGrid.RowStyle>
+                            <Style TargetType="{x:Type DataGridRow}">
+                                <EventSetter Event="MouseDoubleClick" Handler="ProjectRowDoubleClick" />
+                            </Style>
+                        </DataGrid.RowStyle>
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="New Project" Click="CreateNewProject" />
+                                <MenuItem Header="Delete Project" Click="DeleteProject" />
+                                <MenuItem Header="Open Input Folder" Click="OpenInput" />
+                                <MenuItem Header="Open Output Folder" Click="OpenOutput" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
+                    </DataGrid>-->
+                    <TreeView x:Name="ProjectsTreeView"  Margin="0,0,10,0"  BorderThickness="0" FontSize="20" Height="100" SelectedItemChanged="ProjectsTreeSelectedItemChanged">
+                        <TreeViewItem Header="Project 1">
+                            <TreeViewItem Header="Input Folder: C:\Example\Project1\Input" />
+                            <TreeViewItem Header="Output Folder: C:\Example\Project1\Output" />
+                        </TreeViewItem>
+                        <TreeViewItem Header="Project 2">
+                            <TreeViewItem Header="Input Folder: C:\Example\Project2\Input" />
+                            <TreeViewItem Header="Output Folder: C:\Example\Project2\Output" />
+                        </TreeViewItem>
+                        <TreeView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Open Project Folder" Click="OpenProjectFolder"  IsEnabled="True"/>
+                                <Separator Style="{DynamicResource DashLineForMenu}"/>   
+                                <MenuItem Header="Open Input Folder" Click="OpenProjectInputFolder" IsEnabled="True"/>
+                                <MenuItem Header="Open Output Folder" Click="OpenProjectOutputFolder" IsEnabled="True"/>
+                                <Separator Style="{DynamicResource DashLineForMenu}"/>
+                                <MenuItem Header="Delete Project" Click="DeleteProject" IsEnabled="True"/>
+                            </ContextMenu>
+                        </TreeView.ContextMenu>
+                    </TreeView>
+                </DockPanel>
+            </ContentControl>
+
+            <ContentControl DockPanel.Dock="Top" Height="300" Margin="0,10,0,0" Grid.Column="1" Grid.Row="1">
+
+                <Grid>
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,0,0,0"  Background="#FF2D2D2D" >
+                        <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                            <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" >
+                                <Label Content="Project Info" FontWeight="Bold"  />
+                                <Button Name="HomeLoadProjectButton" DockPanel.Dock="Right" Content="Load Project"  Height="30"  Margin="0,3,10,2" Click="ButtonLoadProject"  ToolTip="Launch this workshop loading the selected project's data.  &#xD;Data is loaded using files in the output folder.  &#xD;If a file isn't there, it loads it from the input folder.  &#xD;If a file still isn't there, it probably just crashes :>"  />
+                                <Button Name="HomeUnloadProjectButton" DockPanel.Dock="Right" Content="Unload"  Height="30"  Margin="0,3,10,2" Click="ButtonUnloadProject" Width="90" ToolTip=""  />
+                            </DockPanel>
+                        </Border>
+
+
+                        <DockPanel DockPanel.Dock="Top" Background="{x:Null}"  >
+
+                            <DockPanel DockPanel.Dock="Top" Margin="10,3,10,10" Background="{x:Null}"  >
+                                <DockPanel DockPanel.Dock="Top" LastChildFill="False" Background="{x:Null}" >
+                                    <Label Content="Project Name" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
+                                    <Button Name="ButtonOpenInputFolder2" Content="Open" DockPanel.Dock="Right" Click="OpenSelectedProjectFolder" Width="63" Height="30"/>
+                                </DockPanel>
+                                <Border CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
+                                    <!--Background="White"-->
+                                    <TextBox x:Name="ProjectNameTextbox" DockPanel.Dock="Top" Margin="0,0,0,0" Text="" KeyDown="ChangeProjectName" Padding="4"  BorderThickness="0"  ToolTip="The name of your mod / project. &#xD;This is not shared, and can be whatever you want."  />
+                                </Border>
+
+                            </DockPanel>
+
+
+
+                            <DockPanel DockPanel.Dock="Top" Margin="10,3,10,10" Background="{x:Null}" >
+                                <DockPanel DockPanel.Dock="Top" LastChildFill="False"  Background="{x:Null}">
+                                    <Label Content="Input Folder" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
+                                    <Label Name="LabelForMissingProjectInput" Content="Missing!" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,3,0,0" />
+                                    <Button Name="ButtonCopyInputFolderText" Click="CopyProjectInputFolderTextButton"  Content="Copy" DockPanel.Dock="Right" Width="63" Margin="3,0,0,0" Height="30"/>
+                                    <Button Name="ButtonOpenInputFolder" Content="Open" DockPanel.Dock="Right" Click="OpenSelectedProjectInputFolder" Width="63" Height="30"/>
+                                    <Button x:Name="ButtonSelectInputDirectory" Content="Browse..." DockPanel.Dock="Right" Height="30" Width="100" Margin="0,0,3,0" Click="SetSelectedProjectInputFolder"  />
+                                </DockPanel>
+                                <DockPanel DockPanel.Dock="Top"  Background="{x:Null}">
+                                    <Border Name="BorderInputFolder" CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
+                                        <TextBox x:Name="TextBoxInputDirectory" Margin="2,0,2,0" Padding="4"  BorderThickness="0"  DockPanel.Dock="Left" Text="Where your projects get the game files from."  IsEnabled="False" />
+                                    </Border>
+
+
+                                </DockPanel>
+
+                            </DockPanel>
+
+                            <DockPanel DockPanel.Dock="Top" Margin="10,3,10,0"  Background="{x:Null}"  >
+                                <DockPanel DockPanel.Dock="Top" LastChildFill="False"  Background="{x:Null}">
+                                    <Label Content="Output Folder" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
+                                    <Label Name="LabelForMissingProjectOutput" Content="Missing!" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,3,0,0" />
+                                    <Button Name="ButtonCopyOutputFolderText" Click="CopyProjectOutputFolderTextButton"  Content="Copy" DockPanel.Dock="Right" Width="63" Margin="3,0,0,0" Height="30"/>
+                                    <Button Name="ButtonOpenOutputFolder" Content="Open" DockPanel.Dock="Right" Click="OpenSelectedProjectOutputFolder" Width="60" Height="30"/>
+                                    <Button Content="Browse..." DockPanel.Dock="Right" Height="30" Width="100" Margin="0,0,3,0" Click="SetSelectedProjectOutputFolder"  ToolTip="The folder where files are saved to. &#xD;When saving, files will save in the same folder structure as the input folder.  &#xD;   &#xD;TIP: If your modding for a 3DS or Switch game,  &#xD;Set the output folder as the emulator/game's mod folder! :D"  />
+                                </DockPanel>
+                                <DockPanel DockPanel.Dock="Top"  Background="{x:Null}">
+                                    <Border Name="BorderOutputFolder" CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
+                                        <TextBox x:Name="TextBoxOutputDirectory" Margin="2,0,2,0" Padding="4"  BorderThickness="0"  DockPanel.Dock="Left" Text="Where files will be saved to. :)"  IsEnabled="False" />
+                                    </Border>
+                                </DockPanel>
+
+                            </DockPanel>
+
+
+
+                        </DockPanel>
+                    </DockPanel>
+
+                    <DockPanel Name="LoadingPanel" DockPanel.Dock="Top" Background="#FF1B1B1B" Visibility="Collapsed">
+                        <StackPanel Margin="20, 10, 20, 20" DockPanel.Dock="Top">
+                            <Label x:Name="LoadingPartText" Content="Loading..." Margin="0,0,0,5" HorizontalAlignment="Center"/>
+                            <Label x:Name="LoadingStatusText" Content="Loading..." Margin="0,-5,0,5" HorizontalAlignment="Center"/>
+                            <ProgressBar x:Name="LoadingProgressBar" Height="20" Minimum="0" Maximum="100"/>
+                        </StackPanel>
+                        <StackPanel Name="LoadUIUI" Margin="20, 10, 20, 20" DockPanel.Dock="Top">
+                            <Label x:Name="LoadingPartTextUI" Content="Loading..." Margin="0,0,0,5" HorizontalAlignment="Center"/>
+                            <Label x:Name="LoadingStatusTextUI" Content="Loading..." Margin="0,-5,0,5" HorizontalAlignment="Center"/>
+                            <ProgressBar x:Name="LoadingProgressBarUI" Height="20" Minimum="0" Maximum="100"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Grid>
+                
+            </ContentControl>
+
+
+
+            <ContentControl DockPanel.Dock="Bottom"  Margin="0,10,0,0" BorderThickness="2,0,2,2" BorderBrush="#575757"  >
+                <DockPanel DockPanel.Dock="Bottom" Background="{x:Null}" >
+
+                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                        <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" >
+                            <Label Content="Project Resources" FontWeight="Bold" />
+                            <Label Name="LabelForMissingProjectResources" Content="Some last known locations are wrong?" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,0,0,0" />
+                            <Label Content="(Events use the SELECTED project's resources)"  Margin="0,0,0,0" Foreground="#FF00A7FF" />
+                        </DockPanel>
+                    </Border>
+
+                    <!--Note: Only local files/folders appear here, never child ones, because the user doesn't need to actually set them (thats the point of child items).-->
+                    <DockPanel>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" >
+                            <DockPanel  Background="#FF2D2D2D">
+                                <DockPanel Name="ProjectEventResourcesPanel"  LastChildFill="False" DockPanel.Dock="Top" Background="{x:Null}" >
+
+                                </DockPanel>
+                            </DockPanel>
+
+                        </ScrollViewer>
+                    </DockPanel>
+
+                </DockPanel>
+            </ContentControl>
+        </DockPanel>
+
+        
+    </Grid>
+</UserControl>

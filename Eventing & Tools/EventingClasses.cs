@@ -103,8 +103,8 @@ namespace GameEditorStudio
     public class ProjectEventResource //The resources the user has set for their project. A Workshop decides how many of these exists.
     {
         //Save,,,
-        public string Key { get; set; } //XML
-        public string Location { get; set; } //XML  Used to store the path to a file/folder for a project. 
+        public string Key { get; set; } = ""; //XML
+        public string Location { get; set; } = ""; //XML  Used to store the path to a file/folder for a project. 
     }
 
     public class Event //An entire event (the kind the user creates)

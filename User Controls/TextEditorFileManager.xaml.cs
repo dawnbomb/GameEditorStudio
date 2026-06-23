@@ -20,16 +20,17 @@ namespace GameEditorStudio
     /// </summary>
     public partial class TextEditorFileManager : UserControl
     {
-        Editor TheEditor { get; set; }
+        TextEditorData TextEditorData { get; set; }
 
-        public TextEditorFileManager(Editor AEditor)
+        public TextEditorFileManager(TextEditorData theEditor)
         {
             InitializeComponent();
 
-            TheEditor = AEditor;
+            TextEditorData = theEditor;
+            //TheEditor = AEditor;
 
             TextFileManager.IsTextEditor = true;
-            TextFileManager.ThisEditor = AEditor;
+            TextFileManager.TextEditorData = theEditor;
 
             TextFileManager.AddFileButton.IsEnabled = false;
             TextFileManager.AddFileButton.Visibility = Visibility.Collapsed;
@@ -46,7 +47,7 @@ namespace GameEditorStudio
             foreach (TreeViewItem Item in AllFileManager.TreeGameFiles.Items)
             {
                 GameFile GameFile = Item.Tag as GameFile;
-                if (TheEditor.TextEditorData.ListOfGameFiles.Contains(GameFile))
+                if (TextEditorData.ListOfGameFiles.Contains(GameFile))
                 {
                     items.Add(Item);
                 }
@@ -71,10 +72,10 @@ namespace GameEditorStudio
             if (parentPanel != null)
             {
                 parentPanel.Children.Remove(this);
-                TheEditor.TextEditorData.MainGrid.Visibility = Visibility.Visible;
+                TextEditorData.MainGrid.Visibility = Visibility.Visible;
             }
 
-            TheEditor.TextEditorData.TextFileManager.RefreshFileTree();
+            TextEditorData.TextFileManager.RefreshFileTree();
         }
 
         private void ButtonAddFile(object sender, RoutedEventArgs e)
@@ -84,7 +85,7 @@ namespace GameEditorStudio
             GameFile GameFile = Item.Tag as GameFile;
             if (GameFile == null) { return; }
 
-            TheEditor.TextEditorData.ListOfGameFiles.Add(GameFile);
+            TextEditorData.ListOfGameFiles.Add(GameFile);
             AllFileManager.TreeGameFiles.Items.Remove(Item);
             TextFileManager.TreeGameFiles.Items.Add(Item);
         }
@@ -96,7 +97,7 @@ namespace GameEditorStudio
             GameFile GameFile = Item.Tag as GameFile;
             if (GameFile == null) { return; }
 
-            TheEditor.TextEditorData.ListOfGameFiles.Remove(GameFile);
+            TextEditorData.ListOfGameFiles.Remove(GameFile);
             TextFileManager.TreeGameFiles.Items.Remove(Item);
             AllFileManager.TreeGameFiles.Items.Add(Item);
 

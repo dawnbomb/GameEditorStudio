@@ -62,7 +62,10 @@
                     </DockPanel>
                 </Border>
 
-                <DockPanel Name="EventCommandsDockPanel" LastChildFill="False"  Style="{DynamicResource DockList}"/>
+                <ScrollViewer>
+                    <DockPanel Name="EventCommandsDockPanel" LastChildFill="False"  Style="{DynamicResource DockList}"/>
+                </ScrollViewer>
+                
             </DockPanel>
         </ContentControl>
 
