@@ -26,8 +26,8 @@ namespace GameEditorStudio
         //Or if i do, just be aware they DO cause a memory leak, so only do it very sparingly >_>; 
         //Note: while ints and bools are safe, a string that is replaced, the only string still technically exists in memory. But a string is so tiny in RAM that it probably doesn't matter.
 
-        public static string VersionDate { get; set; } = "June 23 2026";
-        public static Version VersionNumber { get; set; } = new Version(0, 3, 0, 1); //Version Numbers (in order) are Major.Minor.Build.Revision
+        public static string VersionDate { get; set; } = "June 27 2026";
+        public static Version VersionNumber { get; set; } = new Version(0, 3, 0, 2); //Version Numbers (in order) are Major.Minor.Build.Revision
         //Major is big releases.
         //Minor is new features / content.
         //Build is for Bugfixes or small changes.
