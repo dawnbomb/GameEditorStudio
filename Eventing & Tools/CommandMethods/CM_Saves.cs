@@ -669,13 +669,19 @@ namespace GameEditorStudio
 
                             if (editor is TextEditorData textdata)
                             {
-                                foreach (GameFile GameFile in textdata.ListOfGameFiles) 
+                                List<string> locationsss = new();
+
+                                foreach (GameFile GameFile in textdata.ListOfGameFiles)
                                 {
+                                    if (locationsss.Contains(GameFile.FileLocation)) { continue; }
+
                                     writer.WriteStartElement("EditorFile"); //Info about the file used for the main data of the editor.
                                     writer.WriteElementString("FileLocation", GameFile.FileLocation);
                                     writer.WriteEndElement(); // End EditorFile
+
+                                    locationsss.Add(GameFile.FileLocation);
                                 }
-                               
+
                             }
 
                             writer.WriteEndElement(); //End Editor  AKA the Root of the XML   

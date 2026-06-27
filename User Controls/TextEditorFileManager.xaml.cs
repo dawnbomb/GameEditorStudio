@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,8 +67,31 @@ namespace GameEditorStudio
             await Task.Delay(1);
         }
 
-        private void ButtonClose(object sender, RoutedEventArgs e)
+        private void ButtonExitWithoutSaving(object sender, RoutedEventArgs e)
         {
+            var parentPanel = this.Parent as Panel;
+            if (parentPanel != null)
+            {
+                TextEditorData.MainGrid.Visibility = Visibility.Visible;
+                parentPanel.Children.Remove(this);
+            }
+        }
+
+        private void ButtonSaveAndClose(object sender, RoutedEventArgs e)
+        {
+            //TextEditorData.ListOfGameFiles.Clear();
+            //foreach (TreeViewItem Item in TextFileManager.TreeGameFiles.Items)
+            //{
+            //    GameFile GameFile = Item.Tag as GameFile;
+            //    if (GameFile != null)
+            //    {
+            //        TextEditorData.ListOfGameFiles.Add(GameFile);
+            //    }
+            //}
+
+            //TextEditorData.TextFileManager.RefreshFileTree();
+
+
             var parentPanel = this.Parent as Panel;
             if (parentPanel != null)
             {
@@ -75,8 +99,24 @@ namespace GameEditorStudio
                 TextEditorData.MainGrid.Visibility = Visibility.Visible;
             }
 
+            TextEditorData.GameFileLocations.Clear();
+            foreach(TreeViewItem Item in TextFileManager.TreeGameFiles.Items)
+            {
+                GameFile GameFile = Item.Tag as GameFile;
+                if (GameFile != null)
+                {
+                    TextEditorData.GameFileLocations.Add(GameFile.FileLocation);
+                }
+            }
+            //foreach (GameFile gameFile in TextEditorData.ListOfGameFiles)
+            //{
+            //    TextEditorData.GameFileLocations.Add(gameFile.FileLocation);
+            //}
+
             TextEditorData.TextFileManager.RefreshFileTree();
         }
+
+        
 
         private void ButtonAddFile(object sender, RoutedEventArgs e)
         {            
@@ -88,6 +128,7 @@ namespace GameEditorStudio
             TextEditorData.ListOfGameFiles.Add(GameFile);
             AllFileManager.TreeGameFiles.Items.Remove(Item);
             TextFileManager.TreeGameFiles.Items.Add(Item);
+
         }
 
         private void ButtonRemoveFile(object sender, RoutedEventArgs e)
@@ -97,10 +138,39 @@ namespace GameEditorStudio
             GameFile GameFile = Item.Tag as GameFile;
             if (GameFile == null) { return; }
 
-            TextEditorData.ListOfGameFiles.Remove(GameFile);
+            TextEditorData.ListOfGameFiles.Remove(GameFile);            
             TextFileManager.TreeGameFiles.Items.Remove(Item);
             AllFileManager.TreeGameFiles.Items.Add(Item);
+                        
 
+        }
+
+        private void MoveFileUp(object sender, RoutedEventArgs e)
+        {
+            if (TextFileManager.TreeGameFiles.SelectedItem is not TreeViewItem selected)
+                return;
+
+            int index = TextFileManager.TreeGameFiles.Items.IndexOf(selected);
+            if (index > 0)
+            {
+                TextFileManager.TreeGameFiles.Items.RemoveAt(index);
+                TextFileManager.TreeGameFiles.Items.Insert(index - 1, selected);
+                selected.IsSelected = true;
+            }
+        }
+
+        private void MoveFileDown(object sender, RoutedEventArgs e)
+        {
+            if (TextFileManager.TreeGameFiles.SelectedItem is not TreeViewItem selected)
+                return;
+
+            int index = TextFileManager.TreeGameFiles.Items.IndexOf(selected);
+            if (index >= 0 && index < TextFileManager.TreeGameFiles.Items.Count - 1)
+            {
+                TextFileManager.TreeGameFiles.Items.RemoveAt(index);
+                TextFileManager.TreeGameFiles.Items.Insert(index + 1, selected);
+                selected.IsSelected = true;
+            }
         }
     }
 }

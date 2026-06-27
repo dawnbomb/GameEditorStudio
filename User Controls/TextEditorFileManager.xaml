@@ -11,21 +11,21 @@
         <Border DockPanel.Dock="Top" Margin="0,0,0,0">
             <DockPanel>
                 <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
-                    <DockPanel Style="{DynamicResource ContentBar}" >
+                    <DockPanel Style="{DynamicResource ContentBar}" LastChildFill="False">
                         <Label Content="Text Editor File Manager" FontWeight="Bold" />
+                        <Button Click="ButtonExitWithoutSaving" Content="Exit without saving" Margin="0,2,10,2"  DockPanel.Dock="Right"   Width="206"/>
                     </DockPanel>
                 </Border>
 
                 <Grid DockPanel.Dock="Top">
                     <local:FileManager x:Name="TextFileManager"  Grid.Column="0" HorizontalAlignment="Left" Width="264" Margin="10,10,0,10" />
                     <local:FileManager x:Name="AllFileManager"  Grid.Column="0" Margin="512,10,0,10" HorizontalAlignment="Left" Width="278" />
-                    <Button Content="&lt;-&#xD;&#xA;(Add File)" HorizontalAlignment="Left" Margin="277,182,0,0" VerticalAlignment="Top" Width="108" HorizontalContentAlignment="Center" Click="ButtonAddFile" Height="74"/>
-                    <Button Content="           -&gt;&#xA;(Remove File)" HorizontalAlignment="Left" Margin="390,185,0,0" VerticalAlignment="Top" Width="122" Click="ButtonRemoveFile" Height="69"/>
+                    <Button Click="ButtonAddFile" Content="&lt;-&#xD;&#xA;(Add File)" HorizontalAlignment="Left" Margin="277,182,0,0" VerticalAlignment="Top" Width="108" HorizontalContentAlignment="Center"  Height="74"/>
+                    <Button Click="ButtonRemoveFile" Content="           -&gt;&#xA;(Remove File)" HorizontalAlignment="Left" Margin="390,185,0,0" VerticalAlignment="Top" Width="122"  Height="69"/>
 
-                    <Button Content="Save &amp; Close" HorizontalAlignment="Left" Margin="316,354,0,0" VerticalAlignment="Top" Height="45" Width="149" Click="ButtonClose"/>
-                    <Label Content="Note: Unlike other &#xD;&#xA;managers, this one &#xD;&#xA;doesn't have any &#xA;&quot;exit without saving&quot; &#xD;&#xA;option. (I was lazy :P)" HorizontalAlignment="Left" Margin="279,417,0,0" VerticalAlignment="Top"/>
-                    <Button Content="^ Move up" HorizontalAlignment="Left" Margin="288,129,0,0" VerticalAlignment="Top" Width="136" Height="31"/>
-                    <Button Content="V Move Down" HorizontalAlignment="Left" Margin="288,263,0,0" VerticalAlignment="Top" Width="136" Height="34"/>
+                    <Button Click="ButtonSaveAndClose" Content="Save &amp; Close" HorizontalAlignment="Left" Margin="316,354,0,0" VerticalAlignment="Top" Height="45" Width="149"/>
+                    <Button Click="MoveFileUp" Content="^ Move up" HorizontalAlignment="Left" Margin="288,129,0,0" VerticalAlignment="Top" Width="136" Height="31" />
+                    <Button Click="MoveFileDown" Content="V Move Down" HorizontalAlignment="Left" Margin="288,263,0,0" VerticalAlignment="Top" Width="136" Height="34"/>
                 </Grid>
             </DockPanel>
         </Border>
