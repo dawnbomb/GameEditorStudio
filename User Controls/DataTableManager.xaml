@@ -16,9 +16,9 @@
 
                     <ComboBox x:Name="ComboBoxTableType" DockPanel.Dock="Right" Margin="4" Width="300" DropDownClosed="DataSourceDropdownClosed">
                         <ComboBoxItem Content="Link to Data File" Name="DataFile" IsSelected="True"/>
-                        <ComboBoxItem Content="Link to Advanced" Name="Advanced"/>
-                        <ComboBoxItem Content="Link to Json (Unreal Engine)" Name="JSON"/>
-                        <ComboBoxItem Content="Link to XML (Unity)" Name="XML"/>                        
+                        <ComboBoxItem Content="Link to Advanced" Name="Advanced" Foreground="Red"/>
+                        <ComboBoxItem Content="Link to Json (Unreal Engine)" Name="JSON" Foreground="Red"/>
+                        <ComboBoxItem Content="Link to XML (Unity)" Name="XML" Foreground="Red"/>                        
                     </ComboBox>
                     <Label Content="Data Source:" DockPanel.Dock="Right" />
                 </DockPanel>
@@ -89,24 +89,25 @@
                 </TabItem>
                 <TabItem Header="Link to Advanced" Name="TabAdvanced">
                     <Grid Background="#FF373737">
-                        <DockPanel Background="Transparent">
-                            <local:FileManager x:Name="FileManagerAdvanced" HorizontalAlignment="Left" Width="269" Margin="0,0,8,0"  />
+                        <DockPanel Background="Transparent" HorizontalAlignment="Left">
+                            <local:FileManager x:Name="FileManagerAdvanced" HorizontalAlignment="Left" Width="269" Margin="0,0,8,0"  />                            
                         </DockPanel>
-                        <TextBox Text="IF I EVER ADD THIS,&#xD;&#xA;DONT FORGET THAT THE&#xD;&#xA;ENTRY CROSS REFERENCE&#xD;&#xA;(INFO PANEL) TRIES TO READ&#xD;&#xA;THE DATA TABLE IN ROWS&#xD;&#xA;AND COLUMNS.&#xD;&#xA;&#xD;&#xA;(Maybe just disable it for&#xD;&#xA;advanced...?)&#xD;&#xA;&#xD;&#xA;- - - - - - - - - - - - - -&#xD;&#xA;Also Symbology does this to&#xD;&#xA;but indirectly. It reads &#xD;&#xA;Data Table Rows = to the &#xD;&#xA;current name table item count.&#xD;&#xA;&#xD;&#xA;(I could always just disable&#xD;&#xA;this as well for advanced..?)&#xD;&#xA;" Margin="744,106,115,169"  />
-                        <Border Margin="289,58,494,36">
+                        <TextBox Text="IF I EVER ADD THIS,&#xD;&#xA;DONT FORGET THAT THE&#xD;&#xA;ENTRY CROSS REFERENCE&#xD;&#xA;(INFO PANEL) TRIES TO READ&#xD;&#xA;THE DATA TABLE IN ROWS&#xD;&#xA;AND COLUMNS.&#xD;&#xA;&#xD;&#xA;(Maybe just disable it for&#xD;&#xA;advanced...?)&#xD;&#xA;&#xD;&#xA;- - - - - - - - - - - - - -&#xD;&#xA;Also Symbology does this to&#xD;&#xA;but indirectly. It reads &#xD;&#xA;Data Table Rows = to the &#xD;&#xA;current name table item count.&#xD;&#xA;&#xD;&#xA;(I could always just disable&#xD;&#xA;this as well for advanced..?)&#xD;&#xA;" Margin="818,104,41,171"  />
+                        <Border Margin="289,58,0,76" HorizontalAlignment="Left" Width="513">
                             <ScrollViewer >
                                 <Grid>
 
                                 </Grid>
                             </ScrollViewer>
                         </Border>
+                        <Label Content="THIS IS COMING SOON / NOT IMPLIMENTED YET" HorizontalAlignment="Left" Margin="416,10,0,0" VerticalAlignment="Top" Background="#FF270303" Foreground="Red"/>
 
                     </Grid>
 
                 </TabItem>
                 <TabItem Header="Link to JSON" Name="TabJSON">
                     <Grid Background="#FF373737">
-                        <DockPanel Background="Transparent" Margin="0,0,1025,0">
+                        <DockPanel Background="Transparent" HorizontalAlignment="Left" Width="271">
                             <local:FileManager x:Name="JSONFileManager" Width="269" HorizontalAlignment="Left" />
                         </DockPanel>
                         <Border Margin="969,58,66,36">
@@ -116,25 +117,27 @@
                                 </Grid>
                             </ScrollViewer>
                         </Border>
-                        <TreeView Name="JSONTree" Margin="307,41,0,232" HorizontalAlignment="Left" Width="462"/>
+                        <TreeView Name="JSONTree" Margin="307,58,0,232" HorizontalAlignment="Left" Width="462"/>
                         <Button Content="Save and Close" Width="214" Margin="527,664,0,80" HorizontalAlignment="Left"  Style="{DynamicResource ButtonError}"/>
                         <Button Content="Set no table and save" Click="ButtonDeleteDataTable" HorizontalAlignment="Left" Margin="527,720,0,0" VerticalAlignment="Top" Height="34" Width="242"  FontSize="20"/>
+                        <Label Content="THIS IS COMING SOON / NOT IMPLIMENTED YET" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Background="#FF270303" Foreground="Red"/>
                     </Grid>
 
                 </TabItem>
                 <TabItem Header="Link to XML" Name="TabXML">
                     <Grid Background="#FF373737">
-                        <DockPanel Background="Transparent">
+                        <DockPanel Background="Transparent" HorizontalAlignment="Left" >
                             <local:FileManager x:Name="FileManagerXML" HorizontalAlignment="Left" Width="269" Margin="0,0,8,0"  />
                         </DockPanel>
-                        <TextBox Text="IF I EVER ADD THIS,&#xD;&#xA;DONT FORGET THAT THE&#xD;&#xA;ENTRY CROSS REFERENCE&#xD;&#xA;(INFO PANEL) TRIES TO READ&#xD;&#xA;THE DATA TABLE IN ROWS&#xD;&#xA;AND COLUMNS.&#xD;&#xA;&#xD;&#xA;(Maybe just disable it for&#xD;&#xA;advanced...?)&#xD;&#xA;&#xD;&#xA;- - - - - - - - - - - - - -&#xD;&#xA;Also Symbology does this to&#xD;&#xA;but indirectly. It reads &#xD;&#xA;Data Table Rows = to the &#xD;&#xA;current name table item count.&#xD;&#xA;&#xD;&#xA;(I could always just disable&#xD;&#xA;this as well for advanced..?)&#xD;&#xA;" Margin="744,106,115,169"  />
-                        <Border Margin="289,58,494,36">
+                        <TextBox Text="IF I EVER ADD THIS,&#xD;&#xA;DONT FORGET THAT THE&#xD;&#xA;ENTRY CROSS REFERENCE&#xD;&#xA;(INFO PANEL) TRIES TO READ&#xD;&#xA;THE DATA TABLE IN ROWS&#xD;&#xA;AND COLUMNS.&#xD;&#xA;&#xD;&#xA;(Maybe just disable it for&#xD;&#xA;advanced...?)&#xD;&#xA;&#xD;&#xA;- - - - - - - - - - - - - -&#xD;&#xA;Also Symbology does this to&#xD;&#xA;but indirectly. It reads &#xD;&#xA;Data Table Rows = to the &#xD;&#xA;current name table item count.&#xD;&#xA;&#xD;&#xA;(I could always just disable&#xD;&#xA;this as well for advanced..?)&#xD;&#xA;" Margin="834,84,25,192"  />
+                        <Border Margin="289,58,0,36" HorizontalAlignment="Left" Width="513">
                             <ScrollViewer >
                                 <Grid>
 
                                 </Grid>
                             </ScrollViewer>
                         </Border>
+                        <Label Content="THIS IS COMING SOON / NOT IMPLIMENTED YET" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Background="#FF270303" Foreground="Red"/>
 
                     </Grid>
 

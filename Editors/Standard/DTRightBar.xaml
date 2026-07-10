@@ -90,6 +90,10 @@
                                                         <RowDefinition Height="Auto"/>
                                                         <RowDefinition Height="Auto"/>
                                                         <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
                                                     </Grid.RowDefinitions>
 
                                                     <Label Content="File Location" Grid.Column="1" Grid.Row="0"  />
@@ -112,13 +116,26 @@
                                                     <TextBox x:Name="PropertiesEditorNameTableTextSize" Grid.Row="4" Grid.Column="2" Margin="3" TextWrapping="Wrap" Text="Text Size" KeyDown="ChangeNameTableTextSize"/>
 
                                                     <Label Content="First Name #" Grid.Row="5" Grid.Column="1" Margin="0"/>
-                                                    <TextBox x:Name="PropertiesEditorFirstNameNumber" Grid.Row="5" Grid.Column="2" Margin="3" TextWrapping="Wrap" Text="1"  KeyDown="ChangeNameTableFirstNameDisplayNumber"/>
+                                                    <TextBox x:Name="PropertiesEditorFirstNameNumber" Grid.Row="5" Grid.Column="2" Margin="3" TextWrapping="Wrap" Text="1"  KeyDown="ChangeNameTableFirstNameDisplayNumber" TextChanged="NameTableFirstNameNumberTextboxTextChanged"/>
 
                                                     <Label Content="Name Count" Grid.Row="6" Grid.Column="1" Margin="0"/>
                                                     <TextBox x:Name="PropertiesEditorNameCount" Grid.Row="6" Grid.Column="2" Margin="3" TextWrapping="Wrap" Text="Item Count"  KeyDown="ChangeNameTableNameCount"/>
 
-                                                    <Label Content="From Output:" Grid.Row="7" Grid.Column="1" Margin="0"/>
-                                                    <DockPanel Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="1" Margin="0,3,0,3" Background="Transparent" LastChildFill="False">
+                                                    <Label Content="Input Folder" Grid.Column="1"  Grid.Row="7"/>
+                                                    <DockPanel Grid.Row="7" Grid.Column="2" Margin="3,3,3,3" Background="Transparent">
+                                                        <Button Name="OpenNameTableInputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="30" DockPanel.Dock="Right" Click="OpenWorkshopNameTableInputLocationButton" Width="60"/>
+                                                        <TextBox x:Name="NameTableInputLocationTextbox" Grid.Row="1" Grid.Column="2" Margin="0" TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Input" TextChanged="NameTableInputFolderTextboxTextChanged" />
+                                                    </DockPanel>
+
+                                                    <Label Content="Output Folder"  Grid.Row="8" Grid.Column="1" />
+                                                    <DockPanel Grid.Row="8" Grid.Column="2" Margin="3,3,3,3" Background="Transparent">
+                                                        <Button Name="OpenNameTableOutputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="30" DockPanel.Dock="Right" Click="OpenWorkshopNameTableOutputLocationButton" Width="60"/>
+                                                        <TextBox x:Name="NameTableOutputLocationTextbox" Grid.Row="2" Grid.Column="2"  TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Output" TextChanged="NameTableOutputFolderTextboxTextChanged"/>
+
+                                                    </DockPanel>
+
+                                                    <Label Content="Output File:" Grid.Row="9" Grid.Column="1" Margin="0"/>
+                                                    <DockPanel Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="1" Margin="0,3,0,3" Background="Transparent" LastChildFill="False">
                                                         <Button Name="BtnNameTblOutputOpenHxD" Content="Open with HxD" Margin="0,2,10,2" Width="150" Height="28" DockPanel.Dock="Left" Click="OpenNameTableInHxD"/>
                                                         <Button Name="BtnNameTblOutputOpen010" Content="Open with 010" Margin="3,2,0,2" Width="150" Height="28" DockPanel.Dock="Right" Click="OpenNameTableIn010"/>
 
@@ -168,17 +185,17 @@
                                                     <Label Content="Input Folder" Grid.Column="1"  Grid.Row="3"/>
                                                     <DockPanel Grid.Row="3" Grid.Column="2" Margin="3,3,3,3" Background="Transparent">
                                                         <Button Name="OpenInputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="30" DockPanel.Dock="Right" Click="OpenWorkshopInputButton" Width="60"/>
-                                                        <TextBox x:Name="PropertiesEditorReadGameDataFrom" Grid.Row="1" Grid.Column="2" Margin="0" TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Input" />
+                                                        <TextBox x:Name="PropertiesEditorReadGameDataFrom" Grid.Row="1" Grid.Column="2" Margin="0" TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Input" TextChanged="DataTableInputFolderTextboxTextChanged" />
                                                     </DockPanel>
 
                                                     <Label Content="Output Folder"  Grid.Row="4" Grid.Column="1" />
                                                     <DockPanel Grid.Row="4" Grid.Column="2" Margin="3,3,3,3" Background="Transparent">
                                                         <Button Name="OpenOutputLocationButton" Content="Open" Grid.Row="1" Grid.Column="2" Margin="3,0,0,0" Height="30" DockPanel.Dock="Right" Click="OpenWorkshopOutputButton" Width="60"/>
-                                                        <TextBox x:Name="EditorOutputLocationTextbox" Grid.Row="2" Grid.Column="2"  TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Output"/>
+                                                        <TextBox x:Name="EditorOutputLocationTextbox" Grid.Row="2" Grid.Column="2"  TextWrapping="NoWrap"  VerticalAlignment="Center" Text="Output" TextChanged="DataTableOutputFolderTextboxTextChanged"/>
 
                                                     </DockPanel>
 
-                                                    <Label Content="From Output:" Grid.Row="5" Grid.Column="1" Margin="0"/>
+                                                    <Label Content="Output File:" Grid.Row="5" Grid.Column="1" Margin="0"/>
                                                     <DockPanel Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="1" Margin="0,3,0,3" Background="Transparent" LastChildFill="False">
                                                         <Button Name="BtnDataTblOutputOpenHxD" Content="Open with HxD" Margin="0,2,10,2" Width="150" Height="28" DockPanel.Dock="Left" Click="OpenDataTableInHxD"/>
                                                         <Button Name="BtnDataTblOutputOpen010" Content="Open with 010" Margin="3,2,0,2" Width="150" Height="28" DockPanel.Dock="Right" Click="OpenDataTableIn010"/>
@@ -465,7 +482,7 @@
                                                     <DockPanel>
                                                         <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                                                             <DockPanel Style="{DynamicResource ContentBar}"  >
-                                                                <Label Content="Bitflag Properties (Names)" FontWeight="Bold" />
+                                                                <Label Content="Bitflag Properties (Names &amp; Tooltips)" FontWeight="Bold" />
                                                             </DockPanel>
                                                         </Border>
 
@@ -475,10 +492,19 @@
                                                             <TextBox x:Name="PropertiesEntryBitFlag2Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,36,0,0" KeyDown="Bitflag2NameTextboxTextChanged"/>
                                                             <TextBox x:Name="PropertiesEntryBitFlag3Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,66,0,0" KeyDown="Bitflag3NameTextboxTextChanged"/>
                                                             <TextBox x:Name="PropertiesEntryBitFlag4Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,96,0,0" KeyDown="Bitflag4NameTextboxTextChanged"/>
-                                                            <TextBox x:Name="PropertiesEntryBitFlag5Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,5,0,0" KeyDown="Bitflag5NameTextboxTextChanged"/>
-                                                            <TextBox x:Name="PropertiesEntryBitFlag6Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,36,0,0" KeyDown="Bitflag6NameTextboxTextChanged"/>
-                                                            <TextBox x:Name="PropertiesEntryBitFlag7Name" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,66,0,0" KeyDown="Bitflag7NameTextboxTextChanged"/>
-                                                            <TextBox x:Name="PropertiesEntryBitFlag8Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="226,96,0,0" KeyDown="Bitflag8NameTextboxTextChanged"/>
+                                                            <TextBox x:Name="PropertiesEntryBitFlag5Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,126,0,0" KeyDown="Bitflag5NameTextboxTextChanged"/>
+                                                            <TextBox x:Name="PropertiesEntryBitFlag6Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,157,0,0" KeyDown="Bitflag6NameTextboxTextChanged"/>
+                                                            <TextBox x:Name="PropertiesEntryBitFlag7Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,187,0,0" KeyDown="Bitflag7NameTextboxTextChanged"/>
+                                                            <TextBox x:Name="PropertiesEntryBitFlag8Name" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Margin="11,217,0,0" KeyDown="Bitflag8NameTextboxTextChanged"/>
+
+                                                            <TextBox x:Name="PropertiesEntryBitFlag1Tooltip" HorizontalAlignment="Left" Height="28" TextWrapping="NoWrap" Text="Tip" AcceptsReturn="True" VerticalAlignment="Top" Width="250" Margin="180,6,0,0"   TextChanged="Bitflag1TooltipTextboxTextChanged"/>
+                                                            <TextBox x:Name="PropertiesEntryBitFlag2Tooltip" HorizontalAlignment="Left" Height="28" TextWrapping="NoWrap" Text="Tip" AcceptsReturn="True" VerticalAlignment="Top" Width="250" Margin="180,36,0,0"  TextChanged="Bitflag2TooltipTextboxTextChanged"/>
+                                                            <TextBox x:Name="PropertiesEntryBitFlag3Tooltip" HorizontalAlignment="Left" Height="28" TextWrapping="NoWrap" Text="Tip" AcceptsReturn="True" VerticalAlignment="Top" Width="250" Margin="180,66,0,0"  TextChanged="Bitflag3TooltipTextboxTextChanged"/>
+                                                            <TextBox x:Name="PropertiesEntryBitFlag4Tooltip" HorizontalAlignment="Left" Height="28" TextWrapping="NoWrap" Text="Tip" AcceptsReturn="True" VerticalAlignment="Top" Width="250" Margin="180,96,0,0"  TextChanged="Bitflag4TooltipTextboxTextChanged"/>
+                                                            <TextBox x:Name="PropertiesEntryBitFlag5Tooltip" HorizontalAlignment="Left" Height="28" TextWrapping="NoWrap" Text="Tip" AcceptsReturn="True" VerticalAlignment="Top" Width="250" Margin="180,126,0,0" TextChanged="Bitflag5TooltipTextboxTextChanged"/>
+                                                            <TextBox x:Name="PropertiesEntryBitFlag6Tooltip" HorizontalAlignment="Left" Height="28" TextWrapping="NoWrap" Text="Tip" AcceptsReturn="True" VerticalAlignment="Top" Width="250" Margin="180,157,0,0" TextChanged="Bitflag6TooltipTextboxTextChanged"/>
+                                                            <TextBox x:Name="PropertiesEntryBitFlag7Tooltip" HorizontalAlignment="Left" Height="28" TextWrapping="NoWrap" Text="Tip" AcceptsReturn="True" VerticalAlignment="Top" Width="250" Margin="180,187,0,0" TextChanged="Bitflag7TooltipTextboxTextChanged"/>
+                                                            <TextBox x:Name="PropertiesEntryBitFlag8Tooltip" HorizontalAlignment="Left" Height="28" TextWrapping="NoWrap" Text="Tip" AcceptsReturn="True" VerticalAlignment="Top" Width="250" Margin="180,217,0,0" TextChanged="Bitflag8TooltipTextboxTextChanged"/>
 
                                                         </Grid>
                                                     </DockPanel>
@@ -550,7 +576,7 @@
                                             </DockPanel>
                                         </Border>
 
-                                        <Border  DockPanel.Dock="Top">
+                                        <Border Name="RightBarEntryTooltipBorder" DockPanel.Dock="Top" >
                                             <DockPanel>
                                                 <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                                                     <DockPanel  Style="{DynamicResource ContentBar}">

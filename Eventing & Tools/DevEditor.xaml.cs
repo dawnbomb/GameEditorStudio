@@ -26,6 +26,7 @@ namespace GameEditorStudio
     public partial class DevEditor : Window
     {        
         //The commands categorys and groups are auto-generated. They are also just strings and not enums. 
+        
 
         public DevEditor()
         {
@@ -35,6 +36,12 @@ namespace GameEditorStudio
             List<string> CommandCategoryNames = new();
             List<string> CommandGroupNames = new();
             List<string> CommonCategoryNames = new();
+
+            string ToolsImagesFolder =  LibraryGES.ApplicationLocation + "\\Other\\Tool Images\\";
+            //foreach () 
+            //{
+            
+            //}
 
             //ToolTabCombobox
             foreach (var tool in Database.Tools)
@@ -145,7 +152,8 @@ namespace GameEditorStudio
             SelectComboBoxItemByContent(ToolTabCombobox, tool.Category);
             ToolCategoryTextbox.Text = tool.Category;
 
-
+            ToolImagesPanel.Children.Clear();
+            string ToolsImagesFolder = LibraryGES.ApplicationLocation + "\\Other\\Tool Images\\";
 
 
         }
@@ -918,5 +926,57 @@ namespace GameEditorStudio
             PixelWPF.LibraryPixel.NotificationNegative("Error copying to clipboard",
                 "I have no fucking idea why, but copying text is buggy in my program. \n\nAtleast i'm telling you it failed? >_>\n\nIt works like 1 in every 10 tries. This problem drove me mad until i gave up. Fuck this >:(");
         }
+
+
+        private void ToolButtonNewImage(object sender, RoutedEventArgs e)
+        {
+            return; //Scrapped for now, because it will bloat the programs download size. 
+            //GenerateToolImagePanel(Tool Tool)
+        }
+
+        private void GenerateToolImagePanel(Tool Tool)
+        {
+            //DockPanel TheDockPanel = new DockPanel();
+            //DockPanel.SetDock(TheDockPanel, Dock.Top);
+            //TheDockPanel.Margin = new Thickness(3);
+
+            //string numba = CommandToolsPanel.Children.Count.ToString();
+            //Label CountLabel = new Label();
+            //CountLabel.Content = "Tool " + numba + ":";
+            //TheDockPanel.Children.Add(CountLabel);
+            //DockPanel.SetDock(CountLabel, Dock.Left);
+
+            //Button DeleteButton = new Button();
+            //DeleteButton.Content = " Delete ";
+            //DockPanel.SetDock(DeleteButton, Dock.Right);
+            //TheDockPanel.Children.Add(DeleteButton);
+            //DeleteButton.Click += (s, e) =>
+            //{
+            //    CommandToolsPanel.Children.Remove(TheDockPanel);
+            //};
+
+            //ComboBox TheComboBox = new ComboBox();
+            //TheComboBox.Margin = new Thickness(3);
+            //TheDockPanel.Children.Add(TheComboBox);
+
+            //foreach (var tool in Database.Tools)
+            //{
+            //    var toolitem = new ComboBoxItem
+            //    {
+            //        Content = tool.DisplayName,
+            //        Tag = tool
+            //    };
+            //    TheComboBox.Items.Add(toolitem);
+
+            //    if (RequiredTool == tool)
+            //    {
+            //        toolitem.IsSelected = true;
+            //    }
+            //}
+
+
+            //CommandToolsPanel.Children.Add(TheDockPanel);
+        }
+
     }
 }

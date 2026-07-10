@@ -309,25 +309,88 @@ namespace GameEditorStudio
         {
             int Num = Int32.Parse(EntryClass.EntryByteDecimal);
 
-            if (Num > 127) { EntryClass.EntryTypeBitFlag.BitFlag8CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag8CheckText; Num = Num - 128; } else { EntryClass.EntryTypeBitFlag.BitFlag8CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag8UncheckText; } //Flag 0/128
-            if (Num > 63) { EntryClass.EntryTypeBitFlag.BitFlag7CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag7CheckText; Num = Num - 64; } else { EntryClass.EntryTypeBitFlag.BitFlag7CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag7UncheckText; }  //Flag 0/64
-            if (Num > 31) { EntryClass.EntryTypeBitFlag.BitFlag6CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag6CheckText; Num = Num - 32; } else { EntryClass.EntryTypeBitFlag.BitFlag6CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag6UncheckText; }  //Flag 0/32
-            if (Num > 15) { EntryClass.EntryTypeBitFlag.BitFlag5CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag5CheckText; Num = Num - 16; } else { EntryClass.EntryTypeBitFlag.BitFlag5CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag5UncheckText; }  //Flag 0/16
-            if (Num > 7) { EntryClass.EntryTypeBitFlag.BitFlag4CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag4CheckText; Num = Num - 8; } else { EntryClass.EntryTypeBitFlag.BitFlag4CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag4UncheckText; }  //Flag 0/8
-            if (Num > 3) { EntryClass.EntryTypeBitFlag.BitFlag3CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag3CheckText; Num = Num - 4; } else { EntryClass.EntryTypeBitFlag.BitFlag3CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag3UncheckText; }  //Flag 0/4
-            if (Num > 1) { EntryClass.EntryTypeBitFlag.BitFlag2CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag2CheckText; Num = Num - 2; } else { EntryClass.EntryTypeBitFlag.BitFlag2CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag2UncheckText; }  //Flag 0/2
-            if (Num > 0) { EntryClass.EntryTypeBitFlag.BitFlag1CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag1CheckText; Num = Num - 1; } else { EntryClass.EntryTypeBitFlag.BitFlag1CheckBox.Content = EntryClass.EntryTypeBitFlag.BitFlag1UncheckText; }  //Flag 0/1
+            EntryTypeBitFlag EntryBitFlag = EntryClass.EntryTypeBitFlag;
 
-            EntryClass.EntryTypeBitFlag.BitFlag1Label.Content = EntryClass.EntryTypeBitFlag.BitFlag1Name;
-            EntryClass.EntryTypeBitFlag.BitFlag2Label.Content = EntryClass.EntryTypeBitFlag.BitFlag2Name;
-            EntryClass.EntryTypeBitFlag.BitFlag3Label.Content = EntryClass.EntryTypeBitFlag.BitFlag3Name;
-            EntryClass.EntryTypeBitFlag.BitFlag4Label.Content = EntryClass.EntryTypeBitFlag.BitFlag4Name;
-            EntryClass.EntryTypeBitFlag.BitFlag5Label.Content = EntryClass.EntryTypeBitFlag.BitFlag5Name;
-            EntryClass.EntryTypeBitFlag.BitFlag6Label.Content = EntryClass.EntryTypeBitFlag.BitFlag6Name;
-            EntryClass.EntryTypeBitFlag.BitFlag7Label.Content = EntryClass.EntryTypeBitFlag.BitFlag7Name;
-            EntryClass.EntryTypeBitFlag.BitFlag8Label.Content = EntryClass.EntryTypeBitFlag.BitFlag8Name;
+            if (Num > 127) { EntryBitFlag.BitFlag8CheckBox.Content = EntryBitFlag.BitFlag8CheckText; Num = Num - 128; } else { EntryBitFlag.BitFlag8CheckBox.Content = EntryBitFlag.BitFlag8UncheckText; } //Flag 0/128
+            if (Num > 63)  { EntryBitFlag.BitFlag7CheckBox.Content = EntryBitFlag.BitFlag7CheckText; Num = Num - 64; }  else { EntryBitFlag.BitFlag7CheckBox.Content = EntryBitFlag.BitFlag7UncheckText; }  //Flag 0/64
+            if (Num > 31)  { EntryBitFlag.BitFlag6CheckBox.Content = EntryBitFlag.BitFlag6CheckText; Num = Num - 32; }  else { EntryBitFlag.BitFlag6CheckBox.Content = EntryBitFlag.BitFlag6UncheckText; }  //Flag 0/32
+            if (Num > 15)  { EntryBitFlag.BitFlag5CheckBox.Content = EntryBitFlag.BitFlag5CheckText; Num = Num - 16; }  else { EntryBitFlag.BitFlag5CheckBox.Content = EntryBitFlag.BitFlag5UncheckText; }  //Flag 0/16
+            if (Num > 7)   { EntryBitFlag.BitFlag4CheckBox.Content = EntryBitFlag.BitFlag4CheckText; Num = Num - 8; }   else { EntryBitFlag.BitFlag4CheckBox.Content = EntryBitFlag.BitFlag4UncheckText; }  //Flag 0/8
+            if (Num > 3)   { EntryBitFlag.BitFlag3CheckBox.Content = EntryBitFlag.BitFlag3CheckText; Num = Num - 4; }   else { EntryBitFlag.BitFlag3CheckBox.Content = EntryBitFlag.BitFlag3UncheckText; }  //Flag 0/4
+            if (Num > 1)   { EntryBitFlag.BitFlag2CheckBox.Content = EntryBitFlag.BitFlag2CheckText; Num = Num - 2; }   else { EntryBitFlag.BitFlag2CheckBox.Content = EntryBitFlag.BitFlag2UncheckText; }  //Flag 0/2
+            if (Num > 0)   { EntryBitFlag.BitFlag1CheckBox.Content = EntryBitFlag.BitFlag1CheckText; Num = Num - 1; }   else { EntryBitFlag.BitFlag1CheckBox.Content = EntryBitFlag.BitFlag1UncheckText; }  //Flag 0/1
+
+            
+
+            EntryBitFlag.BitFlag1Label.Content = EntryBitFlag.BitFlag1Name;
+            EntryBitFlag.BitFlag2Label.Content = EntryBitFlag.BitFlag2Name;
+            EntryBitFlag.BitFlag3Label.Content = EntryBitFlag.BitFlag3Name;
+            EntryBitFlag.BitFlag4Label.Content = EntryBitFlag.BitFlag4Name;
+            EntryBitFlag.BitFlag5Label.Content = EntryBitFlag.BitFlag5Name;
+            EntryBitFlag.BitFlag6Label.Content = EntryBitFlag.BitFlag6Name;
+            EntryBitFlag.BitFlag7Label.Content = EntryBitFlag.BitFlag7Name;
+            EntryBitFlag.BitFlag8Label.Content = EntryBitFlag.BitFlag8Name;
+
+            //EntryBitFlag.BitFlag1Label.ToolTip = EntryBitFlag.BitFlag1Tooltip;
+            //EntryBitFlag.BitFlag2Label.ToolTip = EntryBitFlag.BitFlag2Tooltip;
+            //EntryBitFlag.BitFlag3Label.ToolTip = EntryBitFlag.BitFlag3Tooltip;
+            //EntryBitFlag.BitFlag4Label.ToolTip = EntryBitFlag.BitFlag4Tooltip;
+            //EntryBitFlag.BitFlag5Label.ToolTip = EntryBitFlag.BitFlag5Tooltip;
+            //EntryBitFlag.BitFlag6Label.ToolTip = EntryBitFlag.BitFlag6Tooltip;
+            //EntryBitFlag.BitFlag7Label.ToolTip = EntryBitFlag.BitFlag7Tooltip;
+            //EntryBitFlag.BitFlag8Label.ToolTip = EntryBitFlag.BitFlag8Tooltip;
+
+            //if (EntryBitFlag.BitFlag1Tooltip == "") { EntryBitFlag.BitFlag1Label.ToolTip = null; }
+            //if (EntryBitFlag.BitFlag2Tooltip == "") { EntryBitFlag.BitFlag2Label.ToolTip = null; }
+            //if (EntryBitFlag.BitFlag3Tooltip == "") { EntryBitFlag.BitFlag3Label.ToolTip = null; }
+            //if (EntryBitFlag.BitFlag4Tooltip == "") { EntryBitFlag.BitFlag4Label.ToolTip = null; }
+            //if (EntryBitFlag.BitFlag5Tooltip == "") { EntryBitFlag.BitFlag5Label.ToolTip = null; }
+            //if (EntryBitFlag.BitFlag6Tooltip == "") { EntryBitFlag.BitFlag6Label.ToolTip = null; }
+            //if (EntryBitFlag.BitFlag7Tooltip == "") { EntryBitFlag.BitFlag7Label.ToolTip = null; }
+            //if (EntryBitFlag.BitFlag8Tooltip == "") { EntryBitFlag.BitFlag8Label.ToolTip = null; }
+
+            UpdateBitflagTooltip(EntryBitFlag.BitFlag1UnderlineBorder, EntryBitFlag.BitFlag1Label, EntryBitFlag.BitFlag1NamePanel, EntryBitFlag.BitFlag1Tooltip);
+            UpdateBitflagTooltip(EntryBitFlag.BitFlag1UnderlineBorder, EntryBitFlag.BitFlag1Label, EntryBitFlag.BitFlag1NamePanel, EntryBitFlag.BitFlag1Tooltip);
+            UpdateBitflagTooltip(EntryBitFlag.BitFlag2UnderlineBorder, EntryBitFlag.BitFlag2Label, EntryBitFlag.BitFlag2NamePanel, EntryBitFlag.BitFlag2Tooltip);
+            UpdateBitflagTooltip(EntryBitFlag.BitFlag3UnderlineBorder, EntryBitFlag.BitFlag3Label, EntryBitFlag.BitFlag3NamePanel, EntryBitFlag.BitFlag3Tooltip);
+            UpdateBitflagTooltip(EntryBitFlag.BitFlag4UnderlineBorder, EntryBitFlag.BitFlag4Label, EntryBitFlag.BitFlag4NamePanel, EntryBitFlag.BitFlag4Tooltip);
+            UpdateBitflagTooltip(EntryBitFlag.BitFlag5UnderlineBorder, EntryBitFlag.BitFlag5Label, EntryBitFlag.BitFlag5NamePanel, EntryBitFlag.BitFlag5Tooltip);
+            UpdateBitflagTooltip(EntryBitFlag.BitFlag6UnderlineBorder, EntryBitFlag.BitFlag6Label, EntryBitFlag.BitFlag6NamePanel, EntryBitFlag.BitFlag6Tooltip);
+            UpdateBitflagTooltip(EntryBitFlag.BitFlag7UnderlineBorder, EntryBitFlag.BitFlag7Label, EntryBitFlag.BitFlag7NamePanel, EntryBitFlag.BitFlag7Tooltip);
+            UpdateBitflagTooltip(EntryBitFlag.BitFlag8UnderlineBorder, EntryBitFlag.BitFlag8Label, EntryBitFlag.BitFlag8NamePanel, EntryBitFlag.BitFlag8Tooltip);
+
+
+
+
         }
+        private void UpdateBitflagTooltip(Border Underline, Label TheLabel, Grid NamePanel, string TheTooltip)
+        {
+            
 
+            Underline.Width = TheLabel.Width;
+            var typeface = new Typeface(
+                    TheLabel.FontFamily,
+                    TheLabel.FontStyle,
+                    TheLabel.FontWeight,
+                    TheLabel.FontStretch
+                );
+
+            var formattedText = new FormattedText(
+                TheLabel.Content.ToString(),
+                CultureInfo.CurrentCulture,
+                System.Windows.FlowDirection.LeftToRight,
+                typeface,
+                TheLabel.FontSize,
+                Brushes.Black,
+                new NumberSubstitution(),
+                1
+            );
+            Underline.Width = formattedText.Width;
+
+            NamePanel.ToolTip = TheTooltip;
+            Underline.Visibility = Visibility.Visible;
+            if (TheTooltip == "") { NamePanel.ToolTip = null; Underline.Visibility = Visibility.Collapsed; }
+        }
 
         public void LoadMenu(Entry EntryClass)
         {            
@@ -873,14 +936,22 @@ namespace GameEditorStudio
             var BitMargin = new Thickness(0, 0, 3, 0); // Left Top Right Bottom 
             var DockMargin = new Thickness(0, 3, 0, 3); // Left Top Right Bottom 
 
+            if (EntryClass.EntryTypeBitFlag.BitFlag1Name == null) { EntryClass.EntryTypeBitFlag.BitFlag1Name = "Bit 1"; }
+            if (EntryClass.EntryTypeBitFlag.BitFlag2Name == null) { EntryClass.EntryTypeBitFlag.BitFlag2Name = "Bit 2"; }
+            if (EntryClass.EntryTypeBitFlag.BitFlag3Name == null) { EntryClass.EntryTypeBitFlag.BitFlag3Name = "Bit 3"; }
+            if (EntryClass.EntryTypeBitFlag.BitFlag4Name == null) { EntryClass.EntryTypeBitFlag.BitFlag4Name = "Bit 4"; }
+            if (EntryClass.EntryTypeBitFlag.BitFlag5Name == null) { EntryClass.EntryTypeBitFlag.BitFlag5Name = "Bit 5"; }
+            if (EntryClass.EntryTypeBitFlag.BitFlag6Name == null) { EntryClass.EntryTypeBitFlag.BitFlag6Name = "Bit 6"; }
+            if (EntryClass.EntryTypeBitFlag.BitFlag7Name == null) { EntryClass.EntryTypeBitFlag.BitFlag7Name = "Bit 7"; }
+            if (EntryClass.EntryTypeBitFlag.BitFlag8Name == null) { EntryClass.EntryTypeBitFlag.BitFlag8Name = "Bit 8"; }
+
             ////////////////////////////////////////////////
             DockPanel BitFlag1 = new();
             BitFlag1.Background = Brushes.Transparent;
             DockPanel.SetDock(BitFlag1, Dock.Top);
             BitFlag1.Margin = DockMargin;
-
-            Label BitFlag1Label = new();
-            if (EntryClass.EntryTypeBitFlag.BitFlag1Name == null) { EntryClass.EntryTypeBitFlag.BitFlag1Name = "Bit 1"; }
+            
+            Label BitFlag1Label = new();            
             BitFlag1Label.Content = EntryClass.EntryTypeBitFlag.BitFlag1Name;
             BitFlag1Label.HorizontalAlignment = HorizontalAlignment.Left;
 
@@ -916,14 +987,31 @@ namespace GameEditorStudio
                 DTEMethods.EntryActivate(EntryClass);
 
             };
+            ////////Flag 1 TOOLTIP//////// 
+            Border Flag1UnderlineBorder = new();
+            EntryClass.EntryTypeBitFlag.BitFlag1UnderlineBorder = Flag1UnderlineBorder;
+            Flag1UnderlineBorder.HorizontalAlignment = HorizontalAlignment.Left;
+            Flag1UnderlineBorder.BorderThickness = new Thickness(0, 0, 0, 2);
+
+            Grid Flag1NamePanel = new();
+            EntryClass.EntryTypeBitFlag.BitFlag1NamePanel = Flag1NamePanel;
+            Flag1NamePanel.Background = Brushes.Transparent;
+            Flag1NamePanel.Children.Add(Flag1UnderlineBorder);
+            Flag1NamePanel.Children.Add(BitFlag1Label); 
+            Flag1UnderlineBorder.BorderBrush = (Brush)new BrushConverter().ConvertFrom("#A0A0A0");
+            Flag1UnderlineBorder.Margin = new Thickness(4, 0, 0, 4); // Left Top Right Bottom
+            ToolTipService.SetInitialShowDelay(Flag1NamePanel, LibraryGES.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(Flag1NamePanel, LibraryGES.TooltipBetweenDelay);
+            /////END OF Flag 1 TOOLTIP/////
+
+
             ////////////////////////////////////////////////
             DockPanel BitFlag2 = new();
             BitFlag2.Background = Brushes.Transparent;
             DockPanel.SetDock(BitFlag2, Dock.Top);
             BitFlag2.Margin = DockMargin;
 
-            Label BitFlag2Label = new();
-            if (EntryClass.EntryTypeBitFlag.BitFlag2Name == null) { EntryClass.EntryTypeBitFlag.BitFlag2Name = "Bit 2"; }
+            Label BitFlag2Label = new();            
             BitFlag2Label.Content = EntryClass.EntryTypeBitFlag.BitFlag2Name;
             BitFlag2Label.HorizontalAlignment = HorizontalAlignment.Left;
 
@@ -958,6 +1046,24 @@ namespace GameEditorStudio
                 DTEMethods.EntryActivate(EntryClass);
 
             };
+            ////////Flag 2 TOOLTIP//////// 
+            Border Flag2UnderlineBorder = new();
+            EntryClass.EntryTypeBitFlag.BitFlag2UnderlineBorder = Flag2UnderlineBorder;
+            Flag2UnderlineBorder.HorizontalAlignment = HorizontalAlignment.Left;
+            Flag2UnderlineBorder.BorderThickness = new Thickness(0, 0, 0, 2);
+
+            Grid Flag2NamePanel = new();
+            EntryClass.EntryTypeBitFlag.BitFlag2NamePanel = Flag2NamePanel;
+            Flag2NamePanel.Background = Brushes.Transparent;
+            Flag2NamePanel.Children.Add(Flag2UnderlineBorder);
+            Flag2NamePanel.Children.Add(BitFlag2Label);
+            Flag2UnderlineBorder.BorderBrush = (Brush)new BrushConverter().ConvertFrom("#A0A0A0");
+            Flag2UnderlineBorder.Margin = new Thickness(4, 0, 0, 4); // Left Top Right Bottom
+            ToolTipService.SetInitialShowDelay(Flag2NamePanel, LibraryGES.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(Flag2NamePanel, LibraryGES.TooltipBetweenDelay);
+            /////END OF Flag 2 TOOLTIP/////
+            
+
             ////////////////////////////////////////////////
             DockPanel BitFlag3 = new();
             BitFlag3.Background = Brushes.Transparent;
@@ -965,7 +1071,6 @@ namespace GameEditorStudio
             BitFlag3.Margin = DockMargin;
 
             Label BitFlag3Label = new();
-            if (EntryClass.EntryTypeBitFlag.BitFlag3Name == null) { EntryClass.EntryTypeBitFlag.BitFlag3Name = "Bit 3"; }
             BitFlag3Label.Content = EntryClass.EntryTypeBitFlag.BitFlag3Name;
             BitFlag3Label.HorizontalAlignment = HorizontalAlignment.Left;
 
@@ -1000,6 +1105,23 @@ namespace GameEditorStudio
                 DTEMethods.EntryActivate(EntryClass);
 
             };
+            ////////Flag 3 TOOLTIP//////// 
+            Border Flag3UnderlineBorder = new();
+            EntryClass.EntryTypeBitFlag.BitFlag3UnderlineBorder = Flag3UnderlineBorder;
+            Flag3UnderlineBorder.HorizontalAlignment = HorizontalAlignment.Left;
+            Flag3UnderlineBorder.BorderThickness = new Thickness(0, 0, 0, 2);
+
+            Grid Flag3NamePanel = new();
+            EntryClass.EntryTypeBitFlag.BitFlag3NamePanel = Flag3NamePanel;
+            Flag3NamePanel.Background = Brushes.Transparent;
+            Flag3NamePanel.Children.Add(Flag3UnderlineBorder);
+            Flag3NamePanel.Children.Add(BitFlag3Label);
+            Flag3UnderlineBorder.BorderBrush = (Brush)new BrushConverter().ConvertFrom("#A0A0A0");
+            Flag3UnderlineBorder.Margin = new Thickness(4, 0, 0, 4); // Left Top Right Bottom
+            ToolTipService.SetInitialShowDelay(Flag3NamePanel, LibraryGES.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(Flag3NamePanel, LibraryGES.TooltipBetweenDelay);
+            /////END OF Flag 3 TOOLTIP/////
+            
             ////////////////////////////////////////////////
             DockPanel BitFlag4 = new();
             BitFlag4.Background = Brushes.Transparent;
@@ -1007,7 +1129,6 @@ namespace GameEditorStudio
             BitFlag4.Margin = DockMargin;
 
             Label BitFlag4Label = new();
-            if (EntryClass.EntryTypeBitFlag.BitFlag4Name == null) { EntryClass.EntryTypeBitFlag.BitFlag4Name = "Bit 4"; }
             BitFlag4Label.Content = EntryClass.EntryTypeBitFlag.BitFlag4Name;
             BitFlag4Label.HorizontalAlignment = HorizontalAlignment.Left;
 
@@ -1042,6 +1163,23 @@ namespace GameEditorStudio
                 DTEMethods.EntryActivate(EntryClass);
 
             };
+            ////////Flag 4 TOOLTIP//////// 
+            Border Flag4UnderlineBorder = new();
+            EntryClass.EntryTypeBitFlag.BitFlag4UnderlineBorder = Flag4UnderlineBorder;
+            Flag4UnderlineBorder.HorizontalAlignment = HorizontalAlignment.Left;
+            Flag4UnderlineBorder.BorderThickness = new Thickness(0, 0, 0, 2);
+
+            Grid Flag4NamePanel = new();
+            EntryClass.EntryTypeBitFlag.BitFlag4NamePanel = Flag4NamePanel;
+            Flag4NamePanel.Background = Brushes.Transparent;
+            Flag4NamePanel.Children.Add(Flag4UnderlineBorder);
+            Flag4NamePanel.Children.Add(BitFlag4Label);
+            Flag4UnderlineBorder.BorderBrush = (Brush)new BrushConverter().ConvertFrom("#A0A0A0");
+            Flag4UnderlineBorder.Margin = new Thickness(4, 0, 0, 4); // Left Top Right Bottom
+            ToolTipService.SetInitialShowDelay(Flag4NamePanel, LibraryGES.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(Flag4NamePanel, LibraryGES.TooltipBetweenDelay);
+            /////END OF Flag 4 TOOLTIP/////
+            
             ////////////////////////////////////////////////
             DockPanel BitFlag5 = new();
             BitFlag5.Background = Brushes.Transparent;
@@ -1049,7 +1187,6 @@ namespace GameEditorStudio
             BitFlag5.Margin = DockMargin;
 
             Label BitFlag5Label = new();
-            if (EntryClass.EntryTypeBitFlag.BitFlag5Name == null) { EntryClass.EntryTypeBitFlag.BitFlag5Name = "Bit 5"; }
             BitFlag5Label.Content = EntryClass.EntryTypeBitFlag.BitFlag5Name;
             BitFlag5Label.HorizontalAlignment = HorizontalAlignment.Left;
 
@@ -1084,6 +1221,23 @@ namespace GameEditorStudio
                 DTEMethods.EntryActivate(EntryClass);
 
             };
+            ////////Flag 5 TOOLTIP//////// 
+            Border Flag5UnderlineBorder = new();
+            EntryClass.EntryTypeBitFlag.BitFlag5UnderlineBorder = Flag5UnderlineBorder;
+            Flag5UnderlineBorder.HorizontalAlignment = HorizontalAlignment.Left;
+            Flag5UnderlineBorder.BorderThickness = new Thickness(0, 0, 0, 2);
+
+            Grid Flag5NamePanel = new();
+            EntryClass.EntryTypeBitFlag.BitFlag5NamePanel = Flag5NamePanel;
+            Flag5NamePanel.Background = Brushes.Transparent;
+            Flag5NamePanel.Children.Add(Flag5UnderlineBorder);
+            Flag5NamePanel.Children.Add(BitFlag5Label);
+            Flag5UnderlineBorder.BorderBrush = (Brush)new BrushConverter().ConvertFrom("#A0A0A0");
+            Flag5UnderlineBorder.Margin = new Thickness(4, 0, 0, 4); // Left Top Right Bottom
+            ToolTipService.SetInitialShowDelay(Flag5NamePanel, LibraryGES.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(Flag5NamePanel, LibraryGES.TooltipBetweenDelay);
+            /////END OF Flag 5 TOOLTIP/////
+            
             ////////////////////////////////////////////////
             DockPanel BitFlag6 = new();
             BitFlag6.Background = Brushes.Transparent;
@@ -1091,7 +1245,6 @@ namespace GameEditorStudio
             BitFlag6.Margin = DockMargin;
 
             Label BitFlag6Label = new();
-            if (EntryClass.EntryTypeBitFlag.BitFlag6Name == null) { EntryClass.EntryTypeBitFlag.BitFlag6Name = "Bit 6"; }
             BitFlag6Label.Content = EntryClass.EntryTypeBitFlag.BitFlag6Name;
             BitFlag6Label.HorizontalAlignment = HorizontalAlignment.Left;
 
@@ -1126,6 +1279,23 @@ namespace GameEditorStudio
                 DTEMethods.EntryActivate(EntryClass);
 
             };
+            ////////Flag 6 TOOLTIP//////// 
+            Border Flag6UnderlineBorder = new();
+            EntryClass.EntryTypeBitFlag.BitFlag6UnderlineBorder = Flag6UnderlineBorder;
+            Flag6UnderlineBorder.HorizontalAlignment = HorizontalAlignment.Left;
+            Flag6UnderlineBorder.BorderThickness = new Thickness(0, 0, 0, 2);
+
+            Grid Flag6NamePanel = new();
+            EntryClass.EntryTypeBitFlag.BitFlag6NamePanel = Flag6NamePanel;
+            Flag6NamePanel.Background = Brushes.Transparent;
+            Flag6NamePanel.Children.Add(Flag6UnderlineBorder);
+            Flag6NamePanel.Children.Add(BitFlag6Label);
+            Flag6UnderlineBorder.BorderBrush = (Brush)new BrushConverter().ConvertFrom("#A0A0A0");
+            Flag6UnderlineBorder.Margin = new Thickness(4, 0, 0, 4); // Left Top Right Bottom
+            ToolTipService.SetInitialShowDelay(Flag6NamePanel, LibraryGES.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(Flag6NamePanel, LibraryGES.TooltipBetweenDelay);
+            /////END OF Flag 6 TOOLTIP/////
+            
             ////////////////////////////////////////////////
             DockPanel BitFlag7 = new();
             BitFlag7.Background = Brushes.Transparent;
@@ -1133,7 +1303,6 @@ namespace GameEditorStudio
             BitFlag7.Margin = DockMargin;
 
             Label BitFlag7Label = new();
-            if (EntryClass.EntryTypeBitFlag.BitFlag7Name == null) { EntryClass.EntryTypeBitFlag.BitFlag7Name = "Bit 7"; }
             BitFlag7Label.Content = EntryClass.EntryTypeBitFlag.BitFlag7Name;
             BitFlag7Label.HorizontalAlignment = HorizontalAlignment.Left;
 
@@ -1168,6 +1337,23 @@ namespace GameEditorStudio
                 DTEMethods.EntryActivate(EntryClass);
 
             };
+            ////////Flag 7 TOOLTIP//////// 
+            Border Flag7UnderlineBorder = new();
+            EntryClass.EntryTypeBitFlag.BitFlag7UnderlineBorder = Flag7UnderlineBorder;
+            Flag7UnderlineBorder.HorizontalAlignment = HorizontalAlignment.Left;
+            Flag7UnderlineBorder.BorderThickness = new Thickness(0, 0, 0, 2);
+
+            Grid Flag7NamePanel = new();
+            EntryClass.EntryTypeBitFlag.BitFlag7NamePanel = Flag7NamePanel;
+            Flag7NamePanel.Background = Brushes.Transparent;
+            Flag7NamePanel.Children.Add(Flag7UnderlineBorder);
+            Flag7NamePanel.Children.Add(BitFlag7Label);
+            Flag7UnderlineBorder.BorderBrush = (Brush)new BrushConverter().ConvertFrom("#A0A0A0");
+            Flag7UnderlineBorder.Margin = new Thickness(4, 0, 0, 4); // Left Top Right Bottom
+            ToolTipService.SetInitialShowDelay(Flag7NamePanel, LibraryGES.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(Flag7NamePanel, LibraryGES.TooltipBetweenDelay);
+            /////END OF Flag 7 TOOLTIP/////
+            
             ////////////////////////////////////////////////
             DockPanel BitFlag8 = new();
             BitFlag8.Background = Brushes.Transparent;
@@ -1175,7 +1361,6 @@ namespace GameEditorStudio
             BitFlag8.Margin = DockMargin;
 
             Label BitFlag8Label = new();
-            if (EntryClass.EntryTypeBitFlag.BitFlag8Name == null) { EntryClass.EntryTypeBitFlag.BitFlag8Name = "Bit 8"; }
             BitFlag8Label.Content = EntryClass.EntryTypeBitFlag.BitFlag8Name;
             BitFlag8Label.HorizontalAlignment = HorizontalAlignment.Left;
 
@@ -1209,6 +1394,23 @@ namespace GameEditorStudio
                 //UpdateEntryProperties(EntryClass);
                 DTEMethods.EntryActivate(EntryClass);
             };
+            ////////Flag 8 TOOLTIP//////// 
+            Border Flag8UnderlineBorder = new();
+            EntryClass.EntryTypeBitFlag.BitFlag8UnderlineBorder = Flag8UnderlineBorder;
+            Flag8UnderlineBorder.HorizontalAlignment = HorizontalAlignment.Left;
+            Flag8UnderlineBorder.BorderThickness = new Thickness(0, 0, 0, 2);
+
+            Grid Flag8NamePanel = new();
+            EntryClass.EntryTypeBitFlag.BitFlag8NamePanel = Flag8NamePanel;
+            Flag8NamePanel.Background = Brushes.Transparent;
+            Flag8NamePanel.Children.Add(Flag8UnderlineBorder);
+            Flag8NamePanel.Children.Add(BitFlag8Label);
+            Flag8UnderlineBorder.BorderBrush = (Brush)new BrushConverter().ConvertFrom("#A0A0A0");
+            Flag8UnderlineBorder.Margin = new Thickness(4, 0, 0, 4); // Left Top Right Bottom
+            ToolTipService.SetInitialShowDelay(Flag8NamePanel, LibraryGES.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(Flag8NamePanel, LibraryGES.TooltipBetweenDelay);
+            /////END OF Flag 8 TOOLTIP/////
+            
             ////////////////////////////////////////////////
 
             EntryClass.EntryDockPanel.Children.Add(BitFlags);
@@ -1242,44 +1444,55 @@ namespace GameEditorStudio
             EntryClass.EntryTypeBitFlag.BitFlag8CheckBox = BitFlag8CheckBox;
 
             BitFlags.Children.Add(BitFlag1);
-            BitFlag1.Children.Add(BitFlag1CheckBox);
-            BitFlag1.Children.Add(BitFlag1Label);
+            BitFlag1.Children.Add(BitFlag1CheckBox);            
+            BitFlag1.Children.Add(Flag1NamePanel);
+            //BitFlag1.Children.Add(BitFlag1Label);
             //BitFlag1.Children.Add(BitFlag1CheckBox);
 
             BitFlags.Children.Add(BitFlag2);
             BitFlag2.Children.Add(BitFlag2CheckBox);
-            BitFlag2.Children.Add(BitFlag2Label);
+            BitFlag2.Children.Add(Flag2NamePanel);
             //BitFlag2.Children.Add(BitFlag2CheckBox);
 
             BitFlags.Children.Add(BitFlag3);
             BitFlag3.Children.Add(BitFlag3CheckBox);
-            BitFlag3.Children.Add(BitFlag3Label);
+            BitFlag3.Children.Add(Flag3NamePanel);
             //BitFlag3.Children.Add(BitFlag3CheckBox);
 
             BitFlags.Children.Add(BitFlag4);
             BitFlag4.Children.Add(BitFlag4CheckBox);
-            BitFlag4.Children.Add(BitFlag4Label);
+            BitFlag4.Children.Add(Flag4NamePanel);
             //BitFlag4.Children.Add(BitFlag4CheckBox);
 
             BitFlags.Children.Add(BitFlag5);
             BitFlag5.Children.Add(BitFlag5CheckBox);
-            BitFlag5.Children.Add(BitFlag5Label);
+            BitFlag5.Children.Add(Flag5NamePanel);
             //BitFlag5.Children.Add(BitFlag5CheckBox);
 
             BitFlags.Children.Add(BitFlag6);
             BitFlag6.Children.Add(BitFlag6CheckBox);
-            BitFlag6.Children.Add(BitFlag6Label);
+            BitFlag6.Children.Add(Flag6NamePanel);
             //BitFlag6.Children.Add(BitFlag6CheckBox);
 
             BitFlags.Children.Add(BitFlag7);
             BitFlag7.Children.Add(BitFlag7CheckBox);
-            BitFlag7.Children.Add(BitFlag7Label);
+            BitFlag7.Children.Add(Flag7NamePanel);
             //BitFlag7.Children.Add(BitFlag7CheckBox);
 
             BitFlags.Children.Add(BitFlag8);
             BitFlag8.Children.Add(BitFlag8CheckBox);
-            BitFlag8.Children.Add(BitFlag8Label);
+            BitFlag8.Children.Add(Flag8NamePanel);
             //BitFlag8.Children.Add(BitFlag8CheckBox);
+
+            UpdateBitflagTooltip(EntryClass.EntryTypeBitFlag.BitFlag1UnderlineBorder, EntryClass.EntryTypeBitFlag.BitFlag1Label, EntryClass.EntryTypeBitFlag.BitFlag1NamePanel, EntryClass.EntryTypeBitFlag.BitFlag1Tooltip);
+            UpdateBitflagTooltip(EntryClass.EntryTypeBitFlag.BitFlag2UnderlineBorder, EntryClass.EntryTypeBitFlag.BitFlag2Label, EntryClass.EntryTypeBitFlag.BitFlag2NamePanel, EntryClass.EntryTypeBitFlag.BitFlag2Tooltip);
+            UpdateBitflagTooltip(EntryClass.EntryTypeBitFlag.BitFlag3UnderlineBorder, EntryClass.EntryTypeBitFlag.BitFlag3Label, EntryClass.EntryTypeBitFlag.BitFlag3NamePanel, EntryClass.EntryTypeBitFlag.BitFlag3Tooltip);
+            UpdateBitflagTooltip(EntryClass.EntryTypeBitFlag.BitFlag4UnderlineBorder, EntryClass.EntryTypeBitFlag.BitFlag4Label, EntryClass.EntryTypeBitFlag.BitFlag4NamePanel, EntryClass.EntryTypeBitFlag.BitFlag4Tooltip);
+            UpdateBitflagTooltip(EntryClass.EntryTypeBitFlag.BitFlag5UnderlineBorder, EntryClass.EntryTypeBitFlag.BitFlag5Label, EntryClass.EntryTypeBitFlag.BitFlag5NamePanel, EntryClass.EntryTypeBitFlag.BitFlag5Tooltip);
+            UpdateBitflagTooltip(EntryClass.EntryTypeBitFlag.BitFlag6UnderlineBorder, EntryClass.EntryTypeBitFlag.BitFlag6Label, EntryClass.EntryTypeBitFlag.BitFlag6NamePanel, EntryClass.EntryTypeBitFlag.BitFlag6Tooltip);
+            UpdateBitflagTooltip(EntryClass.EntryTypeBitFlag.BitFlag7UnderlineBorder, EntryClass.EntryTypeBitFlag.BitFlag7Label, EntryClass.EntryTypeBitFlag.BitFlag7NamePanel, EntryClass.EntryTypeBitFlag.BitFlag7Tooltip);
+            UpdateBitflagTooltip(EntryClass.EntryTypeBitFlag.BitFlag8UnderlineBorder, EntryClass.EntryTypeBitFlag.BitFlag8Label, EntryClass.EntryTypeBitFlag.BitFlag8NamePanel, EntryClass.EntryTypeBitFlag.BitFlag8Tooltip);
+
 
             if (TheWorkshop.IsPreviewMode == true)
             {
@@ -1982,6 +2195,8 @@ namespace GameEditorStudio
             //Window parentWindow = Window.GetWindow(EntryClass.EntryDockPanel);
 
             DTRightBar RightBar = EditorClass.DataTableEditorData.EditorRightBar;
+            RightBar.RightBarEntryTooltipBorder.Visibility = Visibility.Visible;
+            if (EntryClass.NewSubType == EntrySubTypes.BitFlag) { RightBar.RightBarEntryTooltipBorder.Visibility = Visibility.Collapsed; }
 
             if (EditorClass.DataTableEditorData.DTEXaml.RightBar.ListTab.IsSelected == true) 
             {
@@ -2146,6 +2361,15 @@ namespace GameEditorStudio
                 RightBar.PropertiesEntryBitFlag6Name.Text = EntryClass.EntryTypeBitFlag.BitFlag6Name;
                 RightBar.PropertiesEntryBitFlag7Name.Text = EntryClass.EntryTypeBitFlag.BitFlag7Name;
                 RightBar.PropertiesEntryBitFlag8Name.Text = EntryClass.EntryTypeBitFlag.BitFlag8Name;
+
+                RightBar.PropertiesEntryBitFlag1Tooltip.Text = EntryClass.EntryTypeBitFlag.BitFlag1Tooltip;
+                RightBar.PropertiesEntryBitFlag2Tooltip.Text = EntryClass.EntryTypeBitFlag.BitFlag2Tooltip;
+                RightBar.PropertiesEntryBitFlag3Tooltip.Text = EntryClass.EntryTypeBitFlag.BitFlag3Tooltip;
+                RightBar.PropertiesEntryBitFlag4Tooltip.Text = EntryClass.EntryTypeBitFlag.BitFlag4Tooltip;
+                RightBar.PropertiesEntryBitFlag5Tooltip.Text = EntryClass.EntryTypeBitFlag.BitFlag5Tooltip;
+                RightBar.PropertiesEntryBitFlag6Tooltip.Text = EntryClass.EntryTypeBitFlag.BitFlag6Tooltip;
+                RightBar.PropertiesEntryBitFlag7Tooltip.Text = EntryClass.EntryTypeBitFlag.BitFlag7Tooltip;
+                RightBar.PropertiesEntryBitFlag8Tooltip.Text = EntryClass.EntryTypeBitFlag.BitFlag8Tooltip;
             }
 
 

@@ -14,7 +14,7 @@ using Ookii.Dialogs.Wpf;
 namespace GameEditorStudio
 {
     public static class LibraryGES
-    {        
+    {
         //Notes on static classes and memory leaks.
         //First off, in C# it is just unintended memory retention instead of an actual leak like in C++, but thats besides the point...
         //A memory leak is when something stays in memory, despite seemingly no references to it existing anymore.
@@ -28,14 +28,14 @@ namespace GameEditorStudio
 
         public static string VersionDate { get; set; } = "June 27 2026";
         public static Version VersionNumber { get; set; } = new Version(0, 3, 0, 2); //Version Numbers (in order) are Major.Minor.Build.Revision
-        //Major is big releases.
-        //Minor is new features / content.
-        //Build is for Bugfixes or small changes.
-        //Revision is for code rewrites that dont* affect the user. *SHOULDN'T AFFECT THE USER >:(
-                
+                                                                                     //Major is big releases.
+                                                                                     //Minor is new features / content.
+                                                                                     //Build is for Bugfixes or small changes.
+                                                                                     //Revision is for code rewrites that dont* affect the user. *SHOULDN'T AFFECT THE USER >:(
 
+        public static bool PreviewModeWarningMessage { get; set; } = true; //The first time a user selects any editor without first loading a project, the user will get a preview mode warning message. 
         public static int RowSize { get; set; } = 38;
-        public static bool ShowEntryAddress { get; set; } = false; 
+        public static bool ShowEntryAddress { get; set; } = false;
         public static string EntryAddressType { get; set; } = "Decimal";
         //public static bool CollectionPrefix { get; set; } = true;
         public static bool ShowItemIndex { get; set; } = true;
@@ -43,7 +43,7 @@ namespace GameEditorStudio
         public static bool ShowSymbology { get; set; } = false;
         public static bool ShowTranslationPanel { get; set; } = false;
         public static bool EntrysDropAbove { get; set; } = true; //Decides if new entrys drop above the selected entry, or below.
-        public static bool EntryFrameIsVisible { get; set; } = true; 
+        public static bool EntryFrameIsVisible { get; set; } = true;
 
         public static bool DebugShowALL { get; set; } = false;
         //END
@@ -56,6 +56,8 @@ namespace GameEditorStudio
         public static List<ColorTheme> ColorThemeList { get; set; } = new();
         public static WikiDataBase Wiki { get; set; } = new WikiDataBase();
 
+        public static List<string> ToolImageLocations { get; set; } = new();
+
 
         static public Color ColorRed { get; set; } = (Color)ColorConverter.ConvertFromString("#FF0000");
         static public Color ColorPink { get; set; } = (Color)ColorConverter.ConvertFromString("#FF0000");
@@ -63,7 +65,7 @@ namespace GameEditorStudio
         static public Color ColorGreen { get; set; } = (Color)ColorConverter.ConvertFromString("#FF0000");
         static public Color ColorGray { get; set; } = (Color)ColorConverter.ConvertFromString("#FF0000");
 
-        
+
         static public Color ValueAlways0 { get; set; } = ColorGray;
         static public Color ValueAlwaysSame { get; set; } = ColorGray;
         static public Color ValueLessThanX { get; set; } = ColorGray;
@@ -76,9 +78,9 @@ namespace GameEditorStudio
 
         public static void SwitchToColorTheme(ColorTheme Theme)
         {
-                        
 
-            try 
+
+            try
             {
                 //Note: This will crash (fail catch) if it's reading color string "".
                 //IF the element part does not exist (HasText = false for example) then i need to comment the loading line here!!!
@@ -175,17 +177,17 @@ namespace GameEditorStudio
                 Application.Current.Resources["HiddenSelectedEntryBack"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Theme.HiddenSelectedEntry.Back));
                 Application.Current.Resources["HiddenSelectedEntryBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Theme.HiddenSelectedEntry.Border));
                 //Application.Current.Resources["HiddenSelectedEntryOther"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Theme.HiddenSelectedEntry.Other));
-            } 
+            }
             catch { }
-            
+
         }
 
-        public static void NukeDirectory(string TheDirectory) 
+        public static void NukeDirectory(string TheDirectory)
         {
             //Deletes a folder, and all sub-folders (assuming none are in use)
 
             if (Directory.Exists(TheDirectory))
-            {                
+            {
                 DirectoryInfo directoryInfo = new DirectoryInfo(TheDirectory);
 
                 foreach (FileInfo file in directoryInfo.GetFiles())
@@ -197,9 +199,13 @@ namespace GameEditorStudio
                 {
                     subDirectory.Delete(true);
                 }
+
+                Directory.Delete(TheDirectory, true); //Delete the main folder itself.
             }
 
             
+
+
         }
 
         public static void OpenFile(string path)
@@ -246,7 +252,7 @@ namespace GameEditorStudio
         public static void OpenFolder(string path)
         {
             if (string.IsNullOrEmpty(path))
-            {                
+            {
                 return;
             }
 
@@ -267,22 +273,22 @@ namespace GameEditorStudio
             VistaOpenFileDialog FileSelect = new VistaOpenFileDialog();
             FileSelect.Title = Description;
             if ((bool)FileSelect.ShowDialog())
-            {                
+            {
                 string ThePath = FileSelect.FileName;
-                return ThePath;                
+                return ThePath;
 
-                
+
             }
             else { return ""; }
-            
+
         }
 
-        public static string GetFolderFromFilepath(string Filepath) 
+        public static string GetFolderFromFilepath(string Filepath)
         {
             return Path.GetDirectoryName(Filepath);
         }
 
-        public static string GetSelectedFolderPath(string Description, string Message = null) 
+        public static string GetSelectedFolderPath(string Description, string Message = null)
         {
             VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog(); //This starts folder selection using Ookii.Dialogs.WPF NuGet Package
             FolderSelect.Description = Description; //This sets a description to help remind the user what their looking for.
@@ -296,10 +302,10 @@ namespace GameEditorStudio
             }
             else { return ""; }
 
-            
+
         }
 
-        
+
 
         public static string GetSelectFileName(string Description)
         {
@@ -307,7 +313,7 @@ namespace GameEditorStudio
             FileSelect.Title = Description;
             if ((bool)FileSelect.ShowDialog())
             {
-                string NameOnly = Path.GetFileName(FileSelect.FileName);                
+                string NameOnly = Path.GetFileName(FileSelect.FileName);
                 return NameOnly;
             }
             else { return ""; }
@@ -342,11 +348,11 @@ namespace GameEditorStudio
 
                 // Ensure the selected file path starts with the initial folder path
                 if (selectedFilePath.StartsWith(folderPath, StringComparison.OrdinalIgnoreCase)) //Value cannot be null
-                {                    
+                {
                     return selectedFilePath.Substring(folderPath.Length).TrimStart('\\'); // Return the relative path
                 }
                 else
-                {                    
+                {
                     return ""; // Return an empty string if the selected file is not within the folder path
                 }
             }
@@ -387,23 +393,23 @@ namespace GameEditorStudio
             MethodData MethodData = new();
             MethodData.WorkshopData = TheMenu.WorkshopData;
             MethodData.GameLibrary = TheMenu.GameLibrary;
-            MethodData.Command = myCommand.Command;            
-            
+            MethodData.Command = myCommand.Command;
+
 
             if (ResourceKeys.Count == 0) { return MethodData; }
-            
+
 
             foreach (KeyValuePair<int, string> Pair in ResourceKeys) //For each EventCommand resource...
             {
                 if (Pair.Value == "WTOOLS") { MethodData.ResourceLocations.Add("WTOOLS"); continue; }
-                
+
 
                 string FullPath = "";
 
                 EventResource TheEventResource = null;
 
                 foreach (EventResource EventResource in EventResources)  //Look inside the event resources...
-                {                    
+                {
                     if (EventResource.Key == Pair.Value) //Find the matching resource info...
                     {
                         TheEventResource = EventResource;
@@ -411,10 +417,10 @@ namespace GameEditorStudio
                         //and check if it's Local or Relative.
                     }
                 }
-                
+
                 if (TheEventResource == null) { continue; } //for optional resource commands, altho i added this sloppily and may cause a bug. 
 
-                if (TheEventResource.ResourceType == EventResource.ResourceTypes.CMDText) 
+                if (TheEventResource.ResourceType == EventResource.ResourceTypes.CMDText)
                 {
                     FullPath = TheEventResource.Location;
                     MethodData.ResourceLocations.Add(FullPath);
@@ -452,7 +458,7 @@ namespace GameEditorStudio
         }
 
 
-        public static UIElement SetGridData(UIElement Element) 
+        public static UIElement SetGridData(UIElement Element)
         {
             Grid.SetRow(Element, 3);
             Grid.SetColumn(Element, 1);
@@ -460,20 +466,20 @@ namespace GameEditorStudio
             Grid.SetColumnSpan(Element, 5);
             return Element;
         }
-        
 
 
 
-        public static GameFile GetGameFileUsingLocation(WorkshopData Database, string Location) 
+
+        public static GameFile GetGameFileUsingLocation(WorkshopData Database, string Location)
         {
             foreach (GameFile GameFile in Database.GameFiles)
-            {                
+            {
                 if (Location == GameFile.FileLocation)
                 {
                     return GameFile;
-                }                                
+                }
             }
-            
+
             return null;
         }
 
@@ -541,7 +547,7 @@ namespace GameEditorStudio
         }
 
 
-        public static List<TreeViewItem> GetALLTreeViewItems(TreeView treeView) 
+        public static List<TreeViewItem> GetALLTreeViewItems(TreeView treeView)
         {
             List<TreeViewItem> allItems = new List<TreeViewItem>();
 
@@ -554,7 +560,7 @@ namespace GameEditorStudio
                     AddItems(item.Items); // Recursively add children items
                 }
             }
-            
+
             return (allItems);
         }
 
@@ -582,7 +588,7 @@ namespace GameEditorStudio
 
 
 
-        public static Workshop GetParentWorkshop(UserControl userControl) 
+        public static Workshop GetParentWorkshop(UserControl userControl)
         {
             var workshopWindow = VisualTreeHelper.GetParent(userControl);
             while (workshopWindow != null && workshopWindow is not Workshop)
@@ -626,7 +632,24 @@ namespace GameEditorStudio
             }
         }
 
+        public static void UpdateTextboxColors(TextBox textBox, string StringInMemory)
+        {
+            if (textBox.Text != StringInMemory) 
+            {
+                //textBox.Foreground = new SolidColorBrush(textColor);
+                //textBox.Background = new SolidColorBrush(backgroundColor);
+                textBox.BorderBrush = new SolidColorBrush(Colors.DarkMagenta);
+            }
 
+            if (textBox.Text == StringInMemory)
+            {
+                //textBox.Foreground = new SolidColorBrush(textColor);
+                //textBox.Background = new SolidColorBrush(backgroundColor);                
+                textBox.ClearValue(Control.BorderBrushProperty);
+                //textBox.ClearValue(TextBox.BorderBrushProperty);
+            }
+
+        }
     }
 
 

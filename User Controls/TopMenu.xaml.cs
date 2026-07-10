@@ -84,7 +84,7 @@ namespace GameEditorStudio
             MenuSaveWorkshopDocuments.IsEnabled = false;
             MenuSaveProjectDocuments.IsEnabled = false;
             MenuSaveEvents.IsEnabled = false;
-            NewEditorItem.IsEnabled = false;
+            NewEditorItem.IsEnabled = false;            
             ItemExportEditors.IsEnabled = false;
 
             //Events
@@ -110,6 +110,7 @@ namespace GameEditorStudio
                 //MenuSaveWorkshopDocuments.IsEnabled = false;
                 MenuSaveProjectDocuments.IsEnabled = false;
                 NewEditorItem.IsEnabled = false;
+                NewEditorItem.Header = "Create New Editor   (First load a project...)";
                 ItemExportEditors.IsEnabled = false;
 
                 //Events
@@ -129,6 +130,7 @@ namespace GameEditorStudio
                 MenuSaveWorkshopDocuments.IsEnabled = true;
                 MenuSaveProjectDocuments.IsEnabled = true;
                 NewEditorItem.IsEnabled = true;
+                NewEditorItem.Header = "Create New Editor";
                 ItemExportEditors.IsEnabled = true;
 
                 //Events
@@ -1189,6 +1191,16 @@ namespace GameEditorStudio
             //Unload current workshop data from memory.
             //Make sure saving works correctly.
             
+        }
+
+        private void DebugPlayEtrianSound(object sender, RoutedEventArgs e)
+        {
+            PixelWPF.SoundEngine.PlayEtrianUHappy();
+        }
+
+        private void DebugPlayPersona5Crit(object sender, RoutedEventArgs e)
+        {
+            PixelWPF.SoundEngine.PlayPersona5Crit();
         }
     }
 }

@@ -22,13 +22,31 @@
         </Grid.RowDefinitions>
 
         <Border  DockPanel.Dock="Top" Grid.ColumnSpan="5" Margin="0,4,0,4">
-            <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" Background="#FF181827">
-                <Label Content="Loaded Project:" FontWeight="Bold" Margin="0,-5,0,-5"  FontSize="30"/>
-                <Label Name="LabelCurrentProject" Content="NONE (Editors use this)"  Margin="0,-2,0,-5" Foreground="#FFF17900" FontSize="30"/>
+            <Grid Background="{x:Null}" >
+                <!--<Grid.ColumnDefinitions>
+                    --><!--<ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="Auto"/>--><!--
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="500"/>
+                </Grid.ColumnDefinitions>-->
+                <DockPanel Grid.Column="0" LastChildFill="False" Style="{DynamicResource ContentBar}" Background="#FF181827">
+                    <Label Content="Loaded:" FontWeight="Bold" Margin="0,-5,0,-5"  FontSize="30"/>
+                    <Label Name="LabelCurrentProject" Content="NONE"  Margin="0,-2,0,-5" Foreground="#FFF17900" FontSize="30"/>
 
-                <Label Content="Selected Project:" FontWeight="Bold" Margin="50,-5,0,-5"  FontSize="30"/>
-                <Label Name="LabelSelectedProject" Content="NONE (Events use this)"  Margin="0,-2,0,-5" Foreground="#FF00A7FF" FontSize="30"/>
-            </DockPanel>
+                    <Label Content="Selected:" FontWeight="Bold" Margin="50,-5,0,-5"  FontSize="30"/>
+                    <Label Name="LabelSelectedProject" Content="NONE (Events use this)"  Margin="0,-2,0,-5" Foreground="#FF00A7FF" FontSize="30"/>
+
+                    
+                </DockPanel>
+                <!--<DockPanel Grid.Column="2" LastChildFill="False" Background="{x:Null}">
+                    <Button Click="RightBarHome" Name="HomeButton" Content="Home"  />
+                    <Button Click="RightBarHomeOld" Name="HoldOldButton" Content="Hold Old" />
+                    <Button Click="RightBarDocuments" Name="DocumentsButton" Content="Documents" />
+                    <Button Click="RightBarToggle" Name="RightBarToggleButton" Content="Close" />
+                </DockPanel>-->
+            </Grid>
+            
         </Border>
 
         <local:FileManager x:Name="FileManager"  Grid.Column="0" Grid.Row="1"/>
@@ -40,27 +58,25 @@
                         <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                             <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" >
                                 <Label Content="Intro" FontWeight="Bold"  />
-                                <Button Content="Edit" Margin="3"/>
+                                <Button Click="HomeIntroEditButtonClick" Content="Edit" Name="HomeIntroEditButton" Margin="3" DockPanel.Dock="Right"/>
+                                <Button Click="HomeIntroExitButtonClick" Content="Exit" Name="HomeIntroExitButton" Margin="3" DockPanel.Dock="Right"/>
+                                <Button Click="HomeIntroSaveButtonClick" Content="Save" Name="HomeIntroSaveButton" Margin="3" DockPanel.Dock="Right"/>                                                               
+                                <Button Click="HomeIntroHelpButtonClick" Content="Help" Name="HomeIntroHelpButton" Margin="3" DockPanel.Dock="Right"/>
                             </DockPanel>
                         </Border>
                         <ScrollViewer>
                             <DockPanel Name="IntroPanel" Background="#FF1F1F1F">
-                                <TextBox TextWrapping="Wrap" Text="" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False" />
+                                <TextBox Name="IntroTextbox" TextWrapping="Wrap" Text="" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False" DockPanel.Dock="Top" />
+                                <TextBox TextChanged="IntroEditboxTextChanged" x:Name="IntroEditBox"  Margin="10" TextWrapping="Wrap" AcceptsReturn="True" DockPanel.Dock="Top">
+
+                                </TextBox>
                             </DockPanel>                            
                         </ScrollViewer>
 
                     </DockPanel>
                 </TabItem>
-                <TabItem Header="HomeOld" Name="HomeTabOld">
-                    <DockPanel Background="#FF212121">
-                        <ScrollViewer>
-                            <TextBox TextWrapping="Wrap" Text="HELLO AND WELCOME! :D &#xA;This &quot;home page&quot; is a new idea. Previously i made you load your game files before entering a workshop, but now a workshop opens in &quot;preview mode&quot;. This lets you look at the editors without loading a project (without needing any game files). &#xA;&#xA;Preview mode being new means it's both unpolished, and probably has bugs or can crash. Just don't do anything weird in preview mode until i improve it. &gt;_&gt;. &#xA;&#xA;So anyway, to make a mod for this game, first create a &quot;project&quot;. Then set the project's Input Folder (Where the unmodded game files are) and output folder (where your modded game files will save to). When you click load project, any game files the editors need are loaded in (and a full list is shown on the left). &#xA;----------------------------------- &#xA;ABOUT EVENTS AND PROJECT RESOURCES:&#xA;&#xA;&quot;Events&quot; (Located at the top menu) are something users can create, they are a code-free way to create commands or macros if you will. &#xA;&#xA;Some event commands (like &quot;Run Game With Emulator&quot;) can use files other then the game files (for example, an emulator's .exe). I randomly decided these extras would be called &quot;Project Resources&quot;. &#xA;&#xA;Now, you CAN use the editors just fine without setting up any Project Resources, BUUTTT...What about when the game you want to mod first needs you to extract or unpack the game files before you can set them as the input folder? &#xA;&#xA;Well, then workshop creator might make an event to extract or unpack game files! But that means you would want to use the event before even loading a project! (you need to set an input folder to load a project)&#xA;&#xA;So how do i solve this? Well..., as a temporary answer to this problem, the events menu at the top uses the currently SELECTED project's resources, and NOT the currently loaded project's resources. &#xA;&#xA;This way, you can create a new project, set any needed files as project resources, run whatever file unpack event, and then finally set the unpacked files as the input folder. :)&#xA;&#xA;I will make a more elegant answer to this problem... later &gt;_&gt;" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False" />
-                        </ScrollViewer>
-                        
-                    </DockPanel>
-                </TabItem>
                 <TabItem Header="Documents">
-
+                    <local:DocumentsUserControl x:Name="DocumentsControl"/>
                 </TabItem>
             </TabControl>
         </ContentControl>
@@ -71,8 +87,9 @@
             <ContentControl DockPanel.Dock="Top" MinHeight="100"  >
                 <DockPanel  Background="#FF212121">
                     <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
-                        <Label Content="Projects / Mods" FontWeight="Bold" />
+                        <Label Content="Your Mods / Romhacks / Projects / etc" FontWeight="Bold" />
                         <Button Name="HomeNewProjectButton" Click="NewProjectButton" DockPanel.Dock="Right" Content="New"  Height="30" MinWidth="50" Margin="0,3,10,2" Width="60" ToolTip="Create a new Mod / Project."  />
+                        <Button Click="HomeHelpButton" DockPanel.Dock="Right" Content="Help!"  Height="30" MinWidth="50" Margin="0,3,10,2" Width="60" />
                     </DockPanel>
                     
                     <!--<DataGrid  HeadersVisibility="None" x:Name="ProjectsSelector" AutoGenerateColumns="False" DockPanel.Dock="Right" VerticalAlignment="Stretch" IsReadOnly="True" SelectionChanged="ProjectSelected" FontSize="15"  >
@@ -151,13 +168,14 @@
                                 <DockPanel DockPanel.Dock="Top" LastChildFill="False"  Background="{x:Null}">
                                     <Label Content="Input Folder" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
                                     <Label Name="LabelForMissingProjectInput" Content="Missing!" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,3,0,0" />
-                                    <Button Name="ButtonCopyInputFolderText" Click="CopyProjectInputFolderTextButton"  Content="Copy" DockPanel.Dock="Right" Width="63" Margin="3,0,0,0" Height="30"/>
-                                    <Button Name="ButtonOpenInputFolder" Content="Open" DockPanel.Dock="Right" Click="OpenSelectedProjectInputFolder" Width="63" Height="30"/>
-                                    <Button x:Name="ButtonSelectInputDirectory" Content="Browse..." DockPanel.Dock="Right" Height="30" Width="100" Margin="0,0,3,0" Click="SetSelectedProjectInputFolder"  />
+
+                                    <Button Click="CopyProjectInputFolderTextButton" Name="ButtonCopyInputFolderText"   Content="Copy" DockPanel.Dock="Right" Width="63" Margin="3,0,0,0" Height="30"/>
+                                    <Button Click="OpenSelectedProjectInputFolder" Name="ButtonOpenInputFolder" Content="Open" DockPanel.Dock="Right"  Width="63" Height="30"/>
+                                    <Button Click="SetSelectedProjectInputFolder" x:Name="ButtonSelectInputDirectory" Content="Browse..." DockPanel.Dock="Right" Height="30" Width="100" Margin="0,0,3,0"   ToolTipService.InitialShowDelay="1" />
                                 </DockPanel>
                                 <DockPanel DockPanel.Dock="Top"  Background="{x:Null}">
                                     <Border Name="BorderInputFolder" CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
-                                        <TextBox x:Name="TextBoxInputDirectory" Margin="2,0,2,0" Padding="4"  BorderThickness="0"  DockPanel.Dock="Left" Text="Where your projects get the game files from."  IsEnabled="False" />
+                                        <TextBox TextChanged="ProjectInputFolderTextboxTextChanged" x:Name="TextBoxInputDirectory" Margin="2,0,2,0" Padding="4"  BorderThickness="0"  DockPanel.Dock="Left" Text="Where your projects get the game files from."  IsEnabled="False" />
                                     </Border>
 
 
@@ -169,13 +187,13 @@
                                 <DockPanel DockPanel.Dock="Top" LastChildFill="False"  Background="{x:Null}">
                                     <Label Content="Output Folder" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
                                     <Label Name="LabelForMissingProjectOutput" Content="Missing!" FontWeight="Bold" Background="#FF440A0A" Foreground="#FFFF1800" Visibility="Collapsed" Height="26" Padding="5,0,5,2" Margin="10,3,0,0" />
-                                    <Button Name="ButtonCopyOutputFolderText" Click="CopyProjectOutputFolderTextButton"  Content="Copy" DockPanel.Dock="Right" Width="63" Margin="3,0,0,0" Height="30"/>
-                                    <Button Name="ButtonOpenOutputFolder" Content="Open" DockPanel.Dock="Right" Click="OpenSelectedProjectOutputFolder" Width="60" Height="30"/>
-                                    <Button Content="Browse..." DockPanel.Dock="Right" Height="30" Width="100" Margin="0,0,3,0" Click="SetSelectedProjectOutputFolder"  ToolTip="The folder where files are saved to. &#xD;When saving, files will save in the same folder structure as the input folder.  &#xD;   &#xD;TIP: If your modding for a 3DS or Switch game,  &#xD;Set the output folder as the emulator/game's mod folder! :D"  />
+                                    <Button Click="CopyProjectOutputFolderTextButton" Name="ButtonCopyOutputFolderText"   Content="Copy" DockPanel.Dock="Right" Width="63" Margin="3,0,0,0" Height="30"/>
+                                    <Button Click="OpenSelectedProjectOutputFolder" Name="ButtonOpenOutputFolder" Content="Open" DockPanel.Dock="Right"  Width="60" Height="30"/>
+                                    <Button Click="SetSelectedProjectOutputFolder" Content="Browse..." DockPanel.Dock="Right" Height="30" Width="100" Margin="0,0,3,0"   ToolTip="The folder where files are saved to. &#xD;When saving, files will save in the same folder structure as the input folder.  &#xD;   &#xD;TIP: If your modding for a 3DS or Switch game,  &#xD;Set the output folder as the emulator/game's mod folder! :D" ToolTipService.InitialShowDelay="1" />
                                 </DockPanel>
                                 <DockPanel DockPanel.Dock="Top"  Background="{x:Null}">
                                     <Border Name="BorderOutputFolder" CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
-                                        <TextBox x:Name="TextBoxOutputDirectory" Margin="2,0,2,0" Padding="4"  BorderThickness="0"  DockPanel.Dock="Left" Text="Where files will be saved to. :)"  IsEnabled="False" />
+                                        <TextBox x:Name="TextBoxOutputDirectory" Margin="2,0,2,0" Padding="4"  BorderThickness="0"  DockPanel.Dock="Left" Text="Where files will be saved to. :)"  IsEnabled="False" TextChanged="ProjectOutputFolderTextboxTextChanged"/>
                                     </Border>
                                 </DockPanel>
 
@@ -197,6 +215,7 @@
                             <Label x:Name="LoadingStatusTextUI" Content="Loading..." Margin="0,-5,0,5" HorizontalAlignment="Center"/>
                             <ProgressBar x:Name="LoadingProgressBarUI" Height="20" Minimum="0" Maximum="100"/>
                         </StackPanel>
+                        <Label Name="LoadingFinalizingLabel" Content="Finalizing some things..." HorizontalAlignment="Center" Margin="0,0,0,0"/>
                     </DockPanel>
                 </Grid>
                 

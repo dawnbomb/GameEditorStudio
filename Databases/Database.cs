@@ -65,6 +65,8 @@ namespace GameEditorStudio
         public string CreatedDate { get; set; } = ""; //The date this was first created.
         public Version SavedVersion { get; set; } = new Version(0, 0); //The last GES version this was used/saved with.
         public string SavedDate { get; set; } = ""; // The date this was last used/saved.
+        public Version LastUsedVersion { get; set; } = new Version(0, 0); //The last GES version this was used / "save everything" was used.
+        public string LastUsedDate { get; set; } = ""; // The date this was last used / "save everything" was used.
 
         ///////////////////////////////GAME LIBRARY INFO AKA BASICS///////////////////////////////////////////////////////////////////
         public string WorkshopName { get; set; } = ""; //The name of the workshop (IE name of whats selected in Game Library)
@@ -96,7 +98,21 @@ namespace GameEditorStudio
 
     public class Intro 
     {
-        public string DefaultIntroText { get; } = "This is the intro text for this workshop. It can be used to give users important information about modding this game!";
+        public string DefaultIntroText { get; } = "This workshop still needs someone to write an intro for this game. " +
+            "\nHere are some example things to think / write about. " +
+            "\n" +
+            "\n- How to extract the game files?" +
+            "\n- What tools are needed?" +
+            "\n- What folder is the input, and where is it located?" +
+            "\n- What game platform? (PC, Switch, PS2, etc)" +
+            "\n- What game region? (USA, JP, EU, etc)" +
+            "\n- What game patch number? (patch v1.1, expansion name, etc)" +
+            "\n- What discord communities, forumns, wikis, exist?" +
+            "\n- Any helpful youtube \"how to\" videos?" +
+            "\n" +
+            "\nAs a general guideline, workshops should support the latest game version, and all DLC.";
+
+
         public string IntroText { get; set; } = ""; //The intro text for the workshop. This is shown in the Game Library when the workshop is selected.
         
     }

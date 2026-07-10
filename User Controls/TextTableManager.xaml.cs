@@ -52,7 +52,7 @@ namespace GameEditorStudio
 
             this.Loaded += new RoutedEventHandler(LoadEvent);
             //Database = database;
-
+            DataFileRightPanelForCustomCharacterTable.Visibility = Visibility.Collapsed;
 
             #if DEBUG
             #else
@@ -1391,8 +1391,17 @@ namespace GameEditorStudio
         //}
 
 
-        
+        private void DataFileOpenCustomCharacterTablePanel(object sender, RoutedEventArgs e)
+        {
+            DataFileRightPanelForCustomCharacterTable.Visibility = Visibility.Visible;
+            DataFileRightPanel.Visibility = Visibility.Collapsed;
+        }
 
+        private void DataFileCloseCustomCharacterTablePanel(object sender, RoutedEventArgs e)
+        {
+            DataFileRightPanelForCustomCharacterTable.Visibility = Visibility.Collapsed;
+            DataFileRightPanel.Visibility = Visibility.Visible;
+        }
 
         private void FileLinkDebug(object sender, RoutedEventArgs e)
         {
@@ -2115,8 +2124,14 @@ namespace GameEditorStudio
             }
             ItemsEditBox.Text = newtext;
         }
-        
 
-        
+
+        private void OpenCustomCharacterTableHelp(object sender, RoutedEventArgs e)
+        {
+            PixelWPF.LibraryPixel.Notification("Custom Character Table Help", 
+                "This is a custom character table. It allows you to define a custom character set for reading text from data files. " +
+                "\n\nThe character set is defined by a text file that contains the characters in order. The first character in the file is the character with ID 0, the second character is ID 1, and so on. " +
+                "\n\nYou can use this to read text from data files that use a custom character set, such as Shift-JIS or other encodings.");
+        }
     }
 }

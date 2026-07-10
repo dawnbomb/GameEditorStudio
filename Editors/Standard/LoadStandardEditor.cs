@@ -491,13 +491,27 @@ namespace GameEditorStudio
                     foreach (XElement XBitFlag in Xentry.Descendants("BitFlag"))
                     {
                         EntryClass.EntryTypeBitFlag.BitFlag1Name = XBitFlag.Element("Flag1Name")?.Value;
+                        EntryClass.EntryTypeBitFlag.BitFlag1Tooltip = XBitFlag.Element("Flag1Tooltip")?.Value ?? ""; //The ?? "" sets the value to "" if null.
                         EntryClass.EntryTypeBitFlag.BitFlag2Name = XBitFlag.Element("Flag2Name")?.Value;
+                        EntryClass.EntryTypeBitFlag.BitFlag2Tooltip = XBitFlag.Element("Flag2Tooltip")?.Value ?? "";
                         EntryClass.EntryTypeBitFlag.BitFlag3Name = XBitFlag.Element("Flag3Name")?.Value;
+                        EntryClass.EntryTypeBitFlag.BitFlag3Tooltip = XBitFlag.Element("Flag3Tooltip")?.Value ?? "";
                         EntryClass.EntryTypeBitFlag.BitFlag4Name = XBitFlag.Element("Flag4Name")?.Value;
+                        EntryClass.EntryTypeBitFlag.BitFlag4Tooltip = XBitFlag.Element("Flag4Tooltip")?.Value ?? "";
                         EntryClass.EntryTypeBitFlag.BitFlag5Name = XBitFlag.Element("Flag5Name")?.Value;
+                        EntryClass.EntryTypeBitFlag.BitFlag5Tooltip = XBitFlag.Element("Flag5Tooltip")?.Value ?? "";
                         EntryClass.EntryTypeBitFlag.BitFlag6Name = XBitFlag.Element("Flag6Name")?.Value;
+                        EntryClass.EntryTypeBitFlag.BitFlag6Tooltip = XBitFlag.Element("Flag6Tooltip")?.Value ?? "";
                         EntryClass.EntryTypeBitFlag.BitFlag7Name = XBitFlag.Element("Flag7Name")?.Value;
+                        EntryClass.EntryTypeBitFlag.BitFlag7Tooltip = XBitFlag.Element("Flag7Tooltip")?.Value ?? "";
                         EntryClass.EntryTypeBitFlag.BitFlag8Name = XBitFlag.Element("Flag8Name")?.Value;
+                        EntryClass.EntryTypeBitFlag.BitFlag8Tooltip = XBitFlag.Element("Flag8Tooltip")?.Value ?? "";
+
+                        if (EntryClass.WorkshopTooltip != "" && EntryClass.WorkshopTooltip != null) 
+                        { 
+                            EntryClass.EntryTypeBitFlag.BitFlag1Tooltip += "\n\n" + EntryClass.WorkshopTooltip; 
+                            EntryClass.WorkshopTooltip = "";
+                        }
                     }
                 }
 

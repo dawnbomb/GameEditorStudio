@@ -56,7 +56,7 @@ namespace GameEditorStudio
             RightBar.DTEData = DTEData;
             DTEData.EditorRightBar = RightBar;
 
-            RightBar.TheDocumentsUserControl.TheWorkshop = DTEData.WorkshopXaml;
+            RightBar.TheDocumentsUserControl.TheWorkshopXaml = DTEData.WorkshopXaml;
             RightBar.TheDocumentsUserControl.WorkshopData = DTEData.WorkshopXaml.WorkshopData;
 
 

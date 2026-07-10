@@ -44,8 +44,9 @@ namespace GameEditorStudio
         public string DownloadLink { get; set; } = "";
         public string ExeName { get; set; } = ""; //The actual name of the executable (including the ".exe" suffix). IE notepad++.exe
         public string Location { get; set; } = ""; //The users location / path to the exe for this tool on their computer. IE "C:\Program Files\Notepad++\notepad++.exe"
-        
 
+        public string ImagesFolderName { get; set; } = "";
+        public List<string> Images { get; set; } = new();
         
         
 

@@ -175,33 +175,61 @@ namespace GameEditorStudio.Loading
 
         public void LoadAllWorkshopDocuments(WorkshopData WorkshopData) 
         {
-            string[] WorkshopDocumentOrder = File.ReadLines(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + "LoadOrder.txt").ToArray();
-            string[] WorkshopDocumentFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
-            foreach (string name in WorkshopDocumentOrder)
+            if (!Directory.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents")) 
             {
-                if (WorkshopDocumentFolderNames.Contains(name))
+                return; 
+            }            
+                        
+            if (File.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + "LoadOrder.txt")) 
+            {
+                string[] WorkshopDocumentOrder = File.ReadLines(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + "LoadOrder.txt").ToArray();
+                string[] WorkshopDocumentFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
+                foreach (string name in WorkshopDocumentOrder)
                 {
-                    Document TheDocument = new Document
+                    if (WorkshopDocumentFolderNames.Contains(name))
                     {
-                        Name = name,
-                        Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + name + "\\Text.txt")
-                    };
-                    WorkshopData.WorkshopDocumentsList.Add(TheDocument); // Adding the document object to the list
+                        Document TheDocument = new Document
+                        {
+                            Name = name,
+                            Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + name + "\\Text.txt")
+                        };
+                        WorkshopData.WorkshopDocumentsList.Add(TheDocument); // Adding the document object to the list
+                    }
                 }
-            }
-            foreach (string name in WorkshopDocumentFolderNames)//The, add any new documents to the document tree in alphabetical order.
-            {
-                if (!WorkshopDocumentOrder.Contains(name))
+                foreach (string name in WorkshopDocumentFolderNames)//The, add any new documents to the document tree in alphabetical order.
                 {
-                    Document TheDocument = new Document
+                    if (!WorkshopDocumentOrder.Contains(name))
                     {
-                        Name = name,
-                        Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + name + "\\Text.txt")
-                    };
-                    WorkshopData.WorkshopDocumentsList.Add(TheDocument); // Adding the document object to the list                 
+                        Document TheDocument = new Document
+                        {
+                            Name = name,
+                            Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + name + "\\Text.txt")
+                        };
+                        WorkshopData.WorkshopDocumentsList.Add(TheDocument); // Adding the document object to the list                 
 
+                    }
                 }
             }
+
+            if (!File.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + "LoadOrder.txt"))
+            {
+                string[] WorkshopDocumentFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
+                foreach (string name in WorkshopDocumentFolderNames)//The, add any new documents to the document tree in alphabetical order.
+                {
+                    Document TheDocument = new Document
+                    {
+                        Name = name,
+                        Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + name + "\\Text.txt")
+                    };
+                    WorkshopData.WorkshopDocumentsList.Add(TheDocument); // Adding the document object to the list   
+                }
+            }
+
+            if (File.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Intro.txt"))
+            {
+                WorkshopData.Intro.IntroText = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Intro.txt");
+            }
+            
 
         }
 
@@ -214,11 +242,47 @@ namespace GameEditorStudio.Loading
                 return;
             }
 
-            string[] ProjectDocumentOrder = File.ReadLines(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + "LoadOrder.txt").ToArray();
-            string[] ProjectDocumentFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
-            foreach (string name in ProjectDocumentOrder)//The last known list of documents for this workshop, in the order they were saved in.
+            if (!Directory.Exists(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents"))
             {
-                if (ProjectDocumentFolderNames.Contains(name))
+                return;
+            }
+
+            if (File.Exists(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + "LoadOrder.txt")) 
+            {
+                string[] ProjectDocumentOrder = File.ReadLines(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + "LoadOrder.txt").ToArray();
+                string[] ProjectDocumentFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
+                foreach (string name in ProjectDocumentOrder)//The last known list of documents for this workshop, in the order they were saved in.
+                {
+                    if (ProjectDocumentFolderNames.Contains(name))
+                    {
+                        Document TheDocument = new Document
+                        {
+                            Name = name,
+                            Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + name + "\\Text.txt")
+                        };
+                        WorkshopData.ProjectDocumentsList.Add(TheDocument); // Adding the document object to the list
+
+                    }
+                }
+                foreach (string name in ProjectDocumentFolderNames)//The, add any new documents to the document tree in alphabetical order.
+                {
+                    if (!ProjectDocumentOrder.Contains(name))
+                    {
+                        Document TheDocument = new Document
+                        {
+                            Name = name,
+                            Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + name + "\\Text.txt")
+                        };
+                        WorkshopData.ProjectDocumentsList.Add(TheDocument); // Adding the document object to the list
+
+                    }
+                }
+            }
+            if (!File.Exists(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + "LoadOrder.txt"))
+            {
+                
+                string[] ProjectDocumentFolderNames = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
+                foreach (string name in ProjectDocumentFolderNames)//The, add any new documents to the document tree in alphabetical order.
                 {
                     Document TheDocument = new Document
                     {
@@ -226,22 +290,10 @@ namespace GameEditorStudio.Loading
                         Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + name + "\\Text.txt")
                     };
                     WorkshopData.ProjectDocumentsList.Add(TheDocument); // Adding the document object to the list
-
                 }
             }
-            foreach (string name in ProjectDocumentFolderNames)//The, add any new documents to the document tree in alphabetical order.
-            {
-                if (!ProjectDocumentOrder.Contains(name))
-                {
-                    Document TheDocument = new Document
-                    {
-                        Name = name,
-                        Text = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + name + "\\Text.txt")
-                    };
-                    WorkshopData.ProjectDocumentsList.Add(TheDocument); // Adding the document object to the list
 
-                }
-            }
+            
         }
 
 

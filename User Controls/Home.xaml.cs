@@ -19,6 +19,7 @@ using GameEditorStudio.Loading;
 using Microsoft.VisualBasic;
 using Ookii.Dialogs.Wpf;
 using WpfHexEditor;
+using WpfHexEditor.Core.Models;
 using Path = System.IO.Path;
 
 namespace GameEditorStudio
@@ -35,6 +36,8 @@ namespace GameEditorStudio
         {
             InitializeComponent();
 
+            
+
             //RefreshProjectsTreeView();
         }
 
@@ -42,6 +45,10 @@ namespace GameEditorStudio
         {
             WorkshopData = TheWorkshopData;
             WorkshopXaml = WorkshopData.WorkshopXaml;
+
+            DocumentsControl.TheWorkshopXaml = WorkshopXaml;
+            DocumentsControl.WorkshopData = WorkshopData;
+            SetupHomeIntro(false);
 
             if (WorkshopData.LoadedProject == null) { LabelCurrentProject.Content = "NONE"; }
             if (WorkshopData.LoadedProject != null) { LabelCurrentProject.Content = TheWorkshopData.LoadedProject.ProjectName; }
@@ -53,7 +60,17 @@ namespace GameEditorStudio
                 HomeUnloadProjectButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             }
 
-            
+            if (DocumentsControl.WorkshopDocumentsTreeView.Items.Count != 0) 
+            {
+                TreeViewItem item = DocumentsControl.WorkshopDocumentsTreeView.Items[0] as TreeViewItem;
+                item.IsSelected = true;
+            }
+
+            //if (WorkshopData.Intro.IntroText != "")
+            //{
+            //    IntroTextbox.Text = WorkshopData.Intro.IntroText;
+            //}
+            //else { IntroTextbox.Text = WorkshopData.Intro.DefaultIntroText; }
         }
         
 
@@ -156,7 +173,7 @@ namespace GameEditorStudio
             Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
             Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
             Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-
+            LoadingFinalizingLabel.Visibility = Visibility.Visible;
 
             foreach (DataTableEditorData TheEditor in WorkshopData.GameEditors.OfType<DataTableEditorData>()) //Sync Entry Decorations state & Sets Symbology for all DTE editors. 
             {//Fix this later, as im doing for all DTE, for all DTE. 
@@ -175,6 +192,8 @@ namespace GameEditorStudio
 
             LoadingPanel.Visibility = Visibility.Collapsed;
             LoadUIUI.Visibility = Visibility.Collapsed;
+            LibraryGES.PreviewModeWarningMessage = false;
+            LoadingFinalizingLabel.Visibility = Visibility.Collapsed;
         }
 
 
@@ -236,10 +255,23 @@ namespace GameEditorStudio
                 
                 ProjectNameTextbox.Text = projectdata.ProjectName;
                 TextBoxInputDirectory.Text = projectdata.ProjectInputDirectory;
-                BorderInputFolder.ToolTip = projectdata.ProjectInputDirectory;
+                //BorderInputFolder.ToolTip = projectdata.ProjectInputDirectory;
                 TextBoxOutputDirectory.Text = projectdata.ProjectOutputDirectory;
-                BorderOutputFolder.ToolTip = projectdata.ProjectOutputDirectory;
+                //BorderOutputFolder.ToolTip = projectdata.ProjectOutputDirectory;
             }
+
+            //If last known input/output folders are missing, show a warning label.
+            LabelForMissingProjectInput.Visibility = Visibility.Collapsed;
+            if (TextBoxInputDirectory.Text != "" & !Directory.Exists(TextBoxInputDirectory.Text)) 
+            {
+                LabelForMissingProjectInput.Visibility = Visibility.Visible;
+            }
+            LabelForMissingProjectOutput.Visibility = Visibility.Collapsed;
+            if (TextBoxOutputDirectory.Text != "" & !Directory.Exists(TextBoxOutputDirectory.Text))
+            {
+                LabelForMissingProjectOutput.Visibility = Visibility.Visible;
+            }
+            
         }
 
 
@@ -316,12 +348,25 @@ namespace GameEditorStudio
 
         private void ButtonLoadProject(object sender, RoutedEventArgs e)
         {
+            if (TextBoxInputDirectory.Text == "" || !Directory.Exists(TextBoxInputDirectory.Text))
+            {
+                PixelWPF.LibraryPixel.NotificationNegative("Error: Input folder missing!", "The input folder is missing!");
+                return;
+            }
+            if (TextBoxOutputDirectory.Text != "" & !Directory.Exists(TextBoxOutputDirectory.Text))
+            {
+                PixelWPF.LibraryPixel.NotificationNegative("Error: Output folder missing!", "The output folder is missing!");
+                return;
+            }
+
             TreeViewItem treeViewItem = ProjectsTreeView.SelectedItem as TreeViewItem;
             if (treeViewItem == null) { return; }
             Project projectdata = treeViewItem?.Tag as Project;
             if (projectdata != null)
             {
                 LoadProject(projectdata);  
+                WorkshopXaml.ButtonHome.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                PixelWPF.SoundEngine.PlayEtrianUHappy();
             }
         }
 
@@ -329,6 +374,8 @@ namespace GameEditorStudio
         {
             WorkshopData.SelectedProject = null;
             LoadProject(null);
+            LibraryGES.PreviewModeWarningMessage = true;
+            WorkshopXaml.ButtonHome.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         }
         
 
@@ -368,12 +415,27 @@ namespace GameEditorStudio
             }
         }
 
+        private void ProjectInputFolderTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            BorderInputFolder.ToolTip = TextBoxInputDirectory.Text;
+            if (TextBoxInputDirectory.Text == "") { BorderInputFolder.ToolTip = null; }
+        }
+
+        private void ProjectOutputFolderTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            BorderOutputFolder.ToolTip = TextBoxOutputDirectory.Text;
+            if (TextBoxOutputDirectory.Text == "") { BorderOutputFolder.ToolTip = null; }
+        }
+
         private void SetSelectedProjectInputFolder(object sender, RoutedEventArgs e)
         {
             if (WorkshopData.SelectedProject == null) { return; }
 
+            PixelWPF.LibraryPixel.Notification("Input Folder Advice", "The input folder is asking you to select a folder that contains your game's origonal UNMODDED game files. \n\nSo i STRONGLY SUGGEST that this should be a BACKUP of your ORIGONAL, UNMODDED GAME FILES. \n\nInfact, i recommend creating a master backups folder somewhere on your computer, like \"GES Mods\" or \"GES Backups\" or something. Then inside that master backups folder, have a folder with the name of this game, and inside that, have a folder thats a backup of this game's origonal unmodded files. \n\nThis folder structure makes it easy to manage backups of many diffrent games on your PC, and is flexable for unusual games (such as single file games, romhacks, or save file editors). \n\n\nNote: Sometimes a workshop can SUGGEST a folder name to be selected as the input folder, if that was done with this workshop, the next window will have that name in the top title bar. It can also REQUIRE one, the text at the top will specify if it's a suggestion or a requirement. ");
+
             VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog();//This starts folder selection using Ookii.Dialogs.WPF NuGet Package
-            FolderSelect.Description = "Please select the folder named " + WorkshopData.WorkshopInputDirectory; //This sets a description to help remind the user what their looking for.
+            FolderSelect.Description = "Suggested Input Folder: " + WorkshopData.WorkshopInputDirectory; //This sets a description to help remind the user what their looking for.
+            if (WorkshopData.ProjectsRequireSameFolderName == true) { FolderSelect.Description = "REQUIRED Input Folder name: " + WorkshopData.WorkshopInputDirectory; } 
             FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.
             {   //Smart seleting the folder to start in.
                 string inputPath = TextBoxInputDirectory.Text + "\\";
@@ -390,14 +452,30 @@ namespace GameEditorStudio
 
             if ((bool)FolderSelect.ShowDialog(Window.GetWindow(this))) //This triggers the folder selection screen, and if the user does not cancel out...
             {
-                                
-                if (WorkshopData.ProjectsRequireSameFolderName == false)
+                if (WorkshopData.SelectedProject.ProjectOutputDirectory == FolderSelect.SelectedPath) 
                 {
-                    PixelWPF.LibraryPixel.NotificationPositive("You MAYBE selected the correct folder?",
-                        "This workshop doesn't require a specific folder name to be selected. " +
-                        "This is usually set when the input folder is one that users commonly want to be able to rename. " +
+                    bool SetInputToOutput = PixelWPF.LibraryPixel.NotificationConfirm("Set input folder to OUTPUT???",
+                        "You just selected the same folder as your project's output folder! " +
                         "\n\n" +
-                        "If your not sure, I STRONGLY recommend checking the readme, as well as asking around. \n\nOr you can just load your project and see if you get a ton of errors. :p"
+                        "This may be an accident, or on purpose, so just to be sure..." +
+                        "\n\n" +
+                        "Set your input folder to the same as your output?"
+                    );
+                    if (SetInputToOutput == false) { return; }
+                }
+                    
+
+                bool NameHasSpaces = WorkshopData.WorkshopInputDirectory.Any(char.IsWhiteSpace);
+                //WorkshopData.WorkshopInputDirectory
+
+                if (WorkshopData.ProjectsRequireSameFolderName == false && WorkshopData.WorkshopInputDirectory == Path.GetFileName(FolderSelect.SelectedPath))
+                {
+                    PixelWPF.LibraryPixel.NotificationPositive("You selected the correct folder!",
+                        "This workshop does not require a specific input folder name to be selected, " +
+                        "and your selected folder has the same name as the suggested one, " +
+                        "so you probably selected the correct folder. :)" +
+                        "\n\n" +
+                        "This can only end up be wrong if you selected a folder with the exact same name, but in a diffrent location."
                     );
 
                     WorkshopData.SelectedProject.ProjectInputDirectory = FolderSelect.SelectedPath;
@@ -405,13 +483,46 @@ namespace GameEditorStudio
 
                     CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
                 }
-                else if (WorkshopData.WorkshopInputDirectory == Path.GetFileName(FolderSelect.SelectedPath) && WorkshopData.ProjectsRequireSameFolderName == true)
+                else if (WorkshopData.ProjectsRequireSameFolderName == false && WorkshopData.WorkshopInputDirectory != "" && NameHasSpaces == false && WorkshopData.WorkshopInputDirectory != Path.GetFileName(FolderSelect.SelectedPath))
+                {
+                    //If the input name is suggested, has text, no spaces, and the user selected something other then the suggestion, run this.
+                    PixelWPF.LibraryPixel.NotificationNegative("Warning: Possibly incorrect folder selected!",
+                        "This workshop's suggested input folder name: " +
+                        "\n\"" + WorkshopData.WorkshopInputDirectory + "\"" +
+                        "\n\nYour selected folder name: " +
+                        "\n\"" + Path.GetFileName(FolderSelect.SelectedPath) + "\"" +
+                        "\n\n" +
+                        "This workshop does not require a specific input folder name, and it's possible you selected a folder with a diffrent name on purpose." +
+                        "\nBut incase you did not do this on purpose, i'm giving you this warning anyway. " +
+                        "\n\n" +
+                        "If your confused, look for a readme, discord, ask around, or just load your project and see if you get a ton of errors. :p"
+                    );
+                }
+                else if (WorkshopData.ProjectsRequireSameFolderName == false && WorkshopData.WorkshopInputDirectory != "" && NameHasSpaces == true && WorkshopData.WorkshopInputDirectory != Path.GetFileName(FolderSelect.SelectedPath))
+                {
+                    PixelWPF.LibraryPixel.NotificationUnknown("Unknown if selected folder is correct",
+                        "This workshop does not require a specific input folder name to be selected. " +
+                        "\n\n" +
+                        "Now while your selected folder does have a diffrent name then the suggested one, this workshop's \"Suggested Input Folder\" has spaces in it, so i can't tell if it's an actual folder name, or if it's written instructions. " +                        
+                        "\n\n" +
+                        "If your confused, look for a readme, discord, ask around, or just load your project and see if you get a ton of errors. :p"
+                    );
+
+                    WorkshopData.SelectedProject.ProjectInputDirectory = FolderSelect.SelectedPath;
+                    TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
+
+                    CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
+                }
+                else if (WorkshopData.ProjectsRequireSameFolderName == true && WorkshopData.WorkshopInputDirectory == Path.GetFileName(FolderSelect.SelectedPath))
                 {
                     PixelWPF.LibraryPixel.NotificationPositive("You selected the correct folder!",
-                        "The folder name you selected is the same as the one this workshop is looking for. " +
-                        "This can only be wrong if you selected a folder with the exact same name, but a diffrent location."
+                        "This workshop DOES require a specific input folder name to be selected, " +
+                        "and your selected folder has the same name as the suggested one, " +
+                        "so you probably selected the correct folder. :)" +
+                        "\n\n" +
+                        "This can only end up be wrong if you selected a folder with the exact same name, but in a diffrent location."
                     );
-                    
+
                     WorkshopData.SelectedProject.ProjectInputDirectory = FolderSelect.SelectedPath;
                     TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
 
@@ -420,9 +531,13 @@ namespace GameEditorStudio
                 else
                 {
                     PixelWPF.LibraryPixel.NotificationNegative("Error: Wrong folder selected!",
-                        "This workshop is looking for you to select a folder named \"" + WorkshopData.WorkshopInputDirectory + "\"." +
+                        "This workshop's REQUIRED input folder name: " +
+                        "\n\"" + WorkshopData.WorkshopInputDirectory + "\"" +
+                        "\n\nYour selected folder name: " +
+                        "\n\"" + Path.GetFileName(FolderSelect.SelectedPath) + "\"" +
                         "\n\n" +
-                        "If your confused, check the README, or see if there are any helpful discords.");
+                        "If your confused, look for a readme, discord, ask around, or just load your project and see if you get a ton of errors. :p"
+                    );
 
                 }
 
@@ -437,8 +552,11 @@ namespace GameEditorStudio
         {
             if (WorkshopData.SelectedProject == null) { return; }
 
+            PixelWPF.LibraryPixel.Notification("Output Folder Advice", "The output folder is where your modded files will be saved to. The modded files folder structure (meaning files in subfolders) will also be the same as the input folder. \n\nIf your input is a backup of the origonal game files, then the output can be saving over the actual game folder / files. \n\nIf you are modding games that use modern emulators like 3DS or Switch, many of them support a mods folder. Saving your output to an emulator's mods folder is STRONGLY SUGGESTED. :) ");
+
+
             VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog(); //This starts folder selection using Ookii.Dialogs.WPF NuGet Package
-            FolderSelect.Description = "Please select where files will save to."; //This sets a description to help remind the user what their looking for.
+            FolderSelect.Description = "Please select where saved game files will be saved to."; //This sets a description to help remind the user what their looking for.
             FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.        
             {   //Smart seleting the folder to start in.
                 string outputPath = TextBoxOutputDirectory.Text + "\\";
@@ -454,10 +572,22 @@ namespace GameEditorStudio
             }
             if ((bool)FolderSelect.ShowDialog(Window.GetWindow(this))) //This triggers the folder selection screen, and if the user does not cancel out...
             {
-                WorkshopData.SelectedProject.ProjectOutputDirectory = FolderSelect.SelectedPath;
-                TextBoxOutputDirectory.Text = FolderSelect.SelectedPath;
+                if (WorkshopData.SelectedProject.ProjectInputDirectory == FolderSelect.SelectedPath) 
+                {
+                    bool SetOutputToInput = PixelWPF.LibraryPixel.NotificationConfirm("Set output folder to INPUT???", 
+                        "You just selected the same folder as your project's input folder! " +
+                        "\n\n" +
+                        "This may be an accident, or on purpose, so just to be sure..." +
+                        "\n\n" +
+                        "Set your output folder to the same as your input?"
+                    );
+                    if ( SetOutputToInput == false) { return; }
 
-                //UpdateProjectXML(WorkshopData.SelectedProject);//ProjectName, Input, Output     
+
+                }
+
+                WorkshopData.SelectedProject.ProjectOutputDirectory = FolderSelect.SelectedPath;
+                TextBoxOutputDirectory.Text = FolderSelect.SelectedPath;  
 
                 CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
             }
@@ -630,6 +760,7 @@ namespace GameEditorStudio
                     {
                         Textbox.Text = ProjectEventData.Location;
                         TextBorder.ToolTip = ProjectEventData.Location;
+                        if (TextBorder.ToolTip as string == "") { TextBorder.ToolTip = null; }
                     }
 
                 }
@@ -707,7 +838,7 @@ namespace GameEditorStudio
                             if (Path.GetFileName(TheString) == WorkshopEventResource.Location)
                             {
                                 Textbox.Text = TheString;
-
+                                TextBorder.ToolTip = TheString;
 
                                 foreach (ProjectEventResource ProjectEventResource in UserProject.ProjectEventResources) //Copy 1
                                 {
@@ -741,6 +872,7 @@ namespace GameEditorStudio
                                 if (WorkshopEventResource.Key == ProjectEventResource.Key)
                                 {
                                     Textbox.Text = TheString;
+                                    TextBorder.ToolTip = TheString;
 
                                     ProjectEventResource.Location = TheString;
                                     MissingLabel.Visibility = Visibility.Collapsed;
@@ -874,6 +1006,93 @@ namespace GameEditorStudio
             
         }
 
+        private void HomeHelpButton(object sender, RoutedEventArgs e)
+        {
+            PixelWPF.LibraryPixel.Notification("Guide to Projects / Mods",
+                "In this program, your mods / romhacks / etc are called \"Projects\". \n\n" +
+                "To start, click new to create a new project. \n" +
+                "Then, set the input folder (the location of your game's origonal unmodded game files) and the output folder (the location your modded game files will be saved to). \n\n" +
+                "Then just click load project, and your good to go!\n\n" +
+                "Notes for new users:\n" +
+                "1: I recommend creating a backup of your unmodded game files and using that as the input.\n" +
+                "2: If a file exists in both the input and output folders, the one in the output will be loaded.\n" +
+                "3: Project Resources are optional and not required to load a project. They are used for the Eventing system (found at the top in the events menu). \"Events\" are things users setup, and include things like automatic file repacking, or \"Run game X with emulator Y\".\n\n" +
+                "For workshop / editor creators:\n" +
+                "1: You *must* load a project before you can create new editors.\n" +
+                "2: The workshop files list is the files IN ACTIVE USE by atleast one editor. If you add a file and don't use it, they will be removed when you save the workshop.\n" +
+                "3: To help new users with file unpacking for complex games, you can setup an event to handle file unpacking, moving them, renaming them, whatever is needed. "
+            );
+        }
+
+        private void HomeIntroEditButtonClick(object sender, RoutedEventArgs e)
+        {
+            SetupHomeIntro(true);
+        }
         
+
+        private void HomeIntroExitButtonClick(object sender, RoutedEventArgs e)
+        {
+            SetupHomeIntro(false);
+        }
+
+        private void HomeIntroSaveButtonClick(object sender, RoutedEventArgs e)
+        {
+            WorkshopData.Intro.IntroText = IntroEditBox.Text;
+
+            if (string.IsNullOrWhiteSpace(IntroEditBox.Text)) 
+            {
+                WorkshopData.Intro.IntroText = "";
+            }
+
+            SetupHomeIntro(false);
+
+        }
+
+        private void HomeIntroHelpButtonClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void IntroEditboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void SetupHomeIntro(bool InEditMode) 
+        {
+            if (InEditMode == true)
+            {
+                HomeIntroEditButton.Visibility = Visibility.Collapsed;
+                HomeIntroSaveButton.Visibility = Visibility.Visible;
+                HomeIntroExitButton.Visibility = Visibility.Visible;
+                //HomeIntroHelpButton.Visibility = Visibility.Visible;
+
+                IntroEditBox.Visibility = Visibility.Visible;
+                IntroTextbox.Visibility = Visibility.Collapsed;
+
+                IntroEditBox.Text = WorkshopData.Intro.IntroText;
+            }
+
+            if (InEditMode == false) 
+            {
+                HomeIntroEditButton.Visibility = Visibility.Visible;
+                HomeIntroSaveButton.Visibility = Visibility.Collapsed;
+                HomeIntroExitButton.Visibility = Visibility.Collapsed;
+                HomeIntroHelpButton.Visibility = Visibility.Collapsed;
+
+                IntroEditBox.Visibility = Visibility.Collapsed;
+                IntroTextbox.Visibility = Visibility.Visible;
+            }
+
+            if (WorkshopData.Intro.IntroText != "")
+            {
+                IntroTextbox.Text = WorkshopData.Intro.IntroText;
+            }
+            else 
+            { 
+                IntroTextbox.Text = WorkshopData.Intro.DefaultIntroText; 
+            }
+
+        }
     }
 }
