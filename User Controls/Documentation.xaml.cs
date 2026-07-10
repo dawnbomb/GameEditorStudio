@@ -18,7 +18,7 @@ using System.Xml.Linq;
 
 namespace GameEditorStudio
 {
-    public class Document
+    public class Document //A template for a new document.
     {
         public string Name { get; set; } = "New Document";
         public string Note { get; set; } = "";
@@ -35,7 +35,7 @@ namespace GameEditorStudio
         //public string ExePath = "";
         public WorkshopData WorkshopData { get; set; }
 
-        public Workshop TheWorkshop { get; set; }
+        public Workshop TheWorkshopXaml { get; set; }
         TreeViewItem ?CurrentTreeItem { get; set; } //The currently selected document
        
                 
@@ -54,7 +54,7 @@ namespace GameEditorStudio
             
         }
 
-        public void TabClicked()
+        public void RefreshDocuments() //Triggers when this editor's tab is selected. Clear documents, then refill with the latest, then select the current document.
         {
             
             WorkshopDocumentsTreeView.Items.Clear();
@@ -65,14 +65,23 @@ namespace GameEditorStudio
                 CreateTreeItem(WorkDoc, WorkshopDocumentsTreeView, ProjectDocumentsTreeView);
             }
 
-            if (TheWorkshop.IsPreviewMode == true) { return; }
-            
-            foreach (Document ProjDoc in WorkshopData.ProjectDocumentsList)
+
+            if (TheWorkshopXaml.IsPreviewMode == true) 
             {
-                CreateTreeItem(ProjDoc, ProjectDocumentsTreeView, WorkshopDocumentsTreeView);
+                NewProjDocButton.IsEnabled = false;
             }
+            if (TheWorkshopXaml.IsPreviewMode == false) 
+            {
+                NewProjDocButton.IsEnabled = true;
 
+                foreach (Document ProjDoc in WorkshopData.ProjectDocumentsList)
+                {
+                    CreateTreeItem(ProjDoc, ProjectDocumentsTreeView, WorkshopDocumentsTreeView);
+                }
+            }           
+            
 
+            SelectWorkshopsCurrentDocument();
         }
 
         
@@ -172,17 +181,20 @@ namespace GameEditorStudio
             // Create a MenuItem
             MenuItem menuItem1 = new MenuItem();
             menuItem1.Header = "Delete Document";
-            menuItem1.Click += MenuItem1_Click; // Event handler for click action
+            menuItem1.Click += MenuDeleteDocument; // Event handler for click action
             contextMenu.Items.Add(menuItem1);
 
             TreeViewItem.ContextMenu = contextMenu;
 
-            void MenuItem1_Click(object sender, RoutedEventArgs e)
+            void MenuDeleteDocument(object sender, RoutedEventArgs e)
             {
                 // Handle the click event for MenuItem1
                 WorkshopData.WorkshopDocumentsList.Remove(TheDocument);
                 WorkshopData.ProjectDocumentsList.Remove(TheDocument);
+                SelectDocument(null);
                 tree.Items.Remove(TreeViewItem); //DocumentsTreeView.SelectedItem
+
+                
             }
 
            
@@ -223,12 +235,38 @@ namespace GameEditorStudio
 
             }
 
-            if(WorkshopData.CurrentDocument == TheDocument) { TreeViewItem.IsSelected = true; }
+            SelectWorkshopsCurrentDocument();
+        }
+
+        private void SelectWorkshopsCurrentDocument()
+        {
+            if (WorkshopData.CurrentDocument == null) 
+            { 
+                SelectDocument(null); 
+                return; 
+            }
+
+            foreach (TreeViewItem TreeItem in WorkshopDocumentsTreeView.Items)
+            {
+                if (TreeItem.Tag as Document == WorkshopData.CurrentDocument)
+                {
+                    TreeItem.IsSelected = true;
+                    break;
+                }
+            }
+            foreach (TreeViewItem TreeItem in ProjectDocumentsTreeView.Items)
+            {
+                if (TreeItem.Tag as Document == WorkshopData.CurrentDocument)
+                {
+                    TreeItem.IsSelected = true;
+                    break;
+                }
+            }
         }
 
         private void WTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (WorkshopDocumentsTreeView.SelectedItem == null && ProjectDocumentsTreeView.SelectedItem == null) { SelectDocument(null); }
+            //if (WorkshopDocumentsTreeView.SelectedItem == null && ProjectDocumentsTreeView.SelectedItem == null) { SelectDocument(null); }
             if (WorkshopDocumentsTreeView.SelectedItem == null)  { return; }
 
             TreeViewItem OtherSelectedItem = ProjectDocumentsTreeView.SelectedItem as TreeViewItem;
@@ -240,7 +278,7 @@ namespace GameEditorStudio
 
         private void PTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (WorkshopDocumentsTreeView.SelectedItem == null && ProjectDocumentsTreeView.SelectedItem == null) { SelectDocument(null); }
+            //if (WorkshopDocumentsTreeView.SelectedItem == null && ProjectDocumentsTreeView.SelectedItem == null) { SelectDocument(null); }
             if (ProjectDocumentsTreeView.SelectedItem == null) { return; }
 
             TreeViewItem OtherSelectedItem = WorkshopDocumentsTreeView.SelectedItem as TreeViewItem;

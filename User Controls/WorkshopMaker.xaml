@@ -27,25 +27,25 @@
                 </Border>
                 <DockPanel DockPanel.Dock="Top" Margin="10,0,10,0" Height="70" >
                     <DockPanel DockPanel.Dock="Top" LastChildFill="False">
-                        <Label Content="Workshop Name" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
+                        <Label Content="Workshop Name (name of your game)" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
                     </DockPanel>
                     <DockPanel DockPanel.Dock="Top" >
                         <Border CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
-                            <TextBox x:Name="TextBoxGameName" Margin="2,0,2,0" Padding="4"  BorderThickness="0"  DockPanel.Dock="Left"  />
+                            <TextBox x:Name="TextBoxGameName" Margin="2,0,2,0" Padding="4"  BorderThickness="0"  DockPanel.Dock="Left" TextChanged="WorkshopNameTextboxTextChanged" />
                         </Border>
                     </DockPanel>
                 </DockPanel>
 
                 <DockPanel DockPanel.Dock="Top" Margin="10,10,10,0" Height="72"   >
                     <DockPanel DockPanel.Dock="Top" LastChildFill="False">
-                        <Label Content="Input Folder" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
+                        <Label Content="Suggested Input Folder:" DockPanel.Dock="Left" Margin="-3,0,0,0"  />
                         <Button x:Name="ButtonSetWorkshopInputFolder" Content="Browse..." Height="30"  Width="100" Click="ButtonSetWorkshopInputFolder_Click" Padding="0,1,1,0" DockPanel.Dock="Right" />
 
 
                     </DockPanel>
                     <DockPanel DockPanel.Dock="Top">
                         <Border CornerRadius="8" BorderBrush="Black"  BorderThickness="1.5" Padding="2" Background="#FF18191B">
-                            <TextBox x:Name="WorkshopTextboxExampleInputFolder" Margin="2,0,2,0" Padding="4"  BorderThickness="0"  DockPanel.Dock="Left"  IsEnabled="False" />
+                            <TextBox x:Name="WorkshopTextboxExampleInputFolder" Margin="2,0,2,0" Padding="4"  BorderThickness="0"  DockPanel.Dock="Left"  />
                         </Border>
 
 
@@ -53,7 +53,7 @@
                 </DockPanel>
                 <DockPanel DockPanel.Dock="Top" Margin="10,10,0,0"  VerticalAlignment="Top" HorizontalAlignment="Left">
                     <CheckBox Name="WorkshopCheckboxSameFolderName"/>
-                    <Label Content="Require projects to have the same folder name &#xA;as the workshop input folder"/>
+                    <Label Content="Instead of having a suggested input folder, &#xA;REQUIRE users to select an input folder with this name."/>
                 </DockPanel>
                 <Button x:Name="ButtonCreateNewWorkshop" Content="Create New Workshop"  Margin="0,10,0,0"  Height="33" Width="336" Click="ButtonCreateNewWorkshop_Click" />
 
@@ -66,10 +66,10 @@
 
 
 
-        <Label Content="The input folder is the master folder that &#xA;EVERY EDITOR'S FILES MUST BE INSIDE.&#xA;So it's strongly recommended for the input folder&#xA;to just be the game folder, or the unpacked game folder.&#xA;...&#xA;HOWEVER, Game Editor Studio also has an eventing system&#xA;where you can setup automatic file repacking and file moving.&#xA;So for *special* games, you could have a folder that isn't&#xA;the game, and then make an event to repack and move all&#xA;the game files to the actual game folder. &#xA;&#xA;TIP: Make your input folder be a backup of the game,&#xA;or a backup of the extracted game." HorizontalAlignment="Left" Margin="652,262,0,0" VerticalAlignment="Top" />
-        <Label Content="Yes i know this screen has a needlessly large amount of empty space.&#xA;I'll redesign it another time." HorizontalAlignment="Left" Margin="832,682,0,0" VerticalAlignment="Top"/>
-        <Label Content="Note that the workshop name will also be it's folder name, &#xA;so don't use any weird or special symbols or &#xA;the program will crash when its trying to save. &#xA;Banned symbols include @ # $ % : ^ ? / \ ! ~ &quot; etc.&#xD;&#xA;&#xD;&#xA;Also note that - and = are allowed symbols." HorizontalAlignment="Left" Margin="42,411,0,0" VerticalAlignment="Top" Background="#FF190A09" Foreground="#FFFF2121"/>
-        <Label Content="A workshop, kind of like a steam workshop, is a location &#xD;&#xA;that holds editors for a game. &#xD;&#xA;In general, the workshop name should just be the&#xD;&#xA;name of the game, but you can also include extra details.&#xD;&#xA;&quot;World End Reboot - EU version&quot;&#xD;&#xA;&quot;Seiken Ocean - v2 update&quot;" HorizontalAlignment="Left" Margin="652,63,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.503,0.052" />
+        <Label Content="=== ABOUT THE SUGGESTED INPUT FOLDER ===&#xA;Editors mod files inside folder X, selected by the user. &#xA;This is your way to SUGGEST a specific folder name.&#xA;(This is the folder where the game files should be)&#xA;(Users can ignore it and use another name / select another folder)&#xA;(GES saves modded game files to a diffrent output &#xA;folder, so the input can be a backup of unmodded game files)&#xD;&#xA;(Instead of a set folder name, you can also type instructions,&#xD;&#xA;such as &quot;Select your unpacked rom folder&quot;)&#xA;&#xA;Suggesting an input folder name is NOT required. &#xA;(Extra useful for GBA / SNES / etc romhacks)&#xA;(You can also just leave it blank)&#xA;&#xA;You can also REQUIRE users to select a specific folder name.&#xA;(Please only use this under special circumstances)&#xA;&#xA;=== Notes on File Repacking ===&#xA;Game Editor Studio has an eventing system where you can&#xA;setup automatic file repacking and file moving.&#xA;Just something to keep in mind. &#xA;" HorizontalAlignment="Left" Margin="652,262,0,0" VerticalAlignment="Top" />
+        <Label Content="Note: &#xA;The workshop name becomes a folder name, so don't use&#xA;symbols that windows will reject or saving will crash.&#xA;&#xA;Some banned Symbols:&#xA;/ \ : * &quot; &lt; &gt; ? |&#xA;&#xA;Some allowed Symbols:&#xA;= - ! @ # $ % ^ &amp; ( ) ` ~ ' [] {}" HorizontalAlignment="Left" Margin="42,411,0,0" VerticalAlignment="Top" Background="#FF190A09" Foreground="#FFFF2121"/>
+        <Label Content="=== ABOUT WORKSHOPS ===&#xA;A workshop is simply all the editors for a game. &#xA;So in general, the name should just be the game's name.&#xA;That said, for some games, maybe add extra info like...&#xA;&quot;World End Reboot (EU)&quot;&#xA;&quot;Seiken Ocean - v2 update&quot;&#xA;&quot;Blast Force (PS2)&quot; &lt;- Good way to handle remakes" HorizontalAlignment="Left" Margin="652,63,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.503,0.052" />
+        <!--<Button x:Name="ButtonVerifyWorkshop" Content="Verify Workshop for this version of GES" Click="ButtonCreateNewWorkshop_Click" Margin="113,664,797,56" />-->
 
 
     </Grid>

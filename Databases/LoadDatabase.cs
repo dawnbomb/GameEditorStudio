@@ -86,6 +86,27 @@ namespace GameEditorStudio
             }
         }
 
+        public void LoadToolImageLocations()
+        {
+            string toolImagesPath = Path.Combine(LibraryGES.ApplicationLocation, "Other", "Tool Images");
+            if (!Directory.Exists(toolImagesPath))
+                return;
+
+            string pics = "";
+
+            foreach (string imgFile in Directory.GetFiles(toolImagesPath, "*.png", SearchOption.AllDirectories))
+            {
+                string relativePath = Path.GetRelativePath(toolImagesPath, imgFile);
+
+                LibraryGES.ToolImageLocations.Add(relativePath);
+                pics += relativePath + "\n";
+
+            }
+
+            
+            PixelWPF.LibraryPixel.Notification("asfd", pics);
+        }
+
         //////////////////////////////////////////////////////
         ////////////////////WORKSHOPS/////////////////////////
         //////////////////////////////////////////////////////
@@ -116,7 +137,10 @@ namespace GameEditorStudio
                         workshopData.CreatedVersion = Version.TryParse(xml.Element("CreatedVersion")?.Value, out var vx1) ? vx1 : new Version(0, 0);
                         workshopData.SavedDate = xml.Element("SavedDate")?.Value ?? "";
                         workshopData.SavedVersion = Version.TryParse(xml.Element("SavedVersion")?.Value, out var vx2) ? vx2 : new Version(0, 0);
-                                                
+                        workshopData.LastUsedDate = xml.Element("LastUsedDate")?.Value ?? "";
+                        workshopData.LastUsedVersion = Version.TryParse(xml.Element("LastUsedVersion")?.Value, out var vx3) ? vx3 : new Version(0, 0);
+
+
                     }
 
                     
@@ -164,7 +188,7 @@ namespace GameEditorStudio
                                 foreach (var xmlEvent in xml.Descendants("Resource"))
                                 {
                                     string testkey = xmlEvent.Element("Key")?.Value;
-                                    if (workshopData.WorkshopEventResources.Any(r => r.Key == testkey)) { continue; }
+                                    if (workshopData.WorkshopEventResources.Any(r => r.Key == testkey)) { continue; } //Skip if already loaded.
 
 
                                     EventResource EventResource = new();

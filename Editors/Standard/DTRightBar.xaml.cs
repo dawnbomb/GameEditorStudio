@@ -57,6 +57,10 @@ namespace GameEditorStudio
                 PropertiesEntryType.Items.Add(new ComboBoxItem { Content = type.ToString() });
             }
 
+
+
+            //ToolTipService.SetInitialShowDelay(Flag3NamePanel, LibraryGES.TooltipInitialDelay);
+            //ToolTipService.SetBetweenShowDelay(Flag3NamePanel, LibraryGES.TooltipBetweenDelay);
         }
 
 
@@ -309,8 +313,15 @@ namespace GameEditorStudio
                     DTEData.DTEXaml.ItemNameBuilder(TreeViewItem);
 
                 }
+                LibraryGES.UpdateTextboxColors(PropertiesEditorFirstNameNumber, DTEData.NameTable.TextTableFirstNameID.ToString());
             }
         }
+        private void NameTableFirstNameNumberTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (DTEData == null) { return; }
+            LibraryGES.UpdateTextboxColors(PropertiesEditorFirstNameNumber, DTEData.NameTable.TextTableFirstNameID.ToString());
+        }
+
         private void ChangeNameTableNameCount(object sender, KeyEventArgs e)
         {
             //value = EntryClass.EntryEditor.SWData.FileDataTable.FileBytes[EntryClass.EntryEditor.SWData.DataTableStart + (i * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
@@ -430,6 +441,26 @@ namespace GameEditorStudio
             }
         }
 
+        private void NameTableInputFolderTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            NameTableInputLocationTextbox.ToolTip = NameTableInputLocationTextbox.Text;
+        }
+
+        private void NameTableOutputFolderTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            NameTableOutputLocationTextbox.ToolTip = NameTableOutputLocationTextbox.Text;
+        }
+
+        private void OpenWorkshopNameTableInputLocationButton(object sender, RoutedEventArgs e)
+        {
+            LibraryGES.OpenFileFolder(NameTableInputLocationTextbox.Text);
+        }
+
+        private void OpenWorkshopNameTableOutputLocationButton(object sender, RoutedEventArgs e)
+        {
+
+            LibraryGES.OpenFileFolder(NameTableOutputLocationTextbox.Text);
+        }
         private void OpenNameTableInHxD(object sender, RoutedEventArgs e)
         {
             foreach (Tool tool in Database.Tools)
@@ -601,6 +632,15 @@ namespace GameEditorStudio
         private void OpenWorkshopOutputButton(object sender, RoutedEventArgs e)
         {
             LibraryGES.OpenFileFolder(EditorOutputLocationTextbox.Text);
+        }
+        private void DataTableInputFolderTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            PropertiesEditorReadGameDataFrom.ToolTip = PropertiesEditorReadGameDataFrom.Text;
+        }
+
+        private void DataTableOutputFolderTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            EditorOutputLocationTextbox.ToolTip = EditorOutputLocationTextbox.Text;
         }
 
         private void OpenDataTableInHxD(object sender, RoutedEventArgs e)
@@ -1691,6 +1731,62 @@ namespace GameEditorStudio
                 DTEData.EntryClass.EntryTypeBitFlag.BitFlag8Name = PropertiesEntryBitFlag8Name.Text;
                 UpdateEntryName(DTEData.EntryClass);
             }
+        }
+        
+        private void Bitflag1TooltipTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (DTEData == null) { return; } //Because im lazy to make a proper fix.
+            DTEData.EntryClass.EntryTypeBitFlag.BitFlag1Tooltip = PropertiesEntryBitFlag1Tooltip.Text;
+            UpdateEntryName(DTEData.EntryClass);
+        }
+
+        private void Bitflag2TooltipTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (DTEData == null) { return; } //Because im lazy to make a proper fix.
+            DTEData.EntryClass.EntryTypeBitFlag.BitFlag2Tooltip = PropertiesEntryBitFlag2Tooltip.Text;
+            UpdateEntryName(DTEData.EntryClass);
+        }
+
+        private void Bitflag3TooltipTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (DTEData == null) { return; } //Because im lazy to make a proper fix.
+            DTEData.EntryClass.EntryTypeBitFlag.BitFlag3Tooltip = PropertiesEntryBitFlag3Tooltip.Text;
+            UpdateEntryName(DTEData.EntryClass);
+        }
+
+        private void Bitflag4TooltipTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (DTEData == null) { return; } //Because im lazy to make a proper fix.
+            DTEData.EntryClass.EntryTypeBitFlag.BitFlag4Tooltip = PropertiesEntryBitFlag4Tooltip.Text;
+            UpdateEntryName(DTEData.EntryClass);
+        }
+
+        private void Bitflag5TooltipTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (DTEData == null) { return; } //Because im lazy to make a proper fix.
+            DTEData.EntryClass.EntryTypeBitFlag.BitFlag5Tooltip = PropertiesEntryBitFlag5Tooltip.Text;
+            UpdateEntryName(DTEData.EntryClass);
+        }
+
+        private void Bitflag6TooltipTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (DTEData == null) { return; } //Because im lazy to make a proper fix.
+            DTEData.EntryClass.EntryTypeBitFlag.BitFlag6Tooltip = PropertiesEntryBitFlag6Tooltip.Text;
+            UpdateEntryName(DTEData.EntryClass);
+        }
+
+        private void Bitflag7TooltipTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (DTEData == null) { return; } //Because im lazy to make a proper fix.
+            DTEData.EntryClass.EntryTypeBitFlag.BitFlag7Tooltip = PropertiesEntryBitFlag7Tooltip.Text;
+            UpdateEntryName(DTEData.EntryClass);
+        }
+
+        private void Bitflag8TooltipTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (DTEData == null) { return; } //Because im lazy to make a proper fix.
+            DTEData.EntryClass.EntryTypeBitFlag.BitFlag8Tooltip = PropertiesEntryBitFlag8Tooltip.Text;
+            UpdateEntryName(DTEData.EntryClass);
         }
 
         //////// Menu Entry /////////

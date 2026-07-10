@@ -97,7 +97,18 @@ namespace GameEditorStudio
                 );
                 return;
             }
-            
+
+            bool isValid = PixelWPF.LibraryPixel.CheckIfValidFolderName(TextBoxGameName.Text);
+            if (isValid == false) 
+            { 
+                PixelWPF.LibraryPixel.NotificationNegative("Warning: Invalid Workshop Name!",
+                    "The workshop name becomes a folder name on your computer, so the name you entered is invalid (It uses symbols that windows does not allow). " +
+                    "\n\n" +
+                    "Sorry~"
+                );
+                return;
+            }
+
 
             if (ButtonCreateNewWorkshop.Content.ToString() == "Create Workshop")
             {   
@@ -112,21 +123,7 @@ namespace GameEditorStudio
                 Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Editors");
                 Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Tools");
                 System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\LoadOrder.txt", " "); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
-                
-
-                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\READ ME");
-                System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\READ ME\\Text.txt", "" +
-                    "The READ ME is always the first loaded document, so fill it out with useful info! " +
-                    "Here are some examples :3" +
-                    "\n- How to extract the game files (If required)." +
-                    "\n- What tools are needed (If any). " +
-                    "\n- What folder is the input folder, and where it's located." +
-                    "\n- What game platform? (PC, Switch, PS2, etc)" +
-                    "\n- What game region? (USA, JP, EU, etc)" +
-                    "\n- What game patch number? (patch v1.1, expansion name, etc)" +
-                    "\n- What discord communities, forumns, wikis, exist?" +
-                    ""
-                );
+                               
 
                 
             }
@@ -152,7 +149,7 @@ namespace GameEditorStudio
             workshopData.WorkshopInputDirectory = WorkshopTextboxExampleInputFolder.Text;
             workshopData.ProjectsRequireSameFolderName = WorkshopCheckboxSameFolderName.IsChecked == true ? true : false;
 
-            CommandMethodsClass.SaveWorkshopXml(workshopData);
+            CommandMethodsClass.SaveWorkshopXml(workshopData, false);
             Library.RefreshWorkshopTree();
 
             //Exit this and reselect the workshop in the library.
@@ -192,9 +189,20 @@ namespace GameEditorStudio
             }
         }
 
-        
+        private void WorkshopNameTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            bool isValid = PixelWPF.LibraryPixel.CheckIfValidFolderName(TextBoxGameName.Text);
+            if (isValid)
+            {
+                TextBoxGameName.Foreground = new SolidColorBrush(Colors.White);
+                return;
+            }
+            else 
+            {
+                TextBoxGameName.Foreground = new SolidColorBrush(Colors.Red);
+                return;
+            }
 
-
-        
+        }
     }
 }

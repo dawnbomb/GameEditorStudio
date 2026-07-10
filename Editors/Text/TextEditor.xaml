@@ -9,12 +9,14 @@
     <DockPanel Name="BackPanel">
         <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,3,0,2" Height="30">
             <Button Name="LineIDToggle" Content="L-ID" Width="70" Margin="264,0,0,0" Click="ToggleLineID" ToolTip="Toggles Line ID Numbers On/Off."/>
+            <Button Click="ToggleRightSideBar" Name="RightBarToggle" Content="Sidebar" Margin="0,0,0,0"  ToolTip="Toggles the right side bar." DockPanel.Dock="Right" Foreground="#FFA4A4A4"/>
         </DockPanel>
         <Grid x:Name="MainGrid" DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <local:FileManager x:Name="TextFileManager"  Grid.Column="0"  />
 
@@ -28,7 +30,10 @@
                     </DockPanel>
                 </ScrollViewer>
             </ContentControl>
-            
+
+            <DockPanel x:Name="RightSideBar" Grid.Column="3" Visibility="Collapsed" MaxWidth="400">
+                <local:DocumentsUserControl x:Name="DocumentsControl"/>
+            </DockPanel>
 
         </Grid>
     </DockPanel>

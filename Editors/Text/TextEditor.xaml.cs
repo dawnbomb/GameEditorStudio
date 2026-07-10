@@ -22,13 +22,16 @@ namespace GameEditorStudio
     {
         WorkshopData WorkshopData { get; set; }
 
-        public TextEditor(WorkshopData Database, TextEditorData TextEditorData)
+        TextEditorData TextEditorData { get; set; }
+
+        public TextEditor(WorkshopData Database, TextEditorData TheTextEditorData)
         {
             InitializeComponent();
 
             //This
             WorkshopData = Database;
-            
+            TextEditorData = TheTextEditorData;
+
             //My Data
             TextEditorData.TextEditorXaml = this;
             TextEditorData.EditorVisual = this;
@@ -40,7 +43,11 @@ namespace GameEditorStudio
             TextFileManager.TextEditorData = TextEditorData;
             TextFileManager.WorkshopXaml = Database.WorkshopXaml;
             TextFileManager.TreeGameFiles.SelectedItemChanged += TESTTHING;
-                        
+
+            //Documents
+            DocumentsControl.WorkshopData = WorkshopData;
+            DocumentsControl.TheWorkshopXaml = WorkshopData.WorkshopXaml;
+
             //Tab
             TabButtonMaker MakeEditorButton = new();
             MakeEditorButton.CreateEditorTab(TextEditorData);
@@ -61,6 +68,12 @@ namespace GameEditorStudio
                 TheTextBox.IsEnabled = true;
                 TheLineBox.IsEnabled = true;
                 TextFileManager.IsEnabled = true;
+
+                if (TextEditorData.GameFileLocations.Count != 0) 
+                {
+                    TreeViewItem item = TextFileManager.TreeGameFiles.Items[0] as TreeViewItem;
+                    item.IsSelected = true;
+                }
             }
             if (WorkshopData.IsProjectLoaded == false) 
             {
@@ -115,6 +128,20 @@ namespace GameEditorStudio
             {
                 TheLineBox.Visibility = Visibility.Visible;
                 LineIDToggle.Foreground = Brushes.White;
+            }
+        }
+
+        private void ToggleRightSideBar(object sender, RoutedEventArgs e)
+        {
+            if (RightSideBar.Visibility == Visibility.Visible)
+            {
+                RightSideBar.Visibility = Visibility.Collapsed;
+                RightBarToggle.Foreground = Brushes.Gray;
+            }
+            else 
+            {
+                RightSideBar.Visibility = Visibility.Visible;
+                RightBarToggle.Foreground = Brushes.White;
             }
         }
     }

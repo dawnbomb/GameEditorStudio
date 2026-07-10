@@ -43,12 +43,12 @@
                                 <Label Content="Create a data table editor for standard game data. &#xA;(Character Editor, Weapon Editor, Armors, &#xA;Accessorys, Spells, items, Enemys, Shops, Etc)." HorizontalAlignment="Left" Margin="244,74,0,0" VerticalAlignment="Top"/>
                                 <Button Content="Text Editor" HorizontalAlignment="Left" Margin="5,171,0,0" VerticalAlignment="Top" Height="72" Width="238" Click="StartNewTextEditor"/>
                                 <Label Content="This editor lets you group .txt, xml, etc files.&#xA;Kinda like how Notepad++ or obsidian does. &#xA;Best for code scripts like Enemy AI or Events.  " HorizontalAlignment="Left" Margin="249,166,0,0" VerticalAlignment="Top"/>
-                                <Button Content="Text Table Editor" HorizontalAlignment="Left" Margin="7,262,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
+                                <Button Content="Text Table Editor&#xD;&#xA;  (Coming soon)" HorizontalAlignment="Left" Margin="7,262,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
                                 <Label Content="Will be for multi-line text tables.  Note: &#xA;Editors already edit Names &amp; Descriptions. &#xA;This is for translations (Cutscene, Dialogue, etc).  " HorizontalAlignment="Left" Margin="249,257,0,0" VerticalAlignment="Top"/>
-                                <Button Content="Trigger Event" HorizontalAlignment="Left" Margin="7,354,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
+                                <Button Content="Trigger Event&#xD;&#xA;  (Coming soon)" HorizontalAlignment="Left" Margin="7,354,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
                                 <Label Content="It will look like an editor, but triggers an event.&#xA;Set it to open third party editors! :D &#xA;(Graphics editor, Music, 3D Maps, etc)  " HorizontalAlignment="Left" Margin="249,346,0,0" VerticalAlignment="Top"/>
-                                <Button Content="XML Editor" HorizontalAlignment="Left" Margin="10,440,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
-                                <Button Content="JSON Editor" HorizontalAlignment="Left" Margin="10,523,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
+                                <Button Content="XML Editor&#xD;&#xA;  (Coming soon)" HorizontalAlignment="Left" Margin="10,440,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
+                                <Button Content="JSON Editor&#xD;&#xA;  (Coming soon)" HorizontalAlignment="Left" Margin="10,523,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
                                 <Label Content="PS: If making a standard editor, fullscreen this or you cant &#xD;&#xA;see the full tutorial images. I will improve this later :(" HorizontalAlignment="Left" Margin="249,6,0,0" VerticalAlignment="Top" Background="#FF001E31" Foreground="#FF83FFF1"/>
 
                             </Grid>

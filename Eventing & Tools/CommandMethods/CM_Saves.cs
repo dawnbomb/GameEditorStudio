@@ -103,6 +103,12 @@ namespace GameEditorStudio
             {
                 SaveProjectXML(MethodData.mainMenu.WorkshopData.LoadedProject, MethodData.mainMenu.WorkshopData);
             }
+
+            if (MethodData.mainMenu.WorkshopData.LoadedProject != null)
+            {
+                SaveWorkshopXml(MethodData.mainMenu.WorkshopData, true);
+            }
+            
         }
 
 
@@ -599,13 +605,21 @@ namespace GameEditorStudio
                                     {
                                         writer.WriteStartElement("BitFlag");
                                         writer.WriteElementString("Flag1Name", entry.EntryTypeBitFlag.BitFlag1Name.ToString());
+                                        writer.WriteElementString("Flag1Tooltip", entry.EntryTypeBitFlag.BitFlag1Tooltip.ToString());
                                         writer.WriteElementString("Flag2Name", entry.EntryTypeBitFlag.BitFlag2Name.ToString());
+                                        writer.WriteElementString("Flag2Tooltip", entry.EntryTypeBitFlag.BitFlag2Tooltip.ToString());
                                         writer.WriteElementString("Flag3Name", entry.EntryTypeBitFlag.BitFlag3Name.ToString());
+                                        writer.WriteElementString("Flag3Tooltip", entry.EntryTypeBitFlag.BitFlag3Tooltip.ToString());
                                         writer.WriteElementString("Flag4Name", entry.EntryTypeBitFlag.BitFlag4Name.ToString());
+                                        writer.WriteElementString("Flag4Tooltip", entry.EntryTypeBitFlag.BitFlag4Tooltip.ToString());
                                         writer.WriteElementString("Flag5Name", entry.EntryTypeBitFlag.BitFlag5Name.ToString());
+                                        writer.WriteElementString("Flag5Tooltip", entry.EntryTypeBitFlag.BitFlag5Tooltip.ToString());
                                         writer.WriteElementString("Flag6Name", entry.EntryTypeBitFlag.BitFlag6Name.ToString());
+                                        writer.WriteElementString("Flag6Tooltip", entry.EntryTypeBitFlag.BitFlag6Tooltip.ToString());
                                         writer.WriteElementString("Flag7Name", entry.EntryTypeBitFlag.BitFlag7Name.ToString());
+                                        writer.WriteElementString("Flag7Tooltip", entry.EntryTypeBitFlag.BitFlag7Tooltip.ToString());
                                         writer.WriteElementString("Flag8Name", entry.EntryTypeBitFlag.BitFlag8Name.ToString());
+                                        writer.WriteElementString("Flag8Tooltip", entry.EntryTypeBitFlag.BitFlag8Tooltip.ToString());
                                         writer.WriteEndElement(); //End BitFlag    
                                     }
 
@@ -920,6 +934,20 @@ namespace GameEditorStudio
                 return;
             }
 
+            if (SavePath == MethodData.Command.WorkshopData.LoadedProject.ProjectInputDirectory) 
+            {
+                bool SaveToInput = PixelWPF.LibraryPixel.NotificationConfirm("Saving to INPUT Folder???", 
+                    "You are about to save your game files to your project's INPUT folder, overwriting your origonal game files. " +
+                    "This is happening because your output folder is either not set, or set the same as the input folder. " +
+                    "\n\n" +
+                    "(Using a backup of all game files as the input folder is strongly recommended)" +
+                    "\n\n" +
+                    "Anyway, save to your INPUT folder?"
+                );
+
+                if (SaveToInput == false) { return; }
+            }
+
             //add a check for if SavePath location exists
 
             foreach (GameFile gameFile in MethodData.Command.WorkshopData.GameFiles)
@@ -948,6 +976,7 @@ namespace GameEditorStudio
 
             WorkshopData WorkshopData = ActionPack.mainMenu.WorkshopData;
 
+
             try
             {
                 //First we do a test save to a dummy location. This makes it so if it crashes, file corruption won't happen to the real file locations.
@@ -960,19 +989,23 @@ namespace GameEditorStudio
                 }
                 Directory.Delete(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\DOCocumentationFolderTest", true);
 
+
                 //Assuming there was no errors, the next chunk actually saves the documents.
                 //Instead of trying to properly deal with the logistics of renamed document folders, we just blow up the entire Documents folder and recreate it.  
                 LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents");
 
-
-                string DocumentOrder = "";
-                foreach (Document Document in WorkshopData.WorkshopDocumentsList)
+                if (WorkshopData.WorkshopDocumentsList.Count != 0) 
                 {
-                    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + Document.Name);
-                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
-                    DocumentOrder = DocumentOrder + Document.Name + "\n";
+                    string DocumentOrder = "";
+                    foreach (Document Document in WorkshopData.WorkshopDocumentsList)
+                    {
+                        Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + Document.Name);
+                        System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + Document.Name + "\\Text.txt", Document.Text); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
+                        DocumentOrder = DocumentOrder + Document.Name + "\n";
+                    }
+                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + "LoadOrder.txt", DocumentOrder);
                 }
-                System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents\\" + "LoadOrder.txt", DocumentOrder);
+                
 
 
             }
@@ -999,6 +1032,57 @@ namespace GameEditorStudio
                     "\n\n" +
                     "Yes, the problem is the document NAMES, not the text inside them."
                     );
+            }
+
+
+            //Now to save the Home Intro.
+            try 
+            {
+                //if (WorkshopData.Intro.IntroText != "")
+                //{
+                //    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\HOMEFolderTest");
+                //    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\HOMEFolderTest\\" + "Intro.txt", WorkshopData.Intro.IntroText);
+                //    Directory.Delete(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\HOMEFolderTest", true);
+                //}                
+
+                //LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Home");
+                
+                //if (WorkshopData.Intro.IntroText != "")
+                //{
+                //    Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Home");
+                //    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Home\\" + "Intro.txt", WorkshopData.Intro.IntroText);
+                //}
+                                
+
+                File.Delete(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Intro.txt");
+
+                if (WorkshopData.Intro.IntroText != "")
+                {   
+                    System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Intro.txt", WorkshopData.Intro.IntroText);
+                }
+            } 
+            catch 
+            {
+                //LibraryGES.NukeDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\HOMEFolderTest");
+
+                //PixelWPF.LibraryPixel.NotificationNegative("Error: Home not saved.",
+                //    "An error occured during the \"Saving Home\" step of the save operation that just happened. Nothing has been corrupted, don't panic! :)" +
+                //    "\n\n" +
+                //    "As you were probably saving more then only your home, you'll be happy to hear that each part of saving is handled seperately. " +
+                //    "This means there is NO CHANCE that any other parts of the saving operation are affected, such as when also saving editors or saving workshop files. " +
+                //    "\n\n" +
+                //    "We first simulate what would happen IF it actually saved anything, " +
+                //    "by creating a temporary dummy folder and saving everything to that temporary folder. " +
+                //    "This way there is no chance your actual home folder will get corrupted or result in any other serious error. :)" +
+                //    "\n\n" +
+                //    "That all said, i have no idea why home saving would crash. So just... try again?"
+                //);
+
+                PixelWPF.LibraryPixel.NotificationNegative("Error: Home Intro not saved.",
+                    "Well, fuck. " +
+                    "\n\n" +
+                    "Uhhh... just try again?"
+                );
             }
         }
 
@@ -1044,7 +1128,11 @@ namespace GameEditorStudio
                     DocumentOrder = DocumentOrder + Document.Name + "\n";
 
                 }
-                File.WriteAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + "LoadOrder.txt", DocumentOrder);
+                if (WorkshopData.ProjectDocumentsList.Count != 0) 
+                {
+                    File.WriteAllText(LibraryGES.ApplicationLocation + "\\Projects\\" + WorkshopData.WorkshopName + "\\" + WorkshopData.LoadedProject.ProjectName + "\\Documents\\" + "LoadOrder.txt", DocumentOrder);
+                }
+                
 
 
 
@@ -1116,7 +1204,7 @@ namespace GameEditorStudio
             
             //Step 4: Save everything for real.            
             SaveEventsToXML(ExtraPath);
-            SaveWorkshopXml(MethodData.mainMenu.WorkshopData);
+            //SaveWorkshopXml(MethodData.mainMenu.WorkshopData);
 
 
             void SaveEventsToXML(string ExtraPath)
@@ -1319,7 +1407,7 @@ namespace GameEditorStudio
         // To fix the CS0120 error, the method `SaveWorkshopXml` must either be made static or called on an instance of `CommandMethodsClass`.
         // Since the method is being called from a static context, the simplest fix is to make `SaveWorkshopXml` static.
 
-        public static void SaveWorkshopXml(WorkshopData workshopData) //Not a command method i just wanted it in the save .cs file as the other xml saves.
+        public static void SaveWorkshopXml(WorkshopData workshopData, bool UpdateLastUsedDate) //Not a command method i just wanted it in the save .cs file as the other xml saves.
         {
             //Save a test example. If this fails, the real file is not corrupted. 
             string LibraryXmlPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\" + "LibraryTestSave.xml";
@@ -1354,11 +1442,26 @@ namespace GameEditorStudio
                         writer.WriteElementString("SavedVersion", LibraryGES.VersionNumber.ToString());
                         writer.WriteElementString("SavedDate", DateTime.Now.ToString("MMM dd yyyy"));
                         writer.WriteElementString("Seperator", "----------------------------------------------------------------------------------");
+                        if (UpdateLastUsedDate == true) //When using save all
+                        {
+                            workshopData.LastUsedVersion = LibraryGES.VersionNumber;
+                            workshopData.LastUsedDate = DateTime.Now.ToString("MMM dd yyyy");
+                            writer.WriteElementString("LastUsedVersion", LibraryGES.VersionNumber.ToString());
+                            writer.WriteElementString("LastUsedDate", DateTime.Now.ToString("MMM dd yyyy"));
+                        }
+                        if (UpdateLastUsedDate == false) //when saving in workshop creator (game library)
+                        {
+                            writer.WriteElementString("LastUsedVersion", workshopData.LastUsedVersion.ToString());
+                            writer.WriteElementString("LastUsedDate", workshopData.LastUsedDate);
+                        }                        
+                        writer.WriteElementString("Seperator", "----------------------------------------------------------------------------------");
                         writer.WriteElementString("WorkshopName", workshopData.WorkshopName); //Note: This is for reference only, so i can tell what workshop a file is for when it's open in notepad. This isn't actually used anywhere. 
                         writer.WriteElementString("InputLocation", workshopData.WorkshopInputDirectory);
                         writer.WriteElementString("ProjectsRequireSameInputFolderName", workshopData.ProjectsRequireSameFolderName == true ? "true" : "false");
                         writer.WriteElementString("Seperator", "----------------------------------------------------------------------------------");
-
+                        writer.WriteElementString("NoteToSelf", "This Workshop Event Resource list exists here PURELY FOR PEOPLE READING THE XML TO SEE A TOTAL LIST OF WORKSHOP RESOURCES. " +
+                            "\nIt is NOT LOADED OR USED IN ANY WAY. This file is saved when a user does File - \"Save Events\" (and by extension \"Save Everything\"). " +
+                            "\nIf i later want a resource display order list, i should use the events folder (having it here would confuse users trying to share events)");
                         writer.WriteStartElement("ResourceList");
                         foreach (EventResource WorkshopEventResource in workshopData.WorkshopEventResources)
                         {

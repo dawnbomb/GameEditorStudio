@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameEditorStudio"
         mc:Ignorable="d"
-        Title="DevTools" Height="750" Width="1100">
+        Title="DevTools" Height="850" Width="1100">
     <Grid>
 
         <TabControl>
@@ -14,10 +14,10 @@
                     <DockPanel>
                         <DockPanel Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" LastChildFill="False" >
                             <Label Content="Tools" FontWeight="Bold" Margin="5,0,0,0"  />
-                            <Button Content="New" Width="55"  Margin="10,2,0,2" Click="ButtonNewTool"/>
-                            <Button Content="Delete" Width="80"  Margin="10,2,0,2" Click="ButtonDeleteTool"/>
-                            <Button Content="Save All To File" Width="180" DockPanel.Dock="Right" Margin="10,2,10,2" Click="ButtonSaveAllClick"/>
-                            <Button Content="Save Tool" Width="110" DockPanel.Dock="Right" Margin="10,2,10,2" Click="ButtonSaveToolClick"/>
+                            <Button Click="ButtonNewTool" Content="New" Width="55"  Margin="10,2,0,2" />
+                            <Button Click="ButtonDeleteTool" Content="Delete" Width="80"  Margin="10,2,0,2" />
+                            <Button Click="ButtonSaveAllClick" Content="Save All To File" Width="180" DockPanel.Dock="Right" Margin="10,2,10,2" />
+                            <Button Click="ButtonSaveToolClick" Content="Save Tool" Width="110" DockPanel.Dock="Right" Margin="10,2,10,2" />
 
                             <DockPanel Background="Transparent" Margin="50,0,0,0">
                                 <Button Content="Move up" DockPanel.Dock="Left"    Width="100" Click="ButtonMoveToolUp" Margin="10,2,6,2" />
@@ -42,11 +42,40 @@
                                 </ComboBox>
                                 <TextBox Name="ToolCategoryTextbox" Margin="577,12,7,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
 
-                                <Label Content="Notepad" HorizontalAlignment="Left" Margin="7,0,0,0" VerticalAlignment="Center"/>
-                                <TextBox Name="ToolNotepadTextbox" Margin="7,354,7,10" TextWrapping="Wrap" Text="TextBox" AcceptsReturn="True"/>
+
                                 <Label Content="Key"  HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="270,238,0,0"/>
                                 <TextBox x:Name="ToolKeyTextbox" VerticalAlignment="Top" Margin="319,241,10,0" Text="- - -"  IsEnabled="False"/>
                                 <Button Content="Copy Key" Click="CopyToolKey" HorizontalAlignment="Left" Margin="168,241,0,0" VerticalAlignment="Top"/>
+                                <Border DockPanel.Dock="Top" Margin="0,321,0,0" HorizontalAlignment="Center" Width="778" Height="160" VerticalAlignment="Top">
+                                    <DockPanel>
+                                        <DockPanel Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" LastChildFill="False" >
+                                            <Label Content="Images" FontWeight="Bold" Margin="5,0,0,0"  />
+                                            <ComboBox Name="ToolImageFoldersComboBox" MinWidth="200" Margin="3,3.5,3,3.5"  IsEnabled="False" />
+                                            <Label Content="Idea scrapped for now" FontWeight="Bold" Margin="5,0,0,0"  />
+                                            <Button Click="ToolButtonNewImage" Content=" New "   Margin="5,4,10,4" DockPanel.Dock="Right"  />
+                                        </DockPanel>
+                                        <ScrollViewer>
+                                            <DockPanel Name="ToolImagesPanel" LastChildFill="False" Style="{DynamicResource DockList}">
+                                                <DockPanel DockPanel.Dock="Top"  Margin="3">
+                                                    <Button Content=" Delete " DockPanel.Dock="Right"/>
+                                                    <ComboBox  Margin="3"  IsEnabled="False" />
+                                                </DockPanel>
+                                                <DockPanel DockPanel.Dock="Top"  Margin="3">
+                                                    <Button Content=" Delete " DockPanel.Dock="Right"/>
+                                                    <ComboBox  Margin="3"   IsEnabled="False" />
+                                                </DockPanel>
+                                            </DockPanel>
+
+
+
+
+                                        </ScrollViewer>
+                                    </DockPanel>
+                                </Border>
+
+
+                                <Label Content="Notepad" HorizontalAlignment="Left" Margin="10,481,0,0" VerticalAlignment="Top"/>
+                                <TextBox Name="ToolNotepadTextbox" Margin="7,520,7,10" TextWrapping="Wrap" Text="TextBox" AcceptsReturn="True"/>
 
                             </Grid>
                         </DockPanel>
@@ -108,7 +137,7 @@
                                     <DockPanel>
                                         <DockPanel Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" LastChildFill="False" >
                                             <Label Content="Required Tools" FontWeight="Bold" Margin="5,0,0,0"  />
-                                            <Button Content=" New " Width="55"  Margin="5,4,10,4" DockPanel.Dock="Right"  Click="CommandButtonNewTool"/>
+                                            <Button Click="CommandButtonNewTool" Content=" New "  Margin="5,4,10,4" DockPanel.Dock="Right"  />
                                         </DockPanel>
                                         <ScrollViewer>
                                             <DockPanel Name="CommandToolsPanel" LastChildFill="False" Style="{DynamicResource DockList}">
@@ -133,7 +162,7 @@
                                     <DockPanel>
                                         <DockPanel Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" LastChildFill="False" >
                                             <Label Content="Required Resources" FontWeight="Bold" Margin="5,0,0,0"  />
-                                            <Button Content=" New " Width="55"  Margin="5,4,10,4" DockPanel.Dock="Right" Click="CommandButtonNewResource"/>
+                                            <Button Content=" New " Margin="5,4,10,4" DockPanel.Dock="Right" Click="CommandButtonNewResource"/>
                                         </DockPanel>
                                         <ScrollViewer>
                                             <DockPanel Name="CommandEventResourcesPanel" LastChildFill="False" Style="{DynamicResource DockList}">

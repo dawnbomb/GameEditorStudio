@@ -158,9 +158,9 @@
                     <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">
                         <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
                             <Label Content="Workshops" FontWeight="Bold" />
-                            
-                            
-                            <Button DockPanel.Dock="Right" x:Name="ButtonLaunchPreview"   Content="Launch Workshop"  Click="LaunchWorkshopPreviewMode"  FontSize="20" Margin="3,3,10,3"  ToolTip="You can open a game's workshop without any games files! &#xD;Just give this a click and you can see the editors before even setting up a project! &#xD;  &#xD;It's extremely useful!" />
+
+
+                            <Button DockPanel.Dock="Right" x:Name="ButtonLaunchPreview"   Content="Launch Workshop"  Click="LaunchWorkshopPreviewMode"  FontSize="20" Margin="3,3,10,3"  ToolTip="Launch a workshop and check out what editors it has! &#xD; &#xD;A 'workshop' is basically a collection of editors for a specific game. &#xD;Well, it also holds documents, game modding tools, &#xD;lets you setup automatic file repacking, and much more...  &#xD; &#xD;Still, 'A workshop is the editors for a game' is a good starting point of understanding." ToolTipService.InitialShowDelay="5" />
                             <Button DockPanel.Dock="Right" x:Name="ButtonEditWorkshop" Content="Edit"  Width="60" Click="ButtonEditWorkshop2" FontSize="20" Margin="3"   ToolTip="Edit the selected workshop's info." />
                             <Button DockPanel.Dock="Right" x:Name="ButtonCreateWorkshop" Content="New" Width="55" Click="ButtonCreateWorkshop2" FontSize="20" Margin="3,3,3,3" ToolTip="Create a new workshop.  &#xD;A Workshop (name inspired by the steam workshop) is where a game's editors are located.  &#xD;(Enemy editor, Item editor, Skill editor, etc)" />
                             
@@ -225,7 +225,7 @@
                         </Border>
 
                         <ScrollViewer Background="Transparent" VerticalScrollBarVisibility="Auto">
-                            <TextBox x:Name="TextBoxWorkshopReadMe"  TextWrapping="Wrap" Text="Welcome to the first public release of Game Editor Studio!&#xD;&#xA; &#xA;This program generates game editors without any coding knowledge! It also has easy access to romhacking tools, and&#xD;&#xA;great features for people using these editors! &#xA;&#xD;&#xA;Save often in case of crashes or bugs D: and report any you come across on the discord.&#xD;&#xA;&#xA;PS: Many things in the program have right click options.&#xA; &#xA;Want to help development? reach out to me on discord! (Link in the top right)  Made in C# / WPF / .Net 9&#xA; &#xA;Lets make game modding simple, easy, and fun! :)" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"    />
+                            <TextBox x:Name="TextBoxWorkshopReadMe"  TextWrapping="Wrap" Text="Welcome to my early beta of Game Editor Studio!&#xA; &#xA;This program lets you create and share game editors without knowing how to code! &#xD;&#xA;It also has easy access to romhacking tools, and LOTS of QoL! &#xA;(save often and report bugs / crashes on the discord)&#xA;&#xD;&#xA;&#xA;PS: Most things have right click options.&#xA;&#xD;&#xA; &#xA;Made in C# / WPF / .Net10 &#xD;&#xA;To join the dev team, reach out to me on discord! (Link top right) &#xA;Lets make game modding simple, easy, and fun! :)" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"    />
 
                         </ScrollViewer>
                     </DockPanel>

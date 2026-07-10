@@ -146,10 +146,16 @@ namespace GameEditorStudio
 
                 TheWorkshop.HIDEALL();
                 TheEditorClass.EditorVisual.Visibility = Visibility.Visible;
-                                
-                
 
-                
+                if (LibraryGES.PreviewModeWarningMessage == true) 
+                {
+                    PreviewModeWarning();
+                }
+
+                if (EditorClass is TextEditorData TextData) 
+                {
+                    TextData.TextEditorXaml.DocumentsControl.RefreshDocuments();                    
+                }
 
                 if (EditorClass is DataTableEditorData DTEData)
                 {
@@ -159,7 +165,7 @@ namespace GameEditorStudio
 
                     RightBar.PropertiesTextboxEditorName.Text = EditorClass.EditorName;
 
-                    DTEData.EditorRightBar.DocumentsControl.TabClicked();
+                    DTEData.EditorRightBar.DocumentsControl.RefreshDocuments();
                     RightBar.EditorTabItem.IsSelected = true;
 
                     //Data Table Stuff.
@@ -172,6 +178,8 @@ namespace GameEditorStudio
                         RightBar.BtnDataTblOutputOpenHxD.IsEnabled = false;
                         RightBar.PropertiesEditorReadGameDataFrom.Text = "No Data Table Set";
                         RightBar.EditorOutputLocationTextbox.Text = "No Data Table Set";
+                        //RightBar.NameTableInputLocationTextbox.Text = "No Name Table Set";
+                        //RightBar.NameTableOutputLocationTextbox.Text = "No Name Table Set";
                         RightBar.BtnDataTblOutputOpen010.IsEnabled = false;
                     }
                     if (DTEData.DataTable != null) 
@@ -184,6 +192,11 @@ namespace GameEditorStudio
                         RightBar.BtnDataTblOutputOpen010.IsEnabled = true;
 
 
+                        if (TheWorkshop.IsPreviewMode == true)
+                        {
+                            RightBar.PropertiesEditorReadGameDataFrom.Text = "Your in preview mode!";
+                            RightBar.EditorOutputLocationTextbox.Text = "Your in preview mode!";
+                        }
                         if (TheWorkshop.IsPreviewMode == false)
                         {
                             if (TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory != "")
@@ -192,7 +205,7 @@ namespace GameEditorStudio
                             }
                             else
                             {
-                                RightBar.PropertiesEditorReadGameDataFrom.Text = "You didn't set a project input folder, or it nolonger exists. :(";
+                                RightBar.PropertiesEditorReadGameDataFrom.Text = "Not set or missing? :(";
                             }
 
                             if (TheWorkshop.WorkshopData.LoadedProject.ProjectOutputDirectory != "")
@@ -201,14 +214,10 @@ namespace GameEditorStudio
                             }
                             else
                             {
-                                RightBar.EditorOutputLocationTextbox.Text = "You didn't set a project output folder, or it nolonger exists. :(";
+                                RightBar.EditorOutputLocationTextbox.Text = "Not set or missing? :(";
                             }
                         }
-                        else
-                        {
-                            RightBar.PropertiesEditorReadGameDataFrom.Text = "Your in preview mode!";
-                            RightBar.EditorOutputLocationTextbox.Text = "Your in preview mode!";
-                        }
+
 
                         //Seperator////////////
 
@@ -391,12 +400,36 @@ namespace GameEditorStudio
                         //Description Table
                         RightBar.DescriptionTableManagerButton.IsEnabled = true;
                     }
-                    
 
-                    
+                    if (TheWorkshop.IsPreviewMode == true)
+                    {
+                        RightBar.NameTableInputLocationTextbox.Text = "Your in preview mode!";
+                        RightBar.NameTableOutputLocationTextbox.Text = "Your in preview mode!";
+                    }
+                    if (TheWorkshop.IsPreviewMode == false)
+                    {
+                        if (TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory != "")
+                        {
+                            RightBar.NameTableInputLocationTextbox.Text = TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + DTEData.DataTable.FileDataTable.FileLocation;
+                        }
+                        else
+                        {
+                            RightBar.NameTableInputLocationTextbox.Text = "Not set or missing? :(";
+                        }
+
+                        if (TheWorkshop.WorkshopData.LoadedProject.ProjectOutputDirectory != "")
+                        {
+                            RightBar.NameTableOutputLocationTextbox.Text = TheWorkshop.WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + DTEData.DataTable.FileDataTable.FileLocation;
+                        }
+                        else
+                        {
+                            RightBar.NameTableOutputLocationTextbox.Text = "Not set or missing? :(";
+                        }
+                    }
 
 
-                    
+
+
                 }
 
 
@@ -563,6 +596,12 @@ namespace GameEditorStudio
             //AnEditor.EditorImage.StretchDirection = StretchDirection.UpOnly;
         }
 
+        private void PreviewModeWarning() 
+        {
+            LibraryGES.PreviewModeWarningMessage = false;
+            PixelWPF.LibraryPixel.NotificationNegative("Preview Mode Warning","You did not load any projects / game files \n(you are in preview mode). \n\nYou can still look around, just beware that making changes to editors while in preview mode is not crash-proof. \n\nThis warning won't happen again until the next launch of Game Editor Studio :)");
+        }
+
         public void UpdateEditorRightClickMenu(Editor EditorClass)
         {
             WorkshopData WorkshopData = EditorClass.WorkshopData;
@@ -574,9 +613,13 @@ namespace GameEditorStudio
             MenuItem ReloadEditor = new MenuItem(); //Upcoming, but disabled for now. 
             ReloadEditor.Header = "Reload Editor (Not finished)";
             ReloadEditor.Click += ReloadEditor_Click; // Event handler for click action
-            //contextMenu.Items.Add(ReloadEditor);
+            NewContextMenu.Items.Add(ReloadEditor);
+
+            ReloadEditor.IsEnabled = false;
+            ReloadEditor.Foreground = Brushes.Red;
             void ReloadEditor_Click(object sender, RoutedEventArgs e)
             {
+                return;
                 FileLoading fileLoading = new();
                 fileLoading.ReloadAllEditorFiles(EditorClass);
 
@@ -660,7 +703,9 @@ namespace GameEditorStudio
                 NewContextMenu.Items.Add(OpenNTFile);
                 void OpenNTFile_Click(object sender, RoutedEventArgs e)
                 {
+                    string thepath = TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + DTEData.NameTable.TextTableFile.FileLocation;
                     LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + DTEData.NameTable.TextTableFile.FileLocation);
+                    //LibraryGES.OpenFileFolder(TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + DTEData.NameTable.TextTableFile.FileLocation);
                 }
                 if (DTEData.NameTable == null) { OpenNTFile.IsEnabled = false; }
                 else if (DTEData.NameTable.TextTableLinkType == TextTable.TextTableLinkTypes.Nothing) { OpenNTFile.IsEnabled = false; }

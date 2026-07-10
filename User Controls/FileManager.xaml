@@ -17,7 +17,7 @@
                 <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                     <DockPanel Style="{DynamicResource ContentBar}">
                         <Label Name="ItemsLabel" Content="Workshop" FontWeight="Bold"/>
-                        <Button Name="AddFileButton" Content="Add File" DockPanel.Dock="Right" Click="ButtonAddFileToWorkshop" Width="100" HorizontalAlignment="Right" Margin="3" Height="30" ToolTip="Tip: You can just drag and drop files onto the file tree and they will be added. :)"/>
+                        <Button Name="AddFileButton" Content="Add File" DockPanel.Dock="Right" Click="ButtonAddFileToWorkshop" Width="100" HorizontalAlignment="Right" Margin="3" Height="30" ToolTip="Tip: &#xD;You can drag and drop files onto the file tree to add them. :) &#xD; &#xD;Note: &#xD;Only files ACTIVELY BEING USED by atleast one editor will still &#xD;be here after the workshop is saved and reloaded. &#xD;This helps everyone know for sure what files are actually in use. &#xD;If needed, just make a workshop document to talk about any unused files."/>
 
                     </DockPanel>
                 </Border>

@@ -175,6 +175,7 @@ namespace GameEditorStudio
         {
 
             HomeControl.FileManager.RefreshFileTree();
+            HomeControl.DocumentsControl.RefreshDocuments();
 
             HIDEALL();
             //DockPanelHome.Visibility = Visibility.Visible;

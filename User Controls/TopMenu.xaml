@@ -8,11 +8,11 @@
     <DockPanel Background="Transparent" LastChildFill="False">
         <Menu Name="TheMenu" Height="27" DockPanel.Dock="Left" >
             <MenuItem x:Name="WorkshopMenu" Header="File" SubmenuOpened="MenuOpened" >
-                <MenuItem Header="Save Everything" Click="SaveAll" Name="MenuSaveEverything" ToolTip="If a project is not loaded, saving will skip past&#xD;editors, game data, and project documents."/>
+                <MenuItem Header="Save Everything" Click="SaveAll" Name="MenuSaveEverything" ToolTip="If a project is not loaded, saving will skip past&#xD;editors, game data, and project documents. &#xD; &#xD;Note: using save everything (while a project is loaded) is the &#xD;only way to update a workshop's last used date."/>
                 <Separator Style="{DynamicResource DashLineForMenu}"/>
                 <MenuItem Header="Save Editors" Click="SaveEditors" Name="MenuSaveEditors" ToolTip="Saves ONLY the editors. &#xD;Good for when you axidentally change some values, &#xD;but you still really want to save the editors."/>
-                <MenuItem Header="Save Game Data"   Click="SaveGameData" Name="MenuSaveGameData" ToolTip="Game Data refers to the actual game files. &#xD;Stuff like enemy stats, items stats, etc."/>
-                <MenuItem Header="Save Workshop Documents"  Click="SaveWorkshopDocuments" Name="MenuSaveWorkshopDocuments" ToolTip="Workshop Documents are shared with other people who use this workshop."/>
+                <MenuItem Header="Save Game Data"   Click="SaveGameData" Name="MenuSaveGameData" ToolTip="Game Data refers to the actual game files. &#xD;Stuff like enemy stats, items stats, everything the workshop uses. &#xD;&#xD;Note: &#xD;Even if you did not make any changes to a file, &#xD;it is still saved to the output folder. &#xD;I *MAY* add support for saving only modded files in the future.&#xD;(you can harass me to add support for it)"/>
+                <MenuItem Header="Save Workshop Documents (and home intro)"  Click="SaveWorkshopDocuments" Name="MenuSaveWorkshopDocuments" ToolTip="Workshop Documents are shared with other people who use this workshop."/>
                 <MenuItem Header="Save Project Documents  (the loaded project)"  Click="SaveTheLoadedProjectDocuments" Name="MenuSaveProjectDocuments" ToolTip="These are your own personal text files. &#xD;They are not shared with anyone else."/>
                 <MenuItem Header="Save Events" Click="SaveEvents" ToolTip="I wanna improve the event system in the future. Hmmm...." Name="MenuSaveEvents"/>
                 <Separator Style="{DynamicResource DashLineForMenu}"/>
@@ -60,6 +60,9 @@
                     <Separator Style="{DynamicResource DashLineForMenu}"/>                    
                     <MenuItem Header="Call Notification"  Click="DebugNotification" Foreground="#FF2C2C"/>
                     <MenuItem Header="Call Error Notification"  Click="DebugNotificationError" Foreground="#FF2C2C"/>
+                    <Separator Style="{DynamicResource DashLineForMenu}"/>
+                    <MenuItem Header="Play Sound Persona 5 Crit"  Click="DebugPlayPersona5Crit" Foreground="#FF2C2C"/>
+                    <MenuItem Header="Play Sound Etrian Happy"  Click="DebugPlayEtrianSound" Foreground="#FF2C2C"/>
                     <Separator Style="{DynamicResource DashLineForMenu}"/>                    
                     <MenuItem Header="Set 1080P"  Click="Set1080P"/>
                 </MenuItem>

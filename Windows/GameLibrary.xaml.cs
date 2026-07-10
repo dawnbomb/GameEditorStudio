@@ -103,6 +103,7 @@ namespace GameEditorStudio
 
             LoadDatabase LoadDatabase = new(); //Must happen before Setup Commands, because commands use tools.   
             //LoadDatabase.LoadWiki();
+            //LoadDatabase.LoadToolImageLocations(); //currently also causes a popup on launch of all images it detects.
             LoadDatabase.LoadThemes(); //Loads from Other/Themes - A theme is a list of colors for the UI. Users can create their own color themes. 
             LoadDatabase.LoadToolsList(); //Loads from Other/Tools.xml.            
             LoadDatabase.LoadCommandsList(this); //Loads from Other/Commands.xml.            
@@ -265,35 +266,62 @@ namespace GameEditorStudio
                 //Workshop Info Panel
                 WorkshopCreatedLabel.Content = "GES v" + SelectedWorkshop.CreatedVersion + " " + SelectedWorkshop.CreatedDate + "";
                 if (SelectedWorkshop.CreatedVersion.ToString() == "0.0") { WorkshopCreatedLabel.Content = "UNKNOWN"; }
-                WorkshopSavedLabel.Content = "GES v" + SelectedWorkshop.SavedVersion + " " + SelectedWorkshop.SavedDate + "";
-                if (SelectedWorkshop.SavedVersion.ToString() == "0.0") { WorkshopSavedLabel.Content = "UNKNOWN"; }
+                WorkshopSavedLabel.Content = "GES v" + SelectedWorkshop.LastUsedVersion + " " + SelectedWorkshop.LastUsedDate + "";
+                if (SelectedWorkshop.LastUsedVersion.ToString() == "0.0") { WorkshopSavedLabel.Content = "NEVER USED"; }
 
                 //Documents Panel
-                string documentationPath = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", SelectedWorkshop.WorkshopName, "Documents");
-                string[] folderPaths = Directory.GetDirectories(documentationPath);
-                foreach (string folderPath in folderPaths)
+                int DocumentCount = 0;
+                if (File.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + SelectedWorkshop.WorkshopName + "\\Intro.txt"))
                 {
+                    string SomeIntroText = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + SelectedWorkshop.WorkshopName + "\\Intro.txt");
+
                     TreeViewItem item = new();
-                    item.Header = new DirectoryInfo(folderPath).Name;
-                    item.Tag = System.IO.File.ReadAllText(folderPath + "\\Text.txt");
+                    item.Header = "Intro to: " + SelectedWorkshop.WorkshopName;
+                    item.Tag = SomeIntroText;
                     LibraryDocumentsTree.Items.Add(item);
 
-                    string headerText = (item.Header as string)?.Replace(" ", "").ToLower(); //Check if a readme exists, but ignore caps and spaces, so it will always find it.
-                    if (headerText == "readme")
-                    {
-                        item.IsSelected = true;
-                    }
-
-                    ContextMenu contextMenu = new ContextMenu();
-                    item.ContextMenu = contextMenu;
-                    MenuItem openMenuItem = new MenuItem { Header = "Open Document Folder" };
-                    contextMenu.Items.Add(openMenuItem);
-                    openMenuItem.Click += (s, e) =>
-                    {
-                        LibraryGES.OpenFileFolder(folderPath + "\\Text.txt");                        
-                    };
+                    item.IsSelected = true;
+                    DocumentCount++;
                 }
-                DocumentCountLabel.Content = "(" + LibraryDocumentsTree.Items.Count + ")";
+                else 
+                {
+                    TreeViewItem item = new();
+                    item.Header = "Default Workshop Intro";
+                    item.Tag = SelectedWorkshop.Intro.DefaultIntroText;
+                    LibraryDocumentsTree.Items.Add(item);
+
+                    item.IsSelected = true;
+                }
+                string documentationPath = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", SelectedWorkshop.WorkshopName, "Documents");
+                if (Directory.Exists(documentationPath)) 
+                {
+                    string[] folderPaths = Directory.GetDirectories(documentationPath);
+                    foreach (string folderPath in folderPaths)
+                    {
+                        TreeViewItem item = new();
+                        item.Header = new DirectoryInfo(folderPath).Name;
+                        item.Tag = System.IO.File.ReadAllText(folderPath + "\\Text.txt");
+                        LibraryDocumentsTree.Items.Add(item);
+                        DocumentCount++;
+
+                        //string headerText = (item.Header as string)?.Replace(" ", "").ToLower(); //Check if a readme exists, but ignore caps and spaces, so it will always find it.
+                        //if (headerText == "readme")
+                        //{
+                        //    item.IsSelected = true;
+                        //}
+
+                        ContextMenu contextMenu = new ContextMenu();
+                        item.ContextMenu = contextMenu;
+                        MenuItem openMenuItem = new MenuItem { Header = "Open Document Folder" };
+                        contextMenu.Items.Add(openMenuItem);
+                        openMenuItem.Click += (s, e) =>
+                        {
+                            LibraryGES.OpenFileFolder(folderPath + "\\Text.txt");
+                        };
+                    }
+                }
+                //DocumentCountLabel.Content = "(" + LibraryDocumentsTree.Items.Count + ")";
+                DocumentCountLabel.Content = "(" + DocumentCount + ")";
 
 
                 //Editors Panel
@@ -950,8 +978,8 @@ namespace GameEditorStudio
             TreeViewItem Item = LibraryDocumentsTree.SelectedItem as TreeViewItem;
             if (Item == null) { return; }
 
-            TextBoxWorkshopReadMe.Text = Item.Tag as string;
             DocumentNameLabel.Content = Item.Header as string;
+            TextBoxWorkshopReadMe.Text = Item.Tag as string;            
             if (Item.Header as string == "READ ME" || Item.Header as string == "README" || Item.Header as string == "readme" || Item.Header as string == "read me") 
             {
                 DocumentNameLabel.Content = SelectedWorkshop.WorkshopName + " - " + Item.Header as string; 
