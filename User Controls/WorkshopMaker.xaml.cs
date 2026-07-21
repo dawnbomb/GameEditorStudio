@@ -121,7 +121,6 @@ namespace GameEditorStudio
                 Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text);
                 Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents");
                 Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Editors");
-                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Tools");
                 System.IO.File.WriteAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + TextBoxGameName.Text + "\\Documents\\LoadOrder.txt", " "); //Overwrites, Or creates file if it does not exist. Needs location permissions for admin folders.
                                
 

@@ -147,9 +147,10 @@ namespace GameEditorStudio
                 TheWorkshop.HIDEALL();
                 TheEditorClass.EditorVisual.Visibility = Visibility.Visible;
 
-                if (LibraryGES.PreviewModeWarningMessage == true) 
+                if (WorkshopData.PreviewModeWarningMessage == true) 
                 {
-                    PreviewModeWarning();
+                    PixelWPF.LibraryPixel.NotificationNegative("Preview Mode Warning", "You did not load any projects / game files \n(you are in preview mode). \n\nYou can still look around, just beware that making changes to editors while in preview mode is not crash-proof. \n\nThis warning won't happen again until the next launch of Game Editor Studio :)");
+                    
                 }
 
                 if (EditorClass is TextEditorData TextData) 
@@ -406,20 +407,20 @@ namespace GameEditorStudio
                         RightBar.NameTableInputLocationTextbox.Text = "Your in preview mode!";
                         RightBar.NameTableOutputLocationTextbox.Text = "Your in preview mode!";
                     }
-                    if (TheWorkshop.IsPreviewMode == false)
+                    if (TheWorkshop.IsPreviewMode == false )
                     {
-                        if (TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory != "")
+                        if (TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory != "" && DTEData.NameTable != null && DTEData.NameTable.TextTableFile != null)
                         {
-                            RightBar.NameTableInputLocationTextbox.Text = TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + DTEData.DataTable.FileDataTable.FileLocation;
+                            RightBar.NameTableInputLocationTextbox.Text = TheWorkshop.WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + DTEData.NameTable.TextTableFile.FileLocation;
                         }
                         else
                         {
                             RightBar.NameTableInputLocationTextbox.Text = "Not set or missing? :(";
                         }
 
-                        if (TheWorkshop.WorkshopData.LoadedProject.ProjectOutputDirectory != "")
+                        if (TheWorkshop.WorkshopData.LoadedProject.ProjectOutputDirectory != "" && DTEData.NameTable != null && DTEData.NameTable.TextTableFile != null)
                         {
-                            RightBar.NameTableOutputLocationTextbox.Text = TheWorkshop.WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + DTEData.DataTable.FileDataTable.FileLocation;
+                            RightBar.NameTableOutputLocationTextbox.Text = TheWorkshop.WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + DTEData.NameTable.TextTableFile.FileLocation;
                         }
                         else
                         {
@@ -595,12 +596,7 @@ namespace GameEditorStudio
 
             //AnEditor.EditorImage.StretchDirection = StretchDirection.UpOnly;
         }
-
-        private void PreviewModeWarning() 
-        {
-            LibraryGES.PreviewModeWarningMessage = false;
-            PixelWPF.LibraryPixel.NotificationNegative("Preview Mode Warning","You did not load any projects / game files \n(you are in preview mode). \n\nYou can still look around, just beware that making changes to editors while in preview mode is not crash-proof. \n\nThis warning won't happen again until the next launch of Game Editor Studio :)");
-        }
+                
 
         public void UpdateEditorRightClickMenu(Editor EditorClass)
         {

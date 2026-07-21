@@ -5,9 +5,30 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameEditorStudio"
         mc:Ignorable="d"
-        Title="Game Editor Studio Settings" Height="650" Width="650">
+        Title="Game Editor Studio Settings" Height="650" Width="750">
     <DockPanel >
-        <Button Content="Close" HorizontalAlignment="Right" Margin="10,0,10,10" Width="100" Height="32" VerticalAlignment="Top" Click="ButtonBackClick" DockPanel.Dock="Bottom"/>
+        <DockPanel Margin="10,0,10,10" DockPanel.Dock="Bottom" LastChildFill="False">
+            <Button Content="Close" HorizontalAlignment="Right" Margin="10,0,5,0" Width="100" Height="32" VerticalAlignment="Top" Click="ButtonBackClick" DockPanel.Dock="Right"/>
+            <Button Content="Open Settings Folder" HorizontalAlignment="Right" Margin="5,0,10,0" Height="32" VerticalAlignment="Top" Click="ButtonOpenSettingsFolderClick" DockPanel.Dock="Left"/>
+        </DockPanel>
+        
+
+        <ContentControl DockPanel.Dock="Top" Margin="15,10,15,0">
+            <DockPanel  Style="{DynamicResource ContentBar}">
+                <Label Content="This is ugly and unfinished, I'll improve it later."/>
+            </DockPanel>
+        </ContentControl>
+        
+        
+        
+        <ContentControl  Height="145"  Margin="15,0,15,10" DockPanel.Dock="Bottom">
+            <DockPanel LastChildFill="False" Background="#FF191919">
+                <TextBox Name="SettingNameBox" Margin="8,2,0,0" Text="Setting Name" Height="25" FontSize="20" BorderBrush="{x:Null}" DockPanel.Dock="Top" Background="{x:Null}" FontWeight="Bold"/>
+                <Rectangle Stroke="#FFE0E0E0" Margin="8,6,8,2" DockPanel.Dock="Top"/>
+                <TextBox Name="SettingDescriptionBox" TextWrapping="Wrap" Margin="8,0,5,0" Text="Setting Description" Height="100" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="White" DockPanel.Dock="Top"/>
+            </DockPanel>
+        </ContentControl>
+        
         <Grid Margin="15,15,15,10" Style="{DynamicResource GridList}">
             <TabControl  TabStripPlacement="Left"  >
                 <TabItem Header="General" FontSize="20" Background="Transparent" >
@@ -78,10 +99,14 @@ Background="{Binding Border, Converter={StaticResource StringToBrushConverter}}"
                     </TabControl>
                 </TabItem>
                 <Separator Width="50" Height="50"/>
-                <TabItem Header="Data Table" FontSize="20" Background="Transparent">
+                <TabItem Header="Symbology" FontSize="20" Background="Transparent">
                     <local:SettingsDataTable DockPanel.Dock="Top" />
                 </TabItem>
 
+                <TabItem Header="Ideas for later" FontSize="20" Background="Transparent" Foreground="#FFD41212" >
+                    <local:SettingsComingSoon DockPanel.Dock="Top"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+
+                </TabItem>
                 <!--<TabItem Header="Dummy" Background="Transparent">
                 <TabControl Margin="10,0,0,0" >
                     <TabItem Header="General" Background="Transparent">

@@ -342,6 +342,7 @@
                                 </TabItem>
                                 <TabItem Name="EntryTabItem" Header="Entry" Margin="0,0,0,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
                                     <DockPanel >
+                                        
                                         <Border DockPanel.Dock="Top">
                                             <DockPanel>
                                                 <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
@@ -373,7 +374,7 @@
 
 
                                                     <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
-                                                    <TextBox x:Name="PropertiesNameBox" Grid.Row="0" Grid.Column="2" Margin="3" TextWrapping="Wrap"  KeyDown="PropertiesEntryNameBox_KeyDown"/>
+                                                    <TextBox KeyDown="PropertiesEntryNameBox_KeyDown" x:Name="PropertiesNameBox" Grid.Row="0" Grid.Column="2" Margin="3" TextWrapping="Wrap"  />
 
 
 
@@ -409,8 +410,7 @@
                                                     <ComboBox x:Name="PropertiesEntryType" Grid.Row="5" Grid.Column="2" Margin="3"  DropDownClosed="PropertiesEntryType_DropDownClosed">
                                                     </ComboBox>
 
-                                                    <Label Content="Hex Address" Grid.Row="6" Grid.Column="1" Margin="0"/>
-                                                    <TextBox x:Name="PropertiesEntryHexAddressTextbox" Grid.Row="6" Grid.Column="2" Margin="3" TextWrapping="Wrap" IsEnabled="False"/>
+                                                    
                                                 </Grid>
                                             </DockPanel>
                                         </Border>
@@ -545,7 +545,11 @@
                                                         <Border Margin="-100,0,0,4" BorderThickness="0,0,0,2" Width="90" BorderBrush="#FFB7B7B7" ToolTip="Big Endian: 00 on left (0014, 002B). &#xA;Little Endian: 00 on right (1400, 2B00).&#xA;   &#xA;Most consoles use Big Endian."/>
                                                     </DockPanel>
                                                 </Border>
-
+                                                <DockPanel DockPanel.Dock="Top">
+                                                    <Label Content="Hex Address" Grid.Row="6" Grid.Column="1" Margin="0"/>
+                                                    <TextBox x:Name="PropertiesEntryHexAddressTextbox" Grid.Row="6" Grid.Column="2" Margin="3" TextWrapping="Wrap" IsEnabled="False" DockPanel.Dock="Top"/>
+                                                </DockPanel>
+                                                
                                                 <Grid DockPanel.Dock="Top">
                                                     <Label Content="Decimal" HorizontalAlignment="Left" Margin="50,-1,0,0" VerticalAlignment="Top"/>
                                                     <Label Content="Hex" HorizontalAlignment="Left" Margin="191,-1,0,0" VerticalAlignment="Top"/>
@@ -587,10 +591,153 @@
                                                 <TextBox MinHeight="100" x:Name="EntryNoteTextbox" Margin="10" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextChanged="EntryNoteTextboxTextChanged"/>
                                             </DockPanel>
                                         </Border>
+                                        <Border DockPanel.Dock="Top">
+                                            <DockPanel>
+                                                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                    <DockPanel Style="{DynamicResource ContentBar}"  >
+                                                        <Label Content="History" FontWeight="Bold" Margin="5,0,0,0"  />
+                                                    </DockPanel>
+                                                </Border>
 
+                                                <StackPanel Name="EntryValueHistoryStackPanel" DockPanel.Dock="Left" MinWidth="230" MinHeight="180">
+                                                    <Label Content="X Mins Ago: 12"/>
+                                                    <Label Content="Y Mins Ago: 34"/>
+                                                </StackPanel>
+                                                <Border Margin="2,0,2,0" BorderBrush="#FF17171D" />
+                                                <StackPanel DockPanel.Dock="Right">
+                                                    <DockPanel>
+                                                        <Label Content="Input on project load:"/>
+                                                    </DockPanel>
+                                                    <DockPanel>
+                                                        <TextBox Name="HistoryValueOnProjectLoadFromInputTextbox" Margin="5,0,10,0"/>
+                                                    </DockPanel>
+                                                    <DockPanel Margin="0,20,0,0">
+                                                        <Label Content="Output on project load:" />
+                                                    </DockPanel>
+                                                    <DockPanel Margin="0,0,0,0">
+                                                        <TextBox Name="HistoryValueOnProjectLoadFromOutputTextbox" Margin="5,0,10,0"/>
+                                                    </DockPanel>
+
+                                                </StackPanel>
+                                            </DockPanel>
+                                        </Border>
                                     </DockPanel>
                                 </TabItem>
+                                <TabItem Name="MathboxTabItem" Header="Mathbox" Margin="0,0,1,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
+                                    <DockPanel  >
+                                        <Border DockPanel.Dock="Top"  >
+                                            <DockPanel Margin="0,0,0,3">
+                                                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                    <DockPanel Style="{DynamicResource ContentBar}"  >
+                                                        <Label Content="Mathbox" FontWeight="Bold" Margin="5,0,0,0"  />
+                                                    </DockPanel>
+                                                </Border>
 
+                                                <Grid DockPanel.Dock="Top">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="5"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="5"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+
+                                                    <Label Content="Name" Grid.Row="0" Grid.Column="1" Margin="0"/>
+                                                    <TextBox KeyDown="PropertiesMathboxNameTextBox_KeyDown" x:Name="PropertiesMathboxNameBox" Grid.Row="0" Grid.Column="2" Margin="3" Text="New Mathbox" TextWrapping="Wrap"  />
+
+                                                    <Label Content="Hide Name" Grid.Row="1" Grid.Column="1" Margin="0"/>
+                                                    <CheckBox Name="MathboxHideNameCheckbox" Grid.Row="1" Grid.Column="2" Margin="3" Checked="MathboxHideNameCheckboxChecked" Unchecked="MathboxHideNameCheckboxUnchecked" >
+                                                        <CheckBox.LayoutTransform>
+                                                            <ScaleTransform ScaleX="2" ScaleY="2" />
+                                                        </CheckBox.LayoutTransform>
+                                                    </CheckBox>
+
+                                                    <Label Content="Tooltip" Grid.Row="2" Grid.Column="1" Margin="0"/>
+                                                    <TextBox TextChanged="PropertiesMathboxTooltipTextBox_TextChanged" x:Name="PropertiesMathboxTooltipBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Height="100" Margin="3" Text="" AcceptsReturn="True" TextWrapping="Wrap"  />
+                                                    
+                                                    <!--Math Results-->
+                                                    <Label Content="Math Result" Grid.Row="4" Grid.Column="1" Margin="0"/>
+                                                    <TextBox Name="MathboxMathResultTextbox" Grid.Row="4" Grid.Column="2" Margin="3" TextWrapping="NoWrap" IsEnabled="False"  />
+
+                                                    <Label Content="From Input" Grid.Row="5" Grid.Column="1" Margin="0"/>
+                                                    <TextBox Name="MathboxMathResultUsingInputTextbox" Grid.Row="5" Grid.Column="2" Margin="3" TextWrapping="NoWrap" IsEnabled="False"  />
+
+                                                    <Label Content="From Output" Grid.Row="6" Grid.Column="1" Margin="0"/>
+                                                    <TextBox Name="MathboxMathResultUsingOutputTextbox" Grid.Row="6" Grid.Column="2" Margin="3" TextWrapping="NoWrap" IsEnabled="False" />
+
+                                                    <Label Content="Mathboxes best with numbers from numberboxes. &#xD;&#xA;Support for other entry types...eventually." Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Foreground="#FF6B9DED" />
+                                                </Grid>
+                                                <!--<DockPanel DockPanel.Dock="Bottom" Background="#FF212121">
+                                                    <Label Content=""/>
+                                                </DockPanel>-->
+                                                <Border DockPanel.Dock="Top" >
+                                                    <DockPanel Background="#FF212121">
+                                                        <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                            <DockPanel Style="{DynamicResource ContentBar}"  LastChildFill="False">
+                                                                <Label Content="Formula" FontWeight="Bold" Margin="5,0,0,0"  />
+                                                                <Button Click="AddMathPieceClick" Content="Add Math Piece" DockPanel.Dock="Right" Margin="4"/>
+                                                                <Button Click="MathboxHelpClick" Content="Help" DockPanel.Dock="Right" Margin="4"/>
+                                                            </DockPanel>
+                                                        </Border>
+                                                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                                            <StackPanel Name="FormulaStackPanel" DockPanel.Dock="Left" MinWidth="230" MinHeight="180">
+                                                                <Border Margin="3" MinHeight="30">
+                                                                    <DockPanel  Background="#FF2E2E33">
+                                                                        <Button Content="Delete" DockPanel.Dock="Right"/>
+                                                                        <Label Content="Entry:"/>
+                                                                        <ComboBox>
+                                                                            <ComboBoxItem Content="Thing" Selector.IsSelected="True"/>
+                                                                        </ComboBox>
+                                                                    </DockPanel>
+                                                                </Border>
+
+                                                                <Border Margin="3" MinHeight="30">
+                                                                    <DockPanel  Background="#FF2E2E33">
+                                                                        <Button Content="Delete" DockPanel.Dock="Right"/>
+                                                                        <ComboBox>
+                                                                            <ComboBoxItem Content="Add" Selector.IsSelected="True"/>
+                                                                        </ComboBox>
+                                                                        <TextBox Text="10"/>
+
+                                                                    </DockPanel>
+                                                                </Border>
+                                                                <Border Margin="3" MinHeight="30">
+                                                                    <DockPanel  Background="#FF2E2E33">
+                                                                        <Button Content="Delete" DockPanel.Dock="Right"/>
+                                                                        <ComboBox>
+                                                                            <ComboBoxItem Content="Max" Selector.IsSelected="True"/>
+                                                                        </ComboBox>
+                                                                        <TextBox Text="50"/>
+
+                                                                    </DockPanel>
+                                                                </Border>
+                                                            </StackPanel>
+                                                        </ScrollViewer>
+
+
+                                                    </DockPanel>
+                                                    
+
+                                                </Border>
+                                            </DockPanel>
+                                        </Border>
+                                    </DockPanel>
+                                </TabItem>
                             </TabControl>
                         </ScrollViewer>
 

@@ -1,15 +1,5 @@
-﻿
-
-============== About "Last Saved Version" =================
-
-All files (including workshop.xml) have a last saved version number.
-This is the last GES version that specific file was saved with.
-However, the last saved value in workshop.xml is what appears as the workshop last used value in the game library.
-While it's updated when saving events (and thus, when saving everything), it's not updating when clicking save editors / documents.
-So, it's not SO reliable an indicator of the workshop's last saved version.
-BUT THIS SHOULD PROBABLY STAY THAT WAY. 
-Save everything updates it, and i probably do want to know if most of a workshop's last save'd value isn't recent.
-I just... Wish i had a better solution...
+﻿============== .NET 10 ================
+I want to update to .NET 10 but this requires reo to install VS 2026 :(
 
 
 ============== About updating old files =================

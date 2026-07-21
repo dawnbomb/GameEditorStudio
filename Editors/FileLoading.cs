@@ -29,6 +29,7 @@ namespace GameEditorStudio
             //This method is NOT loading the files into any of the editors!
 
             WorkshopData.GameFiles.Clear();
+            WorkshopData.GameFilesFromInput.Clear();
             if (WorkshopData.IsProjectLoaded == false) { return; }
 
             try
@@ -61,9 +62,36 @@ namespace GameEditorStudio
                             WorkshopData.GameFiles.Add(gamefile);//Adding the GameFile to the Dictionary, with the Key of the FilePath so the key is ALWAYS unique.    
                         }
                     }
+
+                    if (LibraryGES.AlsoLoadInputFiles == true) //INPUT VERSION LOADING
+                    {
+                        foreach (XElement FileX in Filesxml.Descendants("File"))
+                        {
+                            GameFile gamefileFromInput = new(); //This class stores everything about a file.
+                            gamefileFromInput.FileName = FileX.Element("Name")?.Value;
+                            gamefileFromInput.FileLocation = FileX.Element("Location")?.Value;
+                            gamefileFromInput.FileNote = FileX.Element("Note")?.Value;
+                            gamefileFromInput.FileWorkshopTooltip = FileX.Element("Tooltip")?.Value;
+
+                            bool GameFileExists = false;
+                            foreach (GameFile TheGameFileFromInput in WorkshopData.GameFilesFromInput)
+                            {
+                                if (TheGameFileFromInput.FileLocation == gamefileFromInput.FileLocation)
+                                {
+                                    GameFileExists = true; //Don't add a file to workshop gamefiles if it's already loaded in.
+                                }
+                            }
+                            if (GameFileExists == false)
+                            {
+                                WorkshopData.GameFilesFromInput.Add(gamefileFromInput);//Adding the GameFile to the Dictionary, with the Key of the FilePath so the key is ALWAYS unique.    
+                            }
+                        }
+                    }
+                    
+
                 }
 
-                var listPart1 = Enumerable.Range(1, 50).ToList();
+                //var listPart1 = Enumerable.Range(1, 50).ToList();
                 double max = WorkshopData.GameFiles.Count;
                 double loadcounter = 0;
                 Database.GameLibrary.LoadingProgressBar.Maximum = 100;
@@ -72,6 +100,7 @@ namespace GameEditorStudio
                 WorkshopData.WorkshopXaml.HomeControl.LoadingProgressBar.Maximum = 100;
                 WorkshopData.WorkshopXaml.HomeControl.LoadingProgressBar.Value = 0;
                 WorkshopData.WorkshopXaml.HomeControl.LoadingPartText.Content = "Part 1: Loading Game Files...";
+
                 foreach (GameFile GameFile in WorkshopData.GameFiles)
                 {
                     Database.GameLibrary.LoadingStatusText.Content = GameFile.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFiles.Count + ")";
@@ -85,6 +114,7 @@ namespace GameEditorStudio
 
                     if (WorkshopData.LoadedProject.ProjectOutputDirectory != "" && File.Exists(Path.Combine(WorkshopData.LoadedProject.ProjectOutputDirectory, GameFile.FileLocation)))
                     {
+                        string Location = WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + GameFile.FileLocation;
                         GameFile.FileBytes = File.ReadAllBytes(WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + GameFile.FileLocation);
                     }
                     else if (WorkshopData.LoadedProject.ProjectInputDirectory != "")
@@ -101,6 +131,65 @@ namespace GameEditorStudio
                     Database.GameLibrary.LoadingProgressBar.Value = calc;
                     WorkshopData.WorkshopXaml.HomeControl.LoadingProgressBar.Value = calc;
                 }
+
+                if (LibraryGES.AlsoLoadInputFiles == true) //INPUT VERSION LOADING
+                {
+                    WorkshopData.WorkshopXaml.HomeControl.LoadingPartText.Content = "Part 1.5: Loading Game Files (from input)...";
+                    foreach (GameFile GameFileFromInput in WorkshopData.GameFilesFromInput)
+                    {
+                        //Database.GameLibrary.LoadingStatusText.Content = GameFileFromInput.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFilesFromInput.Count + ")";
+                        //WorkshopData.WorkshopXaml.HomeControl.LoadingStatusText.Content = GameFileFromInput.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFilesFromInput.Count + ")";
+                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+
+                        if (WorkshopData.LoadedProject.ProjectInputDirectory != "" && File.Exists(Path.Combine(WorkshopData.LoadedProject.ProjectInputDirectory, GameFileFromInput.FileLocation)))
+                        {
+                            GameFileFromInput.FileBytes = File.ReadAllBytes(WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + GameFileFromInput.FileLocation);
+                        }
+                        else
+                        {
+                            return;
+                        }
+
+
+
+                        //loadcounter++;
+                        //double percent = (loadcounter / max) * 100;
+                        //int calc = (int)percent;
+                        //Database.GameLibrary.LoadingProgressBar.Value = calc;
+                        //WorkshopData.WorkshopXaml.HomeControl.LoadingProgressBar.Value = calc;
+                    }
+                }
+                
+
+                //List<Task> loadFilesTasks = new();
+
+                //foreach (GameFile GameFile in WorkshopData.GameFiles)
+                //{
+                //    loadFilesTasks.Add(Task.Run(async () =>
+                //    {
+                //        if (WorkshopData.LoadedProject.ProjectOutputDirectory != "" && File.Exists(Path.Combine(WorkshopData.LoadedProject.ProjectOutputDirectory, GameFile.FileLocation)))
+                //        {
+                //            GameFile.FileBytes = File.ReadAllBytes(WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + GameFile.FileLocation);
+                //        }
+                //        else if (WorkshopData.LoadedProject.ProjectInputDirectory != "")
+                //        {
+                //            GameFile.FileBytes = File.ReadAllBytes(WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + GameFile.FileLocation);
+                //        }
+                //        else
+                //        {
+                //            return;
+                //        }
+
+                //    }));
+
+
+                //}
+                //await Task.WhenAll(loadFilesTasks);
             }
             catch
             {

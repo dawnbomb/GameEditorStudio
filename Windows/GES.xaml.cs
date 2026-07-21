@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static OfficeOpenXml.ExcelErrorValue;
 
 namespace GameEditorStudio
 {
@@ -26,6 +27,7 @@ namespace GameEditorStudio
             this.Title = "Game Editor Studio     Version: " + LibraryGES.VersionNumber + "   ( " + LibraryGES.VersionDate + " )";
             Database.GESMain = this;
 
+            ReadRecentWorkshopNames(); //Has to be before Game Library is added.
 
             GameLibrary Library = new();
             GESGrid.Children.Add(Library);
@@ -35,6 +37,34 @@ namespace GameEditorStudio
             GESGrid.Children.Add(tos);
             Grid.SetRowSpan(tos, 15);
             Grid.SetColumnSpan(tos, 15);
+
+
+
+            if (Properties.Settings.Default.FullscreenGESOnLaunch == true)
+            {
+                this.WindowState = WindowState.Maximized;
+            }
+
+            
+
+        }
+
+        private void ReadRecentWorkshopNames() 
+        {
+            LibraryGES.RecentWorkshops.Clear();
+            string RecentWorkshopNames = Properties.Settings.Default.RecentWorkshops;
+            if (!string.IsNullOrEmpty(RecentWorkshopNames))
+            {
+                string[] workshops = RecentWorkshopNames.Split('|');
+
+                foreach (string workshop in workshops)
+                {
+                    if (!string.IsNullOrWhiteSpace(workshop))
+                    {
+                        LibraryGES.RecentWorkshops.Add(workshop);
+                    }
+                }
+            }
         }
     }
 }

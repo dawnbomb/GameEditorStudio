@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -34,7 +35,12 @@ namespace GameEditorStudio
         {
             XElement xml = XElement.Load(TargetXML);
 
-            TextEditorData TextEditorClass = new();          //Creates a EditorClass
+            //TextEditorData TextEditorClass = null;          //Creates a EditorClass
+            //await Application.Current.Dispatcher.InvokeAsync(() =>
+            //{
+            //    TextEditorClass = new TextEditorData();
+            //});
+            TextEditorData TextEditorClass = new TextEditorData();
             TextEditorClass.WorkshopXaml = TheWorkshop;
             TextEditorClass.WorkshopData = Database;
             TextEditorClass.EditorName = Path.GetFileName(Path.GetDirectoryName(TargetXML));
@@ -55,7 +61,7 @@ namespace GameEditorStudio
                 }
             }
 
-            
+
             
             Database.GameEditors.Add(TextEditorClass); //Adds a core (aka the value) with the Key (New editor name from textbox) to the database dictionary.
             

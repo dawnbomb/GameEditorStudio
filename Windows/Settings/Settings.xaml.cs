@@ -405,6 +405,11 @@ namespace GameEditorStudio
         {
             this.Close();
         }
+
+        private void ButtonOpenSettingsFolderClick(object sender, RoutedEventArgs e)
+        {
+            CommandMethodsClass.OpenUserSettingsFolder();
+        }
     }
 
 

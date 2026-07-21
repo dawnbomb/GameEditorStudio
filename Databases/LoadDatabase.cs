@@ -111,7 +111,7 @@ namespace GameEditorStudio
         ////////////////////WORKSHOPS/////////////////////////
         //////////////////////////////////////////////////////
 
-        public void LoadWorkshops() 
+        public void LoadWorkshops_INCLUDING_EVENTS() 
         {
             if (Directory.Exists(LibraryGES.ApplicationLocation + "\\Workshops"))
             {
@@ -195,6 +195,7 @@ namespace GameEditorStudio
                                     workshopData.WorkshopEventResources.Add(EventResource);
 
                                     EventResource.Name = xmlEvent.Element("Name")?.Value;
+                                    EventResource.TooltipText = xmlEvent.Element("Tooltip")?.Value ?? "";
                                     EventResource.Location = xmlEvent.Element("Location")?.Value;
                                     EventResource.RequiredName = bool.TryParse(xmlEvent.Element("RequiredName")?.Value, out var result2) ? result2 : false;
                                     EventResource.Key = xmlEvent.Element("Key")?.Value;
@@ -530,18 +531,24 @@ namespace GameEditorStudio
                 TheTool.Location = toolNode["Location"].InnerText;
             }
 
-            
+
 
             //Part 2: Confirm the tool locations are still correct. If a tool is MIA, it's location updates to ""
             //Also automatically search the Tools folder and auto-update user paths to these.
+            if (!Directory.Exists(LibraryGES.ApplicationLocation + "\\Tools"))
+            {
+                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Tools");
+            }
             foreach (var tool in Database.Tools)
             {
+                
                 var files = Directory.GetFiles(LibraryGES.ApplicationLocation + "\\Tools", tool.ExeName, SearchOption.AllDirectories);
 
-                if (files.Length > 0)
+                if (files.Length == 1)
                 {
                     tool.Location = files[0]; // If the tool.exe is found, set the location.
                 }
+
 
                 if (!File.Exists(tool.Location))
                 {

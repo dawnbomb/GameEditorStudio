@@ -704,10 +704,13 @@ namespace GameEditorStudio
 
         private async void ItemsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) //When the selected item is changed, we save the current item entry info, and load the new items info.
         {
+            //if (DTEData.EntryClass != null) { DTEMethods.UpdateEntryValueHistory(DTEData.EntryClass); }           
+            
             if (WorkshopXaml.TreeViewSelectionEnabled == false) //I disable selection effects sometimes when modifying items in the collection while it is open.
             {
                 return;
             }
+            
             DTEData.DTEXaml.DescriptionsBottomBar.Visibility = Visibility.Collapsed;
 
             var selectedItem = e.NewValue as TreeViewItem;
@@ -802,12 +805,20 @@ namespace GameEditorStudio
                 if (FirstTime == false)
                 {
                     //Task.Run(() => {  EManager.UpdateEntryHexProperties(DTEData); }  );  
-                    EManager.UpdateEntryHexProperties(DTEData); //This also updates the cross reference sheet.
+
+                    if (DTEData.EntryClass != null) 
+                    {
+                        DTEMethods.EntryActivate(DTEData.EntryClass);
+                        //EManager.UpdateEntryHexProperties(DTEData); //This also updates the cross reference sheet.
+                        DTEMethods.UpdateEntryValueHistory(DTEData.EntryClass);
+                        DTEMethods.UpdateALLMathboxResults(DTEData.WorkshopData);
+                    }
+                    
                 }
                 //EManager.UpdateEntryHexProperties(DTEData); //This also updates the cross reference sheet.
                 FirstTime = false;
             }
-
+                        
             //TranslationsPanel translationsPanel = this.TranslationsPanel;
             //await translationsPanel.UpdateTranslationsPanel(data);
 

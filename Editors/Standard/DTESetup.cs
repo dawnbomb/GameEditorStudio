@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -372,8 +373,8 @@ namespace GameEditorStudio
             DockPanel.SetDock(itemGrid, Dock.Top);
             itemGrid.MinHeight = 100;
             itemGrid.MinWidth = 100;
-            itemGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#121216")); //Brushes.DarkGreen;
-                                                                                                          //itemGrid.Margin = new Thickness(8, 0, 0, 0);
+            itemGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0F0F0F")); //121216 //Brushes.DarkGreen;
+                                                                                                     //itemGrid.Margin = new Thickness(8, 0, 0, 0);
 
 
 
@@ -384,11 +385,21 @@ namespace GameEditorStudio
             //CatClass.ItemGrid.Drop += Grid_Drop;
             //CatClass.ItemGrid.DragOver += OnDragOver;
             CatClass.ItemGrid.AllowDrop = true; // Don't forget this!
+            //CatClass.ItemGrid.Drop += Grid_Drop;
+            //void Grid_Drop(object sender, DragEventArgs e)
+            //{
+            //    DTEMethods.DropGridItemsToBottomOfColumn(e, CatClass.ItemGrid, CatClass.GridItems, DTEData, CatClass, null);
+            //}
             CatClass.ItemGrid.Drop += Grid_Drop;
             void Grid_Drop(object sender, DragEventArgs e)
             {
                 DTEMethods.DropGridItemsToBottomOfColumn(e, CatClass.ItemGrid, CatClass.GridItems, DTEData, CatClass, null);                
+                e.Handled = true;
             }
+
+            
+            
+
             DTEData.MainDockPanel.LastChildFill = true; //Does nothing, i cant find out why last CatBorder won't fill... 
         }
 
@@ -398,9 +409,9 @@ namespace GameEditorStudio
         {
             Border GroupBorder = new();
             GroupClass.GroupBorder = GroupBorder;
-            GroupBorder.Margin = new Thickness(5, 5, 0, -3); //5 5 0 -1
-            GroupBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#352050")); //403069 //303030 //Brushes.LightBlue; //464646
-            GroupBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D1D23"));//Brushes.MediumPurple; //new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF1A20")); //Brushes.Transparent; //new SolidColorBrush((Color)ColorConverter.ConvertFromString("#141114"));  //Brushes.DarkBlue; //201A20
+            GroupBorder.Margin = new Thickness(5, 5, 2, -3); //5 5 0 -1
+            GroupBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#262626")); //352050 //403069 //303030 //Brushes.LightBlue; //464646
+            GroupBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#161616")); //1D1D23 //Brushes.MediumPurple; //new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF1A20")); //Brushes.Transparent; //new SolidColorBrush((Color)ColorConverter.ConvertFromString("#141114"));  //Brushes.DarkBlue; //201A20
             //GroupBorder.BorderBrush = Brushes.Transparent; 
             DockPanel.SetDock(GroupBorder, Dock.Top);
 
@@ -414,17 +425,24 @@ namespace GameEditorStudio
 
             DockPanel GroupHeader = new DockPanel();
             GroupHeader.Margin = new Thickness(0, 0, 0, 0);
-            GroupHeader.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0d0326"));  //Brushes.DarkBlue;
+            //GroupHeader.Background = Brushes.Transparent;
+            GroupHeader.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222222")); //0d0326 //Brushes.DarkBlue;
             DockPanel.SetDock(GroupHeader, Dock.Top);
             GroupClass.GroupPanel.Children.Add(GroupHeader);
             GroupHeader.LastChildFill = false;
             //GroupHeader.MaxHeight = 25;
             //GroupHeader.Height = 25;
+            //GroupHeader.Height = 25;
 
 
-            
             {
                 GroupClass.Visual = GroupClass.GroupBorder;
+
+                //Grid NotGrid = new Grid();
+                //NotGrid.Background = Brushes.Transparent;
+                //NotGrid.Height = 3;
+                //DockPanel.SetDock(NotGrid, Dock.Bottom);
+                //GroupClass.GroupPanel.Children.Add(NotGrid);
 
                 Grid itemGrid = new();
                 GroupClass.ItemGrid = itemGrid;
@@ -432,7 +450,7 @@ namespace GameEditorStudio
                 DockPanel.SetDock(itemGrid, Dock.Top);
                 itemGrid.MinHeight = 20;
                 itemGrid.MinWidth = 20;
-                itemGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D1323")); //Brushes.MediumPurple;
+                itemGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#161616")); //1D1323 //Brushes.MediumPurple;
 
                 GroupClass.ParentCategory.ItemGrid.Children.Add(GroupClass.GroupBorder); //maybe remove this?
 
@@ -597,6 +615,7 @@ namespace GameEditorStudio
             void Grid_Drop(object sender, DragEventArgs e)
             {
                 DTEMethods.DropGridItemsToBottomOfColumn(e, GroupClass.ItemGrid, GroupClass.GridItems, GroupClass.ParentEditor.DataTableEditorData, GroupClass.ParentCategory, GroupClass);
+                e.Handled = true;
             }
 
         }
@@ -678,7 +697,8 @@ namespace GameEditorStudio
 
             MenuItem EntryCreateNewGroup = new MenuItem();
             EntryClass.EntryCreateNewGroup = EntryCreateNewGroup;
-            EntryCreateNewGroup.Header = "  Create new group ";
+            EntryCreateNewGroup.Header = "Create Group";
+            EntryCreateNewGroup.ToolTip = "You can put entrys together inside a Group. \nYou can drag and drop entrys into a group as usual,\nand even move the group around.\n\nGroups do nothing on their own, \nthey are just another way to categorize entrys.";
             contextMenu.Items.Add(EntryCreateNewGroup);
             EntryCreateNewGroup.Click += new RoutedEventHandler(NewColumnGroup);
             void NewColumnGroup(object sender, RoutedEventArgs e)
@@ -719,13 +739,52 @@ namespace GameEditorStudio
 
 
             }
-                        
 
 
+            Separator separator = new Separator();
+            contextMenu.Items.Add(separator);
+            separator.Style = (Style)Application.Current.FindResource("DashLineForMenu");
+            //<Separator Style="{DynamicResource DashLineForMenu}"/>
 
+            MenuItem EntryCreateMathbox = new MenuItem();
+            EntryCreateMathbox.Header = "Create Mathbox";
+            EntryCreateMathbox.ToolTip = "A Mathbox is a type of special entry that can display \na value using a math formula based on entry X.\n\nFor example:\nEnemy HP(50) * 1.5 (75).\nSo the mathbox would show a value of 75.\n\nA mathbox is a great way to show \"the real value\" a game uses.\nExample 1: Enemys have diffrent stats based on difficulty (Hard mode HP).\nExample 2: A game where Atk = Str/2 and Def = Vit/4 (dragon quest).\nExample 3: Show buy price if player has 15% discount.\nExample 4: Show chance to join player's party when kill if applying elemental weakness bonus.\n\nMathboxes have many great uses, give them a try! \nPS: The right click menu of a mathbox lets you delete it.";
+            contextMenu.Items.Add(EntryCreateMathbox);
+            EntryCreateMathbox.Click += new RoutedEventHandler(NewMathbox);
+            void NewMathbox(object sender, RoutedEventArgs e)
+            {
+                //NewMathbox
+                MathboxData data = new MathboxData();
+                MathBox Mathbox = new(data);                
+                Mathbox.NewMathboxBasedOnEntry(EntryClass);
+
+                //Entry MathboxEntry = new();
+                //MathboxEntry.ParentEditor = EntryClass.ParentEditor;
+                //MathboxEntry.ParentCategory = EntryClass.ParentCategory;
+                //MathboxEntry.ParentGrid = EntryClass.ParentGrid;
+                //MathboxEntry.ParentGridItems = EntryClass.ParentGridItems;
+                //MathboxEntry.ParentGridItems.Add(MathboxEntry);
+                //MathboxEntry.Column = EntryClass.Column;
+                //MathboxEntry.Row = EntryClass.Row;
+                //MathboxEntry.RowSpan = 1 + EntryClass.RowSpan; //HUH?
+
+                ////I may need to bump the row of everything in the same column by 1? Or everything below this entry?
+
+                //CreateEntry(MathboxEntry);                
+
+
+                //DTEMethods.UpdateEditorGrids(EntryClass.ParentEditor.DataTableEditorData);
+
+
+            }
+
+            Separator separator2 = new Separator();
+            contextMenu.Items.Add(separator2);
+            separator2.Style = (Style)Application.Current.FindResource("DashLineForMenu");
+            //<Separator Style="{DynamicResource DashLineForMenu}"/>
 
             MenuItem MoveToNewLeftColumn = new MenuItem();
-            MoveToNewLeftColumn.Header = "  Move into New Column  (Left)";
+            MoveToNewLeftColumn.Header = "Move into New Column  (Left)";
             contextMenu.Items.Add(MoveToNewLeftColumn);
             MoveToNewLeftColumn.Click += new RoutedEventHandler(MoveToANewLeftColumn);
             void MoveToANewLeftColumn(object sender, RoutedEventArgs e)
@@ -748,7 +807,7 @@ namespace GameEditorStudio
             }
 
             MenuItem MoveToNewRightColumn = new MenuItem();
-            MoveToNewRightColumn.Header = "  Move into New Column  (Right)";
+            MoveToNewRightColumn.Header = "Move into New Column  (Right)";
             contextMenu.Items.Add(MoveToNewRightColumn);
             MoveToNewRightColumn.Click += new RoutedEventHandler(MoveToANewRightColumn);
             void MoveToANewRightColumn(object sender, RoutedEventArgs e)
@@ -787,7 +846,7 @@ namespace GameEditorStudio
             }
 
             MenuItem MoveToNewAboveCategory = new MenuItem();
-            MoveToNewAboveCategory.Header = "  Move into New Category  (Above)";
+            MoveToNewAboveCategory.Header = "Move into New Category  (Above)";
             contextMenu.Items.Add(MoveToNewAboveCategory);
             MoveToNewAboveCategory.Click += new RoutedEventHandler(MoveToANewAboveCategory);
             void MoveToANewAboveCategory(object sender, RoutedEventArgs e)
@@ -797,7 +856,7 @@ namespace GameEditorStudio
 
 
             MenuItem MoveToNewBelowCategory = new MenuItem();
-            MoveToNewBelowCategory.Header = "  Move into New Category  (Below)";
+            MoveToNewBelowCategory.Header = "Move into New Category  (Below)";
             contextMenu.Items.Add(MoveToNewBelowCategory);
             MoveToNewBelowCategory.Click += new RoutedEventHandler(MoveToANewBelowCategory);
             void MoveToANewBelowCategory(object sender, RoutedEventArgs e)
@@ -852,9 +911,6 @@ namespace GameEditorStudio
             ////////DRAG DROP CODE 
             EntryClass.Visual.MouseLeftButtonDown += Entry_Click;
             EntryClass.Visual.MouseMove += Entry_MouseMove;
-
-            //EntryClass.UnderlineBorder.MouseMove += Entry_MouseMove;
-            //EntryClass.EntryNameTextBlock.MouseMove += Entry_MouseMove;
             void Entry_Click(object sender, MouseButtonEventArgs e)
             {
                 if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
@@ -869,29 +925,26 @@ namespace GameEditorStudio
             }
             void Entry_MouseMove(object sender, MouseEventArgs e)
             {
-                //if (e.OriginalSource is TextBox)
-                //{
-                //    return; // If it's a TextBox, return and don't set the flag
-                //}
-                //e.Handled = true; // 🛑 Prevent the entry's parent from stealing the mouse move event, which would cause problems with dragging.
-                //return;
-
                 if (e.LeftButton == MouseButtonState.Pressed)
                 {
-                    if (e.OriginalSource is DependencyObject d &&
-                        (d is TextBox || d is ComboBox || d is Button || d is ToggleButton)) { e.Handled = true; return; }
+                    if (e.OriginalSource is DependencyObject d && (d is TextBox || d is ComboBox || d is Button || d is ToggleButton)) 
+                    {
+                        e.Handled = true; 
+                        return; 
+                    }
 
                     //||  d is Border //Was causing problems with entrys that have tooltips. I could not drag from the name aka the tooltip BORDER.
                     //but NOT having it blocks combo box (drop downs entrys) from opening. So instead i do this...
                     if (e.OriginalSource is DependencyObject b && (b is Border))
                     {
-                        if (b != EntryClass.UnderlineBorder) { e.Handled = true; return; }
+                        if (b != EntryClass.UnderlineBorder) 
+                        { 
+                            e.Handled = true; 
+                            return; 
+                        }
                     }
 
-                    DTEMethods.BeginDrag(
-                        EntryBorder,
-                        EntryClass,
-                        EntryClass.ParentEditor.DataTableEditorData.DTEXaml.TheScrollviewer);
+                    DTEMethods.BeginDrag(EntryBorder, EntryClass,EntryClass.ParentEditor.DataTableEditorData.DTEXaml.TheScrollviewer);
                 }
             }
 

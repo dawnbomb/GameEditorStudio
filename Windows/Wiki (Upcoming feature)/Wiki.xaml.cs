@@ -86,7 +86,12 @@ namespace GameEditorStudio
             {
                 LoadWiki(); //Origonally i made this, but when adding LoadOrder support, now it's vibe coaded because im lazy.
             }
-            
+
+            // Finally, build the UI
+            foreach (WikiFolder folder in LibraryGES.Wiki.Folders)
+            {
+                GenerateCategory(folder);
+            }
         }
 
         private void LoadWiki()
@@ -116,11 +121,7 @@ namespace GameEditorStudio
                     LoadFolderIntoWiki(dir);
             }
 
-            // Finally, build the UI
-            foreach (WikiFolder folder in LibraryGES.Wiki.Folders)
-            {
-                GenerateCategory(folder);
-            }
+            
 
             bool LoadFolderIntoWiki(string categoryPath)
             {

@@ -1,0 +1,73 @@
+﻿<UserControl x:Class="GameEditorStudio.Release"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d" 
+             d:DesignHeight="650" d:DesignWidth="1050">
+    <Grid>
+        <Label Content="GAME EDITOR STUDIO: RELEASE HELPER TOOL (because i use GES myself)" HorizontalAlignment="Left" Margin="40,0,0,0" VerticalAlignment="Top"/>
+
+        <ContentControl Margin="28,39,32,0" Height="150" VerticalAlignment="Top">
+            <Grid  Background="#FF5F5F5F">
+                <Label Content="From My GES Folder" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <Button Click="SetMyGESFolder" Content="Browse..." HorizontalAlignment="Left" Margin="10,34,0,0" VerticalAlignment="Top"/>
+                <TextBox Name="MyGESfolderTextbox" Margin="116,34,10,0" TextWrapping="NoWrap" Text="D:\Game Editor Studio" VerticalAlignment="Top" IsEnabled="False"/>
+
+                <Label Content="To My Release Folder" HorizontalAlignment="Left" Margin="267,71,0,0" VerticalAlignment="Top"/>
+                <Button Click="SetReleaseGESFolder" Content="Browse..." HorizontalAlignment="Left" Margin="10,106,0,0" VerticalAlignment="Top"/>
+                <TextBox Name="ReleaseGESFolderTextbox" Margin="116,105,10,0" TextWrapping="NoWrap" Text="D:\VS Projects\RELEASES\Game Editor Studio" VerticalAlignment="Top" IsEnabled="False"/>
+
+
+            </Grid>
+        </ContentControl>
+
+
+        <ContentControl Margin="28,200,0,0" Height="206" VerticalAlignment="Top" HorizontalAlignment="Left" Width="301">
+            <StackPanel Background="#FF4E4E4E">
+                <Label Content="From my GES Folder" FontSize="10" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Background="#FF232335" />
+                <CheckBox Name="CopyGESexe" Content="Copy Game Editor Studio.exe" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" IsChecked="True"/>
+                <CheckBox Name="CopyOtherFolder" Content="Copy Over Other Folder" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" IsChecked="True"/>
+                <Label Content="- No option to copy workshops folder&#xD;&#xA;  (Make a separate workshops page)" FontSize="10"/>
+                <!--<CheckBox Content="Copy Over Workshops Folder" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top"/>-->
+            </StackPanel>
+        </ContentControl>
+
+        <ContentControl Margin="334,200,0,0" Height="206" VerticalAlignment="Top" HorizontalAlignment="Left" Width="393">
+            <StackPanel  Background="#FF4E4E4E">
+                <Label Content="In Release Folder" FontSize="10" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Background="#FF232335" />
+                <CheckBox Name="DeleteProjectsFromRelease" Content="Delete Projects Folder from Release" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Center" IsChecked="True"/>
+                <CheckBox Name="DeleteUserSettingsFromRelease" Content="Delete User Settings Folder from Release" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" IsChecked="True"/>
+                <CheckBox Name="DeleteTablesFolderFromRelease" Content="Delete Tables Folder from Release" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" IsChecked="True"/>
+                <CheckBox Name="DeleteToolsFolderFromRelease" Content="Delete Tools Folder from Release" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" IsChecked="True"/>
+            </StackPanel>
+        </ContentControl>
+
+
+        <ContentControl Margin="743,200,0,0" Height="206" VerticalAlignment="Top" HorizontalAlignment="Left" Width="275">
+            <StackPanel  Background="#FF4E4E4E">
+                <Label Content="In Release/Other Folder" FontSize="10" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Background="#FF232335" />
+                <CheckBox Name="DeleteColorSplash" Content="Delete Other / Color Splash" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Center" IsChecked="True"/>
+                <CheckBox Name="DeleteToolImages" Content="Delete Other / Tool Images" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Center" IsChecked="True"/>
+                <CheckBox Name="DeleteWiki" Content="Delete Other / Wiki" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Center" IsChecked="True"/>
+            </StackPanel>
+        </ContentControl>
+
+        <ContentControl Margin="28,432,0,0" Height="165" VerticalAlignment="Top" HorizontalAlignment="Left" Width="406">
+            <StackPanel Background="#FF4E4E4E">
+                <Label Content="Extras" FontSize="10" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Background="#FF232335" />
+                <CheckBox Name="ZipReleaseFolder" Content="Zip Release Folder (Current Version Name)" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" IsChecked="True"/>
+                <CheckBox Name="OpenZippedLocation" Content="Also: Open zip folder location" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" IsChecked="True"/>
+                <!--<CheckBox Name="OpenGESGithub" Content="Also: Open GES Github" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" IsChecked="True"/>-->
+                <Button Click="OpenGESGithub" Content="Open GES Github" Margin="10"/>
+            </StackPanel>
+        </ContentControl>
+
+        <Button Click="DOIT" Content="DO IT!" HorizontalAlignment="Left" Margin="652,494,0,0" VerticalAlignment="Top"/>
+        <Label Content="Don't forget: Push update to gibhub!" HorizontalAlignment="Left" Margin="512,432,0,0" VerticalAlignment="Top"/>
+        <Label Content="Remove PixelWPF: Make it some &#xD;&#xA;kind of special folder?" HorizontalAlignment="Left" Margin="538,539,0,0" VerticalAlignment="Top"/>
+
+
+    </Grid>
+</UserControl>

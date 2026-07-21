@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,7 +63,7 @@ namespace GameEditorStudio
             DebugMenu.Visibility = Visibility.Collapsed; //Show only in debug mode.
             HUDReshade.Visibility = Visibility.Collapsed;  //Show only in debug mode.
             WikiButton.Visibility = Visibility.Collapsed;  
-            LibraryButton.Visibility = Visibility.Collapsed;
+            MenuItemOpenGESReleaseFolder.Visibility = Visibility.Collapsed;
             #endif
 
         }
@@ -149,6 +150,7 @@ namespace GameEditorStudio
             if (GameLibrary != null) //When in the Game Library.  We grab the currently selected workshop.
             {
                 WorkshopData = GameLibrary.SelectedWorkshop;
+                LibraryButton.Visibility = Visibility.Collapsed;
             }
             //The workshop control loads itself as a reference on creation, and never again. So it doesn't need to update. 
             
@@ -878,20 +880,20 @@ namespace GameEditorStudio
             MethodData.GameLibrary = GameLibrary;
             MethodData.WorkshopData = WorkshopData;
             CommandMethodsClass.OpenWorkshopFolder(MethodData);
-
         }
-
         
-
         
 
         private void OpenSettingsWindow(object sender, RoutedEventArgs e)
         {
-
             UserSettings UserSettings = new();
-            UserSettings.Show();                                    
+            UserSettings.Show();
+        }
 
-
+        private void OpenReleaseWindow(object sender, RoutedEventArgs e)
+        {
+            ReleaseWindow ReleaseWindow = new();
+            ReleaseWindow.Show();
         }
 
         private void OpenDevWindow(object sender, RoutedEventArgs e)
@@ -1180,7 +1182,9 @@ namespace GameEditorStudio
 
         private void ExitWorkshop(object sender, RoutedEventArgs e)
         {
-            try //Im to lazy to check if were in a workshop right now, so heres a try catch instead. 
+            //This is the back button to exit a workshop.
+
+            try //I'm to lazy to check if were actually in a workshop right now, so heres a try catch instead. 
             {
                 ((System.Windows.Controls.Panel)WorkshopData.WorkshopXaml.Parent).Children.Remove(WorkshopData.WorkshopXaml);
             } 
@@ -1201,6 +1205,38 @@ namespace GameEditorStudio
         private void DebugPlayPersona5Crit(object sender, RoutedEventArgs e)
         {
             PixelWPF.SoundEngine.PlayPersona5Crit();
+        }
+
+
+
+
+        ////////////////////////////////////////////////////////////////////
+        ///////////////////////////  SETTINGS  /////////////////////////////
+        ////////////////////////////////////////////////////////////////////
+                
+
+        private void SaveSettings(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.Save();
+        }
+
+        private void MenuShowRecentWorkshopsClick(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.Save();
+            if (GameLibrary != null) 
+            {
+                if (Properties.Settings.Default.ShowRecentWorkshops == true) { GameLibrary.RecentWorkshopsContent.Visibility = Visibility.Visible; }
+                if (Properties.Settings.Default.ShowRecentWorkshops == false) { GameLibrary.RecentWorkshopsContent.Visibility = Visibility.Collapsed; }
+            }
+        }
+
+        private void OpenGESReleaseFolder(object sender, RoutedEventArgs e)
+        {
+            if (Directory.Exists("D:\\VS Projects\\RELEASES\\Game Editor Studio"))
+            {
+                LibraryGES.OpenFolder("D:\\VS Projects\\RELEASES\\Game Editor Studio");
+            }
+
         }
     }
 }

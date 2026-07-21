@@ -7,7 +7,7 @@ Game Editor Studio (GES) is a program that lets you create highly customizable e
 ## [Download Latest Build](https://github.com/dawnbomb/GameEditorStudio/releases/latest)
 > Note that automatic updates are not a thing yet, so for now you will need to manually update every so often.
 
-![The Game Library screen selecting the Vesperia Workshop](Graphics/Examples/GES0.1.5VesperiaWorkshop.png)
+![The Game Library screen selecting the Vesperia Workshop](Graphics/Examples/GESv0.3.2Home.png)
 
 ![The Vesperia Enemy Editor](Graphics/Examples/GES0.1.5VesperiaEnemyEditor.png)
 

@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Formats.Asn1;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -33,6 +34,9 @@ namespace GameEditorStudio
                     {
                         UpdateGridLayout(group.ItemGrid, group.GridItems);
                         group.ItemGrid.UpdateLayout();
+
+                        //group.ItemGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto, MinHeight = 0 }); //GridLength.Auto //Height = new GridLength(42), //MaxHeight = 42, MinHeight = 10
+                        //group.ItemGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto, MinWidth = 0 }); //GridLength.Auto
                     }
 
                     //if (item.ParentGroup != null) {  }
@@ -120,6 +124,19 @@ namespace GameEditorStudio
                             {
                                 entry.EntryBorder.Margin = new Thickness(5, 5, 0, -1);
                                 entry.EntryCreateNewGroup.IsEnabled = true;
+                            }
+                        }
+                        if (item is MathboxData mathbox)
+                        {
+                            if (mathbox.ParentGroup != null) //if in group.
+                            {
+                                mathbox.Mathbox.MathboxBorder.Margin = new Thickness(3, 5, 3, -1);
+                                mathbox.CreateNewGroup.IsEnabled = false;
+                            }
+                            else //if not in group.
+                            {
+                                mathbox.Mathbox.MathboxBorder.Margin = new Thickness(5, 5, 0, -1);
+                                mathbox.CreateNewGroup.IsEnabled = true;
                             }
                         }
                     }
@@ -397,9 +414,8 @@ namespace GameEditorStudio
                 static void NormalizeNameWidths(List<GridItem> items)
                 {
                     // Group entries by column
-                    var entriesByColumn = items
-                        .OfType<Entry>()
-                        .GroupBy(e => e.Column);
+                    var entriesByColumn = items.OfType<Entry>().GroupBy(e => e.Column);
+                    var mathsByColumn = items.OfType<MathboxData>().GroupBy(e => e.Column);
 
                     foreach (var columnGroup in entriesByColumn)
                     {
@@ -413,15 +429,33 @@ namespace GameEditorStudio
                         }
 
                         // Find the widest label in this column
-                        double maxWidth = entries
-                            .Select(e => e.EntryNameTextBlock.DesiredSize.Width)
-                            .DefaultIfEmpty(0)
-                            .Max();
+                        double maxWidth = entries.Select(e => e.EntryNameTextBlock.DesiredSize.Width).DefaultIfEmpty(0).Max();
 
                         // Apply the maximum width to all entries in this column
                         foreach (var entry in entries)
                         {
                             entry.EntryNameTextBlock.MinWidth = maxWidth;
+                        }
+                    }
+
+                    foreach (var columnGroup in mathsByColumn)
+                    {
+                        var maths = columnGroup.ToList();
+
+                        // Reset all widths to measure natural size
+                        foreach (var math in maths)
+                        {
+                            math.Mathbox.MathboxLabel.MinWidth = 0;
+                            math.Mathbox.MathboxLabel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                        }
+
+                        // Find the widest label in this column
+                        double maxWidth = maths.Select(e => e.Mathbox.MathboxLabel.DesiredSize.Width).DefaultIfEmpty(0).Max();
+
+                        // Apply the maximum width to all entries in this column
+                        foreach (var math in maths)
+                        {
+                            math.Mathbox.MathboxLabel.MinWidth = maxWidth;
                         }
                     }
                 }
@@ -775,15 +809,15 @@ namespace GameEditorStudio
 
             // 1. Calculate where the user dropped
             Point dropPoint = draginfo.GetPosition(targetGrid);
-            int dropColumn = DTEMethods.GetColumnAt(targetGrid, dropPoint.X);
+            //int dropColumn = DTEMethods.GetColumnAt(targetGrid, dropPoint.X); //old drop method, before i allowed grid items to drop into a group's non-existant extra column.
+            int dropColumn = DTEMethods.GetColumnAt(targetGrid, dropPoint.X, group);
             int dropRow = DTEMethods.GetRowAt(targetGrid, dropPoint.Y);
 
             // 2. NEW VALIDATION: Calculate available space before hitting a group or existing item
             int availableRows = CalculateAvailableRows(destItems, dropColumn, dropRow);
             int requiredRows = draggedItems.Sum(i => i.RowSpan);
 
-            if (requiredRows > availableRows)
-                return; // ❌ Not enough space
+            if (requiredRows > availableRows) return; // ❌ Not enough space
 
             // 3. Update the Back-End Data (The "Model")
             foreach (var item in draggedItems)
@@ -875,16 +909,130 @@ namespace GameEditorStudio
 
 
 
+        //public static void UpdateEntryValueHistoryOLD(Entry EntryClass)
+        //{            
+
+        //    if (EntryClass.EntryValueHistoryOLD.Count != 0)
+        //    {
+        //        if (EntryClass.EntryByteDecimal != EntryClass.EntryValueHistoryOLD[0])
+        //        {
+        //            EntryClass.EntryValueHistoryOLD.Insert(0, EntryClass.EntryByteDecimal);
+        //        }
+        //    }
+
+        //    if (EntryClass.EntryValueHistoryOLD.Count == 0 && EntryClass.EntryByteDecimal != EntryClass.EntryValueOnProjectLoadFromOutput)
+        //    {
+        //        EntryClass.EntryValueHistoryOLD.Add(EntryClass.EntryByteDecimal);
+        //    }
+
+        //    int HistoryMax = 5;
+        //    if (EntryClass.EntryValueHistoryOLD.Count > HistoryMax) { EntryClass.EntryValueHistoryOLD.RemoveAt(HistoryMax); }
+        //    if (EntryClass.EntryValueHistoryOLD.Count > HistoryMax) { EntryClass.EntryValueHistoryOLD.RemoveAt(HistoryMax); }
+        //    if (EntryClass.EntryValueHistoryOLD.Count > HistoryMax) { EntryClass.EntryValueHistoryOLD.RemoveAt(HistoryMax); }
+        //}
+
+        public static void LoadEntryOutputValues(Entry EntryClass) 
+        {
+            if (EntryClass.ParentEditor.DataTableEditorData.WorkshopData.IsProjectLoaded == false){ return; }
+            if (EntryClass.EntryValueOnProjectLoadFromOutput != "") { return; }
+
+            DataTableEditorData DTEData = EntryClass.ParentEditor.DataTableEditorData;
+
+            if (EntryClass.Name == "HP")
+            {
+                string test = "dsfafd";
+            }
+            if (EntryClass.Endianness == "1")
+            {
+                EntryClass.EntryValueOnProjectLoadFromOutput = DTEData.DataTable.FileDataTable.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
+                //InputFile.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
+            }
+            else if (EntryClass.Endianness == "2B")
+            {
+                ushort value2 = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+                ushort swappedValue2 = (ushort)IPAddress.HostToNetworkOrder((short)value2); // Swap the endianness
+                EntryClass.EntryValueOnProjectLoadFromOutput = swappedValue2.ToString("D");
+            }
+            else if (EntryClass.Endianness == "4B")
+            {
+                uint value = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+                byte[] valueBytes = BitConverter.GetBytes(value);
+                Array.Reverse(valueBytes);
+                uint swappedValue = BitConverter.ToUInt32(valueBytes, 0);
+                EntryClass.EntryValueOnProjectLoadFromOutput = swappedValue.ToString("D");
+            }
+            else if (EntryClass.Endianness == "2L")
+            {
+                EntryClass.EntryValueOnProjectLoadFromOutput = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+
+            }
+            else if (EntryClass.Endianness == "4L")
+            {
+                EntryClass.EntryValueOnProjectLoadFromOutput = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+
+            }
+        }
+
+        public static void UpdateEntryValueHistory(Entry EntryClass) 
+        {
+            if (EntryClass.ParentEditor.WorkshopData.IsProjectLoaded == false) { return; }
+            TreeViewItem item = (TreeViewItem)EntryClass.ParentEditor.DataTableEditorData.DTEXaml.LeftBar.ItemsTree.SelectedItem;
+            if (item == null) { return; }
+            TextInfo textInfo = (TextInfo)item.Tag;
+            string key = textInfo.ItemKey;
+
+            if (!EntryClass.EntryValueHistory.TryGetValue(key, out List<string> history))
+            {
+                history = new List<string>();
+                EntryClass.EntryValueHistory[key] = history;
+            }
+
+            if (history.Count == 0)
+            {
+                history.Add(EntryClass.EntryByteDecimal);
+            }
+            else if (history[0] != EntryClass.EntryByteDecimal)
+            {
+                history.Insert(0, EntryClass.EntryByteDecimal);
+            }
+
+            while (history.Count > 5)
+            {
+                history.RemoveAt(5);
+            }
 
 
+            EntryClass.ParentEditor.DataTableEditorData.DTEXaml.RightBar.EntryValueHistoryStackPanel.Children.Clear();
 
+            //TreeViewItem treeItem = EntryClass.ParentEditor.DataTableEditorData.DTEXaml.LeftBar.ItemsTree.SelectedItem as TreeViewItem;
+            //TextInfo textInfo = treeItem?.Tag as TextInfo;
 
+            //if (textInfo != null && EntryClass.EntryValueHistory.TryGetValue(textInfo.ItemKey, out List<string> history))
+            //{
+            //    for (int i = 1; i < history.Count; i++)
+            //    {
+            //        Label label = new Label();
+            //        label.Content = $"{i} Edit Ago: {history[i]}";
+            //        RightBar.EntryValueHistoryStackPanel.Children.Add(label);
+            //    }
+            //}
+
+            for (int i = 1; i < history.Count; i++)
+            {
+                Label label = new Label();
+                label.Content = $"{i} Edit Ago: {history[i]}";
+                EntryClass.ParentEditor.DataTableEditorData.DTEXaml.RightBar.EntryValueHistoryStackPanel.Children.Add(label);
+            }
+        }
 
 
         public static void EntryActivate(Entry EntryClass) 
         {
             //if (TheWorkshop.IsPreviewMode == true) { return; }            
             Workshop TheWorkshop = EntryClass.ParentEditor.WorkshopXaml;
+
+            if (EntryClass != EntryClass.ParentEditor.DataTableEditorData.EntryClass) { UpdateEntryValueHistory(EntryClass); }
+            
 
             EntryManager EntryData = new();
             EntryData.SetSelectedEntry(EntryClass);
@@ -1229,12 +1377,22 @@ namespace GameEditorStudio
             destItems.Add(item);
         }
 
-        
 
 
 
 
-        public static int GetColumnAt(Grid grid, double x)
+
+        //public static int GetColumnAt(Grid grid, double x)
+        //{
+        //    double accumulatedWidth = 0;
+        //    for (int i = 0; i < grid.ColumnDefinitions.Count; i++)
+        //    {
+        //        accumulatedWidth += grid.ColumnDefinitions[i].ActualWidth;
+        //        if (x <= accumulatedWidth) return i;
+        //    }
+        //    return grid.ColumnDefinitions.Count - 1;
+        //}
+        public static int GetColumnAt(Grid grid, double x, Group? group)
         {
             double accumulatedWidth = 0;
             for (int i = 0; i < grid.ColumnDefinitions.Count; i++)
@@ -1242,6 +1400,9 @@ namespace GameEditorStudio
                 accumulatedWidth += grid.ColumnDefinitions[i].ActualWidth;
                 if (x <= accumulatedWidth) return i;
             }
+            if (group != null)
+                return grid.ColumnDefinitions.Count;
+
             return grid.ColumnDefinitions.Count - 1;
         }
 
@@ -1375,7 +1536,13 @@ namespace GameEditorStudio
         }
 
 
-
+        public static void UpdateALLMathboxResults(WorkshopData WorkshopData) 
+        {
+            foreach (MathboxData mathboxdata in WorkshopData.MasterMathboxList) 
+            {
+                mathboxdata.Mathbox.UpdateMathResult();
+            }            
+        }
 
 
 

@@ -312,12 +312,32 @@ namespace GameEditorStudio
 
         }
 
-
+        private void DocumentNameBoxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            bool isValid = PixelWPF.LibraryPixel.CheckIfValidFolderName(DocumentNameBox.Text);
+            if (isValid)
+            {
+                DocumentNameBox.Foreground = new SolidColorBrush(Colors.White);
+                return;
+            }
+            else
+            {
+                DocumentNameBox.Foreground = new SolidColorBrush(Colors.Red);
+                return;
+            }
+        }
 
         private void DocumentNameBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (WorkshopData == null) { return; }
             if (WorkshopData.CurrentDocument == null) { return; }
+
+            bool isValid = PixelWPF.LibraryPixel.CheckIfValidFolderName(DocumentNameBox.Text);
+            if (!isValid)
+            {
+                DocumentNameBox.Foreground = new SolidColorBrush(Colors.Red);
+                return;
+            }
 
             if (e.Key == Key.Enter)
             {

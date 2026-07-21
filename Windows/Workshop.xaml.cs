@@ -60,7 +60,7 @@ namespace GameEditorStudio
         
         public WorkshopData WorkshopData { get; set; } //The database of this workshop.  
 
-        public bool IsPreviewMode { get; set; } //VS preview mode. In preview mode, a project folder and input directory are not used, to allow users to preview a workshop. 
+        public bool IsPreviewMode { get; set; } = true; //VS preview mode. In preview mode, a project folder and input directory are not used, to allow users to preview a workshop. 
         
         public bool TreeViewSelectionEnabled { get; set; } = true; //Move this later, but both Data Table Editor Left and Right bar use this.
 
@@ -68,7 +68,7 @@ namespace GameEditorStudio
         public UserControlEditorIcons UCGraphicsEditor { get; set; }
 
 
-        public Workshop(WorkshopData mydata, Project Project, bool IsWorkshopPreviewModeActive = false) //GameLibrary GameLibrary
+        public Workshop(WorkshopData mydata) 
         {
             InitializeComponent();
 
@@ -83,85 +83,49 @@ namespace GameEditorStudio
             }
 
             #if DEBUG
+            #else            
+            #endif            
 
-            #else
-            
-            #endif
-            
-            IsPreviewMode = IsWorkshopPreviewModeActive;
-            WorkshopData.LoadedProject = Project;  
-            if (IsPreviewMode == false)
-            { //LOAD PROJECT 
-                WorkshopData.IsProjectLoaded = true; //FOR NOW
+            //Loaded += AfterXamlLoads;
+            AfterXamlLoads(); //This is an async method
+        }
 
-                LoadWorkshopDatabaseCode LoadDatabaseB = new();
-                LoadDatabaseB.LoadAllProjectDocuments(WorkshopData);
-                WorkshopData.WorkshopXaml.MenusForToolsAndEvents.SetupTopMenuForProject(WorkshopData.WorkshopXaml);
+        private async Task AfterXamlLoads()
+        {
+            this.Visibility = Visibility.Hidden;
+            //Loaded -= AfterXamlLoads; // Optional, prevents running twice
 
-                FileLoading fileLoading = new();
-                fileLoading.TryLoadAllGameFilesIntoWorkshopDatabase(WorkshopData); //First we load workshop files into the database. }
-
-                HomeControl.HomeLoadProjectButton.Visibility = Visibility.Collapsed; 
-                HomeControl.HomeNewProjectButton.Visibility = Visibility.Collapsed; 
-                HomeControl.HomeUnloadProjectButton.Visibility = Visibility.Collapsed; 
-            }
-
-            
-            
             LoadWorkshopDatabaseCode LoadDatabase = new();
-            LoadDatabase.LoadEveryEditorXMLIntoWorkshopData(this, WorkshopData); //Then we load the editor info into the database.
+
+            
+            Stopwatch timer1 = Stopwatch.StartNew();
+            await LoadDatabase.LoadEveryEditorXMLIntoWorkshopData(this, WorkshopData); //Then we load the editor info into the database.
+            timer1.Stop(); Debug.WriteLine($"Load Workshop XML Finished in {timer1.ElapsedMilliseconds} ms");
+
+            
+            //string BreakpointTest = "here";
+
+            Stopwatch timer2 = Stopwatch.StartNew();
             LoadDatabase.GenerateAllEditorXAML(WorkshopData);
-            LoadDatabase.LoadAllWorkshopDocuments(WorkshopData);           
+            timer2.Stop(); Debug.WriteLine($"Generate All Editor Xamls Finished in {timer2.ElapsedMilliseconds} ms");
+
+            LoadDatabase.LoadAllWorkshopDocuments(WorkshopData);
+
+
             DTEMethods.UpdateHotbarForAllDTEEditors(WorkshopData); //Syncs the hotbar icon state between all DTE editors. 
-            
-            
-            
 
 
-            if (IsPreviewMode == true) 
-            {
-                //PropertiesTextboxEditorName.IsEnabled = false;
-                //PropertiesEditorReadGameDataFrom.IsEnabled = false;
-                //EditorOutputLocationTextbox.IsEnabled = false;
-                //OpenInputLocationButton.IsEnabled = false;
-                //OpenOutputLocationButton.IsEnabled = false;
-                
-                //PropertiesEditorNameTableCharacterSetDropdown.IsEnabled = false;
-                //PropertiesEditorNameTableStartByte.IsEnabled = false;
-                //PropertiesEditorNameTableRowSize.IsEnabled = false;
-                //PropertiesEditorNameTableTextSize.IsEnabled = false;
-                //PropertiesEditorNameCount.IsEnabled = false;
-                
-                //DataTableFileBox.IsEnabled = false;
-                //PropertiesEditorTableStart.IsEnabled = false;
-                //PropertiesEditorTableWidth.IsEnabled = false;
-                
-
-                //PropertiesRowNameBox.IsEnabled = false;
-                //PropertiesRowTooltipBox.IsEnabled = false;
-
-                //PropertiesGroupNameBox.IsEnabled = false;
-                //PropertiesGroupTooltipBox.IsEnabled = false;
-
-                //PropertiesNameBox.IsEnabled = false;
-                //HideNameCheckbox.IsEnabled = false;
-                //HideEntryCheckbox.IsEnabled = false;
-                //PropertiesEntryByteSizeComboBox.IsEnabled = false;
-                //PropertiesEntryType.IsEnabled = false;
-                //NumberboxSignCheckbox.IsEnabled = false;
-                //DropdownMenuType.IsEnabled = false;
-                //foreach (ComboBoxItem item in DropdownMenuType.Items) { item.IsEnabled = false; }
-                //ButtonMenuManager.IsEnabled = false;
-                //EntryNoteTextbox.IsEnabled = false;
-                
-                //IconManagerButton.IsEnabled = false; 
-            }            
 
             GC.RefreshMemoryLimit(); //Not sure if useful, it's a new .net8 feature to automatically increase memory limit as needed. Might reduce lag? Probably won't hurt? 
 
-            HomeControl.HomeSetup(WorkshopData); //Sets up the Home Tab.        
-        }
+            HomeControl.HomeSetup(WorkshopData); //Sets up the Home Tab.
 
+            this.Visibility = Visibility.Visible;
+
+            Database.GESMain.GESGrid.Children.Add(this);
+            Database.GameLibrary.LoadingPanel.Visibility = Visibility.Collapsed;
+            if (Properties.Settings.Default.WorkshopLoadSound == true && Properties.Settings.Default.AutoLoadLastProject == false) { PixelWPF.SoundEngine.PlayEtrianUHappy(); }
+        }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////HUD//////////////////////////////////////////////////////////////////////////

@@ -20,8 +20,8 @@
 
                 <Grid>
                     <Label Content="Editor Name:" FontSize="20" HorizontalAlignment="Left" Margin="10,13,0,0" VerticalAlignment="Top"/>
-                    <TextBox x:Name="TextboxEditorName" HorizontalAlignment="Left" Margin="139,17,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160" FontSize="20" TextChanged="EditorNameTextboxTextChanged"/>
-                    <Label Content="The name should be plural and without the word &quot;editor&quot; (Enemys, Weapons, Items, Skills). &#xA;If you are not sure what the data is for add a question mark (Spells?, Classes?, Arts?). &#xA;If you have no clue what the data is, name it something like Unknown or ???." HorizontalAlignment="Left" Margin="10,49,0,0" VerticalAlignment="Top"/>
+                    <TextBox TextChanged="EditorNameTextboxTextChanged" Name="TextboxEditorName" HorizontalAlignment="Left" Margin="139,17,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160" FontSize="20" />
+                    <Label Content="The name should be plural and without the word &quot;editor&quot; (Enemys, Weapons, Items, Skills). &#xA;If you are not sure what the data is, add a question mark (Spells?, Classes?, Arts?). &#xA;If you have no clue what the data is, maybe &quot;???&quot;." HorizontalAlignment="Left" Margin="10,53,0,0" VerticalAlignment="Top"/>
 
                     <!--<Label Content="Editor Icon:"  FontSize="32" HorizontalAlignment="Left" Margin="191,125,0,0" VerticalAlignment="Top"/>
 <Label Content="( Yes selecting an icon&#xD;&#xA;is mandatory :P )" HorizontalAlignment="Left" Margin="191,169,0,0" VerticalAlignment="Top"/>
@@ -32,29 +32,35 @@
     </DockPanel>
 </Border>
 <local:UserControlEditorIcons x:Name="MenusForToolsAndEvents" Margin="592,10,10,0" Height="531" VerticalAlignment="Top"  />-->
-                    <Label x:Name="LabelErrorNotice" Content="" HorizontalAlignment="Left" Margin="203,233,0,0" VerticalAlignment="Top"  Foreground="Red" />
-                    <Label Content="TIP: If this game needs to repack files (like when romhacking) &#xD;&#xA;then when you have time you should probably learn about the&#xD;&#xA;eventing system and setup automatic file repacking." HorizontalAlignment="Left" Margin="10,550,0,0" VerticalAlignment="Top"/>
+                    <Label Name="LabelErrorNotice" Content="No Editor Name" HorizontalAlignment="Left" Margin="313,14,0,0" VerticalAlignment="Top"  Foreground="Red" />
 
-                    <Border Margin="13,194,0,0" Height="351" VerticalAlignment="Top" HorizontalAlignment="Left" Width="871">
+                    <Label Content="TIP: If this game needs to repack files (like when romhacking), &#xA;then when you have time you should probably learn about the&#xA;eventing system and setup automatic file repacking." HorizontalAlignment="Left" Margin="123,141,0,0" VerticalAlignment="Top" Background="#FF191919"/>
+
+                    <Border Margin="13,228,0,24" HorizontalAlignment="Left" Width="871">
                         <ScrollViewer >
                             <Grid>
                                 <Label Content="Editor types" FontSize="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,15,0,0"/>
-                                <Button Content="Data Table Editor" HorizontalAlignment="Left" Margin="5,80,0,0" VerticalAlignment="Top" Height="73" Width="238" Click="NewDataTableEditor"/>
-                                <Label Content="Create a data table editor for standard game data. &#xA;(Character Editor, Weapon Editor, Armors, &#xA;Accessorys, Spells, items, Enemys, Shops, Etc)." HorizontalAlignment="Left" Margin="244,74,0,0" VerticalAlignment="Top"/>
-                                <Button Content="Text Editor" HorizontalAlignment="Left" Margin="5,171,0,0" VerticalAlignment="Top" Height="72" Width="238" Click="StartNewTextEditor"/>
-                                <Label Content="This editor lets you group .txt, xml, etc files.&#xA;Kinda like how Notepad++ or obsidian does. &#xA;Best for code scripts like Enemy AI or Events.  " HorizontalAlignment="Left" Margin="249,166,0,0" VerticalAlignment="Top"/>
-                                <Button Content="Text Table Editor&#xD;&#xA;  (Coming soon)" HorizontalAlignment="Left" Margin="7,262,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
-                                <Label Content="Will be for multi-line text tables.  Note: &#xA;Editors already edit Names &amp; Descriptions. &#xA;This is for translations (Cutscene, Dialogue, etc).  " HorizontalAlignment="Left" Margin="249,257,0,0" VerticalAlignment="Top"/>
-                                <Button Content="Trigger Event&#xD;&#xA;  (Coming soon)" HorizontalAlignment="Left" Margin="7,354,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
-                                <Label Content="It will look like an editor, but triggers an event.&#xA;Set it to open third party editors! :D &#xA;(Graphics editor, Music, 3D Maps, etc)  " HorizontalAlignment="Left" Margin="249,346,0,0" VerticalAlignment="Top"/>
-                                <Button Content="XML Editor&#xD;&#xA;  (Coming soon)" HorizontalAlignment="Left" Margin="10,440,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
-                                <Button Content="JSON Editor&#xD;&#xA;  (Coming soon)" HorizontalAlignment="Left" Margin="10,523,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
-                                <Label Content="PS: If making a standard editor, fullscreen this or you cant &#xD;&#xA;see the full tutorial images. I will improve this later :(" HorizontalAlignment="Left" Margin="249,6,0,0" VerticalAlignment="Top" Background="#FF001E31" Foreground="#FF83FFF1"/>
+
+                                <Button Click="NewDataTableEditor" Content="Data Table Editor" HorizontalAlignment="Left" Margin="5,75,0,0" VerticalAlignment="Top" Height="73" Width="238" />
+                                <Label Content="Create a data table editor for standard game data (Hex). &#xA;(Character Editor, Weapon Editor, Armors, &#xA;Accessorys, Spells, items, Enemys, Shops, Etc)." HorizontalAlignment="Left" Margin="244,69,0,0" VerticalAlignment="Top"/>
+                                <Button Content="Text Editor" HorizontalAlignment="Left" Margin="5,168,0,0" VerticalAlignment="Top" Height="72" Width="238" Click="StartNewTextEditor"/>
+                                <Label Content="Lets you group text (.txt, .xml, etc) files together.&#xA;Kinda like how obsidian does. &#xA;Best for editing code scripts like Enemy AI or Events.  " HorizontalAlignment="Left" Margin="249,163,0,0" VerticalAlignment="Top"/>
+                                <Button Content="JSON Editor&#xA;  (Sometime... 2027?)" HorizontalAlignment="Left" Margin="5,263,0,0" VerticalAlignment="Top" Height="70" Width="238" Background="#FF3E0101"/>
+                                <Label Content="Probably the next editor I'll add. Unreal Engine games &#xD;&#xA;would use this. (Persona3/4, DQ11S, DQ3, Octopath, &#xD;&#xA;Metaphor, KH3, FF7, SMTV, Tales of Arise, etc)" Margin="249,256,69,328"/>
+                                <Button Content="Text Table Editor&#xA;  (Coming WAY later)" HorizontalAlignment="Left" Margin="5,353,0,0" VerticalAlignment="Top" Height="70" Width="238" Background="#FF3E0101"/>
+                                <Label Content="Will be for multi-line text tables. IE dialogue editor.&#xD;&#xA;Note: Editors already edit Names &amp; Descriptions. &#xA;This is for translations (Cutscene, Dialogue, etc).  " HorizontalAlignment="Left" Margin="249,345,0,0" VerticalAlignment="Top"/>
+                                <Button Content="Trigger Event&#xA;  (Coming WAY later)" HorizontalAlignment="Left" Margin="5,441,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
+                                <Label Content="It will look like an editor, but triggers an event.&#xA;(So it can be set to open third party editors!) :D &#xA;(Graphics editor, Music, 3D Maps, etc)  " HorizontalAlignment="Left" Margin="249,437,0,0" VerticalAlignment="Top"/>
+                                <Button Content="XML Editor&#xA;  (Coming WAY later)" HorizontalAlignment="Left" Margin="5,539,0,0" VerticalAlignment="Top" Height="71" Width="238" Background="#FF3E0101"/>
+                                <Label Content="Only unity games would use this. Currently the only big game&#xD;&#xA;(fire emblem engage) already has an editor.&#xD;&#xA;Unity PC ports (like etrian odyssey) use origonal game files,&#xD;&#xA;not XML, so they need the data table editor.&#xD;&#xA;Unity is unpopular for a reason, borderline shovelware engine." HorizontalAlignment="Left" Margin="248,530,0,0" VerticalAlignment="Top"/>
+
+
 
                             </Grid>
                         </ScrollViewer>
                     </Border>
-                    <Label Content="The editor name will also be a folder name, so don't use special symbols or saving will crash. &#xD;&#xA;Do not use: @#$%:^?/\!~&quot; (Or any other symbols that are not folder friendly)" HorizontalAlignment="Left" Margin="13,131,0,0" VerticalAlignment="Top" Background="#FF150D0D" Foreground="#FFFF2424"/>
+                    <Label Content="Note: &#xA;The name becomes a folder name, so don't use&#xA;symbols that windows will reject or saving will crash.&#xA;&#xA;Some banned Symbols:&#xA;/ \ : * &quot; &lt; &gt; ? |&#xA;&#xA;Some allowed Symbols:&#xA;= - ! @ # $ % ^ &amp; ( ) ` ~ ' [] {}" HorizontalAlignment="Left" Margin="900,10,0,0" VerticalAlignment="Top" Background="#FF190A09" Foreground="#FFFF2121"/>
+
 
 
 

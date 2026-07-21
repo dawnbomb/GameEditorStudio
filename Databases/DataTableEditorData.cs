@@ -42,8 +42,9 @@ namespace GameEditorStudio
         public Category ?CategoryClass { get; set; }
         public Group ?GroupClass { get; set; }
         public Entry ?EntryClass { get; set; } //The entry the user is currently selecting. In DEV mode, This entry is highlighted.
+        public MathboxData ?MathboxClass { get; set; }
 
-        public List<Entry>? MasterEntryList { get; set; } = new(); //A master list to make it easy to make changes to all of them at once.
+        public List<Entry>? MasterEntryList { get; set; } = new(); //A master list to make it easy to make changes to all of them at once.        
         public List<Entry> MergedEntryList { get; set; } = new(); //A "merged entry" is when a previous entry has a byte size of 2 or more, thus "merging" with this entry. This should not appear even if you use the hidden toggle. (But Debug Mode view can force them to visible).
         public List<Entry> HiddenEntryList { get; set; } = new(); //A list of entries that are hidden. Used to make it easy to unhide all hidden entries at once.
         //IMPORTANT NOTE TO SELF ABOUT HIDDEN ENTRYS: I never want hidden entrys to be "removed" from the editor grid. This is because of the possibility
@@ -107,7 +108,55 @@ namespace GameEditorStudio
         public Grid ItemGrid { get; set; } //A group is something that gets it's own grid of items.
         public List<GridItem> GridItems { get; set; } = new();
         
-    }   
+    }
+
+    public class MathboxData : GridItem 
+    {
+        public string Name { get; set; } = "Math";  //XML //The Name / Label an entry Gets. Later, it will default to "???"  
+        public string WorkshopTooltip { get; set; } = ""; //XML
+        public bool IsNameHidden { get; set; } = false;  //XML 
+        public string Key { get; set; } = PixelWPF.LibraryPixel.GenerateKey();
+        public MathBox Mathbox { get; set; }
+        public Border UnderlineBorder { get; set; }
+
+        public List<MathStep> MathFormula { get; set; } = new(); //XML
+        public int? MathResult { get; set; } = null;
+
+        public MenuItem CreateNewGroup { get; set; } = new();
+    }
+
+    public class MathStep 
+    {
+        
+        public MathPieces MathPiece { get; set; } = MathPieces.Plus;
+        public MathValueSources ValueSource { get; set; } = MathValueSources.Number;
+        public string MathValue { get; set; } = "";
+        public Entry? EntryTarget { get; set; } = null;
+
+        public string EntryKey { get; set; } = ""; //Not XML. When first loading the editor, this temporarily holds the target entry key. After all entry's are loaded, this is used to set the target entry. It is then never used again.
+
+        public enum MathPieces //DO NOT RENAME, THESE TERMS SAVE TO XML. (If desperate, update the XML saving first).
+        {
+            Plus,
+            Minus,
+            Multiply,
+            Divide,
+            Max,
+            Min,
+            Round,
+            RoundUp,
+            RoundDown,
+        }
+
+        public enum MathValueSources //DO NOT RENAME, THESE TERMS SAVE TO XML. (If desperate, update the XML saving first).
+        {
+            Number,
+            Entry,
+            Mathbox,
+            
+        }
+    }
+
     
 
     public class Entry : GridItem //Variables in here intensionally do not set =new(); because the editor middle rebuilds when changing tables.
@@ -141,6 +190,11 @@ namespace GameEditorStudio
 
 
         public string EntryByteDecimal { get; set; } //NOT XML  //Needed to deal with the true value of a checkbox or bitflag.  //THIS SHOULD ALWAYS READ AS A POSITIVE NUMBER, IF ITS NEGATIVE IT'S A BUG AND I NEED TO FIX IT! 
+        public List<string> EntryValueHistoryOLD { get; set; } = new(); //NOT XML // A list of the users changes to this value. But I may later add to project xml so it can be viewed longterm.
+        public Dictionary<string, List<string>> EntryValueHistory { get; set; } = new(); //string is textinfo key, value is a history list.
+
+        public string EntryValueOnProjectLoadFromOutput { get; set; } = "";//NOT XML //Used in the history panel. Should always be a positive value (just like above).
+        public string EntryValueOnProjectLoadFromInput { get; set; } = ""; //NOT XML //Used in the history panel. Should always be a positive value (just like above).
 
         public Border EntryBorder { get; set; }//The border around a entry,
         public DockPanel? EntryDockPanel { get; set; } //The entrys Grid, visable to the used, and contains lots of information.
