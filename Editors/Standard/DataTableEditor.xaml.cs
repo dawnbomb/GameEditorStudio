@@ -29,6 +29,7 @@ namespace GameEditorStudio
         Workshop WorkshopXaml { get; set; }
         WorkshopData WorkshopData { get; set; }
         DataTableEditorData DTEData { get; set; }
+                
 
         //////////////////// NOTE: THE CODE FOR THE DESCRIPTION TEXTBOX PART OF THE EDITOR CODE IS ACTUALLY IN THE LEFTBAR CODE, AND KIND OF THE CHARACTER SET MANAGER. ///////
         //////////////////// Also I now generate a new textbox every time the item in the item list changes, although, i may move it back here in the future.  ///////
@@ -508,13 +509,14 @@ namespace GameEditorStudio
                 //        }
                 //    }
                 //}
-                foreach (var cat in DataTableData.CategoryList)
+                foreach (Category cat in DataTableData.CategoryList)
                 {
                     cat.CatBorder.Visibility = Visibility.Collapsed;
 
-                    foreach (var Group in cat.GridItems)
+                    foreach (GridItem GItem in cat.GridItems)
                     {
-                        Group.Visual.Visibility = Visibility.Collapsed;
+                        if (GItem is not Group) { continue; }
+                        GItem.Visual.Visibility = Visibility.Collapsed;
                     }
                 }
 
@@ -550,6 +552,13 @@ namespace GameEditorStudio
                     }
                 }
 
+                foreach (MathboxData mathbox in DataTableData.WorkshopData.MasterMathboxList) 
+                {
+                    mathbox.Visual.Visibility = Visibility.Visible;
+                    if (mathbox.ParentGroup != null) { mathbox.ParentGroup.Visual.Visibility = Visibility.Visible; }
+
+                    mathbox.ParentCategory.CatBorder.Visibility = Visibility.Visible;
+                }
 
 
 

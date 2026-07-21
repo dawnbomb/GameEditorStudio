@@ -142,8 +142,8 @@
                         <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                             <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" >
                                 <Label Content="Project Info" FontWeight="Bold"  />
-                                <Button Name="HomeLoadProjectButton" DockPanel.Dock="Right" Content="Load Project"  Height="30"  Margin="0,3,10,2" Click="ButtonLoadProject"  ToolTip="Launch this workshop loading the selected project's data.  &#xD;Data is loaded using files in the output folder.  &#xD;If a file isn't there, it loads it from the input folder.  &#xD;If a file still isn't there, it probably just crashes :>"  />
-                                <Button Name="HomeUnloadProjectButton" DockPanel.Dock="Right" Content="Unload"  Height="30"  Margin="0,3,10,2" Click="ButtonUnloadProject" Width="90" ToolTip=""  />
+                                <Button Click="ButtonLoadProject" Name="HomeLoadProjectButton" DockPanel.Dock="Right" Content="Load Project"  Height="30"  Margin="0,3,10,2"   ToolTip="Launch this workshop loading the selected project's data.  &#xD;Data is loaded using files in the output folder.  &#xD;If a file isn't there, it loads it from the input folder.  &#xD;If a file still isn't there, it probably just crashes :>"  />
+                                <Button Click="ButtonUnloadProject" Name="HomeUnloadProjectButton" DockPanel.Dock="Right" Content="Unload"  Height="30"  Margin="0,3,10,2"  Width="90" ToolTip=""  />
                             </DockPanel>
                         </Border>
 

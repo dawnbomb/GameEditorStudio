@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Formats.Tar;
 using System.IO;
 using System.Linq;
 using System.Runtime;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.TextFormatting;
 using System.Windows.Threading;
 
@@ -21,7 +24,7 @@ namespace GameEditorStudio.Loading
     {
 
 
-        public void LoadEveryEditorXMLIntoWorkshopData(Workshop TheWorkshop, WorkshopData Database) //Triggers when the workshop is launched / opened.
+        public async Task LoadEveryEditorXMLIntoWorkshopData(Workshop TheWorkshop, WorkshopData Database) //Triggers when the workshop is launched / opened.
         {
             //I had AI rewrite this method and did not look at it very hard but it works. 
             string editorsRoot = Path.Combine(LibraryGES.ApplicationLocation,"Workshops",TheWorkshop.WorkshopData.WorkshopName,"Editors");
@@ -68,8 +71,96 @@ namespace GameEditorStudio.Loading
                 }
             }
 
+            //Dictionary<string, string> editorKeyToXmlPathAAA = new();
+            //Stopwatch timerA = Stopwatch.StartNew();
+            //foreach (string editorFolder in Directory.GetDirectories(editorsRoot))
+            //{
+            //    string editorXmlPath = Path.Combine(editorFolder, "Editor.xml");
+            //    if (!File.Exists(editorXmlPath))
+            //        continue;
+
+            //    XElement xml = XElement.Load(editorXmlPath);
+            //    string editorKey = xml.Element("Key")?.Value;
+
+            //    if (string.IsNullOrWhiteSpace(editorKey))
+            //        continue;
+
+            //    // If duplicate keys exist, first one wins (you may want to log this)
+            //    if (!editorKeyToXmlPathAAA.ContainsKey(editorKey))
+            //    {
+            //        editorKeyToXmlPathAAA.Add(editorKey, editorXmlPath);
+            //    }
+            //}
+            //timerA.Stop(); Debug.WriteLine($"Keys Load via No Tasks in {timerA.ElapsedMilliseconds} ms");
+
+            //Stopwatch timerB = Stopwatch.StartNew();
+            //List<Task> loadKeysTasks = new();
+            //foreach (string editorFolder in Directory.GetDirectories(editorsRoot))
+            //{
+            //    loadKeysTasks.Add(Task.Run(() =>
+            //    {
+
+            //        string editorXmlPath = Path.Combine(editorFolder, "Editor.xml");
+            //        if (!File.Exists(editorXmlPath))
+            //            return;
+            //        Debug.WriteLine($"START {editorXmlPath} Thread {Environment.CurrentManagedThreadId}");
+            //        XElement xml = XElement.Load(editorXmlPath);
+            //        string editorKey = xml.Element("Key")?.Value;
+
+            //        if (string.IsNullOrWhiteSpace(editorKey))
+            //            return;
+
+            //        // If duplicate keys exist, first one wins (you may want to log this)
+            //        lock (editorKeyToXmlPath)
+            //        {
+            //            if (!editorKeyToXmlPath.ContainsKey(editorKey))
+            //                editorKeyToXmlPath.Add(editorKey, editorXmlPath);
+            //        }
+            //        Debug.WriteLine($"END {editorXmlPath} Thread {Environment.CurrentManagedThreadId}");
+
+            //    }));
+
+
+            //}
+            //await Task.WhenAll(loadKeysTasks);
+            //timerB.Stop(); Debug.WriteLine($"Keys Load via Tasks in {timerB.ElapsedMilliseconds} ms");
+
+
+
             // 3. PART 1 — Load editors in LoadOrder.txt order
             HashSet<string> loadedKeys = new();
+
+            //List<Task> loadXMLTasks = new();
+            //foreach (string key in loadOrderKeys)
+            //{
+            //    if (editorKeyToXmlPath.TryGetValue(key, out string editorXmlPath))
+            //    {
+            //        loadedKeys.Add(key);
+            //        loadXMLTasks.Add(Task.Run(async () =>
+            //        {
+            //            await LoadEditorXML(TheWorkshop, Database, editorXmlPath);
+
+            //        }));
+            //    }
+            //}
+
+
+            //// 4. PART 2 — Load any remaining editors not in LoadOrder.txt
+            //foreach (var kvp in editorKeyToXmlPath)
+            //{
+            //    if (!loadedKeys.Contains(kvp.Key))
+            //    {
+            //        loadXMLTasks.Add(Task.Run(async () =>
+            //        {
+            //            await LoadEditorXML(TheWorkshop, Database, kvp.Value);
+            //        }));
+
+            //    }
+            //}
+            //await Task.WhenAll(loadXMLTasks);
+
+            //return;
+
 
             foreach (string key in loadOrderKeys)
             {
@@ -90,14 +181,26 @@ namespace GameEditorStudio.Loading
                 }
             }
 
-            foreach (DataTableEditorData DataTableData in Database.GameEditors.OfType<DataTableEditorData>()) 
+            foreach (DataTableEditorData DataTableData in Database.GameEditors.OfType<DataTableEditorData>())
             {
                 LoadStandardEditor EditorSetup = new();
-                EditorSetup.LoadDataTableXMLIntoDatabasePART2(TheWorkshop, Database, DataTableData);
+                EditorSetup.LoadDataTableXMLIntoDatabasePART2(TheWorkshop, Database, DataTableData); //This loads the grid data, categorys, groups, entrys. 
             }
 
-            
+            //List<Task> loadXMLTasksPART2 = new();
+            //foreach (DataTableEditorData DataTableData in Database.GameEditors.OfType<DataTableEditorData>()) 
+            //{
+            //    loadXMLTasksPART2.Add(Task.Run(async () =>
+            //    {
+            //        LoadStandardEditor EditorSetup = new();
+            //        await EditorSetup.LoadDataTableXMLIntoDatabasePART2(TheWorkshop, Database, DataTableData); //This loads the grid data, categorys, groups, entrys. 
+            //    }));
+                
+                
+            //}
+            //await Task.WhenAll(loadXMLTasksPART2);
 
+            //string Helloa = "test";
         }
 
         //This Method is for creating a new editor while already inside a workshop. IE when going into a workshop and clicking the "New Editor" button.

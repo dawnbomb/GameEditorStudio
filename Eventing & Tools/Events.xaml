@@ -29,7 +29,7 @@
                 </Border>                
                 <DockPanel DockPanel.Dock="Top" Margin="5,0,5,0">
                     <Label Content="Name:"/>
-                    <TextBox Name="EventNameBox" DockPanel.Dock="Left"  Margin="5"  Text=" Name" Width="180" KeyDown="RenameEvent" />
+                    <TextBox Name="EventNameBox" DockPanel.Dock="Left"  Margin="5"  Text=" Name" Width="180" TextChanged="EventNameboxTextChanged" KeyDown="RenameEvent" />
                 </DockPanel>
                 <DockPanel DockPanel.Dock="Top" Margin="10,2,10,0" Height="30">
                     <Button Content="Delete Event" DockPanel.Dock="Right"    Width="135" Click="DeleteEventButton" />

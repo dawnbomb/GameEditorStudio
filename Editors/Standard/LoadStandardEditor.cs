@@ -49,7 +49,12 @@ namespace GameEditorStudio
 
             //TheWorkshop.EditorName = xml.Element("Name")?.Value; //Sets the name of the editor were working with from the name stored in XML.
             string ename = Path.GetFileName(Path.GetDirectoryName(TargetXML)); //Sets the name of the editor were working with from the name editor's folder name.
-            
+
+            //DataTableEditorData DTEData = null;
+            //await Application.Current.Dispatcher.InvokeAsync(() =>
+            //{
+            //    DTEData = new DataTableEditorData();
+            //});
 
             DataTableEditorData TheDataTableData = new();          //Creates a EditorClass
             DataTableEditorData DTEData = TheDataTableData;
@@ -245,16 +250,9 @@ namespace GameEditorStudio
                     }
                 }
             }
-
             
 
-            foreach (XElement item in xml.Descendants("DataTableList")) 
-            {
-                
-            }
-
-
-
+            
 
             try 
             {
@@ -269,7 +267,6 @@ namespace GameEditorStudio
                 Process.GetCurrentProcess().Kill(); //Force crash.
             }
 
-
         }
 
         public void LoadDataTableXMLIntoDatabasePART2(Workshop TheWorkshop, WorkshopData Database, Editor EditorClass) 
@@ -283,7 +280,7 @@ namespace GameEditorStudio
 
             if (EditorClass.DataTableEditorData.DataTable != null) 
             {
-                int numba = xml.Descendants("MergedEntryList").Count();
+                //int numba = xml.Descendants("MergedEntryList").Count();
 
                 //Note: doing .Elements prevents a foreach from running even if there is 0 descendants (yes really, thats required).
                 //IE: i didn't do this for the other loading parts so they may eventually bug / cause crashes.
@@ -292,6 +289,8 @@ namespace GameEditorStudio
                 {
                     LoadEntry(Mentry, null, null);
                 }
+
+                List<MathboxData> Mathboxes = new(); //used to set mathbox entry after all entrys are finished loading.
 
                 foreach (XElement Xrow in xml.Descendants("Category")) //.Descendants gets all levels of children, not just immediate. 
                 {
@@ -311,6 +310,20 @@ namespace GameEditorStudio
 
                         foreach (XElement XCitem in Xcolumn.Elements())
                         {
+                            if (XCitem.Name != "Group") //If NOT in group.
+                            {
+                                if (XCitem.Name == "Entry")
+                                {
+                                    LoadEntry(XCitem, CategoryClass, null); // Pass the XElement if needed
+                                }
+                                if (XCitem.Name == "Mathbox")
+                                {
+                                    LoadMathbox(XCitem, CategoryClass, null, Mathboxes); // Pass the XElement if needed
+                                }
+                            }
+                            
+
+
                             if (XCitem.Name == "Group")
                             {
                                 Group GroupClass = new();
@@ -334,6 +347,12 @@ namespace GameEditorStudio
                                 {
                                     LoadEntry(Xentry, CategoryClass, GroupClass);
                                 }
+                                foreach (XElement Xmath in XCitem.Elements("Mathbox"))
+                                {
+                                    LoadMathbox(Xmath, CategoryClass, GroupClass, Mathboxes);
+                                }
+
+                                //
 
                                 foreach (XElement Gcolumn in XCitem.Elements("Column"))
                                 {
@@ -341,14 +360,15 @@ namespace GameEditorStudio
                                     {
                                         LoadEntry(Xentry, CategoryClass, GroupClass);
                                     }
+                                    foreach (XElement Xmath in Gcolumn.Elements("Mathbox"))
+                                    {
+                                        LoadMathbox(Xmath, CategoryClass, GroupClass, Mathboxes);
+                                    }
                                 }
 
 
                             }
-                            else if (XCitem.Name == "Entry")
-                            {
-                                LoadEntry(XCitem, CategoryClass, null); // Pass the XElement if needed
-                            }
+                            
                         } //End of Citem loop
 
 
@@ -360,12 +380,93 @@ namespace GameEditorStudio
 
 
                 } //End of row loop
+                SetMathboxEntry(Mathboxes);
             }
             
             
             
 
-            
+            void LoadMathbox(XElement Xmathbox, Category MyCategory, Group MyGroup, List<MathboxData> MathboxesList) 
+            {   
+                MathboxData Mathdata = new MathboxData();
+                MathboxesList.Add(Mathdata);
+                Mathdata.ParentEditor = EditorClass;
+                EditorClass.WorkshopData.MasterMathboxList.Add(Mathdata);
+
+                Mathdata.Name = Xmathbox.Element("Name")?.Value;
+
+                Mathdata.ParentCategory = MyCategory;
+                Mathdata.Column = Int32.Parse(Xmathbox.Element("Column")?.Value);
+                Mathdata.Row = Int32.Parse(Xmathbox.Element("Row")?.Value);
+                string thekey = Xmathbox.Element("Key")?.Value ?? "";
+                if (thekey != null && thekey != "") { Mathdata.Key = thekey; }
+                
+
+                if (MyGroup != null) //If entry is in a group.
+                {
+                    Mathdata.ParentGroup = MyGroup;
+                    Mathdata.ParentGrid = MyGroup.ItemGrid;
+                    Mathdata.ParentGridItems = MyGroup.GridItems;
+                    Mathdata.ParentGroup.GridItems.Add(Mathdata);
+
+                }
+                else if (MyGroup == null) //If entry is not in a group.
+                {
+                    Mathdata.ParentGroup = null;
+                    Mathdata.ParentGrid = MyCategory.ItemGrid;
+                    Mathdata.ParentGridItems = MyCategory.GridItems;
+                    MyCategory.GridItems.Add(Mathdata);
+                }          
+
+
+                Mathdata.WorkshopTooltip = Xmathbox.Element("Tooltip")?.Value;
+                Mathdata.IsNameHidden = Convert.ToBoolean(Xmathbox.Element("IsNameHidden")?.Value);
+
+                //loading the MathFormula.
+                XElement? MathFormulaElement = Xmathbox.Element("MathFormula");
+                if (MathFormulaElement != null)
+                {
+                    foreach (XElement Xstep in MathFormulaElement.Elements("MathStep"))
+                    {
+                        MathStep Step = new();
+
+                        if (Enum.TryParse(Xstep.Element("MathPiece")?.Value, out MathStep.MathPieces LoadedMathPiece))
+                        {
+                            Step.MathPiece = LoadedMathPiece;
+                        }
+
+                        if (Enum.TryParse(Xstep.Element("ValueSource")?.Value, out MathStep.MathValueSources LoadedValueSource))
+                        {
+                            Step.ValueSource = LoadedValueSource;
+                        }
+
+                        Step.MathValue = Xstep.Element("MathValue")?.Value ?? "";
+                        Step.EntryKey = Xstep.Element("EntryKey")?.Value ?? ""; //Temporarily stores the EntryKey. Later used to set Target Entry after all entrys are loaded.
+
+                        Mathdata.MathFormula.Add(Step);
+                    }
+                }
+
+
+                MathBox MathBox = new(Mathdata);
+
+            }
+            void SetMathboxEntry(List<MathboxData> MathboxesList) 
+            {
+                foreach (MathboxData mathboxData in MathboxesList) 
+                {
+                    foreach (MathStep mathStep in mathboxData.MathFormula) 
+                    {
+                        if (mathStep.EntryKey == "" || mathStep.EntryKey == null) { continue; }
+                        foreach (Entry entry in mathboxData.ParentEditor.DataTableEditorData.MasterEntryList)
+                        {
+                            if (entry.Key == mathStep.EntryKey) { mathStep.EntryTarget = entry; break; }
+                        }
+                    }
+
+                    
+                }
+            }
 
             void LoadEntry(XElement Xentry, Category MyCategory, Group MyGroup)
             {

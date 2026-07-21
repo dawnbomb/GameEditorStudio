@@ -58,7 +58,8 @@ namespace GameEditorStudio
     }
 
     public class WorkshopData //When i later make this a list in true database, remember to make sure workshop common events still load / save / use properly
-    {
+    {  
+        public bool PreviewModeWarningMessage { get; set; } = true; //NOT XML //The first time a user selects any editor without first loading a project, the user will get a preview mode warning message. 
         public EntryManager EntryManagerOLD { get; set; } = new(); //This doesn't even need to be here. Remove it later. xd
 
         public Version CreatedVersion { get; set; } = new Version(0, 0); //The GES version this was first created with.
@@ -83,8 +84,9 @@ namespace GameEditorStudio
         //////////////////////////////ADVANCED INFO AFTER OPENING WORKSHOP/////////////////////////////////////////////////////////////
         public Workshop WorkshopXaml { get; set; } //Set when a workshop is actually opened.
         public List<GameFile> GameFiles { get; set; } = new(); //The name "File" prevents File.Read from working. Anyway, this is every file in the workshop.    
+        public List<GameFile> GameFilesFromInput { get; set; } = new(); //The name "File" prevents File.Read from working. Anyway, this is every file in the workshop from the INPUT FOLDER. 
         public List<Editor> GameEditors { get; set; } = new(); //Note that "Editors" is a folder name. So this is called "GameEditors".   
-        public Project ?SelectedProject { get; set; } // The currently selected project in the home tab. Events use the SELECTED project rather then the LOADED one. 
+        public Project? SelectedProject { get; set; } = null; // The currently selected project in the home tab. Events use the SELECTED project rather then the LOADED one. 
         public Project ?LoadedProject { get; set; } // The current project whose game files are loaded into the workshop and editors.
         public bool IsProjectLoaded { get; set; } = false; //This bool makes it easy to track code diffrences between when a project is, or is not, currently loaded.        
 
@@ -94,6 +96,10 @@ namespace GameEditorStudio
         public List<Document> WorkshopDocumentsList { get; set; } = new();
         public List<Document> ProjectDocumentsList { get; set; } = new(); //Loads when a project loads. (Including load project button in home tab).
         public Document ?CurrentDocument { get; set; }
+
+
+        //OTHER//
+        public List<MathboxData> MasterMathboxList { get; set; } = new();
     }
 
     public class Intro 

@@ -10,11 +10,8 @@
         <TabControl Margin="10,0,0,0" Background="DimGray">
             <TabItem Header="General" Background="Transparent">
                 <Grid Background="Transparent">
-                    <StackPanel Margin="10" Background="Transparent">
-                        <CheckBox Content="Enable Auto-Save" Margin="0,0,0,5"/>
-                        <CheckBox Content="Show Tooltips" Margin="0,0,0,5"/>
-                        <CheckBox Content="Enable Dark Mode" Margin="0,0,0,5"/>
-                        <CheckBox Content="Show Line Numbers" Margin="0,0,0,5"/>
+                    <StackPanel Margin="10,10,10,10" Background="Transparent">
+                        <CheckBox Content="Nothing Yet." Margin="0,0,0,5"/>
                     </StackPanel>
                 </Grid>
             </TabItem>

@@ -51,7 +51,7 @@
                 <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                     <DockPanel MinHeight="25"  LastChildFill="True" Style="{DynamicResource ContentBar}">
                         <Label Content="Document" FontWeight="Bold"/>
-                        <TextBox x:Name="DocumentNameBox" Text="Document Name" Margin="4" Width="200" HorizontalAlignment="Right" KeyDown="DocumentNameBox_KeyDown" DockPanel.Dock="Right" ToolTip="You have to press enter to actually change the document name. &#xD;&#xA;Document names are the file name when saved to your PC, so dont give them the same name, and don't use special characters like \ / @ - % etc. "  />
+                        <TextBox x:Name="DocumentNameBox" Text="Document Name" Margin="4" Width="200" HorizontalAlignment="Right" TextChanged="DocumentNameBoxTextChanged" KeyDown="DocumentNameBox_KeyDown" DockPanel.Dock="Right" ToolTip="You have to press enter to actually change the document name. &#xD;&#xA;Document names are the file name when saved to your PC, so dont give them the same name, and don't use special characters like \ / @ - % etc. "  />
                     </DockPanel>
                 </Border>
                 

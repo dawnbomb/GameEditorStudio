@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameEditorStudio"
-             mc:Ignorable="d">
+             mc:Ignorable="d"
+             xmlns:properties="clr-namespace:GameEditorStudio.Properties">
     <DockPanel Background="Transparent" LastChildFill="False">
         <Menu Name="TheMenu" Height="27" DockPanel.Dock="Left" >
             <MenuItem x:Name="WorkshopMenu" Header="File" SubmenuOpened="MenuOpened" >
@@ -36,6 +37,7 @@
             </MenuItem>
             <MenuItem Name="ShortcutsMenu" Header="Shortcuts" SubmenuOpened="MenuOpened" >
                 <MenuItem Header="Open Game Editor Studio Folder" Click="OpenCrystalEditorFolder"/>
+                <MenuItem Header="Open GES Release Folder" Click="OpenGESReleaseFolder" Name="MenuItemOpenGESReleaseFolder" Foreground="#FF2C2C"/>
                 <MenuItem Header="Open Downloads Folder" Click="OpenDownloadsFolder"/>
                 <Separator Style="{DynamicResource DashLineForMenu}"/>
                 <MenuItem Header="Open Workshop Folder" Click="OpenWorkshopFolder"/>
@@ -56,6 +58,7 @@
                 <MenuItem Name="DebugMenu" Header="Debug" Foreground="#FF2C2C"   >
                     <MenuItem Header="Dev: Tools and Events Editor"  Click="OpenDevWindow" Foreground="#FF2C2C"/>
                     <MenuItem Header="⚙ Settings"  Click="OpenSettingsWindow" Foreground="#FF2C2C"/>
+                    <MenuItem Header="Release Window"  Click="OpenReleaseWindow" Foreground="#FF2C2C"/>
                     <MenuItem Header="HexTest"  Click="OpenHexTest" Foreground="#FF2C2C"/>
                     <Separator Style="{DynamicResource DashLineForMenu}"/>                    
                     <MenuItem Header="Call Notification"  Click="DebugNotification" Foreground="#FF2C2C"/>
@@ -63,9 +66,20 @@
                     <Separator Style="{DynamicResource DashLineForMenu}"/>
                     <MenuItem Header="Play Sound Persona 5 Crit"  Click="DebugPlayPersona5Crit" Foreground="#FF2C2C"/>
                     <MenuItem Header="Play Sound Etrian Happy"  Click="DebugPlayEtrianSound" Foreground="#FF2C2C"/>
-                    <Separator Style="{DynamicResource DashLineForMenu}"/>                    
+                    <Separator Style="{DynamicResource DashLineForMenu}"/>  
                     <MenuItem Header="Set 1080P"  Click="Set1080P"/>
                 </MenuItem>
+                <Separator Style="{DynamicResource DashLineForMenu}"/>
+                <!--IMPORTANT SETTINGS NOTE:  i had to add this line to the lines defining the user control (way up at the very top of this xaml code).
+                    xmlns:properties="clr-namespace:GameEditorStudio.Properties"     It makes it so that this user control can see and access the settings.-->
+                <MenuItem Click="SaveSettings" Header="Setting: Fullscreen on launch"  IsCheckable="True"    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=FullscreenGESOnLaunch, Mode=TwoWay}"  ToolTip="Makes GES default to max window size on launch."/>
+                <MenuItem Click="MenuShowRecentWorkshopsClick"  Header="Setting: Show Recent Workshops"  IsCheckable="True"    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=ShowRecentWorkshops, Mode=TwoWay}"  ToolTip="In the game library, an area showing your recently opened workshops will appear."/>
+                <MenuItem Click="SaveSettings"  Header="Setting: Sound after project loads."  IsCheckable="True"    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=ProjectLoadSound, Mode=TwoWay}"  ToolTip="Plays a sound after a project finishes loading. Useful for watching youtube while waiting for loading to finish :P."/>
+                <MenuItem Click="SaveSettings"  Header="Setting: Sound after workshop loads."  IsCheckable="True"    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=WorkshopLoadSound, Mode=TwoWay}"  ToolTip="Plays a sound after a workshop finishes loading. Useful for watching youtube while waiting for loading to finish :P."/>
+                <MenuItem Click="SaveSettings"  Header="Setting: Auto-load last used project."  IsCheckable="True"    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AutoLoadLastProject, Mode=TwoWay}"  ToolTip="After a workshop has finished loading, automatically attempts to load the last project you loaded. &#xD;&#xD;The workshop loaded sound will be skipped."/>
+
+
+                
             </MenuItem>
             
         </Menu>
@@ -82,12 +96,12 @@
         </DockPanel>
 
         <DockPanel Background="Transparent" DockPanel.Dock="Right" LastChildFill="False">
-            <Button Name="LibraryButton" DockPanel.Dock="Left" Content="Back"  Click="ExitWorkshop" Height="30" Width="65" Style="{DynamicResource ButtonError}" ToolTip="Go back to the Library."/>
-            <Button DockPanel.Dock="Left" Content="Reshade"  x:Name="HUDReshade" Width="100" Height="30" Click="OpenReshade" Style="{DynamicResource ButtonError}" Margin="4,0,4,0" ToolTip="Install a reshade set i made to a game! It's really good!" />
-            <Button Name="WikiButton" DockPanel.Dock="Left" Content="Wiki"  Click="OpenWiki" Height="30" Width="65" Style="{DynamicResource ButtonError}" ToolTip="Open a small wiki i made of game modding info. It's super useful!"/>
-            <Button DockPanel.Dock="Left" Content="Discord :)"  x:Name="HUDButtonDiscord" Width="115" Height="30" Click="OpenDiscord"  Margin="4,0,0,0" ToolTip="Join my discord server! :D"  />
-            <Button DockPanel.Dock="Left" Content="Website"  Click="WebsiteButton"  Width="100" Height="30"  Margin="4,0,4,0" ToolTip="Open my website. :D"/>
-            <Button DockPanel.Dock="Left" Content="Github"  Click="GithubButton"  Width="90" Height="30" ToolTip="Go to the github page for this project. Altho if you wanna help, talking on discord is much easier for me. :>"/>
+            <Button Click="ExitWorkshop"  Name="LibraryButton" DockPanel.Dock="Left" Content="Back"  Height="30" Width="65" ToolTip="Go back to the Library."/>
+            <Button Click="OpenReshade"  DockPanel.Dock="Left" Content="Reshade"  x:Name="HUDReshade" Width="100" Height="30" Style="{DynamicResource ButtonError}" Margin="4,0,4,0" ToolTip="Install a reshade set i made to a game! It's really good!" />
+            <Button Click="OpenWiki"  Name="WikiButton" DockPanel.Dock="Left" Content="Wiki"  Height="30" Width="65" Style="{DynamicResource ButtonError}" ToolTip="Open a small wiki i made of game modding info. It's super useful!"/>
+            <Button Click="OpenDiscord" DockPanel.Dock="Left" Content="Discord :)"  x:Name="HUDButtonDiscord" Width="115" Height="30"  Margin="4,0,0,0" ToolTip="Join my discord server! :D"  />
+            <Button Click="WebsiteButton" DockPanel.Dock="Left" Content="Website"   Width="100" Height="30"  Margin="4,0,4,0" ToolTip="Open my website. :D"/>
+            <Button Click="GithubButton" DockPanel.Dock="Left" Content="Github"   Width="90" Height="30" ToolTip="Go to the github page for this project. Altho if you wanna help, talking on discord is much easier for me. :>"/>
         </DockPanel>
     </DockPanel>
 

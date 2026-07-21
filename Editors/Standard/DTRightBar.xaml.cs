@@ -46,6 +46,7 @@ namespace GameEditorStudio
             CategoryTabItem.Visibility = Visibility.Collapsed;
             GroupTabItem.Visibility = Visibility.Collapsed;
             EntryTabItem.Visibility = Visibility.Collapsed;
+            MathboxTabItem.Visibility = Visibility.Collapsed;
 
             EntryTab1.Visibility = Visibility.Collapsed;
             EntryTab2.Visibility = Visibility.Collapsed;
@@ -890,6 +891,7 @@ namespace GameEditorStudio
             {
                 DTEData.GroupClass.GroupName = PropertiesGroupNameBox.Text;
                 DTEData.GroupClass.GroupLabel.Content = PropertiesGroupNameBox.Text;
+                DTEMethods.UpdateEditorGrids(DTEData);
             }
         }
 
@@ -1629,6 +1631,7 @@ namespace GameEditorStudio
             EntryManager.LoadEntry(DTEData, DTEData.EntryClass);
 
             DTEData.DTEXaml.RightBar.CrossReferenceInfo.FillLearnBox(DTEData);
+            DTEMethods.UpdateALLMathboxResults(DTEData.WorkshopData);
         }
 
         private void SetNumberboxUnsigned(object sender, RoutedEventArgs e)
@@ -1639,6 +1642,7 @@ namespace GameEditorStudio
             EntryManager.LoadEntry(DTEData, DTEData.EntryClass);
 
             DTEData.DTEXaml.RightBar.CrossReferenceInfo.FillLearnBox(DTEData);
+            DTEMethods.UpdateALLMathboxResults(DTEData.WorkshopData);
         }
 
         private void SuffixTextChanged(object sender, TextChangedEventArgs e)
@@ -1846,6 +1850,54 @@ namespace GameEditorStudio
 
         }
 
-        
+
+        private void PropertiesMathboxNameTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                DTEData.MathboxClass.Name = PropertiesMathboxNameBox.Text;
+                DTEData.MathboxClass.Mathbox.MathboxLabel.Content = PropertiesMathboxNameBox.Text;
+                DTEMethods.UpdateEditorGrids(DTEData);
+            }
+        }
+
+        private void PropertiesMathboxTooltipTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            DTEData.MathboxClass.WorkshopTooltip = PropertiesMathboxTooltipBox.Text;
+            DTEData.MathboxClass.Mathbox.UpdateTooltip();            
+        }
+
+        private void AddMathPieceClick(object sender, RoutedEventArgs e)
+        {
+            DTEData.MathboxClass.MathFormula.Add(new());
+            DTEData.MathboxClass.Mathbox.ShowFormula();
+        }
+
+        private void MathboxHelpClick(object sender, RoutedEventArgs e)
+        {
+            PixelWPF.LibraryPixel.Notification("Math Help", 
+                "The dropdown for numbers from an Entry, will not show an Entrys ifthat..." +
+                "\n1: The entry is detected to be part of the name table." +
+                "\n2: The entry was manually set to hidden." +
+                "\n3: The entry is currently merged into another entry. (so, hidden)" +
+                "\n" +
+                "\n");
+        }
+
+        private void MathboxHideNameCheckboxChecked(object sender, RoutedEventArgs e)
+        {
+            DTEData.MathboxClass.IsNameHidden = true;
+            PropertiesMathboxNameBox.IsEnabled = false;
+            DTEData.MathboxClass.Mathbox.UpdateNameDisplay();
+            DTEMethods.UpdateEditorGrids(DTEData.EntryClass.ParentEditor.DataTableEditorData);
+        }
+
+        private void MathboxHideNameCheckboxUnchecked(object sender, RoutedEventArgs e)
+        {
+            DTEData.MathboxClass.IsNameHidden = false;
+            PropertiesMathboxNameBox.IsEnabled = true;
+            DTEData.MathboxClass.Mathbox.UpdateNameDisplay();
+            DTEMethods.UpdateEditorGrids(DTEData.EntryClass.ParentEditor.DataTableEditorData);
+        }
     }
 }

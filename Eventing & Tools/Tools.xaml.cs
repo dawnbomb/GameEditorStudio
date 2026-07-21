@@ -487,6 +487,22 @@ namespace GameEditorStudio
 
         public void SaveCommonEventsWorkshop() 
         {
+            if (File.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Common Events.xml")) 
+            {
+                File.Delete(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Common Events.xml");
+            }
+
+            bool HasAnyCommonEvents = false;
+            foreach (CommonEvent Event in Database.CommonEvents)
+            {
+                if (Event.Workshop == true)
+                {
+                    HasAnyCommonEvents = true;
+                }
+            }
+            if (HasAnyCommonEvents == false) { return; }
+
+
             XmlWriterSettings settings = new();
             settings.Indent = true;
             settings.IndentChars = ("    ");

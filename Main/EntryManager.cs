@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -42,6 +43,7 @@ namespace GameEditorStudio
 
         public void LoadEntry(DataTableEditorData DTEData, Entry EntryClass) //LOADING ISN'T TAKING SIGN INTO CONSIDERATION!!!
         {
+            //Load Project Triggers this as part of the left bar. I should change this to something more reasonable though...
             //When the left bar selects a new item, this method triggers to load each entry's data based on Item Index.
 
             //This method simply takes the byte(s) from MemoryFile the entry controls,
@@ -108,6 +110,107 @@ namespace GameEditorStudio
                 
             }
 
+            //if (EntryClass.EntryValueOnProjectLoadFromInput == "") //Set to "" when loading a project.
+            //{
+            //    EntryClass.EntryValueOnProjectLoadFromInput = EntryClass.EntryByteDecimal;
+            //}
+            //if (EntryClass.EntryValueOnProjectLoadFromOutput == "") //Set to "" when loading a project.
+            //if(EntryClass.ParentEditor.DataTableEditorData.WorkshopData.IsProjectLoaded == true)
+            //{
+
+            //    if (EntryClass.Name == "HP")
+            //    {
+            //        string test = "dsfafd";
+            //    }
+            //    if (EntryClass.Endianness == "1")
+            //    {
+            //        EntryClass.EntryValueOnProjectLoadFromOutput = DTEData.DataTable.FileDataTable.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
+            //        //InputFile.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
+            //    }
+            //    else if (EntryClass.Endianness == "2B")
+            //    {
+            //        ushort value2 = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+            //        ushort swappedValue2 = (ushort)IPAddress.HostToNetworkOrder((short)value2); // Swap the endianness
+            //        EntryClass.EntryValueOnProjectLoadFromOutput = swappedValue2.ToString("D");
+            //    }
+            //    else if (EntryClass.Endianness == "4B")
+            //    {
+            //        uint value = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+            //        byte[] valueBytes = BitConverter.GetBytes(value);
+            //        Array.Reverse(valueBytes);
+            //        uint swappedValue = BitConverter.ToUInt32(valueBytes, 0);
+            //        EntryClass.EntryValueOnProjectLoadFromOutput = swappedValue.ToString("D");
+            //    }
+            //    else if (EntryClass.Endianness == "2L")
+            //    {
+            //        EntryClass.EntryValueOnProjectLoadFromOutput = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+
+            //    }
+            //    else if (EntryClass.Endianness == "4L")
+            //    {
+            //        EntryClass.EntryValueOnProjectLoadFromOutput = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+
+            //    }
+            //}
+            //DTEMethods.LoadEntryOutputValues(EntryClass);
+
+            if (LibraryGES.AlsoLoadInputFiles == true) //INPUT VERSION LOADING
+            {
+                //if (EntryClass.EntryValueOnProjectLoadFromInput == "") //Set to "" when loading a project.
+                //{
+                //    EntryClass.EntryValueOnProjectLoadFromInput = EntryClass.EntryByteDecimal;
+                //    //HistoryValueOnProjectLoadFromInputTextbox
+                //}
+
+                GameFile GetMirrorGameFileFromInput(GameFile OutputFile) 
+                {
+                    foreach (GameFile FileFromInput in DTEData.WorkshopData.GameFilesFromInput) 
+                    {
+                        if (OutputFile.FileLocation == FileFromInput.FileLocation) 
+                        {
+                            return FileFromInput;
+                        }
+                    }
+                    return null;
+                }
+
+                GameFile InputFile = GetMirrorGameFileFromInput(DTEData.DataTable.FileDataTable);
+
+                if (EntryClass.Endianness == "1")
+                {                    
+                    EntryClass.EntryValueOnProjectLoadFromInput = InputFile.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
+                }
+                else if (EntryClass.Endianness == "2B")
+                {
+                    ushort value2 = BitConverter.ToUInt16(InputFile.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+                    ushort swappedValue2 = (ushort)IPAddress.HostToNetworkOrder((short)value2); // Swap the endianness
+                    EntryClass.EntryValueOnProjectLoadFromInput = swappedValue2.ToString("D");
+                }
+                else if (EntryClass.Endianness == "4B")
+                {
+                    uint value = BitConverter.ToUInt32(InputFile.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+                    byte[] valueBytes = BitConverter.GetBytes(value);
+                    Array.Reverse(valueBytes);
+                    uint swappedValue = BitConverter.ToUInt32(valueBytes, 0);
+                    EntryClass.EntryValueOnProjectLoadFromInput = swappedValue.ToString("D");
+                }
+                else if (EntryClass.Endianness == "2L")
+                {
+                    EntryClass.EntryValueOnProjectLoadFromInput = BitConverter.ToUInt16(InputFile.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+                    if (EntryClass.Name == "HP") 
+                    { string breaktest; }
+                }
+                else if (EntryClass.Endianness == "4L")
+                {
+                    EntryClass.EntryValueOnProjectLoadFromInput = BitConverter.ToUInt32(InputFile.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+
+                }
+            }
+
+            
+
+            
+
 
             if (EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox) 
             { 
@@ -129,6 +232,7 @@ namespace GameEditorStudio
             //WARNING: I tried making symbology update whenever an entry is loaded, but it causes a LOT OF FUCKING LAG when swapping the selected item. DO NOT DO THIS! FIND A BETTER ANSWER! 
             
         }
+
 
         public void SaveEntry(Entry EntryClass)
         {
@@ -699,6 +803,7 @@ namespace GameEditorStudio
 
             // Default properties end
 
+            
 
             TextBox NumberBox = new TextBox();
             NumberBox.Tag = EntryClass;
@@ -715,6 +820,14 @@ namespace GameEditorStudio
             {
                 NumberBox.IsEnabled = false;
             }
+
+            //Old code for trying to make it visually appear similuar to unreal engine blueprint nodes. 
+            //DockPanel RightPanel = new();
+            //EntryClass.EntryDockPanel.Children.Add(RightPanel);
+            //RightPanel.Children.Add(NumberBox);
+            //NumberBox.Background = Brushes.Transparent;
+            //NumberBox.BorderBrush = Brushes.Transparent;
+            //RightPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#18191B"));
 
 
             //DockPanel UpDownDock = new DockPanel();
@@ -750,6 +863,21 @@ namespace GameEditorStudio
             //UpDownDock.Children.Add(downbtn);
             //DockPanel.SetDock(downbtn, Dock.Bottom);
 
+
+
+            //NumberBox.LostFocus += (sender, e) =>
+            //{
+            //    //if (EntryClass.EntryByteDecimal ) { }
+            //    //if (NumberBox.Text != FindLast(EntryClass.EntryValueHistory)) 
+            //    //{
+
+            //    //}
+            //    if (NumberBox.Text != EntryClass.EntryValueOnProjectLoadFromOutput)
+            //    {
+            //        EntryClass.EntryValueHistory.Add(EntryClass.EntryByteDecimal);
+            //    }
+
+            //};
 
             NumberBox.PreviewMouseDown += (sender, e) =>
             {
@@ -839,6 +967,7 @@ namespace GameEditorStudio
                             SaveEntry(EntryClass);
                             //UpdateEntryProperties(EntryClass);
                             DTEMethods.EntryActivate(EntryClass);
+                            DTEMethods.UpdateALLMathboxResults(TheWorkshop.WorkshopData);
                         }
                     }
                 }
@@ -2387,6 +2516,36 @@ namespace GameEditorStudio
 
             //////////////////////////////////////Right Bar Hex Data Update//////////////////////////////////////////
             UpdateEntryHexProperties(EntryClass.ParentEditor.DataTableEditorData);
+
+            //////////////////////////////////////Right Bar History Update//////////////////////////////////////////
+            RightBar.HistoryValueOnProjectLoadFromInputTextbox.Text = EntryClass.EntryValueOnProjectLoadFromInput;
+            //RightBar.HistoryValueOnProjectLoadFromOutputTextbox.Text = EntryClass.EntryValueOnProjectLoadFromOutput;
+            RightBar.HistoryValueOnProjectLoadFromOutputTextbox.Text = "Coming later";
+
+            //RightBar.EntryValueHistoryStackPanel.Children.Clear();
+
+            //TreeViewItem treeItem = EntryClass.ParentEditor.DataTableEditorData.DTEXaml.LeftBar.ItemsTree.SelectedItem as TreeViewItem;
+            //TextInfo textInfo = treeItem?.Tag as TextInfo;
+
+            //if (textInfo != null &&EntryClass.EntryValueHistory.TryGetValue(textInfo.ItemKey, out List<string> history))
+            //{
+            //    for (int i = 1; i < history.Count; i++)
+            //    {
+            //        Label label = new Label();
+            //        label.Content = $"{i} Edit Ago: {history[i]}";
+            //        RightBar.EntryValueHistoryStackPanel.Children.Add(label);
+            //    }
+            //}
+
+            
+
+            //for (int i = 0; i < EntryClass.EntryValueHistoryOLD.Count; i++)
+            //{
+            //    Label label = new Label();
+            //    label.Content = $"{i + 1} Edit Ago: {EntryClass.EntryValueHistoryOLD[i]}";
+            //    RightBar.EntryValueHistoryStackPanel.Children.Add(label);
+            //}
+
 
             //////////////////////////////////////END//////////////////////////////////////////            
             TheWorkshop.UpdateSymbology(EntryClass); //Update Symbology when Entry Value is changed.

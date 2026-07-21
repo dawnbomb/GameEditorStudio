@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -66,15 +67,36 @@ namespace GameEditorStudio
                 item.IsSelected = true;
             }
 
-            //if (WorkshopData.Intro.IntroText != "")
-            //{
-            //    IntroTextbox.Text = WorkshopData.Intro.IntroText;
-            //}
-            //else { IntroTextbox.Text = WorkshopData.Intro.DefaultIntroText; }
-        }
-        
+            if (Properties.Settings.Default.AutoLoadLastProject == true) 
+            {   
 
-        public void LoadProject(Project ProjectData)
+                foreach (TreeViewItem item in ProjectsTreeView.Items) 
+                {   
+                    Project project = item.Tag as Project;
+                    if (project == null) { continue; }
+
+                    if (Properties.Settings.Default.LastProject == project.ProjectName) 
+                    {
+                        item.IsSelected = true;
+                        HomeLoadProjectButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                        return;
+                    }
+
+                    
+                }
+
+                if (Properties.Settings.Default.WorkshopLoadSound == true) { PixelWPF.SoundEngine.PlayEtrianUHappy(); }
+
+            }
+        }
+
+
+        public void LoadProject(Project ProjectData) 
+        {
+            LoadProject2(ProjectData);
+        }
+
+        public void LoadProject2(Project ProjectData)
         {
             LoadingPanel.Visibility = Visibility.Visible;
 
@@ -102,7 +124,9 @@ namespace GameEditorStudio
 
 
             FileLoading fileLoading = new();
+            Stopwatch timer1 = Stopwatch.StartNew();
             fileLoading.TryLoadAllGameFilesIntoWorkshopDatabase(WorkshopData); //First we load workshop files into the database. }
+            timer1.Stop(); Debug.WriteLine($"Load Project Files Finished in {timer1.ElapsedMilliseconds} ms");
 
             FileManager.RefreshFileTree();
 
@@ -128,6 +152,13 @@ namespace GameEditorStudio
             //Load / regenerate the editors with the game files.
             foreach (DataTableEditorData DTEData in WorkshopData.GameEditors.OfType<DataTableEditorData>())
             {
+                foreach (Entry entry in DTEData.MasterEntryList) 
+                {
+                    entry.EntryValueOnProjectLoadFromInput = "";
+                    entry.EntryValueOnProjectLoadFromOutput = "";
+                    entry.EntryValueHistory.Clear();
+                }
+
                 LoadingStatusTextUI.Content = DTEData.EditorName + " (" + (loadcounter + 1).ToString() + "/" + WorkshopData.GameEditors.Count + ")";
                 Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
                 Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
@@ -184,6 +215,8 @@ namespace GameEditorStudio
             //RefreshUI();
             //Thread.Sleep(10);
             //Thread.Sleep(10000);
+            DTEMethods.UpdateALLMathboxResults(WorkshopData);
+
 
             if (ProjectData != null)
             {
@@ -192,7 +225,7 @@ namespace GameEditorStudio
 
             LoadingPanel.Visibility = Visibility.Collapsed;
             LoadUIUI.Visibility = Visibility.Collapsed;
-            LibraryGES.PreviewModeWarningMessage = false;
+            WorkshopData.PreviewModeWarningMessage = false;
             LoadingFinalizingLabel.Visibility = Visibility.Collapsed;
         }
 
@@ -364,9 +397,17 @@ namespace GameEditorStudio
             Project projectdata = treeViewItem?.Tag as Project;
             if (projectdata != null)
             {
+                if (projectdata == WorkshopData.LoadedProject) 
+                {
+                    bool reloadyesno = PixelWPF.LibraryPixel.NotificationConfirm("Project Already Loaded?","FYI This project is already loaded. \n\nSo just checking... did you mean to be reloading it?  Do you still want to reload this project?");
+                    if (reloadyesno == false) { return; }
+                }
+
                 LoadProject(projectdata);  
                 WorkshopXaml.ButtonHome.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                PixelWPF.SoundEngine.PlayEtrianUHappy();
+                if (Properties.Settings.Default.ProjectLoadSound == true) { PixelWPF.SoundEngine.PlayEtrianUHappy(); }
+                Properties.Settings.Default.LastProject = projectdata.ProjectName;
+                Properties.Settings.Default.Save();
             }
         }
 
@@ -374,7 +415,7 @@ namespace GameEditorStudio
         {
             WorkshopData.SelectedProject = null;
             LoadProject(null);
-            LibraryGES.PreviewModeWarningMessage = true;
+            WorkshopData.PreviewModeWarningMessage = true;
             WorkshopXaml.ButtonHome.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         }
         
@@ -468,6 +509,51 @@ namespace GameEditorStudio
                 bool NameHasSpaces = WorkshopData.WorkshopInputDirectory.Any(char.IsWhiteSpace);
                 //WorkshopData.WorkshopInputDirectory
 
+                //If Workshop is set to require a specific folder name.
+                if (WorkshopData.ProjectsRequireSameFolderName == true && WorkshopData.WorkshopInputDirectory == Path.GetFileName(FolderSelect.SelectedPath))
+                {
+                    PixelWPF.LibraryPixel.NotificationPositive("You selected the correct folder!",
+                        "This workshop DOES require a specific input folder name to be selected, " +
+                        "and your selected folder has the same name as the suggested one, " +
+                        "so you probably selected the correct folder. :)" +
+                        "\n\n" +
+                        "This can only end up be wrong if you selected a folder with the exact same name, but in a diffrent location."
+                    );
+
+                    WorkshopData.SelectedProject.ProjectInputDirectory = FolderSelect.SelectedPath;
+                    TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
+
+                    CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
+                }
+                else if (WorkshopData.ProjectsRequireSameFolderName == true && WorkshopData.WorkshopInputDirectory != Path.GetFileName(FolderSelect.SelectedPath))
+                {
+                    PixelWPF.LibraryPixel.NotificationNegative("Error: Wrong folder selected!",
+                        "This workshop's REQUIRED input folder name: " +
+                        "\n\"" + WorkshopData.WorkshopInputDirectory + "\"" +
+                        "\n\nYour selected folder name: " +
+                        "\n\"" + Path.GetFileName(FolderSelect.SelectedPath) + "\"" +
+                        "\n\n" +
+                        "If your confused, look for a readme, discord, ask around, or just load your project and see if you get a ton of errors. :p"
+                    );
+
+                }
+                else if (WorkshopData.ProjectsRequireSameFolderName == true)
+                {
+                    PixelWPF.LibraryPixel.NotificationUnknown("??? 1",
+                        "I don't know how you even got this error. If you can, report to me on discord how you even got this???" +
+                        "\n\n" +
+                        "I'll let the input folder be set, but really, how tf did you trigger this."
+                    );
+
+                    WorkshopData.SelectedProject.ProjectInputDirectory = FolderSelect.SelectedPath;
+                    TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
+
+                    CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
+
+                }
+
+
+                //If workshop is NOT set to require a specific folder name.
                 if (WorkshopData.ProjectsRequireSameFolderName == false && WorkshopData.WorkshopInputDirectory == Path.GetFileName(FolderSelect.SelectedPath))
                 {
                     PixelWPF.LibraryPixel.NotificationPositive("You selected the correct folder!",
@@ -497,6 +583,11 @@ namespace GameEditorStudio
                         "\n\n" +
                         "If your confused, look for a readme, discord, ask around, or just load your project and see if you get a ton of errors. :p"
                     );
+
+                    WorkshopData.SelectedProject.ProjectInputDirectory = FolderSelect.SelectedPath;
+                    TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
+
+                    CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
                 }
                 else if (WorkshopData.ProjectsRequireSameFolderName == false && WorkshopData.WorkshopInputDirectory != "" && NameHasSpaces == true && WorkshopData.WorkshopInputDirectory != Path.GetFileName(FolderSelect.SelectedPath))
                 {
@@ -512,15 +603,29 @@ namespace GameEditorStudio
                     TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
 
                     CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
-                }
-                else if (WorkshopData.ProjectsRequireSameFolderName == true && WorkshopData.WorkshopInputDirectory == Path.GetFileName(FolderSelect.SelectedPath))
+                }                
+                else if (WorkshopData.ProjectsRequireSameFolderName == false && WorkshopData.WorkshopInputDirectory == "")
                 {
-                    PixelWPF.LibraryPixel.NotificationPositive("You selected the correct folder!",
-                        "This workshop DOES require a specific input folder name to be selected, " +
-                        "and your selected folder has the same name as the suggested one, " +
-                        "so you probably selected the correct folder. :)" +
+                    PixelWPF.LibraryPixel.Notification("UHHHH",
+                        "Usually, i would tell you if you selected the correct folder or not, or atleast take a guess at it. However, this workshop did not set a required nor even a suggested folder name.  " +
+                        "\n"  +
+                        "\nSo first, i have no idea if your folder is correct, so \"lol good luck\"., if you can, inform the workshop creator to set one, orYour selected folder name: " +
+                        "\n" +
+                        "\nAnd second, if you can, maybe inform the workshop creator to set one. " 
+                    );
+
+                    WorkshopData.SelectedProject.ProjectInputDirectory = FolderSelect.SelectedPath;
+                    TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
+
+                    CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
+
+                }
+                else if (WorkshopData.ProjectsRequireSameFolderName == false)
+                {
+                    PixelWPF.LibraryPixel.NotificationUnknown("??? 2",
+                        "I don't know how you even got this error. If you can, report to me on discord how you even got this???" +
                         "\n\n" +
-                        "This can only end up be wrong if you selected a folder with the exact same name, but in a diffrent location."
+                        "I'll let the input folder be set, but really, how tf did you trigger this."
                     );
 
                     WorkshopData.SelectedProject.ProjectInputDirectory = FolderSelect.SelectedPath;
@@ -528,19 +633,6 @@ namespace GameEditorStudio
 
                     CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
                 }
-                else
-                {
-                    PixelWPF.LibraryPixel.NotificationNegative("Error: Wrong folder selected!",
-                        "This workshop's REQUIRED input folder name: " +
-                        "\n\"" + WorkshopData.WorkshopInputDirectory + "\"" +
-                        "\n\nYour selected folder name: " +
-                        "\n\"" + Path.GetFileName(FolderSelect.SelectedPath) + "\"" +
-                        "\n\n" +
-                        "If your confused, look for a readme, discord, ask around, or just load your project and see if you get a ton of errors. :p"
-                    );
-
-                }
-
 
 
 
@@ -707,17 +799,49 @@ namespace GameEditorStudio
                 MainPanel.Children.Add(BottomPanel);
                 BottomPanel.Background = Brushes.Transparent;
 
+                { //Name area for label and the possible tooltip.
+                    Grid NamePanel = new Grid();
+                    NamePanel.Background = Brushes.Transparent;
+                    TopPanel.Children.Add(NamePanel);
+                    DockPanel.SetDock(NamePanel, Dock.Left);
 
 
-                Label Label = new();
-                TopPanel.Children.Add(Label);
-                DockPanel.SetDock(Label, Dock.Left);
-                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File && WorkshopEventResource.IsChild == false)
-                { Label.Content = "🗎   " + WorkshopEventResource.Name; }
-                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false)
-                { Label.Content = "📁 " + WorkshopEventResource.Name; }
-                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.CMDText && WorkshopEventResource.IsChild == false)
-                { Label.Content = "✎ " + WorkshopEventResource.Name; }
+                    Label Label = new();
+                    NamePanel.Children.Add(Label);
+                    //DockPanel.SetDock(Label, Dock.Left);
+                    if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File && WorkshopEventResource.IsChild == false)
+                    { Label.Content = "🗎   " + WorkshopEventResource.Name; }
+                    if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false)
+                    { Label.Content = "📁 " + WorkshopEventResource.Name; }
+                    if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.CMDText && WorkshopEventResource.IsChild == false)
+                    { Label.Content = "✎ " + WorkshopEventResource.Name; }
+
+                    if (WorkshopEventResource.TooltipText != "") 
+                    {
+                        NamePanel.ToolTip = WorkshopEventResource.TooltipText;
+                        ToolTipService.SetInitialShowDelay(NamePanel, LibraryGES.TooltipInitialDelay);
+                        ToolTipService.SetBetweenShowDelay(NamePanel, LibraryGES.TooltipBetweenDelay);
+
+                        Border TooltipLine = new Border();
+                        NamePanel.Children.Add(TooltipLine);
+                        //TooltipLine.HorizontalAlignment = HorizontalAlignment.Left;
+                        TooltipLine.BorderThickness = new Thickness(0, 0, 0, 2);
+                        TooltipLine.BorderBrush = (Brush)new BrushConverter().ConvertFrom("#A0A0A0");
+                        TooltipLine.Margin = new Thickness(41, 0, 5, 4); // Left Top Right Bottom
+
+                    }
+                    
+                }
+
+                //Label Label = new();
+                //TopPanel.Children.Add(Label);
+                //DockPanel.SetDock(Label, Dock.Left);
+                //if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File && WorkshopEventResource.IsChild == false)
+                //{ Label.Content = "🗎   " + WorkshopEventResource.Name; }
+                //if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false)
+                //{ Label.Content = "📁 " + WorkshopEventResource.Name; }
+                //if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.CMDText && WorkshopEventResource.IsChild == false)
+                //{ Label.Content = "✎ " + WorkshopEventResource.Name; }
 
                 Button OpenButton = new();
                 TopPanel.Children.Add(OpenButton);

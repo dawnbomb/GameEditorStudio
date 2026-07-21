@@ -143,9 +143,31 @@ namespace GameEditorStudio
 
         }
 
+        private void EventNameboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            bool isValid = PixelWPF.LibraryPixel.CheckIfValidFolderName(EventNameBox.Text);
+            if (isValid)
+            {
+                EventNameBox.Foreground = new SolidColorBrush(Colors.White);
+                return;
+            }
+            else
+            {
+                EventNameBox.Foreground = new SolidColorBrush(Colors.Red);
+                return;
+            }
+        }
+
         private void RenameEvent(object sender, KeyEventArgs e) //The event name textbox
         {
             if (CurrentEvent == null) { return; }
+
+            bool isValid = PixelWPF.LibraryPixel.CheckIfValidFolderName(EventNameBox.Text);
+            if (!isValid)
+            {
+                EventNameBox.Foreground = new SolidColorBrush(Colors.Red);
+                return;
+            }
 
             if (e.Key == Key.Enter)
             {
@@ -945,6 +967,8 @@ namespace GameEditorStudio
 
             workshopData.WorkshopXaml.HomeControl.RefreshProjectEventResourcesUI(workshopData.SelectedProject);
         }
+
+        
     }
 
 

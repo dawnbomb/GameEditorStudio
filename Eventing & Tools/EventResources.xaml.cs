@@ -156,6 +156,7 @@ namespace GameEditorStudio
             BottomPanel.Background = TheBrush;
 
             ComboBox ComboBox = new(); //THIS IS CREATED HERE BUT MANAGED WAY LOWER AND ONLY IF IT'S A CHILD RESOURCE.
+            
 
             Button DeleteButton = new();
             TopPanel.Children.Add(DeleteButton);
@@ -407,6 +408,8 @@ namespace GameEditorStudio
                 };
             }
 
+            
+
 
             Button BrowseButton = new();
             TopPanel.Children.Add(BrowseButton);
@@ -444,14 +447,14 @@ namespace GameEditorStudio
             //    }
 
             //};
-
+            
 
             DockPanel BrowsePanel = new();
             DockPanel.SetDock(BrowsePanel, Dock.Left);
-            BottomPanel.Children.Add(BrowsePanel);
+            BottomPanel.Children.Add(BrowsePanel); //BOTTOM PANEL
             BrowsePanel.Background = TheBrush;
 
-            CheckBox CheckBox = new();
+            CheckBox CheckBox = new(); //TOP PANEL
             if (EventResource.IsChild == false)
             {
                 TopPanel.Children.Add(CheckBox);
@@ -495,7 +498,20 @@ namespace GameEditorStudio
                 }
             }
 
+            Label TooltipLabel = new();
+            TooltipLabel.Content = "Tooltip:";
+            TopPanel.Children.Add(TooltipLabel);
+            DockPanel.SetDock(TooltipLabel, Dock.Left);
 
+            TextBox TooltipTextbox = new();
+            TooltipTextbox.Text = EventResource.TooltipText;
+            TopPanel.Children.Add(TooltipTextbox);
+            DockPanel.SetDock(TooltipTextbox, Dock.Left);
+            TooltipTextbox.MinWidth = 80;
+            TooltipTextbox.TextChanged += (sender, e) =>
+            {
+                EventResource.TooltipText = TooltipTextbox.Text;
+            };
 
 
             Border TextBorder = new Border();

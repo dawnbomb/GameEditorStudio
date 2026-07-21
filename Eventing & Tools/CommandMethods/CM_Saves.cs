@@ -378,6 +378,11 @@ namespace GameEditorStudio
                                                     {
                                                         SaveAnEntry(Ientry);
                                                     }
+                                                    if (item is MathboxData Imathbox)
+                                                    {
+                                                        SaveAMathbox(Imathbox);
+                                                    }
+                                                    
 
                                                     if (item is Group group)
                                                     {
@@ -404,6 +409,10 @@ namespace GameEditorStudio
                                                                 if (eitem is Entry entry)
                                                                 {
                                                                     SaveAnEntry(entry);
+                                                                }
+                                                                if (eitem is MathboxData Gmathbox)
+                                                                {
+                                                                    SaveAMathbox(Gmathbox);
                                                                 }
                                                                 // (Optional: nested groups later if you ever allow them)
                                                             }
@@ -557,6 +566,34 @@ namespace GameEditorStudio
 
 
                                 //HELPER METHODS
+                                void SaveAMathbox(MathboxData mathbox) 
+                                {
+                                    writer.WriteStartElement("Mathbox");
+                                    writer.WriteElementString("Name", mathbox.Name);
+                                    writer.WriteElementString("Tooltip", mathbox.WorkshopTooltip);
+                                    writer.WriteElementString("Row", mathbox.Row.ToString());
+                                    writer.WriteElementString("Column", mathbox.Column.ToString());
+                                    writer.WriteElementString("Key", mathbox.Key);
+
+                                    //writer.WriteElementString("ColumnSpan", mathbox.ColumnSpan.ToString());
+                                    writer.WriteElementString("IsNameHidden", mathbox.IsNameHidden.ToString());
+
+                                    writer.WriteStartElement("MathFormula");
+                                    foreach (MathStep MathStep in mathbox.MathFormula) 
+                                    {
+                                        writer.WriteStartElement("MathStep");
+                                        writer.WriteElementString("MathPiece", MathStep.MathPiece.ToString());
+                                        writer.WriteElementString("ValueSource", MathStep.ValueSource.ToString());
+                                        writer.WriteElementString("MathValue", MathStep.MathValue);
+                                        if (MathStep.EntryTarget != null) { writer.WriteElementString("EntryKey", MathStep.EntryTarget.Key); }
+
+                                        writer.WriteEndElement(); //End MathStep
+                                    }
+                                    writer.WriteEndElement(); //End MathFormula
+
+                                    writer.WriteEndElement(); //End Mathbox
+                                }
+
                                 void SaveAnEntry(Entry entry)
                                 {
                                     writer.WriteStartElement("Entry");
@@ -949,6 +986,9 @@ namespace GameEditorStudio
             }
 
             //add a check for if SavePath location exists
+            //Maybe also make it so instead of saving all WorkshopData.GameFiles, it saves the files in use by atleast one editor.
+            //The GameFiles *usually* is already this, but it's possible to add a new file, not use it, and save.
+            //The next time the user opens the workshop the file son't be in GameFiles because it's not in use, but that time the user saves game files, i think it still gets saved...?
 
             foreach (GameFile gameFile in MethodData.Command.WorkshopData.GameFiles)
             {
@@ -1355,6 +1395,7 @@ namespace GameEditorStudio
                                 
                                 writer.WriteElementString("Name", eventResource.Name); //I had a crash here i never confirmed as fixed. It was actually because eventResource was null. I may have fixed it, but i can't recreate it to make sure...
                                 writer.WriteElementString("Key", eventResource.Key);
+                                writer.WriteElementString("Tooltip", eventResource.TooltipText);
 
                                 if (eventResource.ResourceType == EventResource.ResourceTypes.File)
                                 {

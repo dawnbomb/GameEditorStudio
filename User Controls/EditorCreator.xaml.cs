@@ -34,7 +34,7 @@ namespace GameEditorStudio
             #else            
             #endif
 
-
+            LabelErrorNotice.Visibility = Visibility.Collapsed;
 
 
         }
@@ -60,6 +60,17 @@ namespace GameEditorStudio
 
         private void EditorNameTextboxTextChanged(object sender, TextChangedEventArgs e)
         {
+            bool isValid = PixelWPF.LibraryPixel.CheckIfValidFolderName(TextboxEditorName.Text);
+            if (isValid)
+            {
+                TextboxEditorName.Foreground = new SolidColorBrush(Colors.White);
+                return;
+            }
+            else
+            {
+                TextboxEditorName.Foreground = new SolidColorBrush(Colors.Red);
+                return;
+            }
             //LabelDemoEditorName.Content = TextboxEditorName.Text;
             //if (TextboxEditorName.Text == "") 
             //{
@@ -79,6 +90,14 @@ namespace GameEditorStudio
                     LabelErrorNotice.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF3E0101"));
                     return;
                 }
+
+                bool isValid = PixelWPF.LibraryPixel.CheckIfValidFolderName(TextboxEditorName.Text);
+                if (!isValid)
+                {
+                    TextboxEditorName.Foreground = new SolidColorBrush(Colors.Red);
+                    return;
+                }
+
                 //if (DemoEditorImage.Source == null)
                 //{
                 //    LabelErrorNotice.Content = "Please select a editor icon! D:<";
@@ -123,8 +142,13 @@ namespace GameEditorStudio
                 //    return;
 
                 //}
-                LabelErrorNotice.Content = "";
-                LabelErrorNotice.Background = Brushes.Transparent;
+
+                bool isValid = PixelWPF.LibraryPixel.CheckIfValidFolderName(TextboxEditorName.Text);
+                if (!isValid)
+                {
+                    TextboxEditorName.Foreground = new SolidColorBrush(Colors.Red);
+                    return;
+                }
             }
 
             WorkshopData Database = TheWorkshop.WorkshopData;

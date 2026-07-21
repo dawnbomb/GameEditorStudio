@@ -360,5 +360,33 @@ namespace GameEditorStudio
             }
 
         }
+
+
+        public static void OpenUserSettingsFolder()
+        {
+            //this uses literally nothing from the action pack, LOL.
+
+            try
+            {
+                string folderPath = LibraryGES.ApplicationLocation + "\\Settings\\";
+
+                // Open the folder in the file explorer
+                if (Directory.Exists(folderPath))
+                {
+                    LibraryGES.OpenFolder(folderPath);
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("Crystal editor folder or settings folder not found. This should literally never happen, please report this :(" +
+                        "\n.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                }
+            }
+            catch
+            {
+                PixelWPF.LibraryPixel.NotificationGenericError();
+            }
+
+        }
     }
 }

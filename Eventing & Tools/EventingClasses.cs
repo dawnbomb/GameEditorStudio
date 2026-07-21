@@ -160,6 +160,7 @@ namespace GameEditorStudio
         public bool IsChild { get; set; } = false; //If true, this is a child of another resource. If false, this is a root resource.
         public string ParentKey { get; set; } = ""; //IF CHILD: this is the key of the parent.     
 
+        public string TooltipText { get; set; } = "";
 
 
         public enum ResourceTypes { File, Folder, WTools, CMDText }

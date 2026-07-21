@@ -19,8 +19,19 @@
 
             </ContentControl>
 
-
-
+            <!--<ContentControl DockPanel.Dock="Top" Margin="0,0,0,10">
+                <DockPanel DockPanel.Dock="Top">
+                    <DockPanel DockPanel.Dock="Top">
+                        <Label Content="Tools Folder:"/>
+                        <Button Content="Browse..."/>
+                        <TextBox />
+                    </DockPanel>
+                    <DockPanel DockPanel.Dock="Top">
+                        <Label DockPanel.Dock="Top" Content="Not required, but setting a Tools folder will auto detected any tools inside it, even if they are in subfolders."  VerticalAlignment="Top" Foreground="#FFB1CC78"/>
+                    </DockPanel>
+                </DockPanel>
+            </ContentControl>-->
+            
 
             <DockPanel Margin="0,0,0,10" >
                 <ContentControl DockPanel.Dock="Top">
@@ -44,10 +55,10 @@
                     </DockPanel>
                 </ContentControl>
             </DockPanel>
+
             
             
-            
-            <ContentControl MinHeight="150"  DockPanel.Dock="Top" Margin="10,0,10,10"   >
+            <ContentControl MinHeight="150"  DockPanel.Dock="Bottom" Margin="10,0,10,10"   >
 
                 <DockPanel>
                     <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">

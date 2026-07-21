@@ -91,11 +91,13 @@ namespace GameEditorStudio
 
             {   //I am intensionally leaving this existing but collapsed, and related code, incase i later want project related stuff existing again in the game library.
                 //ProjectsContent.Visibility = Visibility.Collapsed; //TEMP FOR TESTING
-                ProjectInfoControl.Visibility = Visibility.Collapsed; //TEMP FOR TESTING
                 ProjectResourceControl.Visibility = Visibility.Collapsed; //TEMP FOR TESTING
             }
+            if (Properties.Settings.Default.ShowRecentWorkshops == false)
+            {
+                RecentWorkshopsContent.Visibility = Visibility.Collapsed;
+            }
 
-            
             #if DEBUG
             LibraryGES.ApplicationLocation = "D:\\Game Editor Studio"; //"O:\\Teddy\\Game Editor Studio\\Game Editor Studio"; //Where the .exe is supposed to be.
             //LibraryGES.ApplicationLocation = "O:\\Teddy\\Work\\Game Editor Studio";
@@ -112,11 +114,11 @@ namespace GameEditorStudio
             //as i don't currently support pre-loading every workshops data from the library, but common events are still for the "CURRENT" workshop.
             LoadDatabase.LoadToolLocations(); //Load user's last known tool locations.
             LoadDatabase.LoadEnabledCommonEvents(); //Loads from Settings/Common Events.xml the user's enabled common events.
-            LoadDatabase.LoadWorkshops(); //Events are loaded here. - - -  Does not fully load the workshops, that happens when one is launched. 
+            LoadDatabase.LoadWorkshops_INCLUDING_EVENTS(); //Events are loaded here. - - -  Does not fully load the workshops, that happens when one is launched. 
             
             RefreshWorkshopTree();
+            RefreshRecentWorkshopTree();
 
-            
 
             Dispatcher.InvokeAsync(async () => await PixelWPF.GithubUpdater.CheckForUpdatesAsync("GameEditorStudio", "dawnbomb/GameEditorStudio/releases/latest", LibraryGES.VersionNumber));
 
@@ -151,16 +153,11 @@ namespace GameEditorStudio
 
 
 
-        private void Row_DoubleClick(object sender, MouseButtonEventArgs e)
-        {
-             LaunchWorkshop();
-        }
-        
 
-        
         public void RefreshWorkshopTree()
         {
             LibraryTreeOfWorkshops.Items.Clear();
+            
 
             if (!Directory.Exists(LibraryGES.ApplicationLocation + "\\Workshops")) 
             {
@@ -205,7 +202,7 @@ namespace GameEditorStudio
                 {
                     treeItem.IsSelected = true; //If i ever remove this, make sure all right click options function properly (Especially Open Workshop Folder as that invokes a CommandMethod.)
                 };
-
+                
 
                 LibraryTreeOfWorkshops.Items.Add(treeItem);
             }
@@ -214,16 +211,57 @@ namespace GameEditorStudio
 
             
         }
-       
+
+        public void RefreshRecentWorkshopTree()
+        {
+            LibraryTreeOfRecentWorkshops.Items.Clear();
+            foreach (string RecentWorkshopName in LibraryGES.RecentWorkshops)
+            {
+                foreach (TreeViewItem treeitem in LibraryTreeOfWorkshops.Items)
+                {
+                    WorkshopData workshopData = treeitem.Tag as WorkshopData;
+                    if (workshopData.WorkshopName == RecentWorkshopName)
+                    {
+                        TreeViewItem copy = new TreeViewItem();
+
+                        copy.Header = treeitem.Header;
+                        copy.Tag = treeitem.Tag;
+                        copy.ToolTip = treeitem.ToolTip;
+                        copy.ContextMenu = treeitem.ContextMenu;
+
+                        copy.MouseRightButtonDown += (s, e) =>
+                        {
+                            copy.IsSelected = true; //If i ever remove this, make sure all right click options function properly (Especially Open Workshop Folder as that invokes a CommandMethod.)
+                            treeitem.IsSelected = true;
+                        };
+
+                        LibraryTreeOfRecentWorkshops.Items.Add(copy);
+                    }
+                }
+            }
+        }
+
         
+        private void RecentWorkshopsTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            TreeViewItem RTreeItem = LibraryTreeOfRecentWorkshops.SelectedItem as TreeViewItem;
+            if (RTreeItem == null) { return; }
+            WorkshopData RworkshopData = RTreeItem.Tag as WorkshopData;
+                        
+            foreach (TreeViewItem treeitem in LibraryTreeOfWorkshops.Items)
+            {
+                WorkshopData workshopData = treeitem.Tag as WorkshopData;
+                if (workshopData == RworkshopData)
+                {
+                    treeitem.IsSelected = true;                    
+                }
+            }
+        }
 
         private void LibraryTreeOfWorkshops_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             EditorsTree.Items.Clear();
             LibraryDocumentsTree.Items.Clear();
-            ProjectNameTextbox.Text = "";
-            TextBoxInputDirectory.Text = "You must select something to launch the workshop.";
-            TextBoxOutputDirectory.Text = "If not set, defaults to the Input Directory.";
 
 
             if (LibraryTreeOfWorkshops.SelectedItem == null)
@@ -234,6 +272,26 @@ namespace GameEditorStudio
 
             TreeViewItem treeItem = LibraryTreeOfWorkshops.SelectedItem as TreeViewItem;
             SelectedWorkshop = treeItem.Tag as WorkshopData;
+
+            {//Unselect recent workshop if not current workshop.
+                foreach (TreeViewItem Rtreeitem in LibraryTreeOfRecentWorkshops.Items)
+                {
+                    WorkshopData RworkshopData = Rtreeitem.Tag as WorkshopData;
+                    if (Rtreeitem.IsSelected == true) 
+                    {
+                        if (SelectedWorkshop != RworkshopData) 
+                        {
+                            Rtreeitem.IsSelected = false;
+                        }
+                    }
+                    if (Rtreeitem.IsSelected == false && SelectedWorkshop == RworkshopData) 
+                    {
+                        Rtreeitem.IsSelected = true;
+                    }
+                                        
+                }
+            }
+           
 
             ProjectsSelector.ItemsSource = SelectedWorkshop.ProjectsList; // Bind the collection to the ItemsSource property of the DataGrid control   
             CollectionViewSource.GetDefaultView(ProjectsSelector.ItemsSource).Refresh();  
@@ -248,13 +306,7 @@ namespace GameEditorStudio
                 ProjectsSelector.ScrollIntoView(ProjectsSelector.SelectedItem);
             }
 
-
-            ButtonSelectInputDirectory.ToolTip = "This workshop does not require a specific name for it's input folder. \nCheck the readme document for info on what the input folder is supposed to be.";
-            if (SelectedWorkshop.ProjectsRequireSameFolderName == true)
-            {
-                ButtonSelectInputDirectory.ToolTip = "This workshop is looking for a folder by the name of...\n" + SelectedWorkshop.WorkshopInputDirectory;
-            }
-
+                        
 
 
             { //Right sidebar stuff.
@@ -342,12 +394,8 @@ namespace GameEditorStudio
 
         
 
-        private void ButtonLaunchWorkshop_Click(object sender, RoutedEventArgs e)
-        {
-            LaunchWorkshop();
-        }
 
-        private void LaunchWorkshop() 
+        private void LaunchWorkshopPreviewMode(object sender, RoutedEventArgs e)
         {
             if (SelectedWorkshop.CreatedVersion > LibraryGES.VersionNumber)
             {
@@ -360,7 +408,7 @@ namespace GameEditorStudio
                         "\nI won't stop you from *trying* to use it anyway, but be *VERY* careful of this."
                         );
             }
-            else if (SelectedWorkshop.SavedVersion > LibraryGES.VersionNumber)
+            else if (SelectedWorkshop.LastUsedVersion > LibraryGES.VersionNumber)
             {
                 PixelWPF.LibraryPixel.Notification("Workshop last used in future GES version!",
                         "The workshop you are trying to open was last used in a later version of GES, " +
@@ -372,71 +420,53 @@ namespace GameEditorStudio
                         );
             }
 
-            if (SelectedWorkshop.LoadedProject != null || SelectedWorkshop.WorkshopXaml != null) 
-            {
-                PixelWPF.LibraryPixel.NotificationNegative("Sorry - Please restart Game Editor Studio D;",
-                        "As part of adding an upcoming feature to let users select a project AFTER a workshop is loaded and swap between them, i added a crash that happens if you try to open a workshop you previously opened. " +
-                        "It happened because i got sidetracked and never finished adding the new feature. " +
-                        "\n\nAnyway if you restart GES it will be fine. I'll finish adding the feature sometime in the next 2-3 months, as a huge code rewrite is required. But it would make creating multiple mods SUPER easy so i'm not backing down! "
-                        );
-                return;
+
+            {//Update recent workshops list.
+                if (LibraryGES.RecentWorkshops.Contains(SelectedWorkshop.WorkshopName)) { LibraryGES.RecentWorkshops.Remove(SelectedWorkshop.WorkshopName); }
+                LibraryGES.RecentWorkshops.Insert(0, SelectedWorkshop.WorkshopName);                
+                if (LibraryGES.RecentWorkshops.Count > 3) { LibraryGES.RecentWorkshops.RemoveAt(3); }
+                if (LibraryGES.RecentWorkshops.Count > 3) { LibraryGES.RecentWorkshops.RemoveAt(3); }
+                if (LibraryGES.RecentWorkshops.Count > 3) { LibraryGES.RecentWorkshops.RemoveAt(3); }
+
+                string NewRecentList = "";
+                bool first = true;
+                foreach (string name in LibraryGES.RecentWorkshops) 
+                {
+                    if (first == false) { NewRecentList += "|"; }
+                    NewRecentList += name;
+                    first = false;
+                }
+                Properties.Settings.Default.RecentWorkshops = NewRecentList;
             }
 
-            if (ProjectsSelector.SelectedIndex < 0 || LibraryTreeOfWorkshops.SelectedItem == null)
-            {
-                return;
-            }
-            Project UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
 
-            if (!Directory.Exists(UserProject.ProjectInputDirectory)) 
-            {
-                PixelWPF.LibraryPixel.Notification("Huh?",
-                    "It seems the input folder for this project ... doesn't exist?"
-                    );   
-                return;
-            }
-            if (!Directory.Exists(UserProject.ProjectOutputDirectory))
-            {
-                PixelWPF.LibraryPixel.Notification("Huh?",
-                    "It seems the output folder for this project ... doesn't exist?"
-                    );
-                return;
-            }
 
-            LoadingPanel.Visibility = Visibility.Visible;
-            Workshop TheWorkshop = new Workshop(SelectedWorkshop, UserProject); //Thing One, the workshop     
-            Database.GESMain.GESGrid.Children.Add(TheWorkshop);
-            
-
-            Properties.Settings.Default.LastWorkshop = SelectedWorkshop.WorkshopName; //Set the workshop name in settings, so it can be used by other parts of the program. 
-            Properties.Settings.Default.LastProject = UserProject.ProjectName;
-            Properties.Settings.Default.Save();
-        }
-
-        private async void OpenWorkshopFolder2(object sender, RoutedEventArgs e)
-        {
-            if (SelectedWorkshop == null) { return; }
-            string WorkshopFolderPath = LibraryGES.ApplicationLocation + "\\Workshops\\" + SelectedWorkshop.WorkshopName;
-            //await LibraryGES.OpenFolderAsync(WorkshopFolderPath);
-        }
-
-        private void LaunchWorkshopPreviewMode(object sender, RoutedEventArgs e)
-        {              
             {//Loading bar code 
                 LoadingFinalPanel.Visibility = Visibility.Collapsed;
                 LoadingPanel.Visibility = Visibility.Visible;
                 Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
             }
 
-            bool IsPreviewModeActive = true;
+            
 
-            Workshop TheWorkshop = new Workshop(SelectedWorkshop, null, IsPreviewModeActive); //Thing One, the workshop
-            Database.GESMain.GESGrid.Children.Add(TheWorkshop);
+            if (SelectedWorkshop.WorkshopXaml != null) 
+            {
+                Database.GESMain.GESGrid.Children.Add(SelectedWorkshop.WorkshopXaml);
+                LoadingPanel.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                Workshop TheWorkshop = new Workshop(SelectedWorkshop); //Thing One, the workshop
+                //Database.GESMain.GESGrid.Children.Add(TheWorkshop);
+                //LoadingPanel.Visibility = Visibility.Collapsed;
+            }
+            //Workshop TheWorkshop = new Workshop(SelectedWorkshop); //Thing One, the workshop
+            //Database.GESMain.GESGrid.Children.Add(TheWorkshop);
 
             Properties.Settings.Default.LastWorkshop = SelectedWorkshop.WorkshopName; //Set the workshop name in settings, so it can be used by other parts of the program. 
             Properties.Settings.Default.Save();
 
-            LoadingPanel.Visibility = Visibility.Collapsed;
+            
         }
 
 
@@ -502,14 +532,10 @@ namespace GameEditorStudio
 
         private void ProjectSelected(object sender, SelectionChangedEventArgs e)
         {
-            LabelForMissingProjectInput.Visibility = Visibility.Collapsed;
-            LabelForMissingProjectOutput.Visibility = Visibility.Collapsed;
+            
 
             if (ProjectsSelector.SelectedIndex < 0 || LibraryTreeOfWorkshops.SelectedItem == null || SelectedWorkshop == null)
-            {
-                ProjectNameTextbox.Text = "";
-                TextBoxInputDirectory.Text = "";
-                TextBoxOutputDirectory.Text = "";
+            {                
                 RefreshProjectEventResourcesUI();
                 return;
             }
@@ -517,41 +543,7 @@ namespace GameEditorStudio
 
             
             Project UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
-
-            ProjectNameTextbox.Text = UserProject.ProjectName;
-            TextBoxInputDirectory.Text = UserProject.ProjectInputDirectory;
-            TextBoxOutputDirectory.Text = UserProject.ProjectOutputDirectory;
-
-            ButtonOpenInputFolder.ToolTip = UserProject.ProjectInputDirectory;
-            ButtonOpenOutputFolder.ToolTip = UserProject.ProjectOutputDirectory;
-            BorderInputFolder.ToolTip = UserProject.ProjectInputDirectory;
-            BorderOutputFolder.ToolTip = UserProject.ProjectOutputDirectory;
-            
-
-            if (TextBoxInputDirectory.Text == "") 
-            {
-                TextBoxInputDirectory.Text = "Where new projects read files from. :)";
-                ButtonOpenInputFolder.ToolTip = null;
-                BorderInputFolder.ToolTip = null;
-            }
-            if (TextBoxOutputDirectory.Text == "") 
-            {
-                TextBoxOutputDirectory.Text = "Where files will be saved to. :)";
-                ButtonOpenOutputFolder.ToolTip = null;
-                BorderOutputFolder.ToolTip = null;
-            }
-
-            
-            if (UserProject.ProjectOutputDirectory != "" && !Directory.Exists(TextBoxOutputDirectory.Text))
-            {
-                LabelForMissingProjectOutput.Visibility = Visibility.Visible;
-            }
-            if (UserProject.ProjectInputDirectory != "" && !Directory.Exists(TextBoxInputDirectory.Text))
-            {
-                LabelForMissingProjectInput.Visibility = Visibility.Visible;
-            }
-
-
+                        
 
             RefreshProjectEventResourcesUI();
 
@@ -779,196 +771,9 @@ namespace GameEditorStudio
             }
         }
 
-        private void CreateNewProject(object sender, RoutedEventArgs e) //THE NEW PROJECT sdkjfsdjfklsdjfklsjfklsjfklsjkflsjklfjklfsdjklfsjlfkjfklsda
-        {
-            if (LibraryTreeOfWorkshops.SelectedItem == null) { return; }
-
-            string TheProjectFolder = LibraryGES.ApplicationLocation + "\\Projects\\" + SelectedWorkshop.WorkshopName + "\\" + "New Project" + "\\";
-            if (Directory.Exists(TheProjectFolder))
-            {
-                return;
-            }            
-                                    
-            Directory.CreateDirectory(TheProjectFolder);
-
-            Project NewProjectDataItem = new();
-            SelectedWorkshop.ProjectsList.Add(NewProjectDataItem); //Add to the list of projects for this workshop.
-            NewProjectDataItem.CreatedDate = DateTime.Now.ToString("MMM dd yyyy");
-            NewProjectDataItem.CreatedVersion = LibraryGES.VersionNumber;
-            CommandMethodsClass.SaveProjectXML(NewProjectDataItem, SelectedWorkshop);       
-
-            CollectionViewSource.GetDefaultView(ProjectsSelector.ItemsSource).Refresh();
-            ProjectsSelector.SelectedItem = NewProjectDataItem;
-        }
         
-
 
         //=================Button inputs==================
-
-        
-
-        private void ChangeProjectName(object sender, KeyEventArgs e)
-        {   
-            if (e.Key == Key.Enter)
-            {                
-
-                if (ProjectsSelector.SelectedIndex < 0 || LibraryTreeOfWorkshops.SelectedItem == null|| ProjectNameTextbox.Text == "")   {return;}
-
-                Project UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
-                string oldFolderPath = LibraryGES.ApplicationLocation + "\\Projects\\" + SelectedWorkshop.WorkshopName + "\\" + UserProject.ProjectName;
-                string newFolderPath = LibraryGES.ApplicationLocation + "\\Projects\\" + SelectedWorkshop.WorkshopName + "\\" + ProjectNameTextbox.Text;
-
-                if (oldFolderPath == newFolderPath) {return;}
-
-                Directory.Move(oldFolderPath, newFolderPath);// Rename the folder at the old path to the new path
-
-                UserProject.ProjectName = ProjectNameTextbox.Text;
-
-
-                CommandMethodsClass.SaveProjectXML(UserProject, SelectedWorkshop);
-
-
-
-
-                TreeViewItem selectedItem = LibraryTreeOfWorkshops.ItemContainerGenerator.ContainerFromItem(LibraryTreeOfWorkshops.SelectedItem) as TreeViewItem;
-                if (selectedItem != null) //This stuff makes it so the data grid updates.
-                {
-                    selectedItem.IsSelected = false;
-                    selectedItem.IsSelected = true;
-                }
-                               
-
-                foreach (var item in ProjectsSelector.Items)
-                {
-                    if (item is Project dataItem && dataItem.ProjectName.Equals(ProjectNameTextbox.Text, StringComparison.OrdinalIgnoreCase))
-                    {
-                        // Found the project, select the row
-                        ProjectsSelector.SelectedItem = item;
-                        ProjectsSelector.ScrollIntoView(item); // Optional: Scroll to the item if it's not visible
-                        break; // Stop the loop as we found the item
-                    }
-                }
-            }
-            
-
-        }
-
-        private void ButtonSelectInputDirectory_Click(object sender, RoutedEventArgs e)
-        {
-            if (ProjectsSelector.SelectedIndex < 0 || LibraryTreeOfWorkshops.SelectedItem == null)
-            {
-                return;
-            }
-
-            VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog();//This starts folder selection using Ookii.Dialogs.WPF NuGet Package
-            FolderSelect.Description = "Please select the folder named " + SelectedWorkshop.WorkshopInputDirectory; //This sets a description to help remind the user what their looking for.
-            FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.
-            {   //Smart seleting the folder to start in.
-                string inputPath = TextBoxInputDirectory.Text + "\\";
-                DirectoryInfo? current = new DirectoryInfo(inputPath);
-                while (current != null && !current.Exists)
-                {
-                    current = current.Parent;
-                }
-                if (current != null)
-                {
-                    FolderSelect.SelectedPath = current.FullName + "\\";
-                }
-            }
-
-            if ((bool)FolderSelect.ShowDialog(Window.GetWindow(this))) //This triggers the folder selection screen, and if the user does not cancel out...
-            {
-
-                //if (System.IO.File.ReadAllText(ExePath + "\\Workshops\\" + WorkshopName + "\\" +  WorkshopInputDirectory) == Path.GetFileName(FolderSelect.SelectedPath))
-                if (SelectedWorkshop.ProjectsRequireSameFolderName == false)
-                {
-                    PixelWPF.LibraryPixel.NotificationPositive("You MAYBE selected the correct folder?",
-                        "This workshop doesn't require a specific folder name to be selected. " +
-                        "This is usually set when the input folder is one that users commonly want to be able to rename. " +
-                        "\n\n" +
-                        "If your not sure, I STRONGLY recommend checking the readme, as well as asking around. Well, i mean, you'll know if something is wrong if you launch your project and get a ton of errors. >_>;"
-                    );
-
-                    Project UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
-                    UserProject.ProjectInputDirectory = FolderSelect.SelectedPath;
-                    TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
-
-                    CommandMethodsClass.SaveProjectXML(UserProject, SelectedWorkshop);
-
-                }
-                else if (SelectedWorkshop.WorkshopInputDirectory == Path.GetFileName(FolderSelect.SelectedPath) && SelectedWorkshop.ProjectsRequireSameFolderName == true)
-                {
-                    PixelWPF.LibraryPixel.NotificationPositive("You selected the correct folder!",
-                        "The folder name you selected is the same as the one this workshop is looking for. " +
-                        "This can only be wrong if you selected a folder with the exact same name, but a diffrent location."
-                    );
-
-                    Project UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
-                    UserProject.ProjectInputDirectory = FolderSelect.SelectedPath;
-                    TextBoxInputDirectory.Text = FolderSelect.SelectedPath;                    
-
-                    CommandMethodsClass.SaveProjectXML(UserProject, SelectedWorkshop);
-
-                    LabelForMissingProjectInput.Visibility = Visibility.Collapsed;
-
-                }
-                else
-                {
-                    PixelWPF.LibraryPixel.NotificationNegative("Error: Wrong folder selected!",
-                        "This workshop is looking for you to select a folder named \"" + SelectedWorkshop.WorkshopInputDirectory + "\"." +
-                        "\n\n" +
-                        "If your confused, check the README, or see if there are any helpful discords.");
-
-
-                }
-
-
-
-
-            }
-        }
-
-        private void ButtonSelectOutputDirectory_Click(object sender, RoutedEventArgs e)
-        {
-            if (ProjectsSelector.SelectedIndex < 0 || LibraryTreeOfWorkshops.SelectedItem == null)
-            {
-                return;
-            }
-
-
-            VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog(); //This starts folder selection using Ookii.Dialogs.WPF NuGet Package
-            FolderSelect.Description = "Please select where files will save to."; //This sets a description to help remind the user what their looking for.
-            FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.        
-            {   //Smart seleting the folder to start in.
-                string outputPath = TextBoxOutputDirectory.Text + "\\";
-                DirectoryInfo? current = new DirectoryInfo(outputPath);
-                while (current != null && !current.Exists)
-                {
-                    current = current.Parent;
-                }
-                if (current != null)
-                {
-                    FolderSelect.SelectedPath = current.FullName + "\\";
-                }
-            }
-            if ((bool)FolderSelect.ShowDialog(Window.GetWindow(this))) //This triggers the folder selection screen, and if the user does not cancel out...
-            {
-                Project UserProject = SelectedWorkshop.ProjectsList[ProjectsSelector.SelectedIndex];
-                UserProject.ProjectOutputDirectory = FolderSelect.SelectedPath;
-                TextBoxOutputDirectory.Text = FolderSelect.SelectedPath;
-
-                CommandMethodsClass.SaveProjectXML(UserProject, SelectedWorkshop);
-
-                LabelForMissingProjectOutput.Visibility = Visibility.Collapsed;
-            }
-
-
-        }
-
-
-
-        
-
         
 
         

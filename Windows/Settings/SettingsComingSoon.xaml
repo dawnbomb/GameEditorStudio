@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="GameEditorStudio.SettingsComingSoon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="700">
+    <Grid>
+        <StackPanel Margin="10,0,10,10" Background="Transparent">
+            <CheckBox Content="Fullscreen GES on launch." Margin="0,0,0,5"/>
+            <CheckBox Content="Ask to save when closing workshop." Margin="0,0,0,5"/>
+            <CheckBox Content="When a common event is enabled locally and for the current woshop, only show local." Margin="0,0,0,5"/>
+            <CheckBox Content="When a common event is enabled locally and for the current woshop, only show workshop." Margin="0,0,0,5"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
