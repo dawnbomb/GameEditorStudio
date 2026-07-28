@@ -28,6 +28,8 @@ namespace GameEditorStudio
         public WorkshopData WorkshopData { get; set; } //Used to only exist if called from the Workshop, but now it always exists. So legacy code assuming this didn't exist might cause issues.
 
 
+
+
         //Function Key (
 
     }
@@ -66,6 +68,7 @@ namespace GameEditorStudio
 
         public string Category { get; set; } = "Upcoming"; //Decides what Tab the command appears in. 
         public string Group { get; set; } = "Basics"; //Decides what grouping the command appears in, inside a given tab. 
+        public bool ConsoleExclusive { get; set; } = false;
 
         public string MethodName { get; set; } = ""; //The name of the method that runs when this command is called. 
 
@@ -133,6 +136,7 @@ namespace GameEditorStudio
         //Resource 1's Key, Resource 2's Key, etc. These keys match the ones in EventResource (right below this)
 
         public List<CommandResource> CMDList { get; set; } = new();
+        public string WorkshopToolKey { get; set; } = "";
 
     }
 

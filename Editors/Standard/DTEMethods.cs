@@ -1541,8 +1541,10 @@ namespace GameEditorStudio
             foreach (MathboxData mathboxdata in WorkshopData.MasterMathboxList) 
             {
                 mathboxdata.Mathbox.UpdateMathResult();
-            }            
+            }                   
         }
+
+
 
 
 

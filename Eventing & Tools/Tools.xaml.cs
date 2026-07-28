@@ -32,6 +32,9 @@ namespace GameEditorStudio
         public List<DockPanel> dockList { get; set; } = new();
         public string ColorCode { get; set; } = "#090917";
 
+        public DockPanel WPanel { get; set; }
+        List<Tool> WSTools { get; set; }
+
         public ToolsMenu(TopMenu SharedMenus, WorkshopData WorkshopData)
         {
             InitializeComponent();
@@ -43,10 +46,112 @@ namespace GameEditorStudio
 
             SetupToolsTree(dockList);
             SetupCommonEventTree(dockList);
-            SetupTools();
+            SetupTools(Database.Tools, true);
             SetupCommonEvents();
+            SetupThisWorkshop();
+
+        }
+
+        public void SetupThisWorkshop() 
+        {
+            TreeViewItem Witem = new();
+            Witem.Header = "Tools in use";
+            WorkshopTree.Items.Add(Witem);
+
+            DockPanel TheWPanel = new();
+            WPanel = TheWPanel;
+            WPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
+            DockPanel.SetDock(WPanel, Dock.Top);
+            WPanel.Style = (Style)FindResource("DockList");
+            WPanel.LastChildFill = false;
+
+            dockList.Add(WPanel);
+            TheScrollPanel.Children.Add(WPanel);
+
+            WPanel.Visibility = Visibility.Collapsed;  // Initially hidden
 
 
+
+            Witem.Tag = WPanel; // Set the DockPanel as the Tag
+
+            Witem.Selected += (sender, e) =>
+            {
+                foreach (var panel in dockList)
+                {
+                    panel.Visibility = Visibility.Collapsed;
+                }
+                WPanel.Visibility = Visibility.Visible;
+            };
+
+            RefreshWorkshopTools();
+
+            Witem.IsSelected = true;
+        }
+
+        public void RefreshWorkshopTools() 
+        {
+            if (this.WPanel != null)
+            {
+                this.WPanel.Children.Clear();
+            }
+
+            if (WorkshopData.WorkshopXaml == null) { WorkshopLeftControl.Visibility = Visibility.Collapsed; return; }
+            WSTools = WorkshopData.WorkshopTools;
+                                    
+
+
+            Label label = new();
+            DockPanel.SetDock(label, Dock.Top);
+            WPanel.Children.Add(label);
+
+            //WorkshopData.
+            List<Tool> ToolsInUseByCommons = new();
+            foreach (CommonEvent commonEvent in Database.CommonEvents)
+            {
+                if (commonEvent.Workshop == false) { continue; }
+
+                foreach (Command com in commonEvent.MyCommands)
+                {
+                    foreach (Tool tool in com.RequiredToolsList)
+                    {
+                        if (!ToolsInUseByCommons.Contains(tool)) 
+                        {
+                            ToolsInUseByCommons.Add(tool);
+                        }                        
+                    }
+                }
+            }
+
+            label.Content = "GES Tools in use by this workshop (" + ToolsInUseByCommons.Count + ")";
+
+            SetupTools(ToolsInUseByCommons, false);
+
+            DockPanel WTPanel = new DockPanel();
+            DockPanel.SetDock(WTPanel, Dock.Top);
+            WPanel.Children.Add(WTPanel);
+            WTPanel.LastChildFill = false;
+            WTPanel.Margin = new Thickness(5, 20, 5, 10);
+            WTPanel.Background = Brushes.Transparent;
+
+            Label labelW = new();
+            DockPanel.SetDock(labelW, Dock.Left);
+            WTPanel.Children.Add(labelW);
+            labelW.Content = "Non-GES Tools for this Workshop (" + WSTools.Count + ")";
+
+            Button button = new();
+            button.Content = "Manage special workshop tools";
+            DockPanel.SetDock(button, Dock.Right);
+            WTPanel.Children.Add(button);
+            button.Click += (sender, e) => OpenThing();
+
+            void OpenThing()
+            {
+                WToolsManager WToolManagerControl = new(this);
+                TheToolsWindowGrid.Children.Add(WToolManagerControl);
+                WToolManagerControl.warningmessage();
+            }
+
+            SetupTools(WSTools, false);
         }
 
         public void SetupToolsTree(List<DockPanel> dockList)
@@ -92,6 +197,9 @@ namespace GameEditorStudio
                     // Show only the related panel
                     panelForTab.Visibility = Visibility.Visible;
                 };
+
+                
+
             }
         }
 
@@ -142,9 +250,9 @@ namespace GameEditorStudio
         }
                 
 
-        public void SetupTools()
+        public void SetupTools(List<Tool> ToolsList, bool ForGESTools)
         {
-            foreach (Tool ThisTool in Database.Tools)
+            foreach (Tool ThisTool in ToolsList)
             {
                 Border border = new();
                 border.BorderBrush = Brushes.Black; //new SolidColorBrush((Color)ColorConverter.ConvertFromString("#101010"))
@@ -162,21 +270,29 @@ namespace GameEditorStudio
                 ToolPanel.MouseEnter += (sender, e) => ToolPanel_MouseEnter(sender, e, ThisTool);
 
                 // Find corresponding TreeViewItem by Tab value and add MainPanel to its DockPanel
-                foreach (TreeViewItem treeItem in TreeViewTools.Items)
+                if (ForGESTools == true) 
                 {
-                    if (treeItem.Header.ToString() == ThisTool.Category)
+                    foreach (TreeViewItem treeItem in TreeViewTools.Items)
                     {
-                        DockPanel CategoryPanel = treeItem.Tag as DockPanel;
-                        CategoryPanel.Children.Add(border);
-                        break;
+                        if (treeItem.Header.ToString() == ThisTool.Category)
+                        {
+                            DockPanel CategoryPanel = treeItem.Tag as DockPanel;
+                            CategoryPanel.Children.Add(border);
+                            break;
+                        }
                     }
                 }
+                if (ForGESTools == false)
+                {
+                    WPanel.Children.Add(border);
+                }
+                
 
-                SetupToolPanel(ToolPanel, ThisTool);
+                SetupToolPanel(ToolPanel, ThisTool, ForGESTools);
             }
         }
 
-        private void SetupToolPanel(DockPanel toolPanel, Tool tool)
+        private void SetupToolPanel(DockPanel toolPanel, Tool tool, bool ForGESTools)
         {
             // Name Label
             Label nameLabel = new Label
@@ -220,10 +336,14 @@ namespace GameEditorStudio
             {
                 Content = "Browse...",
                 Width = 98,
-                FontSize = 20
+                FontSize = 20,
+                
             };
-            browseButton.Click += (sender, e) => SaveToolsXML(sender, e, tool);
             toolPanel.Children.Add(browseButton);
+            if (ForGESTools == true) { browseButton.Click += (sender, e) => SaveToolsXML(sender, e, tool,  ForGESTools); }
+            if (ForGESTools == false) { browseButton.Click += (sender, e) => SaveToolsXML(sender, e, tool,  ForGESTools); }
+            
+
 
             // Location TextBox
             TextBox locationTextBox = new TextBox
@@ -234,6 +354,8 @@ namespace GameEditorStudio
                 VerticalContentAlignment = VerticalAlignment.Center,
                 
             };
+            ToolTipService.SetInitialShowDelay(locationTextBox, LibraryGES.TooltipInitialDelay);
+            ToolTipService.SetBetweenShowDelay(locationTextBox, LibraryGES.TooltipBetweenDelay);
             Binding locationBinding = new Binding("Location")
             {
                 Source = tool,
@@ -394,9 +516,9 @@ namespace GameEditorStudio
                 return;
             }
         }
-        
+                
 
-        public void SaveToolsXML(object sender, RoutedEventArgs e, Tool Tool)
+        public void SaveToolsXML(object sender, RoutedEventArgs e, Tool Tool,  bool ForGESTools)
         {
             if (!Directory.Exists(LibraryGES.ApplicationLocation + "\\Settings")) 
             {
@@ -411,10 +533,18 @@ namespace GameEditorStudio
                 TextBox associatedTextBox = (TextBox)clickedButton.Tag;
                 associatedTextBox.Text = FileSelect.FileName;
                 Tool.Location = FileSelect.FileName;
+                associatedTextBox.ToolTip = Tool.Location;
             }
 
+            if (ForGESTools == false) 
+            {
+                if (!Database.WorkshopTools.Any(t => t.Key == Tool.Key))
+                {
+                    Database.WorkshopTools.Add(Tool);
+                }
+            }
 
-
+            
 
 
             XmlWriterSettings settings = new();
@@ -430,6 +560,14 @@ namespace GameEditorStudio
                 foreach (Tool tool in Database.Tools)
                 {
                     writer.WriteStartElement("Tool");
+                    writer.WriteElementString("Name", tool.DisplayName.ToString());
+                    writer.WriteElementString("Key", tool.Key.ToString());
+                    writer.WriteElementString("Location", tool.Location);
+                    writer.WriteEndElement();
+                }
+                foreach (Tool tool in Database.WorkshopTools)
+                {
+                    writer.WriteStartElement("WorkshopTool");
                     writer.WriteElementString("Name", tool.DisplayName.ToString());
                     writer.WriteElementString("Key", tool.Key.ToString());
                     writer.WriteElementString("Location", tool.Location);
@@ -543,44 +681,26 @@ namespace GameEditorStudio
         {
             if (sender is TreeView activeTreeView && e.NewValue is TreeViewItem selectedItem)
             {
-                // Determine which tree view is the other one to clear its selection
-                TreeView otherTreeView = activeTreeView == TreeViewTools ? TreeViewCommonEvents : TreeViewTools;
+                if (activeTreeView != WorkshopTree) { ClearTreeViewSelection(WorkshopTree); }
+                if (activeTreeView != TreeViewTools) { ClearTreeViewSelection(TreeViewTools); }
+                if (activeTreeView != TreeViewCommonEvents) { ClearTreeViewSelection(TreeViewCommonEvents); }
 
-                // Clear selection in the other tree view by setting IsSelected to false for all items
-                ClearTreeViewSelection(otherTreeView);
-
-                // Hide all DockPanels
                 foreach (DockPanel panel in TheScrollPanel.Children.OfType<DockPanel>())
                 {
                     panel.Visibility = Visibility.Collapsed;
                 }
 
-                // Show the DockPanel associated with the selected item if it exists
-                DockPanel correspondingPanel = selectedItem.Tag as DockPanel;
-                if (correspondingPanel != null)
-                {
-                    correspondingPanel.Visibility = Visibility.Visible;
-                }
+                DockPanel TreeItemPanel = selectedItem.Tag as DockPanel;
+                if (TreeItemPanel != null){ TreeItemPanel.Visibility = Visibility.Visible; }
+
             }
         }
-
 
         private void ClearTreeViewSelection(TreeView treeView)
         {
             foreach (TreeViewItem item in treeView.Items)
             {
                 item.IsSelected = false;
-                // Optionally, if items have children and you want to recursively deselect:
-                ClearTreeViewItemSelection(item);
-            }
-        }
-
-        private void ClearTreeViewItemSelection(TreeViewItem treeViewItem)
-        {
-            treeViewItem.IsSelected = false;
-            foreach (TreeViewItem child in treeViewItem.Items)
-            {
-                ClearTreeViewItemSelection(child);
             }
         }
 

@@ -399,6 +399,36 @@ namespace GameEditorStudio.Loading
             
         }
 
+        public void LoadAllWorkshopNonGESTools(WorkshopData workshopData) 
+        {
+            if (!File.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\" + "Tools.xml")) 
+            {
+                return;
+            }
+
+            XElement xml = XElement.Load(LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\" + "Tools.xml");
+
+            foreach (XElement item in xml.Descendants("WorkshopTool"))
+            {
+                Tool tool = new();
+
+                tool.DisplayName = item.Element("Name")?.Value;
+                tool.Description = item.Element("Description")?.Value;
+                tool.ExeName = item.Element("ExecutableName")?.Value;
+                tool.DownloadLink = item.Element("DownloadLink")?.Value;
+                //tool.Category = item.Element("Category")?.Value;
+                tool.Key = item.Element("Key")?.Value;
+                tool.Notepad = item.Element("Notepad")?.Value;
+
+                workshopData.WorkshopTools.Add(tool);
+
+                Tool? existingTool = Database.WorkshopTools.FirstOrDefault(t => t.Key == tool.Key);
+                if (existingTool != null)
+                {
+                    tool.Location = existingTool.Location;
+                }                
+            }
+        }
 
     }
 

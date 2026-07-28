@@ -915,208 +915,7 @@ namespace GameEditorStudio
         /////////////////////////////////////////////////////////////////////     
         ///////////////////DOCUMENTS ARE IN A USER CONTROL/////////////////// 
         /////////////////////////////////////////////////////////////////////
-
-
-        /////////////////////////////////////////////////////////////////////     
-        /////////////////////////////// AUTOMOD ///////////////////////////// 
-        /////////////////////////////////////////////////////////////////////
-        private void ApplyFormulaToEntryAcrossAllItems(object sender, RoutedEventArgs e)
-        {
-            //Almost everything here uses doubles instead of ints to make ABSOLUTELY FUCKING SURE nothing EVER goes out of range, even when adding more value types or using large negatives from super robot wars / disgaea.
-            //FormulaComboBox
-            //FormulaTextBox
-
-            if (DTEData.EntryClass == null) { return; }
-            if (DTEData.WorkshopXaml.IsPreviewMode == true) { return; }
-
-            //Editor EditorClass = DTEData;
-            Entry EntryClassX = DTEData.EntryClass;
-
-
-            if (EntryClassX.IsEntryHidden == true || EntryClassX.IsTextInUse == true) { return; } //prevents users from axidentally modding values that should be otherwise already disabled.
-            if (EntryClassX.EntryTypeNumberBox.NewNumberSign == EntryTypeNumberBox.TheNumberSigns.Signed) { return; }
-
-            //if (EntryClass.EntryByteSize != "1") { return; } //temporary
-
-            int FinalItem = 0;
-            try
-            {
-                if (DTEData.NameTable.TextTableItemCount != 0) { FinalItem = DTEData.NameTable.TextTableItemCount; }
-                if (DTEData.NameTable.TextTableItemCount == 0)
-                {
-                    int ItemCount = 0;
-                    foreach (var Item in DTEData.NameTable.ItemList)
-                    {
-                        if (Item.IsFolder == false)
-                        {
-                            ItemCount++;
-                        }
-                    }
-                    FinalItem = ItemCount;
-                }
-                FinalItem = FinalItem - int.Parse(FormulaDoNotModTextBox.Text); //Allows users to NOT mod the final X number of items in the list.
-            }
-            catch
-            {
-                PixelWPF.LibraryPixel.NotificationNegative("Error: ",
-                    "An error happened during the first step of auto-mod. " +
-                    "In this step, it simply tries to count how many items it's going to mod. " +
-                    "This error can probably only appear if the editor is not getting it's item names from an actual game file. " +
-                    "\n\n" +
-                    "Anyway, Auto-mod will now cancel. Nothing has been changed."
-                    );
-                return;
-            }
-
-
-            for (int i = 0; i < FinalItem; i++)
-            {
-
-                try
-                {
-                    //Get Current Value Step
-                    double CurrentValue = 0; //Will cause conflicts with negative numbers so im ignoring them for now. (Maybe i can support negative byte sizes 1 and 2 easily though ?)                
-                    if (EntryClassX.Endianness == "1")
-                    {
-                        EntryClassX.EntryByteDecimal = DTEData.DataTable.FileDataTable.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClassX.DataTableRowSize) + EntryClassX.RowOffset].ToString("D");
-                        CurrentValue = DTEData.DataTable.FileDataTable.FileBytes[DTEData.DataTable.DataTableStart + (i * EntryClassX.DataTableRowSize) + EntryClassX.RowOffset];
-                    }
-                    if (EntryClassX.Endianness == "2B")
-                    {
-                        EntryClassX.EntryByteDecimal = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClassX.DataTableRowSize) + EntryClassX.RowOffset).ToString("D");
-                        CurrentValue = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (i * EntryClassX.DataTableRowSize) + EntryClassX.RowOffset);
-                    }
-                    if (EntryClassX.Endianness == "4B")
-                    {
-                        EntryClassX.EntryByteDecimal = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClassX.DataTableRowSize) + EntryClassX.RowOffset).ToString("D");
-                        CurrentValue = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (i * EntryClassX.DataTableRowSize) + EntryClassX.RowOffset);
-                    }
-                    if (EntryClassX.Endianness == "2L")
-                    {
-                        ushort WrongValue = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClassX.DataTableRowSize) + EntryClassX.RowOffset);
-                        CurrentValue = (ushort)IPAddress.HostToNetworkOrder((short)WrongValue); // Swaps the endianness
-                    }
-                    if (EntryClassX.Endianness == "4L")
-                    {
-                        uint value = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClassX.DataTableRowSize) + EntryClassX.RowOffset);
-                        byte[] valueBytes = BitConverter.GetBytes(value);    // Swaps the endianness
-                        Array.Reverse(valueBytes);                           // Swaps the endianness
-                        CurrentValue = BitConverter.ToUInt32(valueBytes, 0); // Swaps the endianness
-                    }
-
-                    //set above as IF size 1
-                    //make more for IF size 2L 2B 4L 4B
-                    double NewValue = 0;
-
-                    if (FormulaComboBox.Text == "Multiply") //Multiply Step
-                    {
-                        double multiplier = 1;
-                        string formulaText = FormulaTextBox.Text.Trim().TrimEnd('%');
-
-                        if (double.TryParse(formulaText, out double percentage)) //the max size of a double is 9 quadrillion, so it should never cause any size limit errors.
-                        {
-                            multiplier = percentage / 100;
-                        }
-                        else
-                        {
-                            return;
-                        }
-
-                        double MathResult = CurrentValue * multiplier;
-                        NewValue = (double)Math.Round(MathResult);
-
-                    }
-
-                    if (FormulaComboBox.Text == "Add") //Add Step
-                    {
-                        NewValue = CurrentValue + double.Parse(FormulaTextBox.Text);
-                    }
-
-                    if (FormulaComboBox.Text == "Subtract") //Subtract Step
-                    {
-                        NewValue = CurrentValue - double.Parse(FormulaTextBox.Text);
-                    }
-
-                    //MIN Step
-                    if (FormulaMinTextBox.Text != "" && FormulaMinTextBox.Text != null) { if (NewValue < double.Parse(FormulaMinTextBox.Text)) { NewValue = double.Parse(FormulaMinTextBox.Text); } }
-                    if (NewValue < 0) { NewValue = 0; } //True Min Step
-
-                    //MAX Step
-                    if (FormulaMaxTextBox.Text != "" && FormulaMaxTextBox.Text != null) { if (NewValue > double.Parse(FormulaMaxTextBox.Text)) { NewValue = double.Parse(FormulaMaxTextBox.Text); } }
-                    if (EntryClassX.Endianness == "1" && NewValue > 255) { NewValue = 255; } //True Max Step
-                    if (EntryClassX.Endianness == "2B" && NewValue > 65535) { NewValue = 65535; }
-                    if (EntryClassX.Endianness == "2L" && NewValue > 65535) { NewValue = 65535; }
-                    if (EntryClassX.Endianness == "4B" && NewValue > 4294967295) { NewValue = 4294967295; }
-                    if (EntryClassX.Endianness == "4L" && NewValue > 4294967295) { NewValue = 4294967295; }
-
-
-
-
-
-                    //Saving Step
-                    string Result = NewValue.ToString();
-
-                    if (EntryClassX.Endianness == "1")  // This is saving 1 Byte Size?   // First 1 byte save
-                    {
-                        Byte.TryParse(Result, out byte value8);
-                        { ByteManager.ByteWriter(value8, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (i * EntryClassX.DataTableRowSize) + EntryClassX.RowOffset); }
-                    }
-                    if (EntryClassX.Endianness == "2L")
-                    {
-                        UInt16.TryParse(Result, out ushort value16);
-                        value16 = (ushort)IPAddress.HostToNetworkOrder((short)value16); // Swap the endianness
-                        { ByteManager.ByteWriter(value16, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (i * EntryClassX.DataTableRowSize) + EntryClassX.RowOffset); } //First 2 byte save
-
-
-                    }
-                    if (EntryClassX.Endianness == "4L")
-                    {
-                        UInt32.TryParse(Result, out uint value32);
-                        byte[] valueBytes = BitConverter.GetBytes(value32); // Swap the endianness
-                        Array.Reverse(valueBytes); // Swap the endianness
-                        value32 = BitConverter.ToUInt32(valueBytes, 0); // Swap the endianness
-                        { ByteManager.ByteWriter(value32, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (i * EntryClassX.DataTableRowSize) + EntryClassX.RowOffset); } //First 4 byte save
-
-                    }
-                    if (EntryClassX.Endianness == "2B")
-                    {
-                        UInt16.TryParse(Result, out ushort value16);
-                        { ByteManager.ByteWriter(value16, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (i * EntryClassX.DataTableRowSize) + EntryClassX.RowOffset); } //First 2 byte save
-                    }
-                    if (EntryClassX.Endianness == "4B")
-                    {
-                        UInt32.TryParse(Result, out uint value32);
-                        { ByteManager.ByteWriter(value32, DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (i * EntryClassX.DataTableRowSize) + EntryClassX.RowOffset); } //First 4 byte save
-                    }
-
-                    //FormulaMinTextBox
-                    //FormulaMaxTextBox
-                }
-                catch
-                {
-                    PixelWPF.LibraryPixel.NotificationNegative("Error: ???",
-                        "An error happened during the actual modifying of data in memory." +
-                        "\nThis means some of the items have been changed, and others have not." +
-                        "\nNothing has been saved to actual files on the computer, so don't worry." +
-                        "\n" +
-                        "\nHowever, this is a very serious error. It is strongly recommended you close the program WITHOUT saving your game files." +
-                        "\n" +
-                        "\nI chose not to automatically force crash the program, to give you a chance to save some non-game file related things first. " +
-                        "before you close everything, in the workshop menu you may save your documents, common events, and editors, but absolutely do not save your game files. " +
-                        "If you do, you will save them with only some items being changed, but not all of them."
-                    );
-                    return;
-                }
-
-
-            }
-
-
-
-            TreeViewItem itemm = DTEData.EditorLeftBar.TreeView.SelectedItem as TreeViewItem;
-            itemm.IsSelected = false;
-            itemm.IsSelected = true;
-        }
+                        
 
         /////////////////////////////////////////////////////////////////////     
         //////////////////////////////// LISTS ////////////////////////////// 
@@ -1632,6 +1431,7 @@ namespace GameEditorStudio
 
             DTEData.DTEXaml.RightBar.CrossReferenceInfo.FillLearnBox(DTEData);
             DTEMethods.UpdateALLMathboxResults(DTEData.WorkshopData);
+            DTEData.EditorRightBar.AutoModControl.UpdateExampleMathResults();
         }
 
         private void SetNumberboxUnsigned(object sender, RoutedEventArgs e)
@@ -1643,6 +1443,7 @@ namespace GameEditorStudio
 
             DTEData.DTEXaml.RightBar.CrossReferenceInfo.FillLearnBox(DTEData);
             DTEMethods.UpdateALLMathboxResults(DTEData.WorkshopData);
+            DTEData.EditorRightBar.AutoModControl.UpdateExampleMathResults();
         }
 
         private void SuffixTextChanged(object sender, TextChangedEventArgs e)

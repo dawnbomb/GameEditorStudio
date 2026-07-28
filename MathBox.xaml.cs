@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static GameEditorStudio.AutoModMathStep;
 using static GameEditorStudio.MathStep;
 
 namespace GameEditorStudio
@@ -609,7 +610,7 @@ namespace GameEditorStudio
                 MathResultBox.Text = "";
                 MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultTextbox.Text = "";
                 MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultUsingInputTextbox.Text = "";
-                MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultUsingOutputTextbox.Text = "";
+                //MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultUsingOutputTextbox.Text = "";
                 return;
             }
 
@@ -619,16 +620,13 @@ namespace GameEditorStudio
                 double valueSoFarFromInput = CalculateFormula(e => e.EntryValueOnProjectLoadFromInput);
                 //double valueSoFarFromOutput = CalculateFormula(e => e.EntryValueOnProjectLoadFromOutput);
 
-                if (MathboxData.ParentEditor.DataTableEditorData.EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox) 
-                {
-                    string currenttext = MathboxData.ParentEditor.DataTableEditorData.EntryClass.EntryTypeNumberBox.NumberBoxTextBox.Text;
-                }
+
 
                 MathResultBox.Text = valueSoFar.ToString();
                 MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultTextbox.Text = valueSoFar.ToString();
                 MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultUsingInputTextbox.Text = valueSoFarFromInput.ToString();
                 //MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultUsingOutputTextbox.Text = valueSoFarFromOutput.ToString();
-                MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultUsingOutputTextbox.Text = "Coming later";
+
 
                 double CalculateFormula(Func<Entry, string> GetEntryValue)
                 {
@@ -652,6 +650,8 @@ namespace GameEditorStudio
 
                                 if (MathStep.EntryTarget.NewSubType == Entry.EntrySubTypes.NumberBox) //to deal with possible negative values.
                                 {
+                                    //THIS IS A BIG TO FIX LATER.
+                                    //THE FROM INPUT WONT WORK PROPERLY IF WORKING WITH NUMBERBOX.
                                     operand = double.Parse(MathStep.EntryTarget.EntryTypeNumberBox.NumberBoxTextBox.Text);
                                 }
                                 else
@@ -675,46 +675,16 @@ namespace GameEditorStudio
                                 continue;
                         }
 
-
-                        switch (MathStep.MathPiece)
-                        {
-                            case MathStep.MathPieces.Plus:
-                                valueSoFar += operand;
-                                break;
-
-                            case MathStep.MathPieces.Minus:
-                                valueSoFar -= operand;
-                                break;
-
-                            case MathStep.MathPieces.Multiply:
-                                valueSoFar *= operand;
-                                break;
-
-                            case MathStep.MathPieces.Divide:
-                                if (operand != 0)
-                                    valueSoFar /= operand;
-                                break;
-
-                            case MathStep.MathPieces.Max:                                
-                                valueSoFar = Math.Min(valueSoFar, operand);
-                                break;
-
-                            case MathStep.MathPieces.Min:
-                                valueSoFar = Math.Max(valueSoFar, operand);
-                                break;
-
-                            case MathStep.MathPieces.Round:
-                                valueSoFar = Math.Round(valueSoFar);
-                                break;
-
-                            case MathStep.MathPieces.RoundUp:
-                                valueSoFar = Math.Ceiling(valueSoFar);
-                                break;
-
-                            case MathStep.MathPieces.RoundDown:
-                                valueSoFar = Math.Floor(valueSoFar);
-                                break;
-                        }
+                        if (MathStep.MathPiece == MathPieces.Plus) { valueSoFar += operand; }
+                        else if (MathStep.MathPiece == MathPieces.Plus) { valueSoFar += operand; }
+                        else if (MathStep.MathPiece == MathPieces.Minus) { valueSoFar -= operand; }
+                        else if (MathStep.MathPiece == MathPieces.Multiply) { valueSoFar *= operand; }
+                        else if (MathStep.MathPiece == MathPieces.Divide) { if (operand != 0) valueSoFar /= operand; }
+                        else if (MathStep.MathPiece == MathPieces.Max) { valueSoFar = Math.Min(valueSoFar, operand); }
+                        else if (MathStep.MathPiece == MathPieces.Min) { valueSoFar = Math.Max(valueSoFar, operand); }
+                        else if (MathStep.MathPiece == MathPieces.Round) { valueSoFar = Math.Round(valueSoFar); }
+                        else if (MathStep.MathPiece == MathPieces.RoundUp) { valueSoFar = Math.Ceiling(valueSoFar); }
+                        else if (MathStep.MathPiece == MathPieces.RoundDown) { valueSoFar = Math.Floor(valueSoFar); }
                     }
 
                     return valueSoFar;
@@ -725,7 +695,7 @@ namespace GameEditorStudio
                 MathResultBox.Text = "ERROR";
                 MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultTextbox.Text = "ERROR";
                 MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultUsingInputTextbox.Text = "ERROR";
-                MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultUsingOutputTextbox.Text = "ERROR";
+                //MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultUsingOutputTextbox.Text = "ERROR";
             }
             
         }

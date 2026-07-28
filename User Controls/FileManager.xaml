@@ -21,8 +21,8 @@
 
                     </DockPanel>
                 </Border>
-                
-                <TreeView x:Name="TreeGameFiles" SelectedItemChanged="SelectedTreeItemChanged" Drop="TreeGameFilesDrop" AllowDrop="True"/>
+
+                <TreeView SelectedItemChanged="SelectedTreeItemChanged" x:Name="TreeGameFiles" Drop="TreeGameFilesDrop" AllowDrop="True"/>
             </DockPanel>
         </ContentControl>
         <GridSplitter Style="{DynamicResource SplitterHorizontal}" Height="12" Grid.Row="1"   />

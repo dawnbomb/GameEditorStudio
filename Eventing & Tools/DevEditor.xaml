@@ -101,7 +101,7 @@
                             <TreeView x:Name="CommandsTree" SelectedItemChanged="CommandsTreeSelectedItemChanged" HorizontalAlignment="Left" Width="300"/>
                             <Grid>
 
-                                <Label Content="Method Name" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="540,184,0,0"/>
+                                <Label Content="Method Name" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="473,184,0,0"/>
                                 <TextBox Name="CommandMethodNameTextbox" VerticalAlignment="Top" Margin="471,219,10,0" Text="- - -" />
 
                                 <Label Content="Display Name" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="8,6,0,0"/>
@@ -183,6 +183,8 @@
                                     </DockPanel>
                                 </Border>
                                 <Label Content="Resource name is just&#xD;&#xA;what the user sees &#xD;&#xA;when selecting what&#xA;resource to give.&#xA;&#xA;It's not used as the&#xA;actual file name." HorizontalAlignment="Left" Margin="534,335,0,0" VerticalAlignment="Top"/>
+                                <Button Click="SetCommandMethodOpenToolButtonClick" Content="Set to OpenTool" HorizontalAlignment="Left" Margin="610,190,0,0" VerticalAlignment="Top"/>
+                                <CheckBox  Checked="CommandConsoleExclusiveIsChecked" Unchecked="CommandConsoleExclusiveIsUnchecked" Name="CommandConsoleExclusiveCheckbox" Content="Console Exclusive" HorizontalAlignment="Left" Margin="149,44,0,0" VerticalAlignment="Top"/>
 
 
                             </Grid>

@@ -110,7 +110,7 @@ namespace GameEditorStudio
             timer2.Stop(); Debug.WriteLine($"Generate All Editor Xamls Finished in {timer2.ElapsedMilliseconds} ms");
 
             LoadDatabase.LoadAllWorkshopDocuments(WorkshopData);
-
+            LoadDatabase.LoadAllWorkshopNonGESTools(WorkshopData);
 
             DTEMethods.UpdateHotbarForAllDTEEditors(WorkshopData); //Syncs the hotbar icon state between all DTE editors. 
 
@@ -119,6 +119,8 @@ namespace GameEditorStudio
             GC.RefreshMemoryLimit(); //Not sure if useful, it's a new .net8 feature to automatically increase memory limit as needed. Might reduce lag? Probably won't hurt? 
 
             HomeControl.HomeSetup(WorkshopData); //Sets up the Home Tab.
+
+            
 
             this.Visibility = Visibility.Visible;
 

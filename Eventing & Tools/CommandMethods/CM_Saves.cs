@@ -1317,6 +1317,15 @@ namespace GameEditorStudio
                                         }
                                         writer.WriteEndElement(); //End CMDResourceList
                                     }
+                                    if (AnEventCommand.Command.Key == "RunWorkshopTool") 
+                                    {
+                                        writer.WriteElementString("WorkshopToolKey", AnEventCommand.WorkshopToolKey);
+
+                                        //writer.WriteStartElement("SpecialWorkshopTool");
+                                        ////writer.WriteElementString("ToolName(NotLoaded)", AnEventCommand.SpecialWorkshopToolKey);
+                                        //writer.WriteElementString("ToolKey", AnEventCommand.SpecialWorkshopToolKey);
+                                        //writer.WriteEndElement(); //End CMDResourceList
+                                    }
                                 }
                                 
 

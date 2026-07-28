@@ -285,6 +285,11 @@ namespace GameEditorStudio
                                     string commandKey = commandElement.Element("Key")?.Value;
                                     if (!string.IsNullOrEmpty(commandKey))
                                     {
+                                        if (commandKey == "RunWorkshopTool") 
+                                        {
+                                            string testaaa = "";
+                                        }
+
                                         Command matchingCommand = Database.Commands.FirstOrDefault(cmd => cmd.Key == commandKey);
                                         if (matchingCommand != null)
                                         {
@@ -314,7 +319,7 @@ namespace GameEditorStudio
                                                 //        myCommand.ResourceKeys.Add(resourceKeyIndex++, "");
                                                 //    }
                                                 //}
-
+                                                
                                                 var CMDResourceListElement = commandElement.Descendants("CMDResourceList");
                                                 foreach (var CMDResourceElement in CMDResourceListElement)
                                                 {
@@ -356,6 +361,12 @@ namespace GameEditorStudio
                                                         }
                                                     }
                                                 }
+                                                myCommand.WorkshopToolKey = commandElement.Element("WorkshopToolKey")?.Value ?? "";
+                                                //var SpecialWorkshopToolsStuff = commandElement.Descendants("SpecialWorkshopTool");
+                                                //foreach (var WToolElement in SpecialWorkshopToolsStuff) 
+                                                //{
+                                                
+                                                //}
 
                                             }//END OF IF COMMAND PROMPT COMMAND
 
@@ -501,7 +512,6 @@ namespace GameEditorStudio
 
             }
 
-
         }
 
         public void LoadToolLocations()
@@ -530,7 +540,26 @@ namespace GameEditorStudio
 
                 TheTool.Location = toolNode["Location"].InnerText;
             }
+            XmlNodeList WtoolNodes = doc.SelectNodes("/Tools/WorkshopTool");
+            foreach (XmlNode WtoolNode in WtoolNodes) 
+            {
+                string TheKey = WtoolNode["Key"]?.InnerText ?? "";
+                string TheLocation = WtoolNode["Location"]?.InnerText ?? "";
+                if (TheKey == null) { continue; }
+                if (TheKey == "") { continue; }
+                if (TheLocation == null) { continue; }
+                if (TheLocation == "") { continue; }
+                Tool? existingTool = Database.WorkshopTools.FirstOrDefault(t => t.Key == TheKey);
+                if (existingTool != null) { continue; }
+                if (!File.Exists(TheLocation)) { continue; }
 
+                Tool tool = new();
+                tool.DisplayName = WtoolNode["Name"]?.InnerText ?? tool.DisplayName;
+                tool.Key = WtoolNode["Key"]?.InnerText ?? tool.Key;
+                tool.Location = WtoolNode["Location"]?.InnerText ?? tool.Location;
+
+                Database.WorkshopTools.Add(tool);
+            }
 
 
             //Part 2: Confirm the tool locations are still correct. If a tool is MIA, it's location updates to ""

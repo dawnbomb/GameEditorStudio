@@ -822,8 +822,7 @@ namespace GameEditorStudio
                                 continue;
                             }
 
-                            TextTable textTable = new();
-                            EntryClass.EntryTypeMenu.TextTableNothing = textTable;
+                            TextTable textTable = EntryClass.EntryTypeMenu.TextTableNothing;
                             textTable.TextTableLinkType = TextTable.TextTableLinkTypes.Nothing;
 
                             textTable.TextTableFirstNameID = Int32.Parse(MenuTable.Element("FirstNameID")?.Value);
