@@ -207,6 +207,10 @@ namespace GameEditorStudio
                 if (eventCommand.Command.TheMethod == null) { continue; }
                 
                 MethodData ActionPack = LibraryGES.TransformKeysToLocations(eventCommand.ResourceKeys, EventResources, MainMenu, eventCommand);
+
+                Tool? existingTool = workshopData.WorkshopTools.FirstOrDefault(t => t.Key == eventCommand.WorkshopToolKey);
+                if (existingTool != null) { ActionPack.Command.RequiredToolsList.Add(existingTool); }
+                
                 ActionPack.Command.TheMethod(ActionPack);
 
             }
@@ -268,7 +272,11 @@ namespace GameEditorStudio
             {
                 CMDStuff(TopPanel, EventCommand, commandDockPanel); //Adds buttons for the command prompt command to the Top Panel.
             }
-            
+            if (EventCommand.Command.Key == "RunWorkshopTool")
+            {
+                SpecialWorkshopTool(TopPanel, EventCommand, commandDockPanel); //Adds UI for selecting a Non-GES workshop tool.
+            }
+
 
             //Resources
             int i = 1;
@@ -289,6 +297,43 @@ namespace GameEditorStudio
             }
 
             return commandBorder;
+        }
+
+        private void SpecialWorkshopTool(DockPanel TopPanel, EventCommand EventCommand, DockPanel commandDockPanel) 
+        {
+            DockPanel ResourcePanel = new();
+            commandDockPanel.Children.Add(ResourcePanel);
+            DockPanel.SetDock(ResourcePanel, Dock.Bottom);
+
+
+            Label label = new Label();
+            label.Content = "Non GES Tool: ";
+            DockPanel.SetDock(label, Dock.Left);
+            ResourcePanel.Children.Add(label);
+
+            ComboBox toolbox = new();
+            ResourcePanel.Children.Add(toolbox);
+            DockPanel.SetDock(toolbox, Dock.Right);
+
+            foreach (Tool tool in workshopData.WorkshopTools) 
+            {
+                ComboBoxItem toolItem = new ComboBoxItem();
+                toolItem.Content = tool.DisplayName;
+                toolItem.Tag = tool;
+                toolbox.Items.Add(toolItem);
+
+                if (EventCommand.WorkshopToolKey == tool.Key) { toolItem.IsSelected = true; }
+            }
+
+            toolbox.DropDownClosed += (sender, e) =>
+            {
+                ComboBoxItem toolItem = toolbox.SelectedItem as ComboBoxItem;
+                if (toolItem == null) { EventCommand.WorkshopToolKey = ""; return; }
+
+                Tool tool = toolItem.Tag as Tool;
+                EventCommand.WorkshopToolKey = tool.Key;                
+            };
+
         }
 
         private void CMDStuff(DockPanel TopPanel, EventCommand EventCommand, DockPanel commandDockPanel) 

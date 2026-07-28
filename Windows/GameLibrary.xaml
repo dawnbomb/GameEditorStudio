@@ -220,7 +220,7 @@
                 </DockPanel>
             </ContentControl>
 
-            <ContentControl DockPanel.Dock="Top" MinHeight="200" BorderThickness="2,0,2,2" BorderBrush="#575757" >
+            <ContentControl DockPanel.Dock="Top" MinHeight="200" BorderThickness="2,0,2,2" Margin="0,14,0,0" BorderBrush="#575757" >
                 <DockPanel LastChildFill="True">
                     <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                         <DockPanel Style="{DynamicResource ContentBar}"  ToolTip="You can read the documents of this workshop right from this launcher window! &#xD;   &#xD;Actually pretty useful when your new and first starting out.">

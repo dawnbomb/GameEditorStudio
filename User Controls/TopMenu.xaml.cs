@@ -347,7 +347,7 @@ namespace GameEditorStudio
         private void OpenToolsWindow(object sender, RoutedEventArgs e)
         {
             ToolsMenu GeneralToolSetup = new(this, WorkshopData);
-            GeneralToolSetup.Owner = System.Windows.Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
+            GeneralToolSetup.Owner = Window.GetWindow(this); //System.Windows.Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
             GeneralToolSetup.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             GeneralToolSetup.Show();
         }
@@ -429,6 +429,18 @@ namespace GameEditorStudio
                     eventCommand?.RequiredToolsList.Any(tool => string.IsNullOrEmpty(tool.Location) || !File.Exists(tool.Location)) ?? false
                 );
 
+                foreach (Command command in commonEvent.MyCommands)
+                {
+                    if (command.MethodName == "") 
+                    {
+                        menuItem.Foreground = Brushes.Gray;
+                        menuItem.Header = command.DisplayName + "   No method name error, report this!";
+                        
+                        //menuItem.Click += (s, args) => MessageBox.Show("At least one tool this event uses was not found in its last known location, nor was it anywhere inside the Tools folder.\n\nPlease go to Tools Setup and add the tool!");
+                    }
+
+                }
+
                 if (anyToolInvalid)
                 {
                     menuItem.Foreground = Brushes.Gray;
@@ -441,6 +453,8 @@ namespace GameEditorStudio
                         // Execute all commands for this event
                         foreach (Command command in commonEvent.MyCommands)
                         {
+                            if (command.MethodName == "") { return; }
+
                             MethodData ActionPack = new();
                             ActionPack.Command = command;
                             command?.TheMethod(ActionPack);
@@ -538,9 +552,34 @@ namespace GameEditorStudio
                 bool MissingRequirements = false;
                 bool CMDTHING = false;
                 bool NeedsLoadedProject = false;
+                bool MissingExpectedWorkshopToolKey = false;
 
                 foreach (EventCommand myCommand in Event.CommandList)
                 {
+                    
+                    if (myCommand.Command.TheMethod != null)//Check for non GES tool being properly set.
+                    {
+                        MethodData actionPack = LibraryGES.TransformKeysToLocations(myCommand.ResourceKeys, WorkshopData.WorkshopEventResources, this, myCommand);
+
+                        Tool? existingTool = WorkshopData.WorkshopTools.FirstOrDefault(t => t.Key == myCommand.WorkshopToolKey);
+                        if (existingTool == null)
+                        {
+                            conditionsMet = false;
+                            MissingExpectedWorkshopToolKey = true;
+                            BrokenEvent = true;
+                            continue;
+                        }
+                        else if (existingTool != null && (string.IsNullOrEmpty(existingTool.Location) || !File.Exists(existingTool.Location)) )
+                        {
+                            conditionsMet = false;
+                            MissingRequirements = true;
+                            missingTools.Add(existingTool.DisplayName);
+                            
+                            
+                        }
+                    }
+                                        
+
                     //if (myCommand.CMDList.Count != 0) { continue; }
                     if (WorkshopData.SelectedProject == null) { conditionsMet = false; continue; }
                     if (WorkshopData.LoadedProject == null) 
@@ -665,7 +704,7 @@ namespace GameEditorStudio
                 if (!conditionsMet)
                 {
                     runname.Foreground = Brushes.Gray;
-
+                    
                     if (WorkshopData.SelectedProject == null)
                     {
                         Run runX = new Run(" (No Project Selected in home tab)");
@@ -695,6 +734,7 @@ namespace GameEditorStudio
                         
                         if (Event.CommandList.Count == 0) { Run runX = new Run(" (Broken Event: No Commands)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
                         else if (CMDTHING == true) { Run runX = new Run(" (Broken Event: CMD Command Unassigned)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
+                        else if (MissingExpectedWorkshopToolKey == true) { Run runX = new Run(" (Broken Event: Unassigned Workshop Tool)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
                         else if (missingEventCommands.Count != 0 && missingEventChildParentLinks.Count != 0) { Run runX = new Run(" (Broken Event: Unassigned Commands & Child Links)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
                         else if (missingEventCommands.Count != 0) { Run runX = new Run(" (Broken Event: Unassigned Commands)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
                         else if (missingEventChildParentLinks.Count != 0) { Run runX = new Run(" (Broken Event: Unassigned Child-Parent Links)"); menuName.Inlines.Add(runX); runX.Foreground = Brushes.GreenYellow; }
@@ -764,6 +804,10 @@ namespace GameEditorStudio
                                 }
 
                                 MethodData actionPack = LibraryGES.TransformKeysToLocations(myCommand.ResourceKeys, WorkshopData.WorkshopEventResources, this, myCommand);
+
+                                Tool? existingTool = WorkshopData.WorkshopTools.FirstOrDefault(t => t.Key == myCommand.WorkshopToolKey);
+                                if (existingTool != null) { actionPack.Command.RequiredToolsList.Add(existingTool); }
+
                                 actionPack.mainMenu = this;
                                 myCommand.Command.TheMethod(actionPack);
                             }
@@ -1159,6 +1203,30 @@ namespace GameEditorStudio
             System.Diagnostics.Process.Start(psi);
         }
 
+        private void DonateButton(object sender, RoutedEventArgs e)
+        {
+            PixelWPF.LibraryPixel.Notification("Thank you for donating!","I will open the steam gift card page. Select an amount, and if you don't have a steam account click \"Continue as a guest\" (the bright blue button). " +
+                "\n\nI will also open my steam page so you can be sure your sending it to me (Dawnbomb) and not an impersonator!" +
+                "\n\nTHANK YOU FOR DONATING!!!!!" +
+                "\nIf you reach out to me (Dawnbomb) on discord, i'll also give you a personal thank you! I'm dirt poor and STRONGLY appricate your support! <3");
+
+            string url = "https://store.steampowered.com/digitalgiftcards/selectgiftcard";
+            System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            };
+            System.Diagnostics.Process.Start(psi);
+
+            string url2 = "https://steamcommunity.com/profiles/76561198017752148";
+            System.Diagnostics.ProcessStartInfo psi2 = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = url2,
+                UseShellExecute = true
+            };
+            System.Diagnostics.Process.Start(psi2);
+        }
+
         private void OpenPatchnotes(object sender, RoutedEventArgs e)
         {
             PixelWPF.Patchnotes patchnotes = new();
@@ -1238,5 +1306,7 @@ namespace GameEditorStudio
             }
 
         }
+
+        
     }
 }

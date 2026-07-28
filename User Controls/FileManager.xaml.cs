@@ -292,10 +292,16 @@ namespace GameEditorStudio
                 {
                     TextTableManager MyParent = (TextTableManager)current;
 
+                    if (this == MyParent.DataFileManager)
+                    {
+                        MyParent.UpdateDataFileNamesPreview();
+                    }
+
                     if (this == MyParent.FileManagerForTextFiles) 
                     {
                         TextTableManager TheThingy = (TextTableManager)current;
                         TheThingy.UpdateTextFileNameListPreview();
+                        
                         //string fullText = Encoding.UTF8.GetString(GameFile.FileBytes);
                         //string[] lines = fullText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
@@ -305,13 +311,12 @@ namespace GameEditorStudio
                         //{
                         //    TheThingy.TextFilePreviewTextbox.Text += (i) + ": " + lines[i] + "\n";
                         //}
-                    }
+                    }                    
 
-                    if (this == MyParent.DataFileManager)
+                    if (this == MyParent.DataFileManagerAdvanced)
                     {
-                        MyParent.UpdateDataFileNamesPreview();
+                        MyParent.UpdateAdvancedPreview();
                     }
-
 
                 }
 

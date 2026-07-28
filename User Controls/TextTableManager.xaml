@@ -11,9 +11,10 @@
             <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                 <DockPanel Style="{DynamicResource ContentBar}" LastChildFill="False">
                     <Label Content="Text Table Manager" FontWeight="Bold" DockPanel.Dock="Left" />
-                    <Button x:Name="ButtonExitWithoutSaving" Content=" Exit without saving " DockPanel.Dock="Right" Margin="4" Click="ExitWithoutSaving"  />
+                    <Label Name="MaxDataTableRowsLabel" Margin="150,0,0,0"/>
+                    <Button Click="ExitWithoutSaving" x:Name="ButtonExitWithoutSaving" Content=" Exit without saving " DockPanel.Dock="Right" Margin="4"   />
 
-                    <ComboBox x:Name="ComboBoxListType" DockPanel.Dock="Right" Margin="4" Width="190" DropDownClosed="TextSourceDropdownClosed">
+                    <ComboBox DropDownClosed="TextSourceDropdownClosed" x:Name="ComboBoxListType" DockPanel.Dock="Right" Margin="4" Width="190" >
                         <ComboBoxItem Content="Link to Data File" Name="LinkDataFile" />
                         <ComboBoxItem Content="Link to Text File" Name="LinkTextFile"/>
                         <ComboBoxItem Content="Link to Editor" Name="LinkEditor"/>
@@ -248,7 +249,7 @@
                                             <TextBox x:Name="TextLastLineTextBox" HorizontalAlignment="Left" Margin="136,46,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="RunUpdateTextFileNameListPreview"/>
                                             <Label x:Name="TextFileNameIDLabel" Content="First Name #" HorizontalAlignment="Left" Margin="9,112,0,0" VerticalAlignment="Top"/>
                                             <TextBox x:Name="TextFileFileNameIDTextBox" HorizontalAlignment="Left" Margin="136,116,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="1" PreviewTextInput="TextboxPreviewTextInput" TextChanged="RunUpdateTextFileNameListPreview"/>
-                                            <Button x:Name="ButtonSetLastLine" Content="Set to actual last line" HorizontalAlignment="Left" Margin="9,83,0,0" VerticalAlignment="Top" Width="246" Click="TextFileSetAllRowsButton"/>
+                                            <Button Click="TextFileSetAllRowsButton" x:Name="ButtonSetLastLine" Content="Set to actual last line" HorizontalAlignment="Left" Margin="9,83,0,0" VerticalAlignment="Top" Width="246"/>
                                         </Grid>
                                     </DockPanel>
                                 </Border>
@@ -418,8 +419,8 @@
                                             </ScrollViewer>
                                         </DockPanel>
                                     </Border>
-                                    <Button Content=" Save and Exit " HorizontalAlignment="Left" Margin="536,587,0,0" VerticalAlignment="Top" Click="ButtonClickSaveTextTable" Height="50" Width="250"/>
-                                    <Button Content="Set no table and exit" HorizontalAlignment="Left" Margin="512,671,0,0" VerticalAlignment="Top" Click="ButtonClickDeleteTextTable" Height="30" Width="322"/>
+                                    <Button Click="ButtonClickSaveTextTable" Content=" Save and Exit " HorizontalAlignment="Left" Margin="536,587,0,0" VerticalAlignment="Top" Height="50" Width="250"/>
+                                    <Button Click="ButtonClickDeleteTextTable" Content="Set no table and exit" HorizontalAlignment="Left" Margin="512,671,0,0" VerticalAlignment="Top" Height="30" Width="322"/>
                                 </Grid>
                             </Grid>
                             <!--List to Nothing-->
@@ -449,7 +450,7 @@
 
                                             <Label x:Name="LabelNameCount2" Content="Name Count" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" ToolTip="Just a reminder: 0 is infact a number. So If FirstNameID starts at 0, it counts."/>
                                             <Border Name="UnderlineNameCountFile2" HorizontalAlignment="Left" Margin="13,91,0,0" VerticalAlignment="Top" Width="108" BorderBrush="#FFA4A4A4" Height="2"/>
-                                            <TextBox x:Name="AdvNameCountTextBox" HorizontalAlignment="Left" Margin="158,68,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="5" PreviewTextInput="TextboxPreviewTextInput" TextChanged="AdvNameCountTextChanged" ToolTip="This is how many lines / names there are. If you want to stop with line 10, put 10. IE, do not bump it to 11 because of line 0." TabIndex="53"/>
+                                            <TextBox PreviewTextInput="TextboxPreviewTextInput" TextChanged="AdvNameCountTextChanged" x:Name="AdvNameCountTextBox" HorizontalAlignment="Left" Margin="158,68,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="5" ToolTip="This is how many lines / names there are. If you want to stop with line 10, put 10. IE, do not bump it to 11 because of line 0." TabIndex="53"/>
 
                                             <Button x:Name="AdvancedDebugButton" Content="Debug" Margin="158,101,0,0" Click="AdvancedDebug" Width="120" HorizontalAlignment="Left" Height="31" VerticalAlignment="Top"/>
 

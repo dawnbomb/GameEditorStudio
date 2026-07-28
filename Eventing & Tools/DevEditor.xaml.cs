@@ -245,6 +245,21 @@ namespace GameEditorStudio
             }
         }
 
+        private void CommandConsoleExclusiveIsChecked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CommandConsoleExclusiveIsUnchecked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void SetCommandMethodOpenToolButtonClick(object sender, RoutedEventArgs e)
+        {
+            CommandMethodNameTextbox.Text = "OpenTool";
+        }
+
         private void CommandButtonNewTool(object sender, RoutedEventArgs e)
         {
             
@@ -653,6 +668,8 @@ namespace GameEditorStudio
             command.Group = CommandGroupTextbox.Text;
             command.RequiredToolsList.Clear();
             command.RequiredResourcesList.Clear();
+            if (CommandConsoleExclusiveCheckbox.IsChecked == true) { command.ConsoleExclusive = true; }
+            if (CommandConsoleExclusiveCheckbox.IsChecked == false) { command.ConsoleExclusive = false; }
 
             //Copilot did all this, and im gonna actually trust it for a change. 
             foreach (DockPanel TheDockPanel in CommandToolsPanel.Children)

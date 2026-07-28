@@ -102,6 +102,7 @@
             <Button Click="OpenDiscord" DockPanel.Dock="Left" Content="Discord :)"  x:Name="HUDButtonDiscord" Width="115" Height="30"  Margin="4,0,0,0" ToolTip="Join my discord server! :D"  />
             <Button Click="WebsiteButton" DockPanel.Dock="Left" Content="Website"   Width="100" Height="30"  Margin="4,0,4,0" ToolTip="Open my website. :D"/>
             <Button Click="GithubButton" DockPanel.Dock="Left" Content="Github"   Width="90" Height="30" ToolTip="Go to the github page for this project. Altho if you wanna help, talking on discord is much easier for me. :>"/>
+            <Button Click="DonateButton" DockPanel.Dock="Left" Content="Donate"   Width="85" Height="30" ToolTip="Donations help future development!"/>
         </DockPanel>
     </DockPanel>
 

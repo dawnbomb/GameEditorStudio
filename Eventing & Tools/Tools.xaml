@@ -6,81 +6,94 @@
         xmlns:local="clr-namespace:GameEditorStudio"
         mc:Ignorable="d"
         Title="Tools Manager" Height="750" Width="1100">
-    <DockPanel Background="#FF373738" >
-        <DockPanel Name="MainDockPanel" LastChildFill="True" Margin="10,10,10,0" Background="{x:Null}" >
+    <Grid x:Name="TheToolsWindowGrid">
+        <DockPanel Background="#FF373738" >
+            <DockPanel Name="MainDockPanel" LastChildFill="True" Margin="10,10,10,0" Background="{x:Null}" >
 
-            <ContentControl  Height="145"  Margin="0,10,0,10" DockPanel.Dock="Bottom">
-                <DockPanel LastChildFill="False" Background="#FF191919">
-                    <TextBox Name="ToolNameBox" Margin="8,2,0,0" Text="Tool Name" Height="25" FontSize="20" BorderBrush="{x:Null}" DockPanel.Dock="Top" Background="{x:Null}" FontWeight="Bold"/>
-                    <Rectangle Stroke="#FFE0E0E0" Margin="8,6,8,2" DockPanel.Dock="Top"/>
-                    <TextBox Name="ToolDescriptionBox" TextWrapping="Wrap" Margin="8,0,5,0" Text="Tool Description" Height="100" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="White" DockPanel.Dock="Top"/>
-                </DockPanel>
-                
+                <ContentControl  Height="145"  Margin="0,10,0,10" DockPanel.Dock="Bottom">
+                    <DockPanel LastChildFill="False" Background="#FF191919">
+                        <TextBox Name="ToolNameBox" Margin="8,2,0,0" Text="Tool Name" Height="25" FontSize="20" BorderBrush="{x:Null}" DockPanel.Dock="Top" Background="{x:Null}" FontWeight="Bold"/>
+                        <Rectangle Stroke="#FFE0E0E0" Margin="8,6,8,2" DockPanel.Dock="Top"/>
+                        <TextBox Name="ToolDescriptionBox" TextWrapping="Wrap" Margin="8,0,5,0" Text="Tool Description" Height="100" BorderBrush="{x:Null}" Background="{x:Null}" Foreground="White" DockPanel.Dock="Top"/>
+                    </DockPanel>
 
-            </ContentControl>
 
-            <!--<ContentControl DockPanel.Dock="Top" Margin="0,0,0,10">
+                </ContentControl>
+
+                <!--<ContentControl DockPanel.Dock="Top" Margin="0,0,0,10">
+            <DockPanel DockPanel.Dock="Top">
                 <DockPanel DockPanel.Dock="Top">
-                    <DockPanel DockPanel.Dock="Top">
-                        <Label Content="Tools Folder:"/>
-                        <Button Content="Browse..."/>
-                        <TextBox />
-                    </DockPanel>
-                    <DockPanel DockPanel.Dock="Top">
-                        <Label DockPanel.Dock="Top" Content="Not required, but setting a Tools folder will auto detected any tools inside it, even if they are in subfolders."  VerticalAlignment="Top" Foreground="#FFB1CC78"/>
-                    </DockPanel>
+                    <Label Content="Tools Folder:"/>
+                    <Button Content="Browse..."/>
+                    <TextBox />
                 </DockPanel>
-            </ContentControl>-->
-            
-
-            <DockPanel Margin="0,0,0,10" >
-                <ContentControl DockPanel.Dock="Top">
-                    <DockPanel>
-                        <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">
-                            <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
-                                <Label Content="Tools" FontWeight="Bold" />                                
-                            </DockPanel>
-                        </Border>
-                        <TreeView x:Name="TreeViewTools" SelectedItemChanged="TreeSelectionChanged" MinHeight="100"/>
-                    </DockPanel>
-                </ContentControl>
-                <ContentControl DockPanel.Dock="Top" Margin="0,10,0,0">
-                    <DockPanel>
-                        <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">
-                            <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
-                                <Label Content="Common Events" FontWeight="Bold" />                                
-                            </DockPanel>
-                        </Border>
-                        <TreeView x:Name="TreeViewCommonEvents" SelectedItemChanged="TreeSelectionChanged" MinHeight="100"/>
-                    </DockPanel>
-                </ContentControl>
+                <DockPanel DockPanel.Dock="Top">
+                    <Label DockPanel.Dock="Top" Content="Not required, but setting a Tools folder will auto detected any tools inside it, even if they are in subfolders."  VerticalAlignment="Top" Foreground="#FFB1CC78"/>
+                </DockPanel>
             </DockPanel>
+        </ContentControl>-->
 
-            
-            
-            <ContentControl MinHeight="150"  DockPanel.Dock="Bottom" Margin="10,0,10,10"   >
 
-                <DockPanel>
-                    <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">
-                        <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
-                            <Label DockPanel.Dock="Top" Content="Tip: Tools inside the GameEditorStudio/Tools folder are automatically used. &#xA;Even if they are inside folders, subfoldes, and even if the folders are renamed!"  VerticalAlignment="Top" Foreground="#FFB1CC78"/>
-
+                <DockPanel Margin="0,0,0,10" >
+                    <ContentControl Name="WorkshopLeftControl" DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <DockPanel>
+                            <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">
+                                <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
+                                    <Label Content="This Workshop" FontWeight="Bold" />
+                                </DockPanel>
+                            </Border>
+                            <TreeView x:Name="WorkshopTree" SelectedItemChanged="TreeSelectionChanged" MinHeight="30"/>
                         </DockPanel>
-                    </Border>
-                    <ScrollViewer Name="TheScrollViewer" DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
-                        <DockPanel x:Name="TheScrollPanel" Style="{DynamicResource DockList}" LastChildFill="False"/>
-                    </ScrollViewer>
-                </DockPanel>                
-            </ContentControl>
-            
-            
-            
-            
-            
-            
-            
-            
+                    </ContentControl>
+                    <ContentControl DockPanel.Dock="Top">
+                        <DockPanel>
+                            <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">
+                                <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
+                                    <Label Content="Tools" FontWeight="Bold" />
+                                </DockPanel>
+                            </Border>
+                            <TreeView x:Name="TreeViewTools" SelectedItemChanged="TreeSelectionChanged" MinHeight="100"/>
+                        </DockPanel>
+                    </ContentControl>
+                    <ContentControl DockPanel.Dock="Top" Margin="0,10,0,0">
+                        <DockPanel>
+                            <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">
+                                <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
+                                    <Label Content="Common Events" FontWeight="Bold" />
+                                </DockPanel>
+                            </Border>
+                            <TreeView x:Name="TreeViewCommonEvents" SelectedItemChanged="TreeSelectionChanged" MinHeight="100"/>
+                        </DockPanel>
+                    </ContentControl>
+                </DockPanel>
 
+
+
+                <ContentControl MinHeight="150"  DockPanel.Dock="Bottom" Margin="10,0,10,10"   >
+
+                    <DockPanel>
+                        <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">
+                            <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
+                                <Label DockPanel.Dock="Top" Content="Tip: Tools inside the GameEditorStudio/Tools folder are automatically used. &#xA;Even if they are inside folders, subfoldes, or renamed folders!"  VerticalAlignment="Top" Foreground="#FFB1CC78"/>
+
+                            </DockPanel>
+                        </Border>
+                        <ScrollViewer Name="TheScrollViewer" DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
+                            <DockPanel x:Name="TheScrollPanel" Style="{DynamicResource DockList}" LastChildFill="False"/>
+                        </ScrollViewer>
+                    </DockPanel>
+                </ContentControl>
+
+
+
+
+
+
+
+
+
+            </DockPanel>
         </DockPanel>
-    </DockPanel>    
+    </Grid>
+      
 </Window>

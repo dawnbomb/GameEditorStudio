@@ -1,12 +1,126 @@
-﻿<UserControl x:Class="GameEditorStudio.UserControlAutoMod"
+﻿<UserControl x:Class="GameEditorStudio.AutoMod"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameEditorStudio"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+             d:DesignHeight="950" d:DesignWidth="500">
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Margin="0,0,0,0">
+            <DockPanel>
+                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                    <DockPanel Style="{DynamicResource ContentBar}"  LastChildFill="False" >
+                        <Label Content="Automod Info" FontWeight="Bold"/>
+                        <Border Margin="-145,0,0,4" BorderThickness="0,0,0,2" Width="130" BorderBrush="#FFB7B7B7" ToolTip="Big Endian: 00 on left (0014, 002B). &#xA;Little Endian: 00 on right (1400, 2B00).&#xA;   &#xA;Most consoles use Big Endian."/>
+                    </DockPanel>
+                </Border>
+
+
+
+                <Grid  Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="165*"/>
+                        <ColumnDefinition Width="113*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Content="Instant Mod: Apply a math formula to EVERY &#xD;&#xA;item! Examples: 50% MP Costs,&#xD;&#xA;200% Enemy HP, 0% Buy Prices, etc." DockPanel.Dock="Top" Grid.ColumnSpan="3"/>
+
+
+
+                    <Label Content="Example Result"  Grid.Row="5" Grid.Column="0"/>
+                    <Border Grid.Row="5" Grid.Column="0" Margin="3,0,50,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="See what the formula output would be for the currently selected Entry. &#xA; &#xA;As a reminder, applying the formula will change the value for every name in the list,  &#xA;not just the currently selected one."/>
+                    <TextBox x:Name="ExampleResultTextBox" Grid.Row="5" Grid.Column="1" TextWrapping="Wrap" Margin="3,3,3,3" Grid.ColumnSpan="1" />
+                    <Button Click="ApplyAutoModMath" Content="Apply" Grid.Row="5" Grid.Column="2" DockPanel.Dock="Right" Margin="4" ToolTip="Apply current formula to all items for the current entry."/>
+
+                    <Label Content="Example using input"  Grid.Row="6" Grid.Column="0"/>
+                    <Border Grid.Row="6" Grid.Column="0" Margin="3,0,5,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="See what the formula output would be for the currently selected Entry, &#xA;if it started with the value from project input folder instead of the current value."/>
+                    <TextBox x:Name="ExampleResultUsingInputTextBox"  Grid.Row="6" Grid.Column="1"  TextWrapping="Wrap" Margin="3,3,3,3" Grid.ColumnSpan="1" />
+                    <Button Click="ApplyAutoModMathUsingInput" Content="Apply" Grid.Row="6" Grid.Column="2" DockPanel.Dock="Right" Margin="4" ToolTip="Apply, but the formula uses the values from project input folder. &#xA; &#xA;If you Make a formula like Plus 0, and use this, &#xA;then you can reset an entry to it's unmodded values. :)"/>
+
+                    <Label Content="Skip last X items: " Grid.Row="7" Grid.Column="0"/>
+                    <Border Grid.Row="7" Grid.Column="0" Margin="3,0,20,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="This will NOT mod the bottom X names/items in the names/items list. &#xA;I know i should code in something better, &#xA;but this was easy to do and i have other parts&#xA;of the program to be working on.&#xA;&#xA;If you care enough about this feature and want this expanded, &#xA;talk to me on discord and i'll make it a priority."/>
+                    <TextBox x:Name="FormulaDoNotModTextBox" Grid.Row="7" Grid.Column="1" TextWrapping="Wrap" Text="0" Margin="3,3,3,3" Grid.ColumnSpan="1" />
+
+                    <Label Content="Final result always rounds to nearest.&#xD;&#xA;Final result has min/max from entry's size/sign.&#xD;&#xA;Click Apply to apply formula to all items." Grid.Row="8" HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3"/>
+
+                    <Button Click="ApplyAutoModMathUsingLarger" Content="Apply Larger of Result vs Result using Input" Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3" DockPanel.Dock="Right" Margin="4" ToolTip="Apply, but the formula uses the values from project input folder. &#xA; &#xA;If you Make a formula like Plus 0, and use this, &#xA;then you can reset an entry to it's unmodded values. :)"/>
+                    <Button Click="ApplyAutoModMathUsingSmaller" Content="Apply Smaller of Result vs Result using Input" Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" DockPanel.Dock="Right" Margin="4" ToolTip="Apply, but the formula uses the values from project input folder. &#xA; &#xA;If you Make a formula like Plus 0, and use this, &#xA;then you can reset an entry to it's unmodded values. :)"/>
+
+                </Grid>
+            </DockPanel>
+        </Border>
+        <Border DockPanel.Dock="Top" >
+            <DockPanel Background="#FF212121">
+                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                    <DockPanel Style="{DynamicResource ContentBar}"  LastChildFill="False">
+                        <Label Content="Formula" FontWeight="Bold" Margin="5,0,0,0"  />
+                        
+                        <Button Click="AddMathPieceClick" Content="Add Math Piece" DockPanel.Dock="Right" Margin="4"/>
+                        <Button Click="FormulaHelp" Content="Help" DockPanel.Dock="Right" Margin="4"/>
+                        
+                    </DockPanel>
+                </Border>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" >
+                    <StackPanel Name="FormulaStackPanel" DockPanel.Dock="Left" >
+                        <Border Margin="3" MinHeight="30">
+                            <DockPanel  Background="#FF2E2E33">
+                                <Button Content="Delete" DockPanel.Dock="Right"/>
+                                <Label Content="Entry:"/>
+                                <ComboBox>
+                                    <ComboBoxItem Content="Thing" Selector.IsSelected="True"/>
+                                </ComboBox>
+                            </DockPanel>
+                        </Border>
+
+                        <Border Margin="3" MinHeight="30">
+                            <DockPanel  Background="#FF2E2E33">
+                                <Button Content="Delete" DockPanel.Dock="Right"/>
+                                <ComboBox>
+                                    <ComboBoxItem Content="Add" Selector.IsSelected="True"/>
+                                </ComboBox>
+                                <TextBox Text="10"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Margin="3" MinHeight="30">
+                            <DockPanel  Background="#FF2E2E33">
+                                <Button Content="Delete" DockPanel.Dock="Right"/>
+                                <ComboBox>
+                                    <ComboBoxItem Content="Max" Selector.IsSelected="True"/>
+                                </ComboBox>
+                                <TextBox Text="50"/>
+
+                            </DockPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+
+            </DockPanel>
+
+
+        </Border>        
+
+        
+    </DockPanel>
+    
 </UserControl>

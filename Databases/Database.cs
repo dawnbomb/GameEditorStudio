@@ -21,6 +21,7 @@ namespace GameEditorStudio
 
 
         public static List<Tool> Tools { get; set; } = new();
+        public static List<Tool> WorkshopTools { get; set; } = new(); //A master list of ALL workshop tools the user set a path to. The actual list of a workshop's specific workshop tool list is in the workshop. 
         public static List<Command> Commands { get; set; } = new();
         public static List<CommonEvent> CommonEvents { get; set; } = new(); //WORKSHOP COMMONS?
 
@@ -80,6 +81,7 @@ namespace GameEditorStudio
         public List<CommonEvent> WorkshopCommonEvents { get; set; } = new(); //WORKSHOP COMMONS?
         public List<Event> WorkshopEvents { get; set; } = new();
 
+        public List<Tool> WorkshopTools { get; set; } = new(); //XML //This is for Non-GES workshop tools.
 
         //////////////////////////////ADVANCED INFO AFTER OPENING WORKSHOP/////////////////////////////////////////////////////////////
         public Workshop WorkshopXaml { get; set; } //Set when a workshop is actually opened.

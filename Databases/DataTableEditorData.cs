@@ -120,7 +120,6 @@ namespace GameEditorStudio
         public Border UnderlineBorder { get; set; }
 
         public List<MathStep> MathFormula { get; set; } = new(); //XML
-        public int? MathResult { get; set; } = null;
 
         public MenuItem CreateNewGroup { get; set; } = new();
     }
@@ -344,15 +343,15 @@ namespace GameEditorStudio
         public ComboBox Dropdown { get; set; }
         public MenuTypes MenuType { get; set; } = MenuTypes.Dropdown;
         public enum MenuTypes { Dropdown, List } //Possible Menu Types
-        public LinkTypes LinkType { get; set; } = LinkTypes.Editor;
+        public LinkTypes LinkType { get; set; } = LinkTypes.Nothing;
         public enum LinkTypes { DataFile, DataFileAdvanced, TextFile, Editor, Nothing } //Nothing means user uses custom name list.
         
 
-        public TextTable ?TextTableDataFile { get; set; } //DataFile Link        
-        public TextTable ?TextTableTextFile { get; set; } //TextFile Link
-        public TextTable ?TextTableEditor { get; set; } //Editor Link
-        public TextTable ?TextTableNothing { get; set; } //Nothing Link.
-        public TextTable ?TextTableAdvanced { get; set; } //Advanced Link
+        public TextTable? TextTableDataFile { get; set; } //DataFile Link        
+        public TextTable? TextTableTextFile { get; set; } //TextFile Link
+        public TextTable? TextTableEditor { get; set; } //Editor Link
+        public TextTable TextTableNothing { get; set; } = new();//Nothing Link.
+        public TextTable? TextTableAdvanced { get; set; } //Advanced Link
         
 
 

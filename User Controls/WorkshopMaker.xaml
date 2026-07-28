@@ -11,7 +11,7 @@
                 <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                     <DockPanel Style="{DynamicResource ContentBar}" >
                         <Label Content="Workshop Manager" FontWeight="Bold" />
-                        <Button x:Name="ButtonCancel" Content="Exit without saving" HorizontalAlignment="Right" Margin="0,1,5,1" VerticalAlignment="Top"  Width="230" Click="ButtonCancel_Click" Height="30"/>
+                        <Button Click="ButtonCancel_Click" x:Name="ButtonCancel" Content="Exit without saving" HorizontalAlignment="Right" Margin="0,1,5,1" VerticalAlignment="Top"  Width="230"  Height="30"/>
                     </DockPanel>
                 </Border>
 

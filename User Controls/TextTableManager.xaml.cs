@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Formats.Tar;
 using System.Linq;
@@ -37,6 +38,7 @@ namespace GameEditorStudio
         bool DescriptionMode { get; set; } = false;
         bool MenuMode { get; set; } = false;
         UserControlEditorCreator EditorCreator { get; set; }
+        int MaxDataTableRows { get; set; } = 999999999;
 
         public TextTableManager()
         {
@@ -284,6 +286,26 @@ namespace GameEditorStudio
                 }
             }
 
+            
+            if (TheDataTableEditorData.DataTable != null) 
+            {
+                if (DTEData.DataTable != null)
+                {
+                    MaxDataTableRows = CheckMaxDataTableRows();
+                    int CheckMaxDataTableRows()
+                    {
+                        byte[] TheFileBytes = DTEData.DataTable.FileDataTable.FileBytes;
+                        int MaxRows = (TheFileBytes.Length - DTEData.DataTable.DataTableStart) / DTEData.DataTable.DataTableRowSize; //Note that int division ALWAYS rounds DOWN, NOT to nearest.
+                        return MaxRows;
+                    }
+                }
+
+                MaxDataTableRowsLabel.Visibility = Visibility.Visible;
+                MaxDataTableRowsLabel.Content = "Max Names the current Data Table can support: " + MaxDataTableRows;
+            }
+
+            
+            
 
         }
 
@@ -541,8 +563,15 @@ namespace GameEditorStudio
                 FileFirstNameIDNothingTextBox.Text = texttable.TextTableFirstNameID.ToString();
 
 
-                int MinIndex = texttable.ItemList.Min(x => x.ItemIndex);
-                int MaxIndex = texttable.ItemList.Max(x => x.ItemIndex);
+                int MinIndex = 0;
+                int MaxIndex = 0;
+
+                if (texttable.ItemList.Count != 0) 
+                {
+                    MinIndex = texttable.ItemList.Min(x => x.ItemIndex);
+                    MaxIndex = texttable.ItemList.Max(x => x.ItemIndex);
+                }
+
                 ////Nothing List Setup
                 ItemsNumBox.Clear();
                 ItemsEditBox.Clear();
@@ -643,109 +672,164 @@ namespace GameEditorStudio
             TabItem tabItem = TabControlListType.SelectedItem as TabItem;
             string TheTextTableType = tabItem.Tag as string;
 
-            //Error checking first.
-            bool canpass = true;            
-            if (TheTextTableType == "DataFile") 
-            {                
-                FileFullRowSizeTextBox.Background = null;
-                FileTextSizeTextBox.Background = null;
-                FileStartTextBox.Background = null;
-                FileNameCountTextBox.Background = null;
-                FileNameIDTextBox.Background = null;
-                DataFileManager.TreeGameFiles.Background = null;
-
-                if (FileFullRowSizeTextBox.Text == null || FileFullRowSizeTextBox.Text == "" || FileFullRowSizeTextBox.Text == "0")
-                {
-                    FileFullRowSizeTextBox.Background = Brushes.Red;
-                    canpass = false;
-                }
-                if (FileTextSizeTextBox.Text == null || FileTextSizeTextBox.Text == "" || FileTextSizeTextBox.Text == "0")
-                {
-                    FileTextSizeTextBox.Background = Brushes.DarkRed;
-                    canpass = false;
-                }
-                if (FileStartTextBox.Text == null || FileStartTextBox.Text == "")
-                {
-                    FileStartTextBox.Background = Brushes.DarkRed;
-                    canpass = false;
-                }
-                if (FileNameCountTextBox.Text == null || FileNameCountTextBox.Text == "" || FileNameCountTextBox.Text == "0")
-                {
-                    FileNameCountTextBox.Background = Brushes.DarkRed;
-                    canpass = false;
-                }
-                if (FileNameIDTextBox.Text == null || FileNameIDTextBox.Text == "")
-                {
-                    FileNameIDTextBox.Background = Brushes.DarkRed;
-                    canpass = false;
-                }
-                if (DataFileManager.TreeGameFiles.SelectedItem == null)
-                {
-                    DataFileManager.TreeGameFiles.Background = Brushes.DarkRed;
-                    canpass = false;
-                    //LibraryPixel.NotificationNegative("No File Selected", "Please select a file to make an editor with.");
-                }
-                
-            }
-            if (TheTextTableType == "TextFile") 
+            try
             {
-                try { int.Parse(TextFirstLineTextBox.Text); } catch { TextFirstLineTextBox.Background = Brushes.DarkRed; }
-                try { int.Parse(TextLastLineTextBox.Text); } catch { TextLastLineTextBox.Background = Brushes.DarkRed; } 
-
-                if (FileManagerForTextFiles.TreeGameFiles.SelectedItem == null)
+                //Error checking first.
+                bool canpass = true;
+                if (TheTextTableType == "DataFile")
                 {
-                    FileManagerForTextFiles.TreeGameFiles.Background = Brushes.DarkRed;
-                    canpass = false;
-                }
+                    FileFullRowSizeTextBox.Background = null;
+                    FileTextSizeTextBox.Background = null;
+                    FileStartTextBox.Background = null;
+                    FileNameCountTextBox.Background = null;
+                    FileNameIDTextBox.Background = null;
+                    DataFileManager.TreeGameFiles.Background = null;
 
-                try
-                {
-                    if (int.Parse(TextLastLineTextBox.Text) - int.Parse(TextFirstLineTextBox.Text) < 0)
+                    if (FileFullRowSizeTextBox.Text == null || FileFullRowSizeTextBox.Text == "" || FileFullRowSizeTextBox.Text == "0")
                     {
-                        TextLastLineTextBox.Background = Brushes.DarkRed;
-                        TextFirstLineTextBox.Background = Brushes.DarkRed;
+                        FileFullRowSizeTextBox.Background = Brushes.Red;
                         canpass = false;
                     }
-                }
-                catch
-                {
-                    canpass = false;
-                }
-            }
-            if (TheTextTableType == "Editor")
-            {
-                //Not supported
-                canpass = false;
-            }
-            if (TheTextTableType == "Nothing") 
-            {
-                if (DTEData.DataTable != null) 
-                {
-                    int MaxDTRows = CheckMaxDataTableRows();
-                    if (MaxDTRows < ItemsEditBox.LineCount) 
+                    if (FileTextSizeTextBox.Text == null || FileTextSizeTextBox.Text == "" || FileTextSizeTextBox.Text == "0")
+                    {
+                        FileTextSizeTextBox.Background = Brushes.DarkRed;
+                        canpass = false;
+                    }
+                    if (FileStartTextBox.Text == null || FileStartTextBox.Text == "")
+                    {
+                        FileStartTextBox.Background = Brushes.DarkRed;
+                        canpass = false;
+                    }
+                    if (FileNameCountTextBox.Text == null || FileNameCountTextBox.Text == "" || FileNameCountTextBox.Text == "0")
+                    {
+                        FileNameCountTextBox.Background = Brushes.DarkRed;
+                        canpass = false;
+                    }
+                    if (FileNameIDTextBox.Text == null || FileNameIDTextBox.Text == "")
+                    {
+                        FileNameIDTextBox.Background = Brushes.DarkRed;
+                        canpass = false;
+                    }
+                    if (DataFileManager.TreeGameFiles.SelectedItem == null)
+                    {
+                        DataFileManager.TreeGameFiles.Background = Brushes.DarkRed;
+                        canpass = false;
+                        //LibraryPixel.NotificationNegative("No File Selected", "Please select a file to make an editor with.");
+                    }
+
+                    if (MaxDataTableRows < int.Parse(FileNameCountTextBox.Text))
                     {
                         PixelWPF.LibraryPixel.NotificationNegative("Too Many Names", "" +
-                            "Your trying to use more names then the DataTable File can support (reading past end of file)." +
+                            "Your trying to use more names then the DataTable File can support (reading past end of data table file)." +
                             "\n" +
-                            "\nNameTable rows: " + ItemsEditBox.LineCount + 
-                            "\nDataTable max rows: " + MaxDTRows);
+                            "\nNameTable rows: " + int.Parse(FileNameCountTextBox.Text) +
+                            "\nDataTable max rows: " + MaxDataTableRows);
                         return;
                     }
 
-                    int CheckMaxDataTableRows() 
+                }
+                if (TheTextTableType == "TextFile")
+                {
+                    try { int.Parse(TextFirstLineTextBox.Text); } catch { TextFirstLineTextBox.Background = Brushes.DarkRed; }
+                    try { int.Parse(TextLastLineTextBox.Text); } catch { TextLastLineTextBox.Background = Brushes.DarkRed; }
+
+                    if (FileManagerForTextFiles.TreeGameFiles.SelectedItem == null)
                     {
-                        byte[] TheFileBytes = DTEData.DataTable.FileDataTable.FileBytes;
-                        int MaxRows = (TheFileBytes.Length - DTEData.DataTable.DataTableStart) / DTEData.DataTable.DataTableRowSize;
-                        return MaxRows;
+                        FileManagerForTextFiles.TreeGameFiles.Background = Brushes.DarkRed;
+                        canpass = false;
+                    }
+
+                    try
+                    {
+                        if (int.Parse(TextLastLineTextBox.Text) - int.Parse(TextFirstLineTextBox.Text) < 0)
+                        {
+                            TextLastLineTextBox.Background = Brushes.DarkRed;
+                            TextFirstLineTextBox.Background = Brushes.DarkRed;
+                            canpass = false;
+                        }
+                    }
+                    catch
+                    {
+                        canpass = false;
+                    }
+
+                    //This block checks if trying to read past end of text file.
+                    if (FileManagerForTextFiles.TreeGameFiles.SelectedItem == null) { return; }
+
+                    TreeViewItem TheItem = FileManagerForTextFiles.TreeGameFiles.SelectedItem as TreeViewItem;
+                    GameFile TheFile = TheItem.Tag as GameFile;
+
+                    string fullText = Encoding.UTF8.GetString(TheFile.FileBytes);
+                    string[] lines = fullText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+
+                    int LineCount = Math.Max(lines.Length - 1, 0);
+
+                    int maxread = int.Parse(TextLastLineTextBox.Text);
+                    if (maxread > LineCount)
+                    {
+                        canpass = false;
+                        PixelWPF.LibraryPixel.NotificationNegative("Too Many Names", "" +
+                        "Your trying to use more names then the Text File even has (reading past end of text file)." +
+                        "\n" +
+                        "\nText File Last Line #: " + LineCount +
+                        "\nTrying to read from: " + maxread);
+                        return;
+                    }
+
+                    //This checks if it would cause reading past data table max row count.
+                    int readcount = int.Parse(TextLastLineTextBox.Text) - int.Parse(TextFirstLineTextBox.Text) + 1;
+                    if (MaxDataTableRows < readcount)
+                    {
+                        PixelWPF.LibraryPixel.NotificationNegative("Too Many Names", "" +
+                            "Your trying to use more names then the DataTable File can support (reading past end of data table file)." +
+                            "\n" +
+                            "\nNameTable rows: " + readcount +
+                            "\nDataTable max rows: " + MaxDataTableRows);
+                        return;
+                    }
+
+                }
+                if (TheTextTableType == "Editor")
+                {
+                    //Not supported
+                    canpass = false;
+                }
+                if (TheTextTableType == "Nothing")
+                {
+                    if (MaxDataTableRows < ItemsEditBox.LineCount)
+                    {
+                        PixelWPF.LibraryPixel.NotificationNegative("Too Many Names", "" +
+                            "Your trying to use more names then the DataTable File can support (reading past end of data table file)." +
+                            "\n" +
+                            "\nNameTable rows: " + ItemsEditBox.LineCount +
+                            "\nDataTable max rows: " + MaxDataTableRows);
+                        return;
                     }
                 }
-                //Supported but theres nothing to error check?
+                if (TheTextTableType == "Advanced")
+                {
+                    int numa = int.Parse(AdvNameCountTextBox.Text);
+                    if (MaxDataTableRows < numa)
+                    {
+                        PixelWPF.LibraryPixel.NotificationNegative("Too Many Names", "" +
+                            "Your trying to use more names then the DataTable File can support (reading past end of data table file)." +
+                            "\n" +
+                            "\nNameTable rows: " + numa +
+                            "\nDataTable max rows: " + MaxDataTableRows);
+                        return;
+                    }
+                }
+                if (canpass == false)
+                {
+                    return;
+                }
+                //End of error checking
             }
-            if (canpass == false)
+            catch 
             {
                 return;
             }
-            //End of error checking
+            
 
 
             //Now we ask if the user is sure...            
@@ -1255,9 +1339,9 @@ namespace GameEditorStudio
                     IInfo.ItemName = line;
                     IInfo.ItemIndex = NIndex;                    
                     texttable.ItemList.Add(IInfo);
-                }                
+                }
 
-
+                
 
             }
             if (ComboBoxListType.Text == "Link to Advanced") 
@@ -1463,6 +1547,7 @@ namespace GameEditorStudio
             {
                 Tab5.IsSelected = true;
                 //TabControlListType.SelectedIndex = 4;
+                UpdateAdvancedPreview();
             }
 
         }
@@ -1511,7 +1596,7 @@ namespace GameEditorStudio
         }
 
         public void UpdateTextFileNameListPreview()
-        {
+        {            
             //TextFileOrigonalTextbox
             TextFilePreviewTextbox.Text = ""; // Clear it first
             TextFileOrigonalTextbox.Text = ""; // Clear it first
@@ -1526,10 +1611,31 @@ namespace GameEditorStudio
                     string fullText = Encoding.UTF8.GetString(NameFile.FileBytes);
                     string[] lines = fullText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
+                    Stopwatch PreviewTimer = new Stopwatch();
+                    PreviewTimer.Start();
                     for (int i = 0; i < lines.Length; i++)
                     {
                         TextFileOrigonalTextbox.Text += (i) + ": " + lines[i] + "\n";
+
+                        if (PreviewTimer.Elapsed.Seconds == 5) 
+                        {
+                            PixelWPF.LibraryPixel.Notification("Names preview canceled","For some reason, preparing the preview name list is taking a long time." +
+                                "\n\nTo help prevent the program from freezing, i am stopping it early. " +
+                                "\n\nI strongly do not recommend using the selected file to get names from. Well, or i need to code this better. You can ask me on discord if you need to source the names from whatever you selected. " +
+                                "\n\nNote: You could still use it if you want, and maybe it will be fine. But i would atleast recommend backing out and saving everything first before you try."
+                                );
+                            PreviewTimer.Stop();
+                            return;
+                        }
                     }
+                    PreviewTimer.Stop();
+
+                    //string NewFullText = "";
+                    //for (int i = 0; i < lines.Length; i++)
+                    //{
+                    //    NewFullText += (i) + ": " + lines[i] + "\n";
+                    //}
+                    //TextFileOrigonalTextbox.Text = NewFullText;
                 }
                 
             } catch { TextFileOrigonalTextbox.Text = "Error for some reason :3"; }
@@ -1545,13 +1651,28 @@ namespace GameEditorStudio
                     string[] lines = fullText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
                     int id = 0;
+
+                    Stopwatch PreviewTimer = new Stopwatch();
+                    PreviewTimer.Start();
                     for (int i = 0; i < lines.Length; i++)
                     {
                         if (i < int.Parse(TextFirstLineTextBox.Text)) { continue; }
                         if (i > int.Parse(TextLastLineTextBox.Text)) { continue; }
                         TextFilePreviewTextbox.Text += (id + int.Parse(TextFileFileNameIDTextBox.Text)) + ": " + lines[i] + "\n";
                         id++;
+
+                        if (PreviewTimer.Elapsed.Seconds == 5)
+                        {
+                            PixelWPF.LibraryPixel.Notification("Names preview canceled", "For some reason, preparing the preview name list is taking a long time." +
+                                "\n\nTo help prevent the program from freezing, i am stopping it early. " +
+                                "\n\nI strongly do not recommend using the selected file to get names from. Well, or i need to code this better. You can ask me on discord if you need to source the names from whatever you selected. " +
+                                "\n\nNote: You could still use it if you want, and maybe it will be fine. But i would atleast recommend backing out and saving everything first before you try."
+                                );
+                            PreviewTimer.Stop();
+                            return;
+                        }
                     }
+                    PreviewTimer.Stop();
                 }
                 
             } 
@@ -1559,7 +1680,8 @@ namespace GameEditorStudio
             {
                 TextFilePreviewTextbox.Text = "Error for some reason :3";
             }
-            
+
+
         }
 
 
@@ -1791,7 +1913,7 @@ namespace GameEditorStudio
             UpdateAdvancedPreview();
         } 
 
-        private void UpdateAdvancedPreview()
+        public void UpdateAdvancedPreview()
         {
             if (AdvNamesPreviewTextbox == null) { return; } //Stops a strange launch error / crash
 

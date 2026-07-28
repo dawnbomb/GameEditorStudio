@@ -397,7 +397,7 @@
 
                                                     <Label Content="Byte Size" Grid.Row="4" Grid.Column="1" Margin="0"/>
                                                     <Border Grid.Row="4" Grid.Column="1" Margin="3,0,24,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="Big Endian: 00 on left (0014, 002B). &#xA;Little Endian: 00 on right (1400, 2B00).&#xA;   &#xA;Most consoles use Big Endian."/>
-                                                    <ComboBox x:Name="PropertiesEntryByteSizeComboBox" Grid.Row="4" Grid.Column="2" Margin="3" DropDownClosed="PropertiesEntryByteSizeComboBox_DropDownClosed" >
+                                                    <ComboBox DropDownClosed="PropertiesEntryByteSizeComboBox_DropDownClosed" x:Name="PropertiesEntryByteSizeComboBox" Grid.Row="4" Grid.Column="2" Margin="3"  >
                                                         <ComboBoxItem Content="1 Byte"/>
                                                         <ComboBoxItem Content="2 Bytes Little Endian"/>
                                                         <ComboBoxItem Content="4 Bytes Little Endian"/>
@@ -407,7 +407,7 @@
                                                     </ComboBox>
 
                                                     <Label Content="Entry Type" Grid.Row="5" Grid.Column="1" Margin="0"/>
-                                                    <ComboBox x:Name="PropertiesEntryType" Grid.Row="5" Grid.Column="2" Margin="3"  DropDownClosed="PropertiesEntryType_DropDownClosed">
+                                                    <ComboBox DropDownClosed="PropertiesEntryType_DropDownClosed" x:Name="PropertiesEntryType" Grid.Row="5" Grid.Column="2" Margin="3"  >
                                                     </ComboBox>
 
                                                     
@@ -524,7 +524,7 @@
                                                                 <ComboBoxItem Content="List" IsSelected="True" Name="MenuTypeItemList"/>
                                                             </ComboBox>
 
-                                                            <Button Name="ButtonMenuManager" Content="Menu Manager" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Click="MenuEntryOpenTextTableManager" Width="253" Height="30" />
+                                                            <Button Click="MenuEntryOpenTextTableManager" Name="ButtonMenuManager" Content="Menu Manager" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="253" Height="30" />
 
 
                                                             <Label Content="Editor link will &#xA;later support &#xD;&#xA;name notes :D" HorizontalAlignment="Left" Margin="263,-6,0,0" VerticalAlignment="Top"/>
@@ -591,36 +591,7 @@
                                                 <TextBox MinHeight="100" x:Name="EntryNoteTextbox" Margin="10" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextChanged="EntryNoteTextboxTextChanged"/>
                                             </DockPanel>
                                         </Border>
-                                        <Border DockPanel.Dock="Top">
-                                            <DockPanel>
-                                                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
-                                                    <DockPanel Style="{DynamicResource ContentBar}"  >
-                                                        <Label Content="History" FontWeight="Bold" Margin="5,0,0,0"  />
-                                                    </DockPanel>
-                                                </Border>
-
-                                                <StackPanel Name="EntryValueHistoryStackPanel" DockPanel.Dock="Left" MinWidth="230" MinHeight="180">
-                                                    <Label Content="X Mins Ago: 12"/>
-                                                    <Label Content="Y Mins Ago: 34"/>
-                                                </StackPanel>
-                                                <Border Margin="2,0,2,0" BorderBrush="#FF17171D" />
-                                                <StackPanel DockPanel.Dock="Right">
-                                                    <DockPanel>
-                                                        <Label Content="Input on project load:"/>
-                                                    </DockPanel>
-                                                    <DockPanel>
-                                                        <TextBox Name="HistoryValueOnProjectLoadFromInputTextbox" Margin="5,0,10,0"/>
-                                                    </DockPanel>
-                                                    <DockPanel Margin="0,20,0,0">
-                                                        <Label Content="Output on project load:" />
-                                                    </DockPanel>
-                                                    <DockPanel Margin="0,0,0,0">
-                                                        <TextBox Name="HistoryValueOnProjectLoadFromOutputTextbox" Margin="5,0,10,0"/>
-                                                    </DockPanel>
-
-                                                </StackPanel>
-                                            </DockPanel>
-                                        </Border>
+                                        
                                     </DockPanel>
                                 </TabItem>
                                 <TabItem Name="MathboxTabItem" Header="Mathbox" Margin="0,0,1,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
@@ -678,7 +649,7 @@
                                                     <TextBox Name="MathboxMathResultUsingInputTextbox" Grid.Row="5" Grid.Column="2" Margin="3" TextWrapping="NoWrap" IsEnabled="False"  />
 
                                                     <Label Content="From Output" Grid.Row="6" Grid.Column="1" Margin="0"/>
-                                                    <TextBox Name="MathboxMathResultUsingOutputTextbox" Grid.Row="6" Grid.Column="2" Margin="3" TextWrapping="NoWrap" IsEnabled="False" />
+                                                    <TextBox Name="MathboxMathResultUsingOutputTextbox" Grid.Row="6" Grid.Column="2" Margin="3" TextWrapping="NoWrap" IsEnabled="False" Text="Coming Later" />
 
                                                     <Label Content="Mathboxes best with numbers from numberboxes. &#xD;&#xA;Support for other entry types...eventually." Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Foreground="#FF6B9DED" />
                                                 </Grid>
@@ -758,91 +729,52 @@
                 <TabItem Header="Info">
                     <Border>
                         <DockPanel>
+                            <Border DockPanel.Dock="Top">
+                                <DockPanel>
+                                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                        <DockPanel Style="{DynamicResource ContentBar}"  >
+                                            <Label Content="History" FontWeight="Bold" Margin="5,0,0,0"  />
+                                        </DockPanel>
+                                    </Border>
+
+                                    <StackPanel Name="EntryValueHistoryStackPanel" DockPanel.Dock="Left" MinWidth="230" MinHeight="180">
+                                        <Label Content="X Mins Ago: 12"/>
+                                        <Label Content="Y Mins Ago: 34"/>
+                                    </StackPanel>
+                                    <Border Margin="2,0,2,0" BorderBrush="#FF17171D" />
+                                    <StackPanel DockPanel.Dock="Right">
+                                        <DockPanel>
+                                            <Label Content="Input on project load:"/>
+                                        </DockPanel>
+                                        <DockPanel>
+                                            <TextBox Name="HistoryValueOnProjectLoadFromInputTextbox" Margin="5,0,10,0"/>
+                                        </DockPanel>
+                                        <DockPanel Margin="0,20,0,0">
+                                            <Label Content="Output on project load:" />
+                                        </DockPanel>
+                                        <DockPanel Margin="0,0,0,0">
+                                            <TextBox Name="HistoryValueOnProjectLoadFromOutputTextbox" Margin="5,0,10,0"/>
+                                        </DockPanel>
+
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
                             <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                                 <DockPanel Style="{DynamicResource ContentBar}"  LastChildFill="False">
                                     <Label Content="Information" FontWeight="Bold" DockPanel.Dock="Left"/>
+                                    <Label Name="LabelUniqueValueCount" Content="Unique Values: ?" Margin="25,0,5,0" DockPanel.Dock="Top" />
                                 </DockPanel>
                             </Border>
-                            <Label Content="This Info and Entry Symbology only work on &#xA;1 byte entrys. Support for 2+ bytes is later." Margin="5,5,5,5" DockPanel.Dock="Top" />
-                            <Label Name="LabelUniqueValueCount" Content="Unique Values: ?" Margin="5,5,5,5" DockPanel.Dock="Top" />
+                            <Label Content="This Info and Entry Symbology only work on &#xA;1 byte entrys. Support for 2+ bytes is later." Margin="5,2,5,2" DockPanel.Dock="Top" />
+                            
                             <local:UserControlCrossReference x:Name="CrossReferenceInfo" Margin="5,5,5,5" />
                         </DockPanel>
                     </Border>
                 </TabItem>
                 <TabItem Header="Auto Mod">
-                    <Border>
-                        <DockPanel>
-                            <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
-                                <DockPanel Style="{DynamicResource ContentBar}"  LastChildFill="False">
-                                    <Label Content="Automatically mod the game!" FontWeight="Bold" DockPanel.Dock="Left"/>
-                                </DockPanel>
-                            </Border>
-
-                            <Grid  Margin="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="165*"/>
-                                    <ColumnDefinition Width="113*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-
-                                <Label Content="Instant Mod: Apply a math formula to EVERY &#xD;&#xA;item! Examples: 50% MP Costs,&#xD;&#xA;200% Enemy HP, 0% Buy Prices, etc." Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" />
-
-                                <Label Content="Action " Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" />
-                                <ComboBox x:Name="FormulaComboBox" Grid.Row="3" Grid.Column="1" Margin="3,3,3,3" Grid.ColumnSpan="1">
-                                    <ComboBoxItem Content="Multiply" IsSelected="True"/>
-                                    <ComboBoxItem Content="Add" Foreground="#FF440F0F"/>
-                                    <ComboBoxItem Content="Subtract" Foreground="#FF2B0909"/>
-                                </ComboBox>
-
-                                <Label Content="Action Value " Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" />
-                                <TextBox x:Name="FormulaTextBox" Grid.Row="4" Grid.Column="1" TextWrapping="Wrap" Text="100%" Margin="3,3,3,3" Grid.ColumnSpan="1"/>
-
-                                <Label Content="MAX"  Grid.Row="5" Grid.Column="0"/>
-                                <Border Grid.Row="5" Grid.Column="0" Margin="3,0,150,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="This lets you set a Maximum value. &#xA;If it's empty, there is no maximum.&#xA; &#xA;Note: The true max is based on the byte size.&#xA;BEWARE: It does not yet account for the max being cut in half &#xA;because of negative values (signed bytes)."/>
-                                <TextBox x:Name="FormulaMaxTextBox" Grid.Row="5" Grid.Column="1" TextWrapping="Wrap" Margin="3,3,3,3" Grid.ColumnSpan="1" />
-
-
-                                <Label Content="MIN"  Grid.Row="6" Grid.Column="0"/>
-                                <Border Grid.Row="6" Grid.Column="0" Margin="3,0,150,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="This lets you set a Minimum value. &#xA;If it's empty, there is no minimum.&#xA; &#xA;Note: The true minimum is always 0.&#xA;(Does not yet support negative numbers)"/>
-                                <TextBox x:Name="FormulaMinTextBox"  Grid.Row="6" Grid.Column="1"  TextWrapping="Wrap" Margin="3,3,3,3" Grid.ColumnSpan="1" />
-
-
-                                <Label Content="Skip last X items: " Grid.Row="7" Grid.Column="0"/>
-                                <Border Grid.Row="7" Grid.Column="0" Margin="3,0,20,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="This will NOT mod the bottom X items in the item list. &#xA;I know i should code in something better, &#xA;but this was easy to do and i have other parts&#xA;of the program to be working on."/>
-                                <TextBox x:Name="FormulaDoNotModTextBox" Grid.Row="7" Grid.Column="1" TextWrapping="Wrap" Text="0" Margin="3,3,3,3" Grid.ColumnSpan="1" />
-
-                                <Button Content="Apply to all items" Grid.Row="8" Grid.Column="1" Click="ApplyFormulaToEntryAcrossAllItems" Grid.ColumnSpan="2"/>
-                                <Label Content="    SAVE FIRST!    " Grid.Row="8" Grid.Column="0" Foreground="#FFFDA200"/>
-                                <Grid Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3">
-                                    <Label Content="`Multiply` Must always end in a %. &#xA;(50%  120%  300%  70%)" HorizontalAlignment="Left" Margin="10,2,0,0" VerticalAlignment="Top"/>
-                                    <Label Content="Result rounds to nearest number." HorizontalAlignment="Left" Margin="11,52,0,0" VerticalAlignment="Top"/>
-                                    <Label Content="This doesn't support negative values yet!&#xD;&#xA;Mostly because i'm to lazy to code &#xD;&#xA;it right now. It can be added later :&gt;" HorizontalAlignment="Center" Margin="0,136,0,0" VerticalAlignment="Top" Width="470"/>
-                                </Grid>
-
-
-
-                            </Grid>
-                        </DockPanel>
-                    </Border>
+                    <local:AutoMod x:Name="AutoModControl"/>
                 </TabItem>
+                
                 <TabItem Header="Lists"  Name="ListTab" Tag="ListTab">
                     <!--LostFocus="ListLostFocus"-->
                     <Border>

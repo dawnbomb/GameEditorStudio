@@ -162,19 +162,20 @@ namespace GameEditorStudio
                 //    //HistoryValueOnProjectLoadFromInputTextbox
                 //}
 
-                GameFile GetMirrorGameFileFromInput(GameFile OutputFile) 
-                {
-                    foreach (GameFile FileFromInput in DTEData.WorkshopData.GameFilesFromInput) 
-                    {
-                        if (OutputFile.FileLocation == FileFromInput.FileLocation) 
-                        {
-                            return FileFromInput;
-                        }
-                    }
-                    return null;
-                }
 
-                GameFile InputFile = GetMirrorGameFileFromInput(DTEData.DataTable.FileDataTable);
+                //GameFile GetMirrorGameFileFromInput(GameFile OutputFile) 
+                //{
+                //    foreach (GameFile FileFromInput in DTEData.WorkshopData.GameFilesFromInput) 
+                //    {
+                //        if (OutputFile.FileLocation == FileFromInput.FileLocation) 
+                //        {
+                //            return FileFromInput;
+                //        }
+                //    }
+                //    return null;
+                //}
+
+                GameFile InputFile = LibraryGES.GetMirrorGameFileFromInput(DTEData.DataTable.FileDataTable, DTEData.WorkshopData);
 
                 if (EntryClass.Endianness == "1")
                 {                    
@@ -704,8 +705,7 @@ namespace GameEditorStudio
                     
                 }
                 if (EntryClass.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Nothing)
-                {
-                    TextTable texttable = EntryClass.EntryTypeMenu.TextTableNothing;
+                {                    
                     foreach (ComboBoxItem ComboItem in EntryClass.EntryTypeMenu.Dropdown.Items)
                     {
                         if (EntryClass.ParentEditor.WorkshopData.IsProjectLoaded == false)
@@ -726,6 +726,8 @@ namespace GameEditorStudio
                         
                         break;
                     }
+
+                    TextTable texttable = EntryClass.EntryTypeMenu.TextTableNothing;
                     StartNum = texttable.TextTableFirstNameID;
                 }
 
@@ -968,6 +970,7 @@ namespace GameEditorStudio
                             //UpdateEntryProperties(EntryClass);
                             DTEMethods.EntryActivate(EntryClass);
                             DTEMethods.UpdateALLMathboxResults(TheWorkshop.WorkshopData);
+                            EntryClass.ParentEditor.DataTableEditorData.EditorRightBar.AutoModControl.UpdateExampleMathResults();
                         }
                     }
                 }
@@ -2132,17 +2135,17 @@ namespace GameEditorStudio
                 }
 
 
-
-                TextTable texttable = EntryClass.EntryTypeMenu.TextTableNothing;   
+                TextTable texttable = EntryClass.EntryTypeMenu.TextTableNothing;
                 foreach (TextInfo textInfo in texttable.ItemList)
                 {
                     ComboBoxItem comboBoxItem = new();
                     ToolTipService.SetInitialShowDelay(comboBoxItem, LibraryGES.TooltipInitialDelay);
                     ToolTipService.SetBetweenShowDelay(comboBoxItem, LibraryGES.TooltipBetweenDelay);
                     comboBoxItem.Content = (textInfo.ItemIndex + texttable.TextTableFirstNameID) + ": " + textInfo.ItemName;
-                    comboBoxItem.Tag = textInfo; 
+                    comboBoxItem.Tag = textInfo;
                     comboBox.Items.Add(comboBoxItem);
                 }
+
             }
 
             
@@ -2549,7 +2552,7 @@ namespace GameEditorStudio
 
             //////////////////////////////////////END//////////////////////////////////////////            
             TheWorkshop.UpdateSymbology(EntryClass); //Update Symbology when Entry Value is changed.
-
+            RightBar.AutoModControl.UpdateExampleMathResults();
         } //End of UpdateEntryProperties Method
 
 

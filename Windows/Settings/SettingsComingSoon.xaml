@@ -5,13 +5,29 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameEditorStudio"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="700">
+             d:DesignHeight="550" d:DesignWidth="800">
     <Grid>
         <StackPanel Margin="10,0,10,10" Background="Transparent">
-            <CheckBox Content="Fullscreen GES on launch." Margin="0,0,0,5"/>
-            <CheckBox Content="Ask to save when closing workshop." Margin="0,0,0,5"/>
+            
+            
             <CheckBox Content="When a common event is enabled locally and for the current woshop, only show local." Margin="0,0,0,5"/>
             <CheckBox Content="When a common event is enabled locally and for the current woshop, only show workshop." Margin="0,0,0,5"/>
+            <CheckBox Content="DTE Left bar, hide the Items label. (Makes search bar larger) (But right click items label is how to export)" Margin="0,0,0,5"/>
+            <Separator/>
+            <CheckBox Content="DTE Left bar, hide the search bar. (If both hidden, more vertical space)" Margin="0,0,0,5"/>
+            <CheckBox Content="DTE Bottom Left, hide the Info label." Margin="0,0,0,5"/>
+            <CheckBox Content="Ask to save when closing workshop." Margin="0,0,0,5"/>
+            <CheckBox Content="Fullscreen GES on launch." Margin="0,0,0,5"/>
+            <CheckBox Content="make Hotbar buttons (DEC/HEX, Symbology, Hiddens, etc) apply to ALL editors when clicked." Margin="0,0,0,5"/>
+
+            <CheckBox Content="Output folder is required to save game data (on by default).  Currently it saves to input if output does not exist... But this is a nice safeguard." Margin="0,0,0,5"/>
+            <CheckBox Content="Block setting a project's output folder to be the same as it's input folder (with on by default). User can always disable this." Margin="0,0,0,5"/>
+            <CheckBox Content="Numberboxes now have Up-Down buttons to help communicate they accept numbers only. The buttons are cosmetic only (To prevent mis-clicks)." Margin="0,0,0,5"/>
+            <CheckBox Content="Math is Blue, or Red? (Online, it's like, 80% blue, 20% red) https://www.youtube.com/shorts/vrWsRMo544o." Margin="0,0,0,5"/>
+
+            <CheckBox Content="Numberboxes now have Up-Down buttons to help communicate they accept numbers only. The buttons are cosmetic only (To prevent mis-clicks)." Margin="0,0,0,5"/>
+            <Separator/>
+            <CheckBox Content="Overwrite Editor row appearence to always be a Nameplate." Margin="0,0,0,5"/>
         </StackPanel>
     </Grid>
 </UserControl>

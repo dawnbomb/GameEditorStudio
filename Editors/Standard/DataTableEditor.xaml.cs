@@ -164,7 +164,7 @@ namespace GameEditorStudio
 
             //DataTableEditorData.EditorTab.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 
-
+            RightBar.AutoModControl.AutomodSetup(DTEData);
 
             GenerateUI();
         }

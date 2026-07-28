@@ -34,6 +34,18 @@ namespace GameEditorStudio
             Process.Start(startInfo);
         }
 
+        public static void RunNonGESTool(MethodData MethodData)
+        {
+            Tool toolOne = MethodData.Command.RequiredToolsList[0];
+            ProcessStartInfo startInfo = new ProcessStartInfo()
+            {
+                FileName = toolOne.Location, // Path to the executable
+                UseShellExecute = true       // This allows starting a process associated with a file type (when needed)
+            };
+
+            // Start the process with the configured ProcessStartInfo
+            Process.Start(startInfo);
+        }
 
         ////////////////////////////////////////////////////////////////////
 
