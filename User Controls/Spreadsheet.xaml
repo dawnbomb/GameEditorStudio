@@ -133,7 +133,7 @@
     </UserControl.Resources>
     
     <Border>
-        <DockPanel Background="#FF480505" >
+        <DockPanel Background="#FF1D1B1B" >
             <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                 <DockPanel Style="{DynamicResource ContentBar}" LastChildFill="False">
                     <DockPanel DockPanel.Dock="Top" LastChildFill="False">
@@ -144,6 +144,9 @@
                         <Button Content="Origonal Order (Dec)"  DockPanel.Dock="Left"    Click="DecOrigonalOrder" Margin="2,2,22,2" ToolTip="" />
                         <Button Content="Editor Order (Hex)"  DockPanel.Dock="Left"   Click="HexEditorOrder" Margin="2,2,2,2" ToolTip="" />
                         <Button Content="Editor Order (Dec)"  DockPanel.Dock="Left" Click="DecEditorOrder" Margin="2,2,22,2" ToolTip="" />
+                    </DockPanel>
+                    <DockPanel DockPanel.Dock="Top" >
+                        <Label Content="Tips:  Its easier to compare selected rows.    Click a row to select it.    Click and Drag to select multiple.   Hold CTRL to click select non-adjacent rows.   " DockPanel.Dock="Top" Foreground="#FF888480"/>
                     </DockPanel>
                     <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                         <CheckBox Name="NoteCheckbox" Content="Name Note" DockPanel.Dock="Left" Margin="2,2,15,2" ToolTip="Show item notes as part of name." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
@@ -161,12 +164,13 @@
                     
                 </DockPanel>
             </Border>
+            
             <DataGrid Name="MainDataGrid" 
                       FrozenColumnCount="1"                  
                       EnableColumnVirtualization="True"          
                       EnableRowVirtualization="True"
                       VirtualizingStackPanel.VirtualizationMode="Recycling"
-                      
+                      DockPanel.Dock="Top"
                       
                       ScrollViewer.CanContentScroll="True"
           VirtualizingStackPanel.IsVirtualizingWhenGrouping="True"
@@ -176,7 +180,9 @@
                       AutoGenerateColumns="True"  
                       GridLinesVisibility="All" 
                       CanUserResizeColumns="False"/>
+            
         </DockPanel>
+        
     </Border>
     
 </UserControl>

@@ -805,6 +805,7 @@ namespace GameEditorStudio
             Grid.SetRowSpan(spreadsheet, 99);
 
             EditorBack.Children.Add(spreadsheet); //
+        
 
             //if (spreadsheet.IsVisible == false)
             //{

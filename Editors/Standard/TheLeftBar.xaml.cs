@@ -951,53 +951,62 @@ namespace GameEditorStudio
 
         private void SearchBarTextChanged(object sender, TextChangedEventArgs e)
         {
-            SearchBar.TextChanged += (sender, e) =>
+            if (ItemsTree == null) { return; }
+
+            string searchText = SearchBar.Text;
+
+            if (!string.IsNullOrEmpty(searchText) && searchText != "🔎 Search.....")
             {
-                string searchText = SearchBar.Text;
-
-                if (!string.IsNullOrEmpty(searchText) && searchText != "🔎 Search.....")
+                if (string.IsNullOrEmpty(searchText))
                 {
-                    if (string.IsNullOrEmpty(searchText))
-                    {
-                        ItemsTree.Items.Filter = null;
-                    }
-                    else
-                    {
-                        ItemsTree.Items.Filter = (item) =>
-                        {
-                            if (((TreeViewItem)item).Tag is TextInfo itemInfo)
-                            {
-                                // Search for the search text within the item name
-                                if (itemInfo.ItemName.Contains(searchText, StringComparison.OrdinalIgnoreCase) || itemInfo.ItemNote.Contains(searchText, StringComparison.OrdinalIgnoreCase) || itemInfo.ItemWorkshopTooltip.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-                                {
-                                    return true;
-                                }
-
-                                // Check the children of the current TreeViewItem
-                                foreach (var childItem in ((TreeViewItem)item).Items)
-                                {
-                                    if (childItem is TreeViewItem childTreeViewItem && childTreeViewItem.Tag is TextInfo childInfo)
-                                    {
-                                        if (childInfo.ItemName.Contains(searchText, StringComparison.OrdinalIgnoreCase) || childInfo.ItemNote.Contains(searchText, StringComparison.OrdinalIgnoreCase) || childInfo.ItemWorkshopTooltip.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-                                        {
-                                            return true;
-                                        }
-                                    }
-                                }
-                            }
-
-                            return false;
-                        };
-                    }
+                    ItemsTree.Items.Filter = null;
                 }
                 else
                 {
-                    // Reset the filter when the search text is empty or the placeholder
-                    ItemsTree.Items.Filter = null;
+                    ItemsTree.Items.Filter = (item) =>
+                    {
+                        if (((TreeViewItem)item).Tag is TextInfo itemInfo)
+                        {
+                            // Search for the search text within the item name
+                            if (itemInfo.ItemName.Contains(searchText, StringComparison.OrdinalIgnoreCase) || itemInfo.ItemNote.Contains(searchText, StringComparison.OrdinalIgnoreCase) || itemInfo.ItemWorkshopTooltip.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return true;
+                            }
+
+                            // Check the children of the current TreeViewItem
+                            foreach (var childItem in ((TreeViewItem)item).Items)
+                            {
+                                if (childItem is TreeViewItem childTreeViewItem && childTreeViewItem.Tag is TextInfo childInfo)
+                                {
+                                    if (childInfo.ItemName.Contains(searchText, StringComparison.OrdinalIgnoreCase) || childInfo.ItemNote.Contains(searchText, StringComparison.OrdinalIgnoreCase) || childInfo.ItemWorkshopTooltip.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+
+                        return false;
+                    };
                 }
+            }
+            else
+            {
+                // Reset the filter when the search text is empty or the placeholder
+                ItemsTree.Items.Filter = null;
+
+                if (ItemsTree.SelectedItem is TreeViewItem selectedItem)
+                {
+                    selectedItem.BringIntoView();
+                }
+            }
+
+            //SearchBar.TextChanged += (sender, e) =>
+            //{
+                
 
 
-            };
+            //};
         }
 
         private void ItemNameboxPreviewKeyDown(object sender, KeyEventArgs e)

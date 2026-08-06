@@ -42,6 +42,9 @@ namespace GameEditorStudio
         WorkshopData workshopData { get; set; }
         DataTableEditorData DTEData { get; set; }
 
+        TextInfo SelectedItem { get; set; }
+        bool first = true;
+
         public Spreadsheet(WorkshopData workshopData, DataTableEditorData dtedata)
         {
             InitializeComponent();
@@ -49,10 +52,14 @@ namespace GameEditorStudio
             this.workshopData = workshopData;
             this.DTEData = dtedata;
 
-            HexOrigonalOrder(null, null); //default to Hex Origonal order on load.
+            TreeViewItem TItem = dtedata.EditorLeftBar.TreeView.SelectedItem as TreeViewItem;
+            if (TItem != null) { SelectedItem = TItem.Tag as TextInfo; }
+
+            HexOrigonalOrder(null, null); //default to Hex Origonal order on load.            
+            
         }
 
-        private void HexOrigonalOrder(object sender, RoutedEventArgs e) { RefreshGrid(true, true); mode = "HexOrigonal"; }
+        public void HexOrigonalOrder(object sender, RoutedEventArgs e) { RefreshGrid(true, true); mode = "HexOrigonal"; }
         private void HexEditorOrder(object sender, RoutedEventArgs e) { RefreshGrid(true, false); mode = "HexEditor"; } 
         private void DecEditorOrder(object sender, RoutedEventArgs e) { RefreshGrid(false, false); mode = "DecOrigonal"; }
         private void DecOrigonalOrder(object sender, RoutedEventArgs e) { RefreshGrid(false, true); mode = "DecEditor"; } 
@@ -99,6 +106,8 @@ namespace GameEditorStudio
             var query = DTEData.DataTableEditorData.NameTable.ItemList.Where(x => !x.IsFolder);
             if (isOriginalOrder) query = query.OrderBy(x => x.ItemIndex);
 
+
+            int RowToBecomeSelected = 0;
             foreach (var item in query)
             {
                 System.Data.DataRow row = table.NewRow();
@@ -106,6 +115,10 @@ namespace GameEditorStudio
                 int displayID = item.ItemIndex + DTEData.NameTable.TextTableFirstNameID;
                 row[0] = $"{displayID}: {item.ItemName}";
                 if (item.ItemNote != "" && NoteCheckbox.IsChecked == true) { row[0] = $"{displayID}: {item.ItemName}   ({item.ItemNote})"; }
+                if (SelectedItem == item) 
+                {
+                    RowToBecomeSelected = table.Rows.Count;
+                }
 
                 int colIdx = 1;
                 foreach (var entry in DTEData.DataTableEditorData.MasterEntryList.OrderBy(x => x.RowOffset))
@@ -153,7 +166,12 @@ namespace GameEditorStudio
 
             MainDataGrid.Tag = isHex ? "Hex" : "Decimal";
             MainDataGrid.ItemsSource = table.DefaultView;
-            
+
+            if (RowToBecomeSelected >= 0)
+            {
+                MainDataGrid.SelectedIndex = RowToBecomeSelected;
+                MainDataGrid.ScrollIntoView(MainDataGrid.SelectedItem);
+            }
         }
 
         // Helper to handle Endianness

@@ -608,7 +608,7 @@ namespace GameEditorStudio
                 else if (IsNeverZero == true)
                 {
                     EntryClass.Symbology.Foreground = Brushes.Red;
-                    EntryClass.Symbology.Content = " 0";
+                    EntryClass.Symbology.Content = " 0"; //attached to the unused text of entry.
                     EntryClass.Symbology.ToolTip = "This entry is never zero.\n\nThis is actually pretty rare, so you should be suspicious. ";
 
                 }
