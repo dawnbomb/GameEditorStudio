@@ -270,18 +270,46 @@ namespace GameEditorStudio
                         //Nothing List Setup
                         ItemsNumBox.Clear();
                         ItemsEditBox.Clear();
-                        //ItemsNumBox.Text = "0";
-                        StringBuilder NumsText = new StringBuilder("0");
-                        StringBuilder itemsText = new StringBuilder(TheDataTableEditorData.NameTable.ItemList[0].ItemName);
-                        for (int i = 1; i < TheDataTableEditorData.NameTable.ItemList.Count; i++)
+
+
+                        var sortedItems = TheDataTableEditorData.NameTable.ItemList.Where(t => !t.IsFolder).OrderBy(t => t.ItemIndex).ToList();
+                        if (sortedItems.Count != 0)
                         {
-                            NumsText.Append("\r");
-                            NumsText.Append(i);
-                            itemsText.Append("\r");
-                            itemsText.Append(TheDataTableEditorData.NameTable.ItemList[i].ItemName);
+                            ItemsNumBox.Clear();
+                            ItemsEditBox.Clear();
+
+                            StringBuilder numsText = new StringBuilder("0");
+                            StringBuilder itemsText = new StringBuilder(sortedItems[0].ItemName);
+
+                            for (int i = 1; i < sortedItems.Count; i++)
+                            {
+                                numsText.Append("\r");
+                                numsText.Append(i);
+
+                                itemsText.Append("\r");
+                                itemsText.Append(sortedItems[i].ItemName);
+                            }
+
+                            ItemsNumBox.Text = numsText.ToString();
+                            ItemsEditBox.Text = itemsText.ToString();
                         }
-                        ItemsNumBox.Text = NumsText.ToString();
-                        ItemsEditBox.Text = itemsText.ToString();
+
+
+                        //OLD CODE
+                        ////ItemsNumBox.Text = "0";
+                        //StringBuilder NumsText = new StringBuilder("0");
+                        //StringBuilder itemsText = new StringBuilder(TheDataTableEditorData.NameTable.ItemList[0].ItemName);
+                        //for (int i = 1; i < TheDataTableEditorData.NameTable.ItemList.Count;)
+                        //{
+                        //    NumsText.Append("\r");
+                        //    NumsText.Append(i);
+                        //    itemsText.Append("\r");
+                        //    itemsText.Append(TheDataTableEditorData.NameTable.ItemList[i].ItemName);
+                        //    i++;
+                        //}
+                        //ItemsNumBox.Text = NumsText.ToString();
+                        //ItemsEditBox.Text = itemsText.ToString();
+
                     }
                 }
             }
@@ -1839,66 +1867,34 @@ namespace GameEditorStudio
             }
         }
 
-        private void NothingNameListTextboxTextChanged(object sender, TextChangedEventArgs e)
+        private void UpdateNothingNumBox() 
         {
-            //return;
-
             ItemsNumBox.Clear();
             string[] lines = ItemsEditBox.Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
             StringBuilder sb = new StringBuilder();
 
-            for (int i = 0; i < lines.Length; i++)
+            int TheFirstNameNum = 0;
+            if (FileFirstNameIDNothingTextBox != null) 
+            {
+                TheFirstNameNum = int.TryParse(FileFirstNameIDNothingTextBox.Text, out int value) ? value : 0;
+            }
+                
+
+            for (int i = TheFirstNameNum; i < lines.Length + TheFirstNameNum; i++)
             {
                 sb.AppendLine(i.ToString());
             }
 
             ItemsNumBox.Text = sb.ToString();
-
         }
 
-
-        private void NothingItemsEditBoxPreviewKeyDown(object sender, KeyEventArgs e) //more GPT code to stop the user from axidentally deleting lines in the Nothing Name Textbox.
+        private void NothingNameListTextboxTextChanged(object sender, TextChangedEventArgs e)
         {
-            //var tb = (TextBox)sender;
-            //int lineCountBefore = tb.Text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None).Length;
+            //return;
+            UpdateNothingNumBox();
 
-            //string newText = tb.Text;
-            //int caret = tb.CaretIndex;
-            //int selStart = tb.SelectionStart;
-            //int selLength = tb.SelectionLength;
-
-            //if (e.Key == Key.Back)
-            //{
-            //    if (selLength > 0)
-            //    {
-            //        newText = newText.Remove(selStart, selLength);
-            //    }
-            //    else if (caret > 0)
-            //    {
-            //        newText = newText.Remove(caret - 1, 1);
-            //    }
-            //}
-            //else if (e.Key == Key.Delete)
-            //{
-            //    if (selLength > 0)
-            //    {
-            //        newText = newText.Remove(selStart, selLength);
-            //    }
-            //    else if (caret < newText.Length)
-            //    {
-            //        newText = newText.Remove(caret, 1);
-            //    }
-            //}
-            //else return; // Let other keys through
-
-            //int lineCountAfter = newText.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None).Length;
-
-
-            //if (lineCountAfter != lineCountBefore)
-            //{                
-            //    e.Handled = true; // Block if line count decreased
-            //}
         }
+
 
 
 
@@ -2254,6 +2250,11 @@ namespace GameEditorStudio
                 "This is a custom character table. It allows you to define a custom character set for reading text from data files. " +
                 "\n\nThe character set is defined by a text file that contains the characters in order. The first character in the file is the character with ID 0, the second character is ID 1, and so on. " +
                 "\n\nYou can use this to read text from data files that use a custom character set, such as Shift-JIS or other encodings.");
+        }
+
+        private void NothingFirstNameNumTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdateNothingNumBox();
         }
     }
 }

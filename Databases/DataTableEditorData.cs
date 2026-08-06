@@ -224,7 +224,7 @@ namespace GameEditorStudio
     {
         public DockPanel BitFlagsDockPanel { get; set; } // Used to hold the various Bigflags inside it.
 
-        public string BitFlag1Name { get; set; } = "Flag 1"; //XML        
+        public string BitFlag1Name { get; set; } = "Flag 1 (1)"; //XML        
         public DockPanel BitFlag1 { get; set; }
         public Label BitFlag1Label { get; set; }        
         public Button BitFlag1CheckBox { get; set; }
@@ -232,7 +232,7 @@ namespace GameEditorStudio
         public Border BitFlag1UnderlineBorder { get; set; } //For tooltips
         public Grid BitFlag1NamePanel { get; set; } //For tooltips
         ////////////////////////////////////////////////////////////////////////////
-        public string BitFlag2Name { get; set; } = "Flag 2"; //XML
+        public string BitFlag2Name { get; set; } = "Flag 2 (2)"; //XML
         public string BitFlag2Tooltip { get; set; } = ""; //XML
         public DockPanel BitFlag2 { get; set; }
         public Label BitFlag2Label { get; set; }        
@@ -240,7 +240,7 @@ namespace GameEditorStudio
         public Border BitFlag2UnderlineBorder { get; set; } //For tooltips
         public Grid BitFlag2NamePanel { get; set; } //For tooltips
         ////////////////////////////////////////////////////////////////////////////
-        public string BitFlag3Name { get; set; } = "Flag 3"; //XML
+        public string BitFlag3Name { get; set; } = "Flag 3 (4)"; //XML
         public string BitFlag3Tooltip { get; set; } = ""; //XML
         public DockPanel BitFlag3 { get; set; }
         public Label BitFlag3Label { get; set; }        
@@ -248,7 +248,7 @@ namespace GameEditorStudio
         public Border BitFlag3UnderlineBorder { get; set; } //For tooltips
         public Grid BitFlag3NamePanel { get; set; } //For tooltips
         ////////////////////////////////////////////////////////////////////////////
-        public string BitFlag4Name { get; set; } = "Flag 4"; //XML
+        public string BitFlag4Name { get; set; } = "Flag 4 (8)"; //XML
         public string BitFlag4Tooltip { get; set; } = ""; //XML
         public DockPanel BitFlag4 { get; set; }
         public Label BitFlag4Label { get; set; }        
@@ -256,7 +256,7 @@ namespace GameEditorStudio
         public Border BitFlag4UnderlineBorder { get; set; } //For tooltips
         public Grid BitFlag4NamePanel { get; set; } //For tooltips
         ////////////////////////////////////////////////////////////////////////////
-        public string BitFlag5Name { get; set; } = "Flag 5"; //XML
+        public string BitFlag5Name { get; set; } = "Flag 5 (16)"; //XML
         public string BitFlag5Tooltip { get; set; } = ""; //XML
         public DockPanel BitFlag5 { get; set; }
         public Label BitFlag5Label { get; set; }        
@@ -264,7 +264,7 @@ namespace GameEditorStudio
         public Border BitFlag5UnderlineBorder { get; set; } //For tooltips
         public Grid BitFlag5NamePanel { get; set; } //For tooltips
         ////////////////////////////////////////////////////////////////////////////
-        public string BitFlag6Name { get; set; } = "Flag 6"; //XML
+        public string BitFlag6Name { get; set; } = "Flag 6 (32)"; //XML
         public string BitFlag6Tooltip { get; set; } = ""; //XML
         public DockPanel BitFlag6 { get; set; }
         public Label BitFlag6Label { get; set; }        
@@ -272,7 +272,7 @@ namespace GameEditorStudio
         public Border BitFlag6UnderlineBorder { get; set; } //For tooltips
         public Grid BitFlag6NamePanel { get; set; } //For tooltips
         ////////////////////////////////////////////////////////////////////////////
-        public string BitFlag7Name { get; set; } = "Flag 7"; //XML
+        public string BitFlag7Name { get; set; } = "Flag 7 (64)"; //XML
         public string BitFlag7Tooltip { get; set; } = ""; //XML
         public DockPanel BitFlag7 { get; set; }
         public Label BitFlag7Label { get; set; }        
@@ -281,7 +281,7 @@ namespace GameEditorStudio
         public Border BitFlag7UnderlineBorder { get; set; } //For tooltips
         public Grid BitFlag7NamePanel { get; set; } //For tooltips
         ////////////////////////////////////////////////////////////////////////////
-        public string BitFlag8Name { get; set; } = "Flag 8"; //XML
+        public string BitFlag8Name { get; set; } = "Flag 8 (128)"; //XML
         public string BitFlag8Tooltip { get; set; } = ""; //XML
         public DockPanel BitFlag8 { get; set; }
         public Label BitFlag8Label { get; set; }        

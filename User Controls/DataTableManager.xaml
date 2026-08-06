@@ -18,7 +18,7 @@
                         <ComboBoxItem Content="Link to Data File" Name="DataFile" IsSelected="True"/>
                         <ComboBoxItem Content="Link to Advanced" Name="Advanced" Foreground="Red"/>
                         <ComboBoxItem Content="Link to Json (Unreal Engine)" Name="JSON" Foreground="Red"/>
-                        <ComboBoxItem Content="Link to XML (Unity)" Name="XML" Foreground="Red"/>                        
+                        <ComboBoxItem Content="Link to XML (Unity)" Name="XML" Foreground="Red"/>
                     </ComboBox>
                     <Label Content="Data Source:" DockPanel.Dock="Right" />
                 </DockPanel>
@@ -42,14 +42,14 @@
 
                                 <Grid>
                                     <Label Content="Base Address" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top"/>
-                                    <TextBox x:Name="TextBoxDataTableBaseAddress" HorizontalAlignment="Left" Margin="146,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0"/>
-                                    <Label Content="Row Size" HorizontalAlignment="Left" Margin="0,32,0,0" VerticalAlignment="Top"/>
-                                    <TextBox x:Name="TextBoxDataTableRowSize" HorizontalAlignment="Left" Margin="146,40,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0"/>
+                                    <TextBox  x:Name="TextBoxDataTableBaseAddress" HorizontalAlignment="Left" Margin="146,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0"/>
+                                    <Label Content="Row Size" HorizontalAlignment="Left" Margin="0,60,0,0" VerticalAlignment="Top"/>
+                                    <TextBox x:Name="TextBoxDataTableRowSize" HorizontalAlignment="Left" Margin="146,68,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="0"/>
 
 
 
-                                    <Label Content="Note: Mistakes here &#xD;&#xA;can't be fixed later, &#xD;&#xA;but you could always &#xD;&#xA;just remake the editor." HorizontalAlignment="Left" Margin="10,106,0,0" VerticalAlignment="Top"/>
-                                    <Button Content="Debug" x:Name="DataTableDebugButton" Click="DebugButtonClick" Margin="146,73,0,0" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120"/>
+                                    <Label Content="Note: Mistakes here &#xD;&#xA;can't be fixed later, &#xD;&#xA;but you could always &#xD;&#xA;just remake the editor." HorizontalAlignment="Left" Margin="10,133,0,0" VerticalAlignment="Top"/>
+                                    <Button Content="Debug" x:Name="DataTableDebugButton" Click="DebugButtonClick" Margin="146,100,0,0" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120"/>
                                 </Grid>
 
                             </DockPanel>
@@ -90,7 +90,7 @@
                 <TabItem Header="Link to Advanced" Name="TabAdvanced">
                     <Grid Background="#FF373737">
                         <DockPanel Background="Transparent" HorizontalAlignment="Left">
-                            <local:FileManager x:Name="FileManagerAdvanced" HorizontalAlignment="Left" Width="269" Margin="0,0,8,0"  />                            
+                            <local:FileManager x:Name="FileManagerAdvanced" HorizontalAlignment="Left" Width="269" Margin="0,0,8,0"  />
                         </DockPanel>
                         <TextBox Text="IF I EVER ADD THIS,&#xD;&#xA;DONT FORGET THAT THE&#xD;&#xA;ENTRY CROSS REFERENCE&#xD;&#xA;(INFO PANEL) TRIES TO READ&#xD;&#xA;THE DATA TABLE IN ROWS&#xD;&#xA;AND COLUMNS.&#xD;&#xA;&#xD;&#xA;(Maybe just disable it for&#xD;&#xA;advanced...?)&#xD;&#xA;&#xD;&#xA;- - - - - - - - - - - - - -&#xD;&#xA;Also Symbology does this to&#xD;&#xA;but indirectly. It reads &#xD;&#xA;Data Table Rows = to the &#xD;&#xA;current name table item count.&#xD;&#xA;&#xD;&#xA;(I could always just disable&#xD;&#xA;this as well for advanced..?)&#xD;&#xA;" Margin="818,104,41,171"  />
                         <Border Margin="289,58,0,76" HorizontalAlignment="Left" Width="513">

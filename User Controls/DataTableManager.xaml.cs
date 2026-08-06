@@ -107,7 +107,7 @@ namespace GameEditorStudio
                 TextBoxDataTableBaseAddress.Background = null;
                 TextBoxDataTableRowSize.Background = null;
 
-                if (TextBoxDataTableBaseAddress.Text == null || TextBoxDataTableBaseAddress.Text == "")
+                if (TextBoxDataTableBaseAddress.Text == null || TextBoxDataTableBaseAddress.Text == "" || TextBoxDataTableBaseAddress.Text.IndexOfAny(new[] { '[', ']', '(', ')', '{', '}', 'x', 'X', '-' }) >= 0)
                 {
                     TextBoxDataTableBaseAddress.Background = Brushes.Red;
                 }
@@ -115,7 +115,7 @@ namespace GameEditorStudio
                 {
                     TextBoxDataTableRowSize.Background = Brushes.Red;
                 }
-                if (TextBoxDataTableRowSize.Text.Contains("a") || TextBoxDataTableRowSize.Text.Contains("s") || TextBoxDataTableRowSize.Text.Contains("d") || TextBoxDataTableRowSize.Text.Contains("w"))
+                if (TextBoxDataTableRowSize.Text.Contains("a") || TextBoxDataTableRowSize.Text.Contains("s") || TextBoxDataTableRowSize.Text.Contains("d") || TextBoxDataTableRowSize.Text.Contains("w") || TextBoxDataTableRowSize.Text.IndexOfAny(new[] { '[', ']', '(', ')', '{', '}', 'x', 'X', '-' }) >= 0)
                 {
                     TextBoxDataTableRowSize.Background = Brushes.Red;
                 }

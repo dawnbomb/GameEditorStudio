@@ -74,6 +74,12 @@ namespace GameEditorStudio
         public string WorkshopName { get; set; } = ""; //The name of the workshop (IE name of whats selected in Game Library)
         public string WorkshopInputDirectory { get; set; } = ""; //The intended InputDirectory (Folder name) for modding this game. This helps make sure end users aren't guessing what the correct one is.
         public bool ProjectsRequireSameFolderName { get; set; } = true; //If true the project input folder must have the same name as WorkshopInputDirectory.
+        public WorkshopStatuses Status  { get; set; } = WorkshopStatuses.None; //(NOT IMPLIMENTED YET) XML //Lets users define if a workshop is in active development or not.
+        public enum WorkshopStatuses //DO NOT RENAME, THESE TERMS SAVE TO XML. (If desperate, update the XML saving first).
+        {
+            None,
+            Beta,
+        }
 
         public Intro Intro { get; set; } = new ();
         public List<EventResource> WorkshopEventResources { get; set; } = new();

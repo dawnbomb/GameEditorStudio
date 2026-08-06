@@ -1061,20 +1061,27 @@ namespace GameEditorStudio
 
         public static void UpdateEntryName(Entry EntryClass) 
         {
+
             //add a option to properties where a entrys can have a Icon on the left side. for easy, universal, user styling / expression.
             TextBlock EntryTextBlock = EntryClass.EntryNameTextBlock;
             EntryTextBlock.IsHitTestVisible = false; //Makes it so mouse scroll works when there is no tooltip.
 
             Run MainName = EntryClass.RunEntryName;
+            MainName.ClearValue(TextElement.ForegroundProperty);
             //MainName.VerticalAlignment = VerticalAlignment.Center;
 
             if (EntryClass.IsNameHidden == false) { EntryClass.EntryNameTextBlock.Visibility = Visibility.Visible; }
             EntryClass.EntryNameTextBlock.Visibility = Visibility.Visible;
 
-            if (EntryClass.IsNameHidden == true) 
+            if (EntryClass.IsNameHidden == true)
             {
                 MainName.Text = "";
                 EntryClass.EntryNameTextBlock.Visibility = Visibility.Collapsed;
+            }
+            else if (EntryClass.Name == "" && EntryClass.Symbology.Content as string == " 0") 
+            {
+                MainName.Text = "unused? " + EntryClass.RowOffset;
+                MainName.Foreground = Brushes.Gray;
             }
             else if (EntryClass.Name == "")
             {

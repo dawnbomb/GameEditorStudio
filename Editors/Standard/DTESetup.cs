@@ -410,8 +410,8 @@ namespace GameEditorStudio
             Border GroupBorder = new();
             GroupClass.GroupBorder = GroupBorder;
             GroupBorder.Margin = new Thickness(5, 5, 2, -3); //5 5 0 -1
-            GroupBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#262626")); //352050 //403069 //303030 //Brushes.LightBlue; //464646
-            GroupBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#161616")); //1D1D23 //Brushes.MediumPurple; //new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF1A20")); //Brushes.Transparent; //new SolidColorBrush((Color)ColorConverter.ConvertFromString("#141114"));  //Brushes.DarkBlue; //201A20
+            GroupBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#362e19")); //352050 //262626  //403069 //303030 //Brushes.LightBlue; //464646
+            GroupBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1c180e")); //1D1D23 //161616  //Brushes.MediumPurple; //new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF1A20")); //Brushes.Transparent; //new SolidColorBrush((Color)ColorConverter.ConvertFromString("#141114"));  //Brushes.DarkBlue; //201A20
             //GroupBorder.BorderBrush = Brushes.Transparent; 
             DockPanel.SetDock(GroupBorder, Dock.Top);
 
@@ -426,7 +426,7 @@ namespace GameEditorStudio
             DockPanel GroupHeader = new DockPanel();
             GroupHeader.Margin = new Thickness(0, 0, 0, 0);
             //GroupHeader.Background = Brushes.Transparent;
-            GroupHeader.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222222")); //0d0326 //Brushes.DarkBlue;
+            GroupHeader.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#302914")); //0d0326 //222222 //Brushes.DarkBlue;
             DockPanel.SetDock(GroupHeader, Dock.Top);
             GroupClass.GroupPanel.Children.Add(GroupHeader);
             GroupHeader.LastChildFill = false;
@@ -450,7 +450,7 @@ namespace GameEditorStudio
                 DockPanel.SetDock(itemGrid, Dock.Top);
                 itemGrid.MinHeight = 20;
                 itemGrid.MinWidth = 20;
-                itemGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#161616")); //1D1323 //Brushes.MediumPurple;
+                itemGrid.Background = GroupBorder.Background; //new SolidColorBrush((Color)ColorConverter.ConvertFromString("#362f1c")); //1D1323 // 161616//Brushes.MediumPurple;
 
                 GroupClass.ParentCategory.ItemGrid.Children.Add(GroupClass.GroupBorder); //maybe remove this?
 
@@ -1048,7 +1048,7 @@ namespace GameEditorStudio
 
             ////////////////END OF UNDERLINE SYSTEM//////////////////////
 
-            DTEMethods.UpdateEntryName(EntryClass); //Handles name updates, Tooltip underlines, becoming hidden, and checking if text???
+            
 
 
 
@@ -1079,6 +1079,7 @@ namespace GameEditorStudio
 
             TheWorkshop.UpdateSymbology(EntryClass); //Set Symbology on Entry Creation.
 
+            DTEMethods.UpdateEntryName(EntryClass); //Handles name updates, Tooltip underlines, becoming hidden, and checking if text???
 
             if (EntryClass.Bytes == 0)
             {
