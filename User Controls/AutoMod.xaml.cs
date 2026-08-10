@@ -22,7 +22,7 @@ namespace GameEditorStudio
     {
 
         public AutoModSimpleMathPieces MathPiece { get; set; } = AutoModSimpleMathPieces.Plus;
-        public string MathValue { get; set; } = "";
+        public string MathValue { get; set; } = "1";
         public Entry? EntryTarget { get; set; } = null;
 
         public string EntryKey { get; set; } = ""; //Not XML. When first loading the editor, this temporarily holds the target entry key. After all entry's are loaded, this is used to set the target entry. It is then never used again.
@@ -182,7 +182,7 @@ namespace GameEditorStudio
                     {
                         MathStep.MathPiece = mathPiece;
                         MakeRightSide();
-                        UpdateExampleMathResults();
+                        UpdateAutoModExampleMathResults();
                     }
                 }
 
@@ -216,7 +216,7 @@ namespace GameEditorStudio
                     {
                         MathFormula.Remove(MathStep);
                         FormulaStack.Children.Remove(border);
-                        UpdateExampleMathResults();
+                        UpdateAutoModExampleMathResults();
                     }
                     //OKmathboxes
                     //if (MathStep.ValueSource == MathStep.AutoModMathValueSources.Mathbox)
@@ -325,7 +325,7 @@ namespace GameEditorStudio
                         {
                             MathStep.MathValue = textBox.Text;
                             MathStep.EntryTarget = null;
-                            UpdateExampleMathResults();
+                            UpdateAutoModExampleMathResults();
                         }
                     }
 
@@ -336,12 +336,12 @@ namespace GameEditorStudio
             }
         }
 
-        public void UpdateExampleMathResults() 
+        public void UpdateAutoModExampleMathResults() 
         {
             if (DTEData.WorkshopData.IsProjectLoaded == false)
             {
-                ExampleResultTextBox.Text = "No Project";
-                ExampleResultUsingInputTextBox.Text = "No Project";
+                AutoModExampleResultTextBox.Text = "No Project";
+                AutoModExampleResultUsingInputTextBox.Text = "No Project";
                 return;
             }
 
@@ -349,27 +349,39 @@ namespace GameEditorStudio
             {                
                 double EntryValue = DTEMathMethods.GetEntryValueFrom(DTEData.EntryClass, DTEMathMethods.EntryValueSource.FromCurrent);
                 double NewValue = CalculateFormulaAndClamp(EntryValue);
-                ExampleResultTextBox.Text = NewValue.ToString();
-                                
-                double EntryInputValue = DTEMathMethods.GetEntryValueFrom(DTEData.EntryClass, DTEMathMethods.EntryValueSource.FromInput);
-                if (EntryValue == EntryInputValue) 
-                { 
-                    ExampleResultUsingInputTextBox.Text = "Same";
-                    ExampleResultUsingInputTextBox.IsEnabled = false;
+                AutoModExampleResultTextBox.Text = NewValue.ToString();
+
+                if (DTEData.EntryClass.EntryValueOnProjectLoadFromInput != null && DTEData.EntryClass.EntryValueOnProjectLoadFromInput != "")
+                {
+                    double EntryInputValue = DTEMathMethods.GetEntryValueFrom(DTEData.EntryClass, DTEMathMethods.EntryValueSource.FromInput);
+                    if (EntryValue == EntryInputValue)
+                    {
+                        AutoModExampleResultUsingInputTextBox.Text = "Same";
+                        AutoModExampleResultUsingInputTextBox.IsEnabled = false;
+                        ButtonApplyAutoModUsingInput.IsEnabled = false;
+                    }
+                    else
+                    {
+                        double NewInputValue = CalculateFormulaAndClamp(EntryInputValue);
+                        AutoModExampleResultUsingInputTextBox.Text = NewInputValue.ToString();
+                        AutoModExampleResultUsingInputTextBox.IsEnabled = true;
+                        ButtonApplyAutoModUsingInput.IsEnabled = true;
+                    }
                 }
                 else 
                 {
-                    double NewInputValue = CalculateFormulaAndClamp(EntryInputValue);
-                    ExampleResultUsingInputTextBox.Text = NewInputValue.ToString();
-                    ExampleResultUsingInputTextBox.IsEnabled = true;
+                    AutoModExampleResultUsingInputTextBox.Text = "Reload Project";
+                    AutoModExampleResultUsingInputTextBox.IsEnabled = false;
+                    ButtonApplyAutoModUsingInput.IsEnabled = false;
                 }
+                
 
                 
             }
             catch
             {
-                ExampleResultTextBox.Text = "ERROR";
-                ExampleResultUsingInputTextBox.Text = "ERROR";
+                AutoModExampleResultTextBox.Text = "ERROR";
+                AutoModExampleResultUsingInputTextBox.Text = "ERROR";
             }
 
         }

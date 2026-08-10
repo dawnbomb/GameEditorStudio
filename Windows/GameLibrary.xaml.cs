@@ -85,8 +85,7 @@ namespace GameEditorStudio
 
         public GameLibrary()
         {
-            InitializeComponent();   
-            LibraryGES.ApplicationLocation = AppDomain.CurrentDomain.BaseDirectory;
+            InitializeComponent();               
             Database.GameLibrary = this;
 
             {   //I am intensionally leaving this existing but collapsed, and related code, incase i later want project related stuff existing again in the game library.
@@ -98,10 +97,7 @@ namespace GameEditorStudio
                 RecentWorkshopsContent.Visibility = Visibility.Collapsed;
             }
 
-            #if DEBUG
-            LibraryGES.ApplicationLocation = "D:\\Game Editor Studio"; //"O:\\Teddy\\Game Editor Studio\\Game Editor Studio"; //Where the .exe is supposed to be.
-            //LibraryGES.ApplicationLocation = "O:\\Teddy\\Work\\Game Editor Studio";
-            #endif
+            
 
             LoadDatabase LoadDatabase = new(); //Must happen before Setup Commands, because commands use tools.   
             //LoadDatabase.LoadWiki();
@@ -123,26 +119,6 @@ namespace GameEditorStudio
             Dispatcher.InvokeAsync(async () => await PixelWPF.GithubUpdater.CheckForUpdatesAsync("GameEditorStudio", "dawnbomb/GameEditorStudio/releases/latest", LibraryGES.VersionNumber));
 
             MainMenu.MenuLibrarySetup(this);
-
-
-            #if DEBUG
-            foreach (TreeViewItem treeViewItem in LibraryTreeOfWorkshops.Items) 
-            {
-                WorkshopData wdata = treeViewItem.Tag as WorkshopData;
-                if (wdata.WorkshopName == Properties.Settings.Default.LastWorkshop) 
-                {
-                    treeViewItem.IsSelected = true;
-                    foreach (Project Pdata in ProjectsSelector.Items)
-                    {
-                        if (Pdata.ProjectName == Properties.Settings.Default.LastProject) 
-                        {
-                            ProjectsSelector.SelectedItem = Pdata;
-                        }
-                    }
-                }
-                
-            }
-            #endif
 
             
             
@@ -323,13 +299,11 @@ namespace GameEditorStudio
 
                 //Documents Panel
                 int DocumentCount = 0;
-                if (File.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + SelectedWorkshop.WorkshopName + "\\Intro.txt"))
-                {
-                    string SomeIntroText = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + SelectedWorkshop.WorkshopName + "\\Intro.txt");
-
+                if (SelectedWorkshop.Intro.IntroText != "")
+                {   
                     TreeViewItem item = new();
                     item.Header = "Intro to: " + SelectedWorkshop.WorkshopName;
-                    item.Tag = SomeIntroText;
+                    item.Tag = SelectedWorkshop.Intro.IntroText;
                     LibraryDocumentsTree.Items.Add(item);
 
                     item.IsSelected = true;
@@ -783,11 +757,25 @@ namespace GameEditorStudio
             TreeViewItem Item = LibraryDocumentsTree.SelectedItem as TreeViewItem;
             if (Item == null) { return; }
 
-            DocumentNameLabel.Content = Item.Header as string;
-            TextBoxWorkshopReadMe.Text = Item.Tag as string;            
+            string defaulttext = "Welcome to my early beta of Game Editor Studio! " +
+                "\n\nThis program lets you create and share game editors without knowing how to code! " +
+                "\n\nIt also has easy access to romhacking tools, and LOTS of QoL! " +
+                "\n(save often and report bugs / crashes on the discord)" +
+                "\n\n\n\nPS: Most things have right click options." +
+                "\n\n\n\nMade in C# / WPF / .Net10 " +
+                "\n\nTo join the dev team, reach out to me on discord! (Link top right) " +
+                "\nLets make game modding simple, easy, and fun! :)";
+
+            DocumentNameLabel.Content = Item.Header as string;           
+                        
+            Dictionary<string, BitmapImage> images = new();
+            //foreach (WikiImage wimage in document.ImagesList) { images.Add(wimage.FileName, wimage.Bitmap); }
+            PixelWPF.LibraryText.TextToStackPanel(Item.Tag as string, StackPanelForWorkshopDocument, images);
+                      
             if (Item.Header as string == "READ ME" || Item.Header as string == "README" || Item.Header as string == "readme" || Item.Header as string == "read me") 
             {
-                DocumentNameLabel.Content = SelectedWorkshop.WorkshopName + " - " + Item.Header as string; 
+                DocumentNameLabel.Content = SelectedWorkshop.WorkshopName + " - " + Item.Header as string;
+                PixelWPF.LibraryText.TextToStackPanel(defaulttext, StackPanelForWorkshopDocument, images);
             }
         }
         private void OpenProjectFolder(object sender, RoutedEventArgs e)

@@ -27,6 +27,16 @@ namespace GameEditorStudio
             this.Title = "Game Editor Studio     Version: " + LibraryGES.VersionNumber + "   ( " + LibraryGES.VersionDate + " )";
             Database.GESMain = this;
 
+            #if DEBUG
+            LibraryGES.DebugMode = true;
+            //Now we set where the .exe is supposed to be. For use when in visual studio.
+            LibraryGES.ApplicationLocation = "D:\\Game Editor Studio";
+            //"O:\\Teddy\\Game Editor Studio\\Game Editor Studio"; 
+            //LibraryGES.ApplicationLocation = "O:\\Teddy\\Work\\Game Editor Studio";
+            #else
+            LibraryGES.ApplicationLocation = AppDomain.CurrentDomain.BaseDirectory;
+            #endif
+
             ReadRecentWorkshopNames(); //Has to be before Game Library is added.
 
             GameLibrary Library = new();

@@ -556,11 +556,9 @@ namespace GameEditorStudio
         {
             TreeViewItem item = TreeOfDocuments.SelectedItem as TreeViewItem;
             WikiDocument document = item.Tag as WikiDocument;
+                        
 
-            PatchnotePanel.Children.Clear();
-
-            StackPanel thepanel = PatchnotePanel;
-            string[] lines = document.Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            StackPanel thepanel = PatchnotePanel;            
             Dictionary<string, BitmapImage> images = new();
             foreach (WikiImage wimage in document.ImagesList) { images.Add(wimage.FileName, wimage.Bitmap); }
 

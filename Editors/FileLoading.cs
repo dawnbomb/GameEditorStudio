@@ -32,6 +32,8 @@ namespace GameEditorStudio
             WorkshopData.GameFilesFromInput.Clear();
             if (WorkshopData.IsProjectLoaded == false) { return; }
 
+            
+
             try
             {
                 //This doesn't happen in preview mode. 
@@ -49,6 +51,8 @@ namespace GameEditorStudio
                         gamefile.FileNote = FileX.Element("Note")?.Value;
                         gamefile.FileWorkshopTooltip = FileX.Element("Tooltip")?.Value;
 
+                        string filelocation = FileX.Element("Location")?.Value;                        
+
                         bool GameFileExists = false;
                         foreach (GameFile TheGameFile in WorkshopData.GameFiles)
                         {
@@ -59,10 +63,16 @@ namespace GameEditorStudio
                         }
                         if (GameFileExists == false)
                         {
+                            //GameFile gamefile = new(); //This class stores everything about a file.
+                            //gamefile.FileName = FileX.Element("Name")?.Value;
+                            //gamefile.FileLocation = FileX.Element("Location")?.Value;
+                            //gamefile.FileNote = FileX.Element("Note")?.Value;
+                            //gamefile.FileWorkshopTooltip = FileX.Element("Tooltip")?.Value;
+
                             WorkshopData.GameFiles.Add(gamefile);//Adding the GameFile to the Dictionary, with the Key of the FilePath so the key is ALWAYS unique.    
                         }
                     }
-
+                    
                     if (LibraryGES.AlsoLoadInputFiles == true) //INPUT VERSION LOADING
                     {
                         foreach (XElement FileX in Filesxml.Descendants("File"))
@@ -72,6 +82,8 @@ namespace GameEditorStudio
                             gamefileFromInput.FileLocation = FileX.Element("Location")?.Value;
                             gamefileFromInput.FileNote = FileX.Element("Note")?.Value;
                             gamefileFromInput.FileWorkshopTooltip = FileX.Element("Tooltip")?.Value;
+
+                            string filelocation = FileX.Element("Location")?.Value;
 
                             bool GameFileExists = false;
                             foreach (GameFile TheGameFileFromInput in WorkshopData.GameFilesFromInput)
@@ -83,6 +95,12 @@ namespace GameEditorStudio
                             }
                             if (GameFileExists == false)
                             {
+                                //GameFile gamefileFromInput = new(); //This class stores everything about a file.
+                                //gamefileFromInput.FileName = FileX.Element("Name")?.Value;
+                                //gamefileFromInput.FileLocation = FileX.Element("Location")?.Value;
+                                //gamefileFromInput.FileNote = FileX.Element("Note")?.Value;
+                                //gamefileFromInput.FileWorkshopTooltip = FileX.Element("Tooltip")?.Value;
+
                                 WorkshopData.GameFilesFromInput.Add(gamefileFromInput);//Adding the GameFile to the Dictionary, with the Key of the FilePath so the key is ALWAYS unique.    
                             }
                         }
@@ -90,7 +108,7 @@ namespace GameEditorStudio
                     
 
                 }
-
+                
                 //var listPart1 = Enumerable.Range(1, 50).ToList();
                 double max = WorkshopData.GameFiles.Count;
                 double loadcounter = 0;
@@ -131,30 +149,34 @@ namespace GameEditorStudio
                     Database.GameLibrary.LoadingProgressBar.Value = calc;
                     WorkshopData.WorkshopXaml.HomeControl.LoadingProgressBar.Value = calc;
                 }
-
+                
                 if (LibraryGES.AlsoLoadInputFiles == true) //INPUT VERSION LOADING
                 {
                     WorkshopData.WorkshopXaml.HomeControl.LoadingPartText.Content = "Part 1.5: Loading Game Files (from input)...";
                     foreach (GameFile GameFileFromInput in WorkshopData.GameFilesFromInput)
                     {
-                        //Database.GameLibrary.LoadingStatusText.Content = GameFileFromInput.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFilesFromInput.Count + ")";
-                        //WorkshopData.WorkshopXaml.HomeControl.LoadingStatusText.Content = GameFileFromInput.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFilesFromInput.Count + ")";
-                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-
+                        Database.GameLibrary.LoadingStatusText.Content = GameFileFromInput.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFilesFromInput.Count + ")";
+                        WorkshopData.WorkshopXaml.HomeControl.LoadingStatusText.Content = GameFileFromInput.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFilesFromInput.Count + ")";
+                        Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                                                
                         if (WorkshopData.LoadedProject.ProjectInputDirectory != "" && File.Exists(Path.Combine(WorkshopData.LoadedProject.ProjectInputDirectory, GameFileFromInput.FileLocation)))
                         {
-                            GameFileFromInput.FileBytes = File.ReadAllBytes(WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + GameFileFromInput.FileLocation);
+                            string fullpath = WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + GameFileFromInput.FileLocation;
+
+                            //If i ever crash because of this again, make sure the program is building to x64 and not x86. 
+                            //x86 has a RAM limit of about 2~4GB.
+                            //x64 RAM limit is about 1 BILLION GB.
+                            GameFileFromInput.FileBytes = File.ReadAllBytes(fullpath);
                         }
                         else
-                        {
+                        {                            
                             return;
-                        }
-
+                        }                        
 
 
                         //loadcounter++;
@@ -191,9 +213,16 @@ namespace GameEditorStudio
                 //}
                 //await Task.WhenAll(loadFilesTasks);
             }
-            catch
-            {
-                MessageBox.Show("The workshop failed to load all files." +
+            catch (Exception ex)
+            {   
+                MessageBox.Show("ERROR" + ex.ToString(), "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                //If i ever crash because of this again, make sure the program is building to x64 and not x86. 
+                //x86 has a RAM limit of about 2~4GB.
+                //x64 RAM limit is about 1 BILLION GB.
+
+                PixelWPF.LibraryPixel.Notification("ERROR",
+                    "The workshop failed to load all files." +
                     "\n" +
                     "\nPossible reasons are as follow:" +
                     "\n1: The input directory is incorrect" +
@@ -201,10 +230,11 @@ namespace GameEditorStudio
                     "\n3: You failed to extract everything you needed to begin with to use the workshop." +
                     "\n4: The workshop creator has changed the folder / file structure of the workshop." +
                     "\n" +
-                    "\nIf you can't stop getting this error, don't keep trying, just ask for help. Especially if you can contact the workshop creator." +
+                    "\n5: It's possible you don't have enough RAM to load this many files, or that i (yet again) accidentally built the program to be for x86 giving it a RAM limit of 2~4GB instead of having no RAM limits." +
                     "\n" +
-                    "\nThe Program will now close as a safety measure.", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
-
+                    "\nIf you can't stop getting this error, don't keep trying, just ask for help. (On the discord, or from the workshop creator)." +
+                    "\n" +
+                    "\nThe Program will now close as a safety measure.");
 
                 Application.Current.Shutdown();
                 return;
@@ -218,9 +248,7 @@ namespace GameEditorStudio
             Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
             Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
             Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-
-
-
+                        
 
         }
         

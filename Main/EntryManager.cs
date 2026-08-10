@@ -177,35 +177,39 @@ namespace GameEditorStudio
 
                 GameFile InputFile = LibraryGES.GetMirrorGameFileFromInput(DTEData.DataTable.FileDataTable, DTEData.WorkshopData);
 
-                if (EntryClass.Endianness == "1")
-                {                    
-                    EntryClass.EntryValueOnProjectLoadFromInput = InputFile.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
-                }
-                else if (EntryClass.Endianness == "2B")
+                if (InputFile != null) 
                 {
-                    ushort value2 = BitConverter.ToUInt16(InputFile.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
-                    ushort swappedValue2 = (ushort)IPAddress.HostToNetworkOrder((short)value2); // Swap the endianness
-                    EntryClass.EntryValueOnProjectLoadFromInput = swappedValue2.ToString("D");
-                }
-                else if (EntryClass.Endianness == "4B")
-                {
-                    uint value = BitConverter.ToUInt32(InputFile.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
-                    byte[] valueBytes = BitConverter.GetBytes(value);
-                    Array.Reverse(valueBytes);
-                    uint swappedValue = BitConverter.ToUInt32(valueBytes, 0);
-                    EntryClass.EntryValueOnProjectLoadFromInput = swappedValue.ToString("D");
-                }
-                else if (EntryClass.Endianness == "2L")
-                {
-                    EntryClass.EntryValueOnProjectLoadFromInput = BitConverter.ToUInt16(InputFile.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
-                    if (EntryClass.Name == "HP") 
-                    { string breaktest; }
-                }
-                else if (EntryClass.Endianness == "4L")
-                {
-                    EntryClass.EntryValueOnProjectLoadFromInput = BitConverter.ToUInt32(InputFile.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+                    if (EntryClass.Endianness == "1")
+                    {
+                        EntryClass.EntryValueOnProjectLoadFromInput = InputFile.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
+                    }
+                    else if (EntryClass.Endianness == "2B")
+                    {
+                        ushort value2 = BitConverter.ToUInt16(InputFile.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+                        ushort swappedValue2 = (ushort)IPAddress.HostToNetworkOrder((short)value2); // Swap the endianness
+                        EntryClass.EntryValueOnProjectLoadFromInput = swappedValue2.ToString("D");
+                    }
+                    else if (EntryClass.Endianness == "4B")
+                    {
+                        uint value = BitConverter.ToUInt32(InputFile.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+                        byte[] valueBytes = BitConverter.GetBytes(value);
+                        Array.Reverse(valueBytes);
+                        uint swappedValue = BitConverter.ToUInt32(valueBytes, 0);
+                        EntryClass.EntryValueOnProjectLoadFromInput = swappedValue.ToString("D");
+                    }
+                    else if (EntryClass.Endianness == "2L")
+                    {
+                        EntryClass.EntryValueOnProjectLoadFromInput = BitConverter.ToUInt16(InputFile.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+                        if (EntryClass.Name == "HP")
+                        { string breaktest; }
+                    }
+                    else if (EntryClass.Endianness == "4L")
+                    {
+                        EntryClass.EntryValueOnProjectLoadFromInput = BitConverter.ToUInt32(InputFile.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
 
+                    }
                 }
+                
             }
 
             
@@ -970,7 +974,7 @@ namespace GameEditorStudio
                             //UpdateEntryProperties(EntryClass);
                             DTEMethods.EntryActivate(EntryClass);
                             DTEMethods.UpdateALLMathboxResults(TheWorkshop.WorkshopData);
-                            EntryClass.ParentEditor.DataTableEditorData.EditorRightBar.AutoModControl.UpdateExampleMathResults();
+                            EntryClass.ParentEditor.DataTableEditorData.EditorRightBar.AutoModControl.UpdateAutoModExampleMathResults();
                         }
                     }
                 }
@@ -2525,6 +2529,15 @@ namespace GameEditorStudio
             //RightBar.HistoryValueOnProjectLoadFromOutputTextbox.Text = EntryClass.EntryValueOnProjectLoadFromOutput;
             RightBar.HistoryValueOnProjectLoadFromOutputTextbox.Text = "Coming later";
 
+            RightBar.HistoryValueOnProjectLoadFromInputTextbox.IsEnabled = true;
+            if (EntryClass.EntryValueOnProjectLoadFromInput == null || EntryClass.EntryValueOnProjectLoadFromInput == "") 
+            {
+                RightBar.HistoryValueOnProjectLoadFromInputTextbox.Text = "Reload Project";
+                RightBar.HistoryValueOnProjectLoadFromInputTextbox.IsEnabled = false;
+            }
+            
+            
+
             //RightBar.EntryValueHistoryStackPanel.Children.Clear();
 
             //TreeViewItem treeItem = EntryClass.ParentEditor.DataTableEditorData.DTEXaml.LeftBar.ItemsTree.SelectedItem as TreeViewItem;
@@ -2552,7 +2565,7 @@ namespace GameEditorStudio
 
             //////////////////////////////////////END//////////////////////////////////////////            
             TheWorkshop.UpdateSymbology(EntryClass); //Update Symbology when Entry Value is changed.
-            RightBar.AutoModControl.UpdateExampleMathResults();
+            RightBar.AutoModControl.UpdateAutoModExampleMathResults();
         } //End of UpdateEntryProperties Method
 
 

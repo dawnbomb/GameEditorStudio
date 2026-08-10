@@ -171,7 +171,7 @@
                         </Border>
 
                         <ScrollViewer Background="Transparent" VerticalScrollBarVisibility="Auto">
-                            <TextBox x:Name="TextBoxWorkshopReadMe"  TextWrapping="Wrap" Text="Welcome to my early beta of Game Editor Studio!&#xA; &#xA;This program lets you create and share game editors without knowing how to code! &#xD;&#xA;It also has easy access to romhacking tools, and LOTS of QoL! &#xA;(save often and report bugs / crashes on the discord)&#xA;&#xD;&#xA;&#xA;PS: Most things have right click options.&#xA;&#xD;&#xA; &#xA;Made in C# / WPF / .Net10 &#xD;&#xA;To join the dev team, reach out to me on discord! (Link top right) &#xA;Lets make game modding simple, easy, and fun! :)" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"    />
+                            <StackPanel x:Name="StackPanelForWorkshopDocument"   Margin="10,10,10,10" Focusable="False" Background="{x:Null}" />
 
                         </ScrollViewer>
                     </DockPanel>

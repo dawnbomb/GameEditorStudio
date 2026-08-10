@@ -99,7 +99,7 @@
             <Button Click="ExitWorkshop"  Name="LibraryButton" DockPanel.Dock="Left" Content="Back"  Height="30" Width="65" ToolTip="Go back to the Library."/>
             <Button Click="OpenReshade"  DockPanel.Dock="Left" Content="Reshade"  x:Name="HUDReshade" Width="100" Height="30" Style="{DynamicResource ButtonError}" Margin="4,0,4,0" ToolTip="Install a reshade set i made to a game! It's really good!" />
             <Button Click="OpenWiki"  Name="WikiButton" DockPanel.Dock="Left" Content="Wiki"  Height="30" Width="65" Style="{DynamicResource ButtonError}" ToolTip="Open a small wiki i made of game modding info. It's super useful!"/>
-            <Button Click="OpenDiscord" DockPanel.Dock="Left" Content="Discord :)"  x:Name="HUDButtonDiscord" Width="115" Height="30"  Margin="4,0,0,0" ToolTip="Join my discord server! :D"  />
+            <Button Click="OpenDiscord" MouseRightButtonDown="OpenWiki" DockPanel.Dock="Left" Content="Discord :)"  x:Name="HUDButtonDiscord" Width="115" Height="30"  Margin="4,0,0,0" ToolTip="Join my discord server! :D"  />
             <Button Click="WebsiteButton" DockPanel.Dock="Left" Content="Website"   Width="100" Height="30"  Margin="4,0,4,0" ToolTip="Open my website. :D"/>
             <Button Click="GithubButton" DockPanel.Dock="Left" Content="Github"   Width="90" Height="30" ToolTip="Go to the github page for this project. Altho if you wanna help, talking on discord is much easier for me. :>"/>
             <Button Click="DonateButton" DockPanel.Dock="Left" Content="Donate"   Width="85" Height="30" ToolTip="Donations help future development!"/>

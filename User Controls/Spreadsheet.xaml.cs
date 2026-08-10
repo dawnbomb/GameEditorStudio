@@ -100,6 +100,15 @@ namespace GameEditorStudio
                     uniqueColName = $"{colName} ({duplicateCounter++})";
 
                 table.Columns.Add(uniqueColName, typeof(string));
+
+                //From old unsucessfull attempt to add tooltips.
+                //DataColumn column = table.Columns.Add(uniqueColName, typeof(string));
+                //if (!string.IsNullOrEmpty(entry.WorkshopTooltip))
+                //{
+                //    column.ExtendedProperties["Tooltip"] = entry.WorkshopTooltip;
+                //    column.ColumnName = uniqueColName + "*";
+                //}
+
             }
 
             // 3. Fill Rows
@@ -166,6 +175,7 @@ namespace GameEditorStudio
 
             MainDataGrid.Tag = isHex ? "Hex" : "Decimal";
             MainDataGrid.ItemsSource = table.DefaultView;
+
 
             if (RowToBecomeSelected >= 0)
             {

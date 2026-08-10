@@ -39,17 +39,61 @@ namespace GameEditorStudio
         {
             InitializeComponent();
 
-            this.WorkshopData = WorkshopData;  
-            
+            this.WorkshopData = WorkshopData;
+
+            //Properties.Settings.Default.ToolsFolder = "";
+            //Properties.Settings.Default.Save();
+
             //if (WorkshopData == null ) { this.Title = "Current Workshop: None"; }   
             if (WorkshopData != null) { this.Title = "Current Workshop: " + WorkshopData.WorkshopName; }
+                        
+            if (Directory.Exists(Properties.Settings.Default.ToolsFolder)) { ToolsFolderTextbox.Text = Properties.Settings.Default.ToolsFolder; }
 
-            SetupToolsTree(dockList);
-            SetupCommonEventTree(dockList);
-            SetupTools(Database.Tools, true);
-            SetupCommonEvents();
-            SetupThisWorkshop();
+            try { SetupToolsTree(dockList); }    catch  { PixelWPF.LibraryPixel.Notification("Tools Crash 1",""); }
+            try { SetupCommonEventTree(dockList); }catch { PixelWPF.LibraryPixel.Notification("Tools Crash 2", ""); }
+            try { SetupTools(Database.Tools, true); }  catch { PixelWPF.LibraryPixel.Notification("Tools Crash 3", ""); }
+            try { SetupCommonEvents(); } catch { PixelWPF.LibraryPixel.Notification("Tools Crash 4", ""); }
+            try { SetupThisWorkshop(); } catch { PixelWPF.LibraryPixel.Notification("Tools Crash 5", ""); }            
 
+        }
+
+        private void SetToolsFolderButtonClick(object sender, RoutedEventArgs e)
+        {
+            PixelWPF.LibraryPixel.Notification("Tools Folder Advice", "" +
+                "GES scans your tools folder for tools every time you open a menu. Having a tools folder is super useful!" +
+                "\n" +
+                "\n====== TIPS =====" +
+                "\n1: The tools folder should have ALL your game modding tools. " +
+                "\n" +
+                "\n2: Put it somewhere OTHER then your GES folder, with a descriptive name like \"Game Romhacking Tools\" or \"Game Modding Tools\". " +
+                "\n" +
+                "\n3: Organize tools into sub-folders, like \"Hex Editors\", \"SNES Tools\", \"Unity Tools\", etc. " +
+                "");
+
+
+            VistaFolderBrowserDialog FolderSelect = new VistaFolderBrowserDialog(); //This starts folder selection using Ookii.Dialogs.WPF NuGet Package
+            FolderSelect.Description = "Please select where your Tools folder is. (Or whatever you named it)"; //This sets a description to help remind the user what their looking for.
+            FolderSelect.UseDescriptionForTitle = true;    //This enables the description to appear.        
+            {   //Smart seleting the folder to start in.
+                //string FolderPath = TextBoxOutputDirectory.Text + "\\";
+                //DirectoryInfo? current = new DirectoryInfo(FolderPath);
+                //while (current != null && !current.Exists)
+                //{
+                //    current = current.Parent;
+                //}
+                //if (current != null)
+                //{
+                //    FolderSelect.SelectedPath = current.FullName + "\\";
+                //}
+            }
+            if ((bool)FolderSelect.ShowDialog(Window.GetWindow(this))) //This triggers the folder selection screen, and if the user does not cancel out...
+            {
+                ToolsFolderTextbox.Text = FolderSelect.SelectedPath;
+                Properties.Settings.Default.ToolsFolder = FolderSelect.SelectedPath;
+                Properties.Settings.Default.Save();
+
+                RefreshWorkshopTools();
+            }
         }
 
         public void SetupThisWorkshop() 
@@ -83,20 +127,29 @@ namespace GameEditorStudio
                 WPanel.Visibility = Visibility.Visible;
             };
 
-            RefreshWorkshopTools();
+            try { RefreshWorkshopTools(); }
+            catch { PixelWPF.LibraryPixel.Notification("Tools Crash 6", ""); }
+            
 
             Witem.IsSelected = true;
         }
 
         public void RefreshWorkshopTools() 
         {
-            if (this.WPanel != null)
+            try 
             {
-                this.WPanel.Children.Clear();
-            }
+                if (this.WPanel != null)
+                {
+                    this.WPanel.Children.Clear();
+                }
 
-            if (WorkshopData.WorkshopXaml == null) { WorkshopLeftControl.Visibility = Visibility.Collapsed; return; }
-            WSTools = WorkshopData.WorkshopTools;
+                if (WorkshopData == null) { WorkshopLeftControl.Visibility = Visibility.Collapsed; return; } //Both are here to double make sure.
+                if (WorkshopData.WorkshopXaml == null) { WorkshopLeftControl.Visibility = Visibility.Collapsed; return; } //Both are here to double make sure.
+                WSTools = WorkshopData.WorkshopTools;
+            }
+            catch { PixelWPF.LibraryPixel.Notification("Tools Crash 9", ""); }
+
+            
                                     
 
 
@@ -124,7 +177,9 @@ namespace GameEditorStudio
 
             label.Content = "GES Tools in use by this workshop (" + ToolsInUseByCommons.Count + ")";
 
-            SetupTools(ToolsInUseByCommons, false);
+            try { SetupTools(ToolsInUseByCommons, false); }
+            catch { PixelWPF.LibraryPixel.Notification("Tools Crash 7", ""); }
+            
 
             DockPanel WTPanel = new DockPanel();
             DockPanel.SetDock(WTPanel, Dock.Top);
@@ -136,7 +191,10 @@ namespace GameEditorStudio
             Label labelW = new();
             DockPanel.SetDock(labelW, Dock.Left);
             WTPanel.Children.Add(labelW);
-            labelW.Content = "Non-GES Tools for this Workshop (" + WSTools.Count + ")";
+
+            try { labelW.Content = "Non-GES Tools for this Workshop (" + WSTools.Count + ")"; }
+            catch { PixelWPF.LibraryPixel.Notification("Tools Crash 10", ""); }
+            
 
             Button button = new();
             button.Content = "Manage special workshop tools";
@@ -151,7 +209,9 @@ namespace GameEditorStudio
                 WToolManagerControl.warningmessage();
             }
 
-            SetupTools(WSTools, false);
+            try { SetupTools(WSTools, false); }
+            catch { PixelWPF.LibraryPixel.Notification("Tools Crash 8", ""); }
+            
         }
 
         public void SetupToolsTree(List<DockPanel> dockList)
@@ -516,7 +576,7 @@ namespace GameEditorStudio
                 return;
             }
         }
-                
+        
 
         public void SaveToolsXML(object sender, RoutedEventArgs e, Tool Tool,  bool ForGESTools)
         {
@@ -526,9 +586,16 @@ namespace GameEditorStudio
             }            
 
             VistaOpenFileDialog FileSelect = new VistaOpenFileDialog();
-            FileSelect.Title = "Select the Exe";
+            FileSelect.Title = "Select the Exe:" + Tool.ExeName;
             if ((bool)FileSelect.ShowDialog(this))
             {
+                if (Path.GetFileName(FileSelect.FileName)  != Tool.ExeName) 
+                {
+                    PixelWPF.LibraryPixel.NotificationUnknown("Maybe Wrong?","Expected name:\n" + Tool.ExeName + "\n\nYou Selected:\n" + Path.GetFileName(FileSelect.FileName) + "\n\nThe exe will be set anyway (for edge cases where you might be using a custom build of a tool). \n\nJust beware problems can happen when using events with a wrong exe.");
+                    
+                }
+
+
                 Button clickedButton = (Button)sender;
                 TextBox associatedTextBox = (TextBox)clickedButton.Tag;
                 associatedTextBox.Text = FileSelect.FileName;
@@ -704,9 +771,7 @@ namespace GameEditorStudio
             }
         }
 
-
-
-
+        
     }
 
 

@@ -30,9 +30,6 @@ namespace GameEditorStudio
         {
             InitializeComponent();
 
-            #if DEBUG
-            #else            
-            #endif
 
             LabelErrorNotice.Visibility = Visibility.Collapsed;
 

@@ -812,7 +812,7 @@ namespace GameEditorStudio
                         //EManager.UpdateEntryHexProperties(DTEData); //This also updates the cross reference sheet.
                         DTEMethods.UpdateEntryValueHistory(DTEData.EntryClass);
                         DTEMethods.UpdateALLMathboxResults(DTEData.WorkshopData);
-                        DTEData.EditorRightBar.AutoModControl.UpdateExampleMathResults();
+                        DTEData.EditorRightBar.AutoModControl.UpdateAutoModExampleMathResults();
                     }
                     
                 }

@@ -113,370 +113,373 @@ namespace GameEditorStudio
 
         public void LoadWorkshops_INCLUDING_EVENTS() 
         {
-            if (Directory.Exists(LibraryGES.ApplicationLocation + "\\Workshops"))
+            if (!Directory.Exists(LibraryGES.ApplicationLocation + "\\Workshops"))
             {
-                string[] workshopfolders = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
+                return;
+            }
 
-                foreach (var workshopfolder in workshopfolders)
+            string[] workshopfolders = Directory.GetDirectories(LibraryGES.ApplicationLocation + "\\Workshops", "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
+
+            foreach (var workshopfolder in workshopfolders)
+            {
+                WorkshopData workshopData = new();
+                Database.Workshops.Add(workshopData);
+
+                //Workshop.xml data
+                using (FileStream TargetXML = new FileStream(LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopfolder + "\\Workshop.xml", FileMode.Open, FileAccess.Read))
                 {
-                    WorkshopData workshopData = new();
-                    Database.Workshops.Add(workshopData);
-
-                    //Workshop.xml data
-                    using (FileStream TargetXML = new FileStream(LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopfolder + "\\Workshop.xml", FileMode.Open, FileAccess.Read))
-                    {
-                        XElement xml = XElement.Load(TargetXML);
-
-                        //Loading Workshop basic data
-                        //workshopData.WorkshopName = xml.Element("WorkshopName")?.Value;
-                        workshopData.WorkshopName = workshopfolder;
-                        workshopData.WorkshopInputDirectory = xml.Element("InputLocation")?.Value;
-                        workshopData.ProjectsRequireSameFolderName = bool.TryParse(xml.Element("ProjectsRequireSameInputFolderName")?.Value, out bool result) && result;
-
-                        workshopData.CreatedDate = xml.Element("CreatedDate")?.Value ?? "";
-                        workshopData.CreatedVersion = Version.TryParse(xml.Element("CreatedVersion")?.Value, out var vx1) ? vx1 : new Version(0, 0);
-                        workshopData.SavedDate = xml.Element("SavedDate")?.Value ?? "";
-                        workshopData.SavedVersion = Version.TryParse(xml.Element("SavedVersion")?.Value, out var vx2) ? vx2 : new Version(0, 0);
-                        workshopData.LastUsedDate = xml.Element("LastUsedDate")?.Value ?? "";
-                        workshopData.LastUsedVersion = Version.TryParse(xml.Element("LastUsedVersion")?.Value, out var vx3) ? vx3 : new Version(0, 0);
-
-
-                    }
-
-                    
-
-                    //Load Workshop Common Events
-                    if (File.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\Common Events.xml"))
-                    {
-                        List<string> ListOfCommonEventKeys = new();
-
-                        XElement xml = XElement.Load(LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\Common Events.xml");
-                        foreach (XElement XCommonEvent in xml.Descendants("CommonEvent"))
-                        {
-                            string TheKey = XCommonEvent.Element("Key")?.Value;
-                            ListOfCommonEventKeys.Add(TheKey);
-                        }
-
-                        foreach (CommonEvent commonevent in Database.CommonEvents)
-                        {
-                            if (ListOfCommonEventKeys.Any(key => key == commonevent.Key))
-                            {
-                                workshopData.WorkshopCommonEvents.Add(commonevent);
-                            }
-                        }
-                    }
-
-
-
-                    //Load Workshop Event Resources NEW
-                    string eventsDirectory = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", workshopData.WorkshopName, "Events");
-                    if (Directory.Exists(eventsDirectory))
-                    {
-                        foreach (string eventFolder in Directory.GetDirectories(eventsDirectory))
-                        {
-                            string resourcesPath = Path.Combine(eventFolder, "Resources.xml");
-
-                            if (!File.Exists(resourcesPath))
-                            {
-                                continue;
-                            }
-
-                            using (FileStream targetXML = new FileStream(resourcesPath, FileMode.Open, FileAccess.Read))
-                            {
-                                XElement xml = XElement.Load(targetXML);
-
-                                foreach (var xmlEvent in xml.Descendants("Resource"))
-                                {
-                                    string testkey = xmlEvent.Element("Key")?.Value;
-                                    if (workshopData.WorkshopEventResources.Any(r => r.Key == testkey)) { continue; } //Skip if already loaded.
-
-
-                                    EventResource EventResource = new();
-                                    workshopData.WorkshopEventResources.Add(EventResource);
-
-                                    EventResource.Name = xmlEvent.Element("Name")?.Value;
-                                    EventResource.TooltipText = xmlEvent.Element("Tooltip")?.Value ?? "";
-                                    EventResource.Location = xmlEvent.Element("Location")?.Value;
-                                    EventResource.RequiredName = bool.TryParse(xmlEvent.Element("RequiredName")?.Value, out var result2) ? result2 : false;
-                                    EventResource.Key = xmlEvent.Element("Key")?.Value;
-                                    EventResource.ParentKey = xmlEvent.Element("ParentKey")?.Value;
-                                    if (xmlEvent.Element("ResourceType")?.Value == "File")    { EventResource.ResourceType = EventResource.ResourceTypes.File; }
-                                    if (xmlEvent.Element("ResourceType")?.Value == "Folder")  { EventResource.ResourceType = EventResource.ResourceTypes.Folder; }
-                                    if (xmlEvent.Element("ResourceType")?.Value == "CMDText") { EventResource.ResourceType = EventResource.ResourceTypes.CMDText; }
-                                    if (xmlEvent.Element("IsChild")?.Value == "False")    { EventResource.IsChild = false; }
-                                    if (xmlEvent.Element("IsChild")?.Value == "True") { EventResource.IsChild = true; }
-                                    
-                                    
-
-                                }
-                            }
-                        }
-                    }
-
-
-
-                    //Load Workshop Events                  
-                    if (Directory.Exists(eventsDirectory))
-                    {
-                        List<string> EventsListLoadOrder = new();
-                        string EventsOrderText = LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\Events\\" + "LoadOrder.txt";
-                        if (File.Exists(EventsOrderText))
-                        {
-                            string[] lines = File.ReadAllLines(EventsOrderText);
-                            foreach (string line in lines)
-                            {
-                                if (!string.IsNullOrWhiteSpace(line))
-                                {
-                                    EventsListLoadOrder.Add(line);
-                                }
-                            }
-                        }
-
-                        foreach (string eventFolder in EventsListLoadOrder) //Load all known events
-                        {
-                            try 
-                            {
-                                LoadEvent(eventFolder);
-                            } 
-                            catch
-                            {
-                                string EventThatDidNotLoad = eventFolder;
-                                System.Diagnostics.Debugger.Break(); //An even inside LoadOrder didn't load because the folder is missing. 
-                            }
-                            
-
-                        }
-
-                        string[] allEventFolders = Directory.GetDirectories(eventsDirectory, "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
-                        foreach (string eventFolder in allEventFolders) //Load all unknown events?
-                        {
-                            if (!EventsListLoadOrder.Contains(eventFolder))
-                            {
-                                LoadEvent(eventFolder);
-                            }
-                        }
-
-                        void LoadEvent(string eventFolder)
-                        {
-                            string eventFile = Path.Combine(eventsDirectory + "\\" + eventFolder, "Event.xml");
-
-                            XDocument doc = XDocument.Load(eventFile);
-                            foreach (var xmlEvent in doc.Descendants("Event"))
-                            {
-                                Event newEvent = new Event //Actual event loading from XML happens here.
-                                {   
-
-                                    DisplayName = xmlEvent.Element("Name")?.Value ?? "New Event",
-                                    Note = xmlEvent.Element("Note")?.Value ?? string.Empty,
-                                    Tooltip = xmlEvent.Element("Tooltip")?.Value ?? string.Empty,
-                                    CommandList = new List<EventCommand>()
-                                };
-
-
-                                newEvent.CreatedDate = xmlEvent.Element("CreatedDate")?.Value ?? "";
-                                newEvent.CreatedVersion = Version.TryParse(xmlEvent.Element("CreatedVersion")?.Value, out var vx1) ? vx1 : new Version(0, 0);
-                                newEvent.SavedDate = xmlEvent.Element("SavedDate")?.Value ?? "";
-                                newEvent.SavedVersion = Version.TryParse(xmlEvent.Element("SavedVersion")?.Value, out var vx2) ? vx2 : new Version(0, 0);
-
-
-                                var commandElements = xmlEvent.Descendants("Command");
-                                foreach (var commandElement in commandElements)
-                                {
-                                    string commandKey = commandElement.Element("Key")?.Value;
-                                    if (!string.IsNullOrEmpty(commandKey))
-                                    {
-                                        if (commandKey == "RunWorkshopTool") 
-                                        {
-                                            string testaaa = "";
-                                        }
-
-                                        Command matchingCommand = Database.Commands.FirstOrDefault(cmd => cmd.Key == commandKey);
-                                        if (matchingCommand != null)
-                                        {
-                                            bool CMD = false;
-                                            bool.TryParse(commandElement.Element("CMD")?.Value, out CMD);
-
-                                            EventCommand myCommand = new EventCommand
-                                            {
-                                                Command = matchingCommand,
-                                                ResourceKeys = new Dictionary<int, string>()
-                                            };
-
-                                            // Initialize the dictionary with default values
-                                            int resourceKeyIndex = 1;
-                                            foreach (CommandResource Aresource in matchingCommand.RequiredResourcesList) //var resource in matchingCommand.Resources
-                                            {
-                                                myCommand.ResourceKeys.Add(resourceKeyIndex++, ""); // Initialize with empty or default values   
-                                            }
-
-                                            { //LOAD SOME SPECIAL STUFF IF THIS IS THE COMMAND PROMPT COMMAND
-                                                //if (CMD == true)
-                                                //{
-                                                //    var CMDresourceElements = commandElement.Descendants("Resource");
-                                                //    foreach (var resourceElement in CMDresourceElements)
-                                                //    {
-                                                //        string resourceKey = resourceElement.Element("Key")?.Value ?? "";
-                                                //        myCommand.ResourceKeys.Add(resourceKeyIndex++, "");
-                                                //    }
-                                                //}
-                                                
-                                                var CMDResourceListElement = commandElement.Descendants("CMDResourceList");
-                                                foreach (var CMDResourceElement in CMDResourceListElement)
-                                                {
-                                                    foreach (var resourceElement in CMDResourceElement.Elements("CMDResource"))
-                                                    {
-                                                        string CMDType = resourceElement.Element("CMDType")?.Value;
-                                                        if (CMDType == "File")
-                                                        {
-                                                            CommandResource ResourceData = new();
-                                                            ResourceData.Label = "File Path From";
-                                                            ResourceData.Type = CommandResource.ResourceTypes.File;
-                                                            myCommand.CMDList.Add(ResourceData);
-
-                                                            //myCommand.ResourceKeys.Add(resourceKeyIndex++, "");
-
-                                                        }
-                                                        if (CMDType == "Folder")
-                                                        {
-                                                            CommandResource ResourceData = new();
-                                                            ResourceData.Label = "Folder Path From";
-                                                            ResourceData.Type = CommandResource.ResourceTypes.Folder;
-                                                            myCommand.CMDList.Add(ResourceData);
-                                                        }
-                                                        if (CMDType == "CMDText")
-                                                        {
-                                                            CommandResource ResourceData = new();
-                                                            ResourceData.Label = "Your Text";
-                                                            ResourceData.Type = CommandResource.ResourceTypes.CMDText;
-                                                            //ResourceData.CMDString = resourceElement.Element("CMDText")?.Value;
-                                                            myCommand.CMDList.Add(ResourceData);
-
-                                                            ResourceData.CMDTextKey = resourceElement.Element("CMDTextKey")?.Value;
-
-                                                            //EventResource TextResource = new();
-                                                            //TextResource.Name = "CMD Text Resource";
-                                                            //TextResource.Key = PixelWPF.LibraryPixel.GenerateKey();
-                                                            //TextResource.ResourceType = EventResource.ResourceTypes.Text;
-                                                            //workshopData.WorkshopEventResources.Add(TextResource);
-                                                        }
-                                                    }
-                                                }
-                                                myCommand.WorkshopToolKey = commandElement.Element("WorkshopToolKey")?.Value ?? "";
-                                                //var SpecialWorkshopToolsStuff = commandElement.Descendants("SpecialWorkshopTool");
-                                                //foreach (var WToolElement in SpecialWorkshopToolsStuff) 
-                                                //{
-                                                
-                                                //}
-
-                                            }//END OF IF COMMAND PROMPT COMMAND
-
-                                            // Update the dictionary with actual values from XML
-                                            resourceKeyIndex = 1; // Reset index for actual values
-                                            var resourceElements = commandElement.Descendants("Resource");
-                                            foreach (var resourceElement in resourceElements)
-                                            {
-                                                string resourceKey = resourceElement.Element("Key")?.Value ?? "";
-
-                                                if (myCommand.ResourceKeys.ContainsKey(resourceKeyIndex))
-                                                {
-                                                    myCommand.ResourceKeys[resourceKeyIndex] = resourceKey;
-                                                }
-                                                else
-                                                {
-                                                    myCommand.ResourceKeys.Add(resourceKeyIndex, resourceKey);
-                                                }
-
-                                                resourceKeyIndex++;
-                                            }
-
-                                            newEvent.CommandList.Add(myCommand);
-                                        }
-                                    }
-                                }
-
-                                workshopData.WorkshopEvents.Add(newEvent);
-                            }
-                        }
-
-                    }
-
-
-
-                    //A workshop's projects.
-                    string ProjectsFolder = LibraryGES.ApplicationLocation + "\\Projects\\" + workshopfolder + "\\"; //"\\LibraryBannerArt.png";   
-                    if (Directory.Exists(ProjectsFolder))
-                    {
-                        foreach (string TheProjectFolder in Directory.GetDirectories(ProjectsFolder))
-                        {
-
-                            using (FileStream fs = new FileStream(TheProjectFolder + "\\Project.xml", FileMode.Open, FileAccess.Read))
-                            {
-                                XElement Pxml = XElement.Load(fs);
-                                string PName = Pxml.Element("Name")?.Value;
-                                string PInput = Pxml.Element("InputLocation")?.Value;
-                                string POutput = Pxml.Element("OutputLocation")?.Value;
-
-                                List<ProjectEventResource> ProjectEventResources = new();
-                                var xmlEventResources = Pxml.Element("ResourceList");
-
-                                if (xmlEventResources != null)
-                                {
-                                    //This oIf its empty to begin with, it blanks.
-
-
-                                    foreach (EventResource EventResource in workshopData.WorkshopEventResources)
-                                    {
-                                        if (EventResource.IsChild == true) { continue; }
-
-                                        ProjectEventResource projectEventData = new ProjectEventResource
-                                        {
-                                            Key = EventResource.Key,
-                                            
-                                        };
-                                        ProjectEventResources.Add(projectEventData);
-                                    }
-
-                                    foreach (XElement xmlEventResource in xmlEventResources.Elements("Resource"))
-                                    {
-                                        string resourceKey = xmlEventResource.Element("Key")?.Value;
-                                        string location = xmlEventResource.Element("Location")?.Value;
-
-                                        foreach (ProjectEventResource ProjectResourceData in ProjectEventResources)
-                                        {
-                                            if (resourceKey == ProjectResourceData.Key)
-                                            {
-                                                ProjectResourceData.Location = location;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                Project projectDataItem = new();
-                                workshopData.ProjectsList.Add(projectDataItem);
-
-                                projectDataItem.ProjectName = PName;
-                                projectDataItem.ProjectInputDirectory = PInput;
-                                projectDataItem.ProjectOutputDirectory = POutput;
-                                projectDataItem.ProjectEventResources = ProjectEventResources;
-
-                                projectDataItem.CreatedDate = Pxml.Element("CreatedDate")?.Value ?? "";
-                                projectDataItem.CreatedVersion = Version.TryParse(Pxml.Element("CreatedVersion")?.Value, out var vx1) ? vx1 : new Version(0, 0);
-                                projectDataItem.SavedDate = Pxml.Element("SavedDate")?.Value ?? "";
-                                projectDataItem.SavedVersion = Version.TryParse(Pxml.Element("SavedVersion")?.Value, out var vx2) ? vx2 : new Version(0, 0);
-
-
-                            }
-
-                        }
-
-
-
-                    }
+                    XElement xml = XElement.Load(TargetXML);
+
+                    //Loading Workshop basic data
+                    //workshopData.WorkshopName = xml.Element("WorkshopName")?.Value;
+                    workshopData.WorkshopName = workshopfolder;
+                    workshopData.WorkshopInputDirectory = xml.Element("InputLocation")?.Value;
+                    workshopData.ProjectsRequireSameFolderName = bool.TryParse(xml.Element("ProjectsRequireSameInputFolderName")?.Value, out bool result) && result;
+
+                    workshopData.CreatedDate = xml.Element("CreatedDate")?.Value ?? "";
+                    workshopData.CreatedVersion = Version.TryParse(xml.Element("CreatedVersion")?.Value, out var vx1) ? vx1 : new Version(0, 0);
+                    workshopData.SavedDate = xml.Element("SavedDate")?.Value ?? "";
+                    workshopData.SavedVersion = Version.TryParse(xml.Element("SavedVersion")?.Value, out var vx2) ? vx2 : new Version(0, 0);
+                    workshopData.LastUsedDate = xml.Element("LastUsedDate")?.Value ?? "";
+                    workshopData.LastUsedVersion = Version.TryParse(xml.Element("LastUsedVersion")?.Value, out var vx3) ? vx3 : new Version(0, 0);
 
 
                 }
 
+                //Load Workshop Intro
+                if (File.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopfolder + "\\Intro.txt"))
+                {
+                    workshopData.Intro.IntroText = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopfolder + "\\Intro.txt");                    
+                }
 
+
+                //Load Workshop Common Events
+                if (File.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\Common Events.xml"))
+                {
+                    List<string> ListOfCommonEventKeys = new();
+
+                    XElement xml = XElement.Load(LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\Common Events.xml");
+                    foreach (XElement XCommonEvent in xml.Descendants("CommonEvent"))
+                    {
+                        string TheKey = XCommonEvent.Element("Key")?.Value;
+                        ListOfCommonEventKeys.Add(TheKey);
+                    }
+
+                    foreach (CommonEvent commonevent in Database.CommonEvents)
+                    {
+                        if (ListOfCommonEventKeys.Any(key => key == commonevent.Key))
+                        {
+                            workshopData.WorkshopCommonEvents.Add(commonevent);
+                        }
+                    }
+                }
+
+
+
+                //Load Workshop Event Resources NEW
+                string eventsDirectory = Path.Combine(LibraryGES.ApplicationLocation, "Workshops", workshopData.WorkshopName, "Events");
+                if (Directory.Exists(eventsDirectory))
+                {
+                    foreach (string eventFolder in Directory.GetDirectories(eventsDirectory))
+                    {
+                        string resourcesPath = Path.Combine(eventFolder, "Resources.xml");
+
+                        if (!File.Exists(resourcesPath))
+                        {
+                            continue;
+                        }
+
+                        using (FileStream targetXML = new FileStream(resourcesPath, FileMode.Open, FileAccess.Read))
+                        {
+                            XElement xml = XElement.Load(targetXML);
+
+                            foreach (var xmlEvent in xml.Descendants("Resource"))
+                            {
+                                string testkey = xmlEvent.Element("Key")?.Value;
+                                if (workshopData.WorkshopEventResources.Any(r => r.Key == testkey)) { continue; } //Skip if already loaded.
+
+
+                                EventResource EventResource = new();
+                                workshopData.WorkshopEventResources.Add(EventResource);
+
+                                EventResource.Name = xmlEvent.Element("Name")?.Value;
+                                EventResource.TooltipText = xmlEvent.Element("Tooltip")?.Value ?? "";
+                                EventResource.Location = xmlEvent.Element("Location")?.Value;
+                                EventResource.RequiredName = bool.TryParse(xmlEvent.Element("RequiredName")?.Value, out var result2) ? result2 : false;
+                                EventResource.Key = xmlEvent.Element("Key")?.Value;
+                                EventResource.ParentKey = xmlEvent.Element("ParentKey")?.Value;
+                                if (xmlEvent.Element("ResourceType")?.Value == "File") { EventResource.ResourceType = EventResource.ResourceTypes.File; }
+                                if (xmlEvent.Element("ResourceType")?.Value == "Folder") { EventResource.ResourceType = EventResource.ResourceTypes.Folder; }
+                                if (xmlEvent.Element("ResourceType")?.Value == "CMDText") { EventResource.ResourceType = EventResource.ResourceTypes.CMDText; }
+                                if (xmlEvent.Element("IsChild")?.Value == "False") { EventResource.IsChild = false; }
+                                if (xmlEvent.Element("IsChild")?.Value == "True") { EventResource.IsChild = true; }
+
+
+
+                            }
+                        }
+                    }
+                }
+
+
+
+                //Load Workshop Events                  
+                if (Directory.Exists(eventsDirectory))
+                {
+                    List<string> EventsListLoadOrder = new();
+                    string EventsOrderText = LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\Events\\" + "LoadOrder.txt";
+                    if (File.Exists(EventsOrderText))
+                    {
+                        string[] lines = File.ReadAllLines(EventsOrderText);
+                        foreach (string line in lines)
+                        {
+                            if (!string.IsNullOrWhiteSpace(line))
+                            {
+                                EventsListLoadOrder.Add(line);
+                            }
+                        }
+                    }
+
+                    foreach (string eventFolder in EventsListLoadOrder) //Load all known events
+                    {
+                        try
+                        {
+                            LoadEvent(eventFolder);
+                        }
+                        catch
+                        {
+                            string EventThatDidNotLoad = eventFolder;
+                            System.Diagnostics.Debugger.Break(); //An even inside LoadOrder didn't load because the folder is missing. 
+                        }
+
+
+                    }
+
+                    string[] allEventFolders = Directory.GetDirectories(eventsDirectory, "*", SearchOption.TopDirectoryOnly).Select(x => new DirectoryInfo(x).Name).ToArray();
+                    foreach (string eventFolder in allEventFolders) //Load all unknown events?
+                    {
+                        if (!EventsListLoadOrder.Contains(eventFolder))
+                        {
+                            LoadEvent(eventFolder);
+                        }
+                    }
+
+                    void LoadEvent(string eventFolder)
+                    {
+                        string eventFile = Path.Combine(eventsDirectory + "\\" + eventFolder, "Event.xml");
+
+                        XDocument doc = XDocument.Load(eventFile);
+                        foreach (var xmlEvent in doc.Descendants("Event"))
+                        {
+                            Event newEvent = new Event //Actual event loading from XML happens here.
+                            {
+
+                                DisplayName = xmlEvent.Element("Name")?.Value ?? "New Event",
+                                Note = xmlEvent.Element("Note")?.Value ?? string.Empty,
+                                Tooltip = xmlEvent.Element("Tooltip")?.Value ?? string.Empty,
+                                CommandList = new List<EventCommand>()
+                            };
+
+
+                            newEvent.CreatedDate = xmlEvent.Element("CreatedDate")?.Value ?? "";
+                            newEvent.CreatedVersion = Version.TryParse(xmlEvent.Element("CreatedVersion")?.Value, out var vx1) ? vx1 : new Version(0, 0);
+                            newEvent.SavedDate = xmlEvent.Element("SavedDate")?.Value ?? "";
+                            newEvent.SavedVersion = Version.TryParse(xmlEvent.Element("SavedVersion")?.Value, out var vx2) ? vx2 : new Version(0, 0);
+
+
+                            var commandElements = xmlEvent.Descendants("Command");
+                            foreach (var commandElement in commandElements)
+                            {
+                                string commandKey = commandElement.Element("Key")?.Value;
+                                if (!string.IsNullOrEmpty(commandKey))
+                                {
+                                    if (commandKey == "RunWorkshopTool")
+                                    {
+                                        string testaaa = "";
+                                    }
+
+                                    Command matchingCommand = Database.Commands.FirstOrDefault(cmd => cmd.Key == commandKey);
+                                    if (matchingCommand != null)
+                                    {
+                                        bool CMD = false;
+                                        bool.TryParse(commandElement.Element("CMD")?.Value, out CMD);
+
+                                        EventCommand myCommand = new EventCommand
+                                        {
+                                            Command = matchingCommand,
+                                            ResourceKeys = new Dictionary<int, string>()
+                                        };
+
+                                        // Initialize the dictionary with default values
+                                        int resourceKeyIndex = 1;
+                                        foreach (CommandResource Aresource in matchingCommand.RequiredResourcesList) //var resource in matchingCommand.Resources
+                                        {
+                                            myCommand.ResourceKeys.Add(resourceKeyIndex++, ""); // Initialize with empty or default values   
+                                        }
+
+                                        { //LOAD SOME SPECIAL STUFF IF THIS IS THE COMMAND PROMPT COMMAND
+                                          //if (CMD == true)
+                                          //{
+                                          //    var CMDresourceElements = commandElement.Descendants("Resource");
+                                          //    foreach (var resourceElement in CMDresourceElements)
+                                          //    {
+                                          //        string resourceKey = resourceElement.Element("Key")?.Value ?? "";
+                                          //        myCommand.ResourceKeys.Add(resourceKeyIndex++, "");
+                                          //    }
+                                          //}
+
+                                            var CMDResourceListElement = commandElement.Descendants("CMDResourceList");
+                                            foreach (var CMDResourceElement in CMDResourceListElement)
+                                            {
+                                                foreach (var resourceElement in CMDResourceElement.Elements("CMDResource"))
+                                                {
+                                                    string CMDType = resourceElement.Element("CMDType")?.Value;
+                                                    if (CMDType == "File")
+                                                    {
+                                                        CommandResource ResourceData = new();
+                                                        ResourceData.Label = "File Path From";
+                                                        ResourceData.Type = CommandResource.ResourceTypes.File;
+                                                        myCommand.CMDList.Add(ResourceData);
+
+                                                        //myCommand.ResourceKeys.Add(resourceKeyIndex++, "");
+
+                                                    }
+                                                    if (CMDType == "Folder")
+                                                    {
+                                                        CommandResource ResourceData = new();
+                                                        ResourceData.Label = "Folder Path From";
+                                                        ResourceData.Type = CommandResource.ResourceTypes.Folder;
+                                                        myCommand.CMDList.Add(ResourceData);
+                                                    }
+                                                    if (CMDType == "CMDText")
+                                                    {
+                                                        CommandResource ResourceData = new();
+                                                        ResourceData.Label = "Your Text";
+                                                        ResourceData.Type = CommandResource.ResourceTypes.CMDText;
+                                                        //ResourceData.CMDString = resourceElement.Element("CMDText")?.Value;
+                                                        myCommand.CMDList.Add(ResourceData);
+
+                                                        ResourceData.CMDTextKey = resourceElement.Element("CMDTextKey")?.Value;
+
+                                                        //EventResource TextResource = new();
+                                                        //TextResource.Name = "CMD Text Resource";
+                                                        //TextResource.Key = PixelWPF.LibraryPixel.GenerateKey();
+                                                        //TextResource.ResourceType = EventResource.ResourceTypes.Text;
+                                                        //workshopData.WorkshopEventResources.Add(TextResource);
+                                                    }
+                                                }
+                                            }
+                                            myCommand.WorkshopToolKey = commandElement.Element("WorkshopToolKey")?.Value ?? "";
+                                            //var SpecialWorkshopToolsStuff = commandElement.Descendants("SpecialWorkshopTool");
+                                            //foreach (var WToolElement in SpecialWorkshopToolsStuff) 
+                                            //{
+
+                                            //}
+
+                                        }//END OF IF COMMAND PROMPT COMMAND
+
+                                        // Update the dictionary with actual values from XML
+                                        resourceKeyIndex = 1; // Reset index for actual values
+                                        var resourceElements = commandElement.Descendants("Resource");
+                                        foreach (var resourceElement in resourceElements)
+                                        {
+                                            string resourceKey = resourceElement.Element("Key")?.Value ?? "";
+
+                                            if (myCommand.ResourceKeys.ContainsKey(resourceKeyIndex))
+                                            {
+                                                myCommand.ResourceKeys[resourceKeyIndex] = resourceKey;
+                                            }
+                                            else
+                                            {
+                                                myCommand.ResourceKeys.Add(resourceKeyIndex, resourceKey);
+                                            }
+
+                                            resourceKeyIndex++;
+                                        }
+
+                                        newEvent.CommandList.Add(myCommand);
+                                    }
+                                }
+                            }
+
+                            workshopData.WorkshopEvents.Add(newEvent);
+                        }
+                    }
+
+                }
+
+
+
+                //A workshop's projects.
+                string ProjectsFolder = LibraryGES.ApplicationLocation + "\\Projects\\" + workshopfolder + "\\"; //"\\LibraryBannerArt.png";   
+                if (Directory.Exists(ProjectsFolder))
+                {
+                    foreach (string TheProjectFolder in Directory.GetDirectories(ProjectsFolder))
+                    {
+
+                        using (FileStream fs = new FileStream(TheProjectFolder + "\\Project.xml", FileMode.Open, FileAccess.Read))
+                        {
+                            XElement Pxml = XElement.Load(fs);
+                            string PName = Pxml.Element("Name")?.Value;
+                            string PInput = Pxml.Element("InputLocation")?.Value;
+                            string POutput = Pxml.Element("OutputLocation")?.Value;
+
+                            List<ProjectEventResource> ProjectEventResources = new();
+                            var xmlEventResources = Pxml.Element("ResourceList");
+
+                            if (xmlEventResources != null)
+                            {
+                                //This oIf its empty to begin with, it blanks.
+
+
+                                foreach (EventResource EventResource in workshopData.WorkshopEventResources)
+                                {
+                                    if (EventResource.IsChild == true) { continue; }
+
+                                    ProjectEventResource projectEventData = new ProjectEventResource
+                                    {
+                                        Key = EventResource.Key,
+
+                                    };
+                                    ProjectEventResources.Add(projectEventData);
+                                }
+
+                                foreach (XElement xmlEventResource in xmlEventResources.Elements("Resource"))
+                                {
+                                    string resourceKey = xmlEventResource.Element("Key")?.Value;
+                                    string location = xmlEventResource.Element("Location")?.Value;
+
+                                    foreach (ProjectEventResource ProjectResourceData in ProjectEventResources)
+                                    {
+                                        if (resourceKey == ProjectResourceData.Key)
+                                        {
+                                            ProjectResourceData.Location = location;
+                                        }
+                                    }
+                                }
+                            }
+
+                            Project projectDataItem = new();
+                            workshopData.ProjectsList.Add(projectDataItem);
+
+                            projectDataItem.ProjectName = PName;
+                            projectDataItem.ProjectInputDirectory = PInput;
+                            projectDataItem.ProjectOutputDirectory = POutput;
+                            projectDataItem.ProjectEventResources = ProjectEventResources;
+
+                            projectDataItem.CreatedDate = Pxml.Element("CreatedDate")?.Value ?? "";
+                            projectDataItem.CreatedVersion = Version.TryParse(Pxml.Element("CreatedVersion")?.Value, out var vx1) ? vx1 : new Version(0, 0);
+                            projectDataItem.SavedDate = Pxml.Element("SavedDate")?.Value ?? "";
+                            projectDataItem.SavedVersion = Version.TryParse(Pxml.Element("SavedVersion")?.Value, out var vx2) ? vx2 : new Version(0, 0);
+
+
+                        }
+
+                    }
+
+
+
+                }
 
 
             }
@@ -516,74 +519,96 @@ namespace GameEditorStudio
 
         public void LoadToolLocations()
         {
-            if (!Directory.Exists(LibraryGES.ApplicationLocation + "\\Settings")) 
+            if (Directory.Exists(LibraryGES.ApplicationLocation + "\\Settings")) 
             {
-                return;
-            }
-            if (!File.Exists(LibraryGES.ApplicationLocation + "\\Settings\\Tools.xml"))
-            {
-                return;
-            }
-
-            XmlDocument doc = new XmlDocument();
-            doc.Load(LibraryGES.ApplicationLocation + "\\Settings\\Tools.xml"); // replace this with the actual path to your XML file
-
-            XmlNodeList toolNodes = doc.SelectNodes("/Tools/Tool");
-            foreach (XmlNode toolNode in toolNodes) // For each Tool node in the XML, If the Tools dictionary has the listed tool, load it's location and General status. 
-            {
-                Tool TheTool = Database.Tools.FirstOrDefault(item => item.Key == toolNode["Key"].InnerText);
-
-                if (TheTool == null) 
+                if (File.Exists(LibraryGES.ApplicationLocation + "\\Settings\\Tools.xml"))
                 {
-                    continue;
-                }
+                    //STEP 1: Load Last Known Tool Locations.
 
-                TheTool.Location = toolNode["Location"].InnerText;
-            }
-            XmlNodeList WtoolNodes = doc.SelectNodes("/Tools/WorkshopTool");
-            foreach (XmlNode WtoolNode in WtoolNodes) 
-            {
-                string TheKey = WtoolNode["Key"]?.InnerText ?? "";
-                string TheLocation = WtoolNode["Location"]?.InnerText ?? "";
-                if (TheKey == null) { continue; }
-                if (TheKey == "") { continue; }
-                if (TheLocation == null) { continue; }
-                if (TheLocation == "") { continue; }
-                Tool? existingTool = Database.WorkshopTools.FirstOrDefault(t => t.Key == TheKey);
-                if (existingTool != null) { continue; }
-                if (!File.Exists(TheLocation)) { continue; }
+                    XmlDocument doc = new XmlDocument();
+                    doc.Load(LibraryGES.ApplicationLocation + "\\Settings\\Tools.xml"); // replace this with the actual path to your XML file
 
-                Tool tool = new();
-                tool.DisplayName = WtoolNode["Name"]?.InnerText ?? tool.DisplayName;
-                tool.Key = WtoolNode["Key"]?.InnerText ?? tool.Key;
-                tool.Location = WtoolNode["Location"]?.InnerText ?? tool.Location;
-
-                Database.WorkshopTools.Add(tool);
-            }
-
-
-            //Part 2: Confirm the tool locations are still correct. If a tool is MIA, it's location updates to ""
-            //Also automatically search the Tools folder and auto-update user paths to these.
-            if (!Directory.Exists(LibraryGES.ApplicationLocation + "\\Tools"))
-            {
-                Directory.CreateDirectory(LibraryGES.ApplicationLocation + "\\Tools");
-            }
-            foreach (var tool in Database.Tools)
-            {
-                
-                var files = Directory.GetFiles(LibraryGES.ApplicationLocation + "\\Tools", tool.ExeName, SearchOption.AllDirectories);
-
-                if (files.Length == 1)
-                {
-                    tool.Location = files[0]; // If the tool.exe is found, set the location.
-                }
-
-
-                if (!File.Exists(tool.Location))
-                {
-                    tool.Location = "";
+                    LoadLastKnownToolLocations(doc);
+                    LoadLastKnownWorkshopToolLocations(doc);
                 }
             }
+            
+            //STEP 2: Load tools in user's tools folder, and clear any set tool locations that are now invalid.             
+            LoadToolLocationsFromToolsFolder();
+            ClearEmptyToolLocations();
+
+            void LoadLastKnownToolLocations(XmlDocument doc) 
+            {
+                XmlNodeList toolNodes = doc.SelectNodes("/Tools/Tool");
+                foreach (XmlNode toolNode in toolNodes) // For each Tool node in the XML, If the Tools dictionary has the listed tool, load it's location and General status. 
+                {
+                    Tool TheTool = Database.Tools.FirstOrDefault(item => item.Key == toolNode["Key"].InnerText);
+
+                    if (TheTool == null)
+                    {
+                        continue;
+                    }
+
+                    TheTool.Location = toolNode["Location"].InnerText;
+                }
+            }
+            
+            void LoadLastKnownWorkshopToolLocations(XmlDocument doc) 
+            {
+                XmlNodeList WtoolNodes = doc.SelectNodes("/Tools/WorkshopTool");
+                foreach (XmlNode WtoolNode in WtoolNodes)
+                {
+                    string TheKey = WtoolNode["Key"]?.InnerText ?? "";
+                    string TheLocation = WtoolNode["Location"]?.InnerText ?? "";
+                    if (TheKey == null) { continue; }
+                    if (TheKey == "") { continue; }
+                    if (TheLocation == null) { continue; }
+                    if (TheLocation == "") { continue; }
+                    Tool? existingTool = Database.WorkshopTools.FirstOrDefault(t => t.Key == TheKey);
+                    if (existingTool != null) { continue; }
+                    if (!File.Exists(TheLocation)) { continue; }
+
+                    Tool tool = new();
+                    tool.DisplayName = WtoolNode["Name"]?.InnerText ?? tool.DisplayName;
+                    tool.Key = WtoolNode["Key"]?.InnerText ?? tool.Key;
+                    tool.Location = WtoolNode["Location"]?.InnerText ?? tool.Location;
+
+                    Database.WorkshopTools.Add(tool);
+                }
+            }
+            
+            void LoadToolLocationsFromToolsFolder() 
+            {
+                string ToolsFolder = Properties.Settings.Default.ToolsFolder;
+                if (!Directory.Exists(ToolsFolder)) { ToolsFolder = ""; }
+
+                if (ToolsFolder != "")
+                {
+                    foreach (var tool in Database.Tools)
+                    {
+                        string[] files = Directory.GetFiles(ToolsFolder, tool.ExeName, SearchOption.AllDirectories); //LibraryGES.ApplicationLocation + "\\Tools"
+
+                        if (files.Length == 1)
+                        {
+                            tool.Location = files[0]; // If the tool.exe is found, set the location.
+                        }
+                    }
+                }
+            }
+
+            void ClearEmptyToolLocations() 
+            {
+                foreach (var tool in Database.Tools)
+                {
+                    if (!File.Exists(tool.Location))
+                    {
+                        tool.Location = "";
+                    }
+                    
+                }
+            }
+                        
+            
         }
 
 

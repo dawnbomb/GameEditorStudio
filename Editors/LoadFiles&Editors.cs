@@ -278,6 +278,11 @@ namespace GameEditorStudio.Loading
 
         public void LoadAllWorkshopDocuments(WorkshopData WorkshopData) 
         {
+            if (File.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Intro.txt"))
+            {
+                WorkshopData.Intro.IntroText = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Intro.txt");
+            }
+
             if (!Directory.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Documents")) 
             {
                 return; 
@@ -327,11 +332,7 @@ namespace GameEditorStudio.Loading
                     WorkshopData.WorkshopDocumentsList.Add(TheDocument); // Adding the document object to the list   
                 }
             }
-
-            if (File.Exists(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Intro.txt"))
-            {
-                WorkshopData.Intro.IntroText = System.IO.File.ReadAllText(LibraryGES.ApplicationLocation + "\\Workshops\\" + WorkshopData.WorkshopName + "\\Intro.txt");
-            }
+                       
             
 
         }

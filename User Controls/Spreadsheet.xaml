@@ -144,6 +144,8 @@
                         <Button Content="Origonal Order (Dec)"  DockPanel.Dock="Left"    Click="DecOrigonalOrder" Margin="2,2,22,2" ToolTip="" />
                         <Button Content="Editor Order (Hex)"  DockPanel.Dock="Left"   Click="HexEditorOrder" Margin="2,2,2,2" ToolTip="" />
                         <Button Content="Editor Order (Dec)"  DockPanel.Dock="Left" Click="DecEditorOrder" Margin="2,2,22,2" ToolTip="" />
+
+                        
                     </DockPanel>
                     <DockPanel DockPanel.Dock="Top" >
                         <Label Content="Tips:  Its easier to compare selected rows.    Click a row to select it.    Click and Drag to select multiple.   Hold CTRL to click select non-adjacent rows.   " DockPanel.Dock="Top" Foreground="#FF888480"/>
@@ -156,7 +158,7 @@
                         <CheckBox Name="BluePercentsCheckbox" Content="Blue 50,100,150" DockPanel.Dock="Left" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
                         <CheckBox Name="RedLowNumbersCheckbox" Content="Red under 16" DockPanel.Dock="Left" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
                         <CheckBox Name="Yellow1Checkbox" Content="Yellow 1" DockPanel.Dock="Left" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
-
+                        <Label Content="Note: This is a hex viewer, NOT a hex editor!" Foreground="#FF959648"/>
                         <!--<CheckBox Name="100sCheckbox" Content="Orange if dec ends with 00 (100, 200, 300, )" DockPanel.Dock="Left" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>-->
                     </DockPanel>
                     
