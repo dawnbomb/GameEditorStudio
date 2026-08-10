@@ -26,15 +26,17 @@ namespace GameEditorStudio
         //Or if i do, just be aware they DO cause a memory leak, so only do it very sparingly >_>; 
         //Note: while ints and bools are safe, a string that is replaced, the only string still technically exists in memory. But a string is so tiny in RAM that it probably doesn't matter.
 
-        public static string VersionDate { get; set; } = "Augest 6 2026";
-        public static Version VersionNumber { get; set; } = new Version(0, 3, 6); //Version Numbers (in order) are Major.Minor.Build.Revision
+        public static bool DebugMode { get; set; } = false; //Gets turned on when program starts if running from visual studio. Hides visibility of buttons related to upcoming features.
+
+        public static string VersionDate { get; set; } = "Augest 8 2026";
+        public static Version VersionNumber { get; set; } = new Version(0, 3, 7); //Version Numbers (in order) are Major.Minor.Build.Revision
                                                                                      //Major is big releases.
                                                                                      //Minor is new features / content.
                                                                                      //Build is for Bugfixes or small changes.
                                                                                      //Revision is for code rewrites that dont* affect the user. *SHOULDN'T AFFECT THE USER >:(
 
         
-        public static bool AlsoLoadInputFiles { get; set; } = false; //load the input version of files as well. Used to display the default input value in the history panel.
+        public static bool AlsoLoadInputFiles { get; set; } = true; //load the input version of files as well. Used to display the default input value in the history panel.
         
         public static int RowSize { get; set; } = 38;
         public static bool ShowEntryAddress { get; set; } = false;
@@ -91,6 +93,7 @@ namespace GameEditorStudio
                 //If the button says None thats the same as "" and will crash, IE no nones should exist.
                 //I could fix this by checking HasText or setting to #000000 if its "" on load, but i'll just leave this problem for another day. 
 
+                //NOTE: IF CRASHING TO LOAD THIS, GO TO THE GES.XAML.CS AND SET YOUR LOCAL GES FOLDER.
                 Application.Current.Resources["ApplicationText"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Theme.Application.Text));
                 Application.Current.Resources["ApplicationBack"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Theme.Application.Back));
                 Application.Current.Resources["ApplicationBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(Theme.Application.Border));

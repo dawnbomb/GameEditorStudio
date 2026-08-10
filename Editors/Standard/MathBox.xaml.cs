@@ -616,15 +616,22 @@ namespace GameEditorStudio
 
             try
             {
+                //For Current Value
                 double valueSoFar = CalculateFormula(e => e.EntryByteDecimal);
-                double valueSoFarFromInput = CalculateFormula(e => e.EntryValueOnProjectLoadFromInput);
-                //double valueSoFarFromOutput = CalculateFormula(e => e.EntryValueOnProjectLoadFromOutput);
-
-
-
-                MathResultBox.Text = valueSoFar.ToString();
                 MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultTextbox.Text = valueSoFar.ToString();
-                MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultUsingInputTextbox.Text = valueSoFarFromInput.ToString();
+                MathResultBox.Text = valueSoFar.ToString();
+
+                //For Value from Input.
+                if (MathboxData.ParentEditor.DataTableEditorData.EntryClass.EntryValueOnProjectLoadFromInput != null && MathboxData.ParentEditor.DataTableEditorData.EntryClass.EntryValueOnProjectLoadFromInput != "")
+                {
+                    double valueSoFarFromInput = CalculateFormula(e => e.EntryValueOnProjectLoadFromInput);
+                    MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultUsingInputTextbox.Text = valueSoFarFromInput.ToString();
+                }
+                else { MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultUsingInputTextbox.Text = "Reload Project"; }
+                
+
+                //For Value from Output.
+                //double valueSoFarFromOutput = CalculateFormula(e => e.EntryValueOnProjectLoadFromOutput);
                 //MathboxData.ParentEditor.DataTableEditorData.DTEXaml.RightBar.MathboxMathResultUsingOutputTextbox.Text = valueSoFarFromOutput.ToString();
 
 

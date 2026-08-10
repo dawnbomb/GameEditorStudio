@@ -66,7 +66,7 @@
                         </Border>
                         <ScrollViewer>
                             <DockPanel Name="IntroPanel" Background="#FF1F1F1F">
-                                <TextBox Name="IntroTextbox" TextWrapping="Wrap" Text="" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False" DockPanel.Dock="Top" />
+                                <StackPanel Name="IntroStackPanel" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" DockPanel.Dock="Top" />
                                 <TextBox TextChanged="IntroEditboxTextChanged" x:Name="IntroEditBox"  Margin="10" TextWrapping="Wrap" AcceptsReturn="True" DockPanel.Dock="Top">
 
                                 </TextBox>

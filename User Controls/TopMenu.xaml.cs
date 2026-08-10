@@ -15,7 +15,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -25,7 +25,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Ookii.Dialogs.Wpf;
 using PixelWPF;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+//using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
@@ -56,15 +56,15 @@ namespace GameEditorStudio
 
             this.Loaded += new RoutedEventHandler(AfterMenuIsLoaded); //This is the event that's called when the window is loaded. Here, It's required to set the parent window, and also to set the WorkshopName.
 
-            #if DEBUG
+            if (LibraryGES.DebugMode == false) 
+            {
+                ExtrasMenu.Visibility = Visibility.Collapsed; //Show only in debug mode.
+                DebugMenu.Visibility = Visibility.Collapsed; //Show only in debug mode.
+                HUDReshade.Visibility = Visibility.Collapsed;  //Show only in debug mode.
+                WikiButton.Visibility = Visibility.Collapsed;
+                MenuItemOpenGESReleaseFolder.Visibility = Visibility.Collapsed;
+            }
             
-            #else
-            ExtrasMenu.Visibility = Visibility.Collapsed; //Show only in debug mode.
-            DebugMenu.Visibility = Visibility.Collapsed; //Show only in debug mode.
-            HUDReshade.Visibility = Visibility.Collapsed;  //Show only in debug mode.
-            WikiButton.Visibility = Visibility.Collapsed;  
-            MenuItemOpenGESReleaseFolder.Visibility = Visibility.Collapsed;
-            #endif
 
         }
 
@@ -556,32 +556,37 @@ namespace GameEditorStudio
 
                 foreach (EventCommand myCommand in Event.CommandList)
                 {
-                    
+                    if (WorkshopData.SelectedProject == null) { conditionsMet = false; continue; }
+
                     if (myCommand.Command.TheMethod != null)//Check for non GES tool being properly set.
                     {
                         MethodData actionPack = LibraryGES.TransformKeysToLocations(myCommand.ResourceKeys, WorkshopData.WorkshopEventResources, this, myCommand);
 
-                        Tool? existingTool = WorkshopData.WorkshopTools.FirstOrDefault(t => t.Key == myCommand.WorkshopToolKey);
-                        if (existingTool == null)
+                        if (myCommand.WorkshopToolKey != "") 
                         {
-                            conditionsMet = false;
-                            MissingExpectedWorkshopToolKey = true;
-                            BrokenEvent = true;
-                            continue;
+                            Tool? existingTool = WorkshopData.WorkshopTools.FirstOrDefault(t => t.Key == myCommand.WorkshopToolKey);
+                            if (existingTool == null)
+                            {
+                                conditionsMet = false;
+                                MissingExpectedWorkshopToolKey = true;
+                                BrokenEvent = true;
+                                continue;
+                            }
+                            else if (existingTool != null && (string.IsNullOrEmpty(existingTool.Location) || !File.Exists(existingTool.Location)))
+                            {
+                                conditionsMet = false;
+                                MissingRequirements = true;
+                                missingTools.Add(existingTool.DisplayName);
+
+
+                            }
                         }
-                        else if (existingTool != null && (string.IsNullOrEmpty(existingTool.Location) || !File.Exists(existingTool.Location)) )
-                        {
-                            conditionsMet = false;
-                            MissingRequirements = true;
-                            missingTools.Add(existingTool.DisplayName);
-                            
-                            
-                        }
+                        
                     }
                                         
 
                     //if (myCommand.CMDList.Count != 0) { continue; }
-                    if (WorkshopData.SelectedProject == null) { conditionsMet = false; continue; }
+                    
                     if (WorkshopData.LoadedProject == null) 
                     {                                         
                         //The very tiny list of specific commands that require a loaded project.
@@ -1169,6 +1174,13 @@ namespace GameEditorStudio
             
         }
 
+        private void OpenWiki(object sender, MouseButtonEventArgs e) //Triggers on right clicking the discord button.
+        {
+            Tutorial f2 = new Tutorial();
+            f2.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+            f2.Show();
+        }
+
         private void OpenDiscord(object sender, RoutedEventArgs e)
         {
             string url = "https://discord.gg/mhrZqjRyKx";
@@ -1255,6 +1267,10 @@ namespace GameEditorStudio
             try //I'm to lazy to check if were actually in a workshop right now, so heres a try catch instead. 
             {
                 ((System.Windows.Controls.Panel)WorkshopData.WorkshopXaml.Parent).Children.Remove(WorkshopData.WorkshopXaml);
+                TreeView tree = Database.GameLibrary.LibraryTreeOfWorkshops;
+                TreeViewItem item = tree.SelectedItem as TreeViewItem;
+                item.IsSelected = false;
+                item.IsSelected = true;
             } 
             catch 
             { }

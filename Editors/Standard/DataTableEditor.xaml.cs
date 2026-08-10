@@ -45,13 +45,14 @@ namespace GameEditorStudio
             DebugUpdateALLGrid.Visibility = Visibility.Collapsed; //grid force update button.
             TranslationToggle.Visibility = Visibility.Collapsed; //Translation panel toggle button.
             EntryVisibilityToggle.Visibility = Visibility.Collapsed; //Clean UI mode
-            #if DEBUG
-            DebugUpdateALLGrid.Visibility = Visibility.Visible; 
-            DebugShowALL.Visibility = Visibility.Visible;
-            TranslationToggle.Visibility = Visibility.Visible;
-            EntryVisibilityToggle.Visibility = Visibility.Visible; 
-            #endif
 
+            if (LibraryGES.DebugMode == true) 
+            {
+                DebugUpdateALLGrid.Visibility = Visibility.Visible;
+                DebugShowALL.Visibility = Visibility.Visible;
+                TranslationToggle.Visibility = Visibility.Visible;
+                EntryVisibilityToggle.Visibility = Visibility.Visible;
+            }
 
             DTEData.EditorLeftBar.DataTableEditorData = DTEData;
             RightBar.DTEData = DTEData;
@@ -263,6 +264,42 @@ namespace GameEditorStudio
                     ItemNameBuilder(TreeItem);
                 }
 
+            }
+        }
+
+        private void ToggleFolders(object sender, RoutedEventArgs e)
+        {
+            bool expand = HasCollapsedFolder(LeftBar.ItemsTree.Items);
+
+            SetExpandedState(LeftBar.ItemsTree.Items, expand);
+
+            bool HasCollapsedFolder(ItemCollection items)
+            {
+                foreach (TreeViewItem item in items)
+                {
+                    if (item.Items.Count > 0)
+                    {
+                        if (!item.IsExpanded)
+                            return true;
+
+                        if (HasCollapsedFolder(item.Items))
+                            return true;
+                    }
+                }
+
+                return false;
+            }
+
+            void SetExpandedState(ItemCollection items, bool expanded)
+            {
+                foreach (TreeViewItem item in items)
+                {
+                    if (item.Items.Count > 0)
+                    {
+                        item.IsExpanded = expanded;
+                        SetExpandedState(item.Items, expanded);
+                    }
+                }
             }
         }
 
@@ -816,5 +853,7 @@ namespace GameEditorStudio
             //    spreadsheet.Close();
             //}
         }
+
+        
     }
 }

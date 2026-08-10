@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -125,7 +126,12 @@ namespace GameEditorStudio
 
             FileLoading fileLoading = new();
             Stopwatch timer1 = Stopwatch.StartNew();
-            fileLoading.TryLoadAllGameFilesIntoWorkshopDatabase(WorkshopData); //First we load workshop files into the database. }
+            try
+            {
+                fileLoading.TryLoadAllGameFilesIntoWorkshopDatabase(WorkshopData);
+            } //First we load workshop files into the database. } }
+            catch { PixelWPF.LibraryPixel.Notification("Project Load Crash 2", ""); }
+            
             timer1.Stop(); Debug.WriteLine($"Load Project Files Finished in {timer1.ElapsedMilliseconds} ms");
 
             FileManager.RefreshFileTree();
@@ -403,7 +409,9 @@ namespace GameEditorStudio
                     if (reloadyesno == false) { return; }
                 }
 
-                LoadProject(projectdata);  
+                try { LoadProject(projectdata);  }
+                catch { PixelWPF.LibraryPixel.Notification("Project Load Crash 1", ""); }
+                
                 WorkshopXaml.ButtonHome.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 if (Properties.Settings.Default.ProjectLoadSound == true) { PixelWPF.SoundEngine.PlayEtrianUHappy(); }
                 Properties.Settings.Default.LastProject = projectdata.ProjectName;
@@ -1192,7 +1200,7 @@ namespace GameEditorStudio
                 //HomeIntroHelpButton.Visibility = Visibility.Visible;
 
                 IntroEditBox.Visibility = Visibility.Visible;
-                IntroTextbox.Visibility = Visibility.Collapsed;
+                IntroStackPanel.Visibility = Visibility.Collapsed;
 
                 IntroEditBox.Text = WorkshopData.Intro.IntroText;
             }
@@ -1205,17 +1213,25 @@ namespace GameEditorStudio
                 HomeIntroHelpButton.Visibility = Visibility.Collapsed;
 
                 IntroEditBox.Visibility = Visibility.Collapsed;
-                IntroTextbox.Visibility = Visibility.Visible;
+                IntroStackPanel.Visibility = Visibility.Visible;
+
+                if (WorkshopData.Intro.IntroText != "")
+                {
+                    Dictionary<string, BitmapImage> images = new();
+                    //foreach (WikiImage wimage in document.ImagesList) { images.Add(wimage.FileName, wimage.Bitmap); }
+
+                    PixelWPF.LibraryText.TextToStackPanel(WorkshopData.Intro.IntroText, IntroStackPanel, images);
+                }
+                else
+                {
+                    Dictionary<string, BitmapImage> images = new();
+                    //foreach (WikiImage wimage in document.ImagesList) { images.Add(wimage.FileName, wimage.Bitmap); }
+
+                    PixelWPF.LibraryText.TextToStackPanel(WorkshopData.Intro.DefaultIntroText, IntroStackPanel, images);
+                }
             }
 
-            if (WorkshopData.Intro.IntroText != "")
-            {
-                IntroTextbox.Text = WorkshopData.Intro.IntroText;
-            }
-            else 
-            { 
-                IntroTextbox.Text = WorkshopData.Intro.DefaultIntroText; 
-            }
+            
 
         }
     }

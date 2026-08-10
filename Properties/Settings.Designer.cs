@@ -130,5 +130,17 @@ namespace GameEditorStudio.Properties {
                 this["AutoLoadLastProject"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ToolsFolder {
+            get {
+                return ((string)(this["ToolsFolder"]));
+            }
+            set {
+                this["ToolsFolder"] = value;
+            }
+        }
     }
 }

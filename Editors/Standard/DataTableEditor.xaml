@@ -11,7 +11,7 @@
     <Grid x:Name="EditorBack">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="275"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
@@ -25,8 +25,10 @@
 
         <DockPanel Grid.Column="0" Grid.Row="0" Margin="0,3,0,3" LastChildFill="False" >
             <Button Click="ToggleItemIDNumberVisibility" Content="I-ID" DockPanel.Dock="Left"  Margin="1,0,5,0" ToolTip="Toggles item ID numbers. &#xD;&#xA;ID numbers are shown using the real, internal game data order, not the order you arrange them in. &#xD;&#xA;If you didn't know, you can drag items around and reorder them!&#xD;&#xA;Anyway, because the ID numbers can become almost useless, you have the option to turn them off."/>
-            <Button Click="ToggleTranslationPanel" Content="アA" Width="45" DockPanel.Dock="Left" x:Name="TranslationToggle" Style="{DynamicResource ButtonError}"   Margin="0,0,2,0" ToolTip="Toggles the translation panel.&#xD;&#xA;This is an upcoming feature, and will be useful for people making english patches."/>
+            <Button Click="ToggleFolders" Content="📂" DockPanel.Dock="Left" Margin="0,0,2,0" ToolTip="Toggles the open / closed status of all folders."/>
 
+            <Button Click="ToggleTranslationPanel" Content="アA" Width="45" DockPanel.Dock="Left" x:Name="TranslationToggle" Style="{DynamicResource ButtonError}"   Margin="0,0,2,0" ToolTip="Toggles the translation panel.&#xD;&#xA;This is an upcoming feature, and will be useful for people making english patches."/>
+            
         </DockPanel>
         <DockPanel Grid.Column="2" Grid.Row="0" Margin="0,3,0,3" LastChildFill="False" >
             <Button Click="ToggleEntrySymbology" Content="🔍" DockPanel.Dock="Left" x:Name="EntrySymbologyToggle" Margin="2,0,2,0" ToolTip="Toggles Symbology. &#xD;&#xA;Symbology tries to tell you information useful for discovering what an entry byte actually does. &#xD;&#xA;You can mouseover an entry symbol to learn more detailed information." Width="42"/>

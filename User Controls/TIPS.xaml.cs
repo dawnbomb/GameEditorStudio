@@ -58,7 +58,9 @@ namespace GameEditorStudio
             "Games: I'm a huge Danganrompa fan. It's so damn good it killed the Ace Attorney series!",
             "Games: Umineko is, even today, the best visual novel there is.",
             "Games: Class of '09 is an offensive comedy game on steam. It's *really* funny.",
-            "Games: Touhou Labyrinth Tri is CRAZY GOOD on the highest difficulty.",
+            "Games: Touhou Labyrinth Tri is CRAZY GOOD on the highest difficulty." +
+            "Games: I AM VERY EXCITED FOR FIRE EMBLEM FORTUNES WEAVE!!!" +
+            "GAMES: I AM VERY EXCITED FOR DANGANROMPA 2x2",
 
         };
 

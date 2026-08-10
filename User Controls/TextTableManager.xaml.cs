@@ -56,11 +56,12 @@ namespace GameEditorStudio
             //Database = database;
             DataFileRightPanelForCustomCharacterTable.Visibility = Visibility.Collapsed;
 
-            #if DEBUG
-            #else
-            DataFileDebugButton.Visibility = Visibility.Collapsed; //Remove the debug button in release builds.
-            AdvancedDebugButton.Visibility = Visibility.Collapsed; 
-            #endif
+            if (LibraryGES.DebugMode == false) 
+            {
+                DataFileDebugButton.Visibility = Visibility.Collapsed; //Remove the debug button in release builds.
+                AdvancedDebugButton.Visibility = Visibility.Collapsed;
+            }
+            
 
             {
                 //Link to Data File

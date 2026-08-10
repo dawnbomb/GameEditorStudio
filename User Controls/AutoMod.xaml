@@ -48,13 +48,13 @@
 
                     <Label Content="Example Result"  Grid.Row="5" Grid.Column="0"/>
                     <Border Grid.Row="5" Grid.Column="0" Margin="3,0,50,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="See what the formula output would be for the currently selected Entry. &#xA; &#xA;As a reminder, applying the formula will change the value for every name in the list,  &#xA;not just the currently selected one."/>
-                    <TextBox x:Name="ExampleResultTextBox" Grid.Row="5" Grid.Column="1" TextWrapping="Wrap" Margin="3,3,3,3" Grid.ColumnSpan="1" />
+                    <TextBox x:Name="AutoModExampleResultTextBox" Grid.Row="5" Grid.Column="1" TextWrapping="Wrap" Margin="3,3,3,3" Grid.ColumnSpan="1" />
                     <Button Click="ApplyAutoModMath" Content="Apply" Grid.Row="5" Grid.Column="2" DockPanel.Dock="Right" Margin="4" ToolTip="Apply current formula to all items for the current entry."/>
 
                     <Label Content="Example using input"  Grid.Row="6" Grid.Column="0"/>
                     <Border Grid.Row="6" Grid.Column="0" Margin="3,0,5,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="See what the formula output would be for the currently selected Entry, &#xA;if it started with the value from project input folder instead of the current value."/>
-                    <TextBox x:Name="ExampleResultUsingInputTextBox"  Grid.Row="6" Grid.Column="1"  TextWrapping="Wrap" Margin="3,3,3,3" Grid.ColumnSpan="1" />
-                    <Button Click="ApplyAutoModMathUsingInput" Content="Apply" Grid.Row="6" Grid.Column="2" DockPanel.Dock="Right" Margin="4" ToolTip="Apply, but the formula uses the values from project input folder. &#xA; &#xA;If you Make a formula like Plus 0, and use this, &#xA;then you can reset an entry to it's unmodded values. :)"/>
+                    <TextBox x:Name="AutoModExampleResultUsingInputTextBox"  Grid.Row="6" Grid.Column="1"  TextWrapping="Wrap" Margin="3,3,3,3" Grid.ColumnSpan="1" />
+                    <Button Click="ApplyAutoModMathUsingInput" Name="ButtonApplyAutoModUsingInput" Content="Apply" Grid.Row="6" Grid.Column="2" DockPanel.Dock="Right" Margin="4" ToolTip="Apply, but the formula uses the values from project input folder. &#xA; &#xA;If you Make a formula like Plus 0, and use this, &#xA;then you can reset an entry to it's unmodded values. :)"/>
 
                     <Label Content="Skip last X items: " Grid.Row="7" Grid.Column="0"/>
                     <Border Grid.Row="7" Grid.Column="0" Margin="3,0,20,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="This will NOT mod the bottom X names/items in the names/items list. &#xA;I know i should code in something better, &#xA;but this was easy to do and i have other parts&#xA;of the program to be working on.&#xA;&#xA;If you care enough about this feature and want this expanded, &#xA;talk to me on discord and i'll make it a priority."/>

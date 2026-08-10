@@ -35,11 +35,11 @@ namespace GameEditorStudio
             TabXML.Visibility = Visibility.Collapsed;
             //Row size or File changes cause it to remake the entry list.
 
-
-            #if DEBUG
-            #else
-            DataTableDebugButton.Visibility = Visibility.Collapsed; //Remove the debug button in release builds.
-            #endif
+            if (LibraryGES.DebugMode == false) 
+            {
+                DataTableDebugButton.Visibility = Visibility.Collapsed; //Remove the debug button in release builds.
+            }
+            
         }
 
         public void SetupForDataTable(DataTableEditorData TheDTEData) 

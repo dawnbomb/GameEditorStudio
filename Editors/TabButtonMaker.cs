@@ -150,7 +150,7 @@ namespace GameEditorStudio
                 if (WorkshopData.PreviewModeWarningMessage == true) 
                 {
                     PixelWPF.LibraryPixel.NotificationNegative("Preview Mode Warning", "You did not load any projects / game files \n(you are in preview mode). \n\nYou can still look around, just beware that making changes to editors while in preview mode is not crash-proof. \n\nThis warning won't happen again until the next launch of Game Editor Studio :)");
-                    
+                    WorkshopData.PreviewModeWarningMessage = false;
                 }
 
                 if (EditorClass is TextEditorData TextData) 

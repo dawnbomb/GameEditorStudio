@@ -130,11 +130,11 @@ namespace GameEditorStudio
                 {
                     if (entry.Bytes == 1)
                     {
-                        if (value > 127)
+                        if (value >= 127)
                         {
                             return 127;
                         }
-                        else if (value < -128)
+                        else if (value <= -128)
                         {
                             return -128;
                         }
@@ -142,22 +142,22 @@ namespace GameEditorStudio
                     }
                     if (entry.Bytes == 2)
                     {
-                        if (value > 32767)
+                        if (value >= 32767)
                         {
                             return 32767;
                         }
-                        else if (value < -32768)
+                        else if (value <= -32768)
                         {
                             return -32768;
                         }
                     }
                     if (entry.Bytes == 4)
                     {
-                        if (value > 2147483647)
+                        if (value >= 2147483647)
                         {
                             return 2147483647;
                         }
-                        else if (value < -2147483648)
+                        else if (value <= -2147483648)
                         {
                             return -2147483648;
                         }
@@ -168,11 +168,11 @@ namespace GameEditorStudio
 
             if (entry.Bytes == 1)
             {
-                if (value > 255)
+                if (value >= 255)
                 {
                     return 255;
                 }
-                else if (value < 0)
+                else if (value <= 0)
                 {
                     return 0;
                 }
@@ -180,22 +180,22 @@ namespace GameEditorStudio
             }
             if (entry.Bytes == 2)
             {
-                if (value > 65535)
+                if (value >= 65535)
                 {
                     return 65535;
                 }
-                else if (value < 0)
+                else if (value <= 0)
                 {
                     return 0;
                 }
             }
             if (entry.Bytes == 4)
             {
-                if (value > 4294967295)
+                if (value >= 4294967295)
                 {
                     return 4294967295;
                 }
-                else
+                else if (value <= 0)
                 {
                     return 0;
                 }

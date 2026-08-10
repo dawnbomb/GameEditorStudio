@@ -82,10 +82,6 @@ namespace GameEditorStudio
                 command.WorkshopData = WorkshopData;
             }
 
-            #if DEBUG
-            #else            
-            #endif            
-
             //Loaded += AfterXamlLoads;
             AfterXamlLoads(); //This is an async method
         }

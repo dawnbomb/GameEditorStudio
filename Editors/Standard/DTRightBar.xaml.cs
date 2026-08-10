@@ -1431,7 +1431,7 @@ namespace GameEditorStudio
 
             DTEData.DTEXaml.RightBar.CrossReferenceInfo.FillLearnBox(DTEData);
             DTEMethods.UpdateALLMathboxResults(DTEData.WorkshopData);
-            DTEData.EditorRightBar.AutoModControl.UpdateExampleMathResults();
+            DTEData.EditorRightBar.AutoModControl.UpdateAutoModExampleMathResults();
         }
 
         private void SetNumberboxUnsigned(object sender, RoutedEventArgs e)
@@ -1443,7 +1443,7 @@ namespace GameEditorStudio
 
             DTEData.DTEXaml.RightBar.CrossReferenceInfo.FillLearnBox(DTEData);
             DTEMethods.UpdateALLMathboxResults(DTEData.WorkshopData);
-            DTEData.EditorRightBar.AutoModControl.UpdateExampleMathResults();
+            DTEData.EditorRightBar.AutoModControl.UpdateAutoModExampleMathResults();
         }
 
         private void SuffixTextChanged(object sender, TextChangedEventArgs e)
