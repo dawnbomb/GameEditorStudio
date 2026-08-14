@@ -37,7 +37,9 @@
                     <Label Content="Selected:" FontWeight="Bold" Margin="50,-5,0,-5"  FontSize="30"/>
                     <Label Name="LabelSelectedProject" Content="NONE (Events use this)"  Margin="0,-2,0,-5" Foreground="#FF00A7FF" FontSize="30"/>
 
-                    
+                    <Label Name="WorkshopLoadTimeLabel" Content="Workshop Load Time: " Margin="40,0,0,0"/>
+                    <Label Name="ProjectLoadTimeLabel" Content="Project Load Time: " Margin="40,0,0,0"/>
+
                 </DockPanel>
                 <!--<DockPanel Grid.Column="2" LastChildFill="False" Background="{x:Null}">
                     <Button Click="RightBarHome" Name="HomeButton" Content="Home"  />
@@ -208,12 +210,12 @@
                         <StackPanel Margin="20, 10, 20, 20" DockPanel.Dock="Top">
                             <Label x:Name="LoadingPartText" Content="Loading..." Margin="0,0,0,5" HorizontalAlignment="Center"/>
                             <Label x:Name="LoadingStatusText" Content="Loading..." Margin="0,-5,0,5" HorizontalAlignment="Center"/>
-                            <ProgressBar x:Name="LoadingProgressBar" Height="20" Minimum="0" Maximum="100"/>
+                            <ProgressBar x:Name="LoadingProgressBar"  Minimum="0" Maximum="100"/>
                         </StackPanel>
                         <StackPanel Name="LoadUIUI" Margin="20, 10, 20, 20" DockPanel.Dock="Top">
                             <Label x:Name="LoadingPartTextUI" Content="Loading..." Margin="0,0,0,5" HorizontalAlignment="Center"/>
                             <Label x:Name="LoadingStatusTextUI" Content="Loading..." Margin="0,-5,0,5" HorizontalAlignment="Center"/>
-                            <ProgressBar x:Name="LoadingProgressBarUI" Height="20" Minimum="0" Maximum="100"/>
+                            <ProgressBar x:Name="LoadingProgressBarUI"  Minimum="0" Maximum="100"/>
                         </StackPanel>
                         <Label Name="LoadingFinalizingLabel" Content="Finalizing some things..." HorizontalAlignment="Center" Margin="0,0,0,0"/>
                     </DockPanel>

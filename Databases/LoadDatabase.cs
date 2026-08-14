@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
@@ -519,23 +520,26 @@ namespace GameEditorStudio
 
         public void LoadToolLocations()
         {
+            
             if (Directory.Exists(LibraryGES.ApplicationLocation + "\\Settings")) 
             {
                 if (File.Exists(LibraryGES.ApplicationLocation + "\\Settings\\Tools.xml"))
                 {
-                    //STEP 1: Load Last Known Tool Locations.
+                    //STEP 1: Load Last Known Tool Locations.                    
 
                     XmlDocument doc = new XmlDocument();
                     doc.Load(LibraryGES.ApplicationLocation + "\\Settings\\Tools.xml"); // replace this with the actual path to your XML file
+                    
 
-                    LoadLastKnownToolLocations(doc);
-                    LoadLastKnownWorkshopToolLocations(doc);
+                    LoadLastKnownToolLocations(doc); 
+                    LoadLastKnownWorkshopToolLocations(doc); 
+
                 }
             }
             
             //STEP 2: Load tools in user's tools folder, and clear any set tool locations that are now invalid.             
             LoadToolLocationsFromToolsFolder();
-            ClearEmptyToolLocations();
+            ClearEmptyToolLocations(); 
 
             void LoadLastKnownToolLocations(XmlDocument doc) 
             {
@@ -576,24 +580,52 @@ namespace GameEditorStudio
                     Database.WorkshopTools.Add(tool);
                 }
             }
-            
-            void LoadToolLocationsFromToolsFolder() 
+
+            void LoadToolLocationsFromToolsFolder()
             {
+
                 string ToolsFolder = Properties.Settings.Default.ToolsFolder;
-                if (!Directory.Exists(ToolsFolder)) { ToolsFolder = ""; }
 
-                if (ToolsFolder != "")
+                if (!Directory.Exists(ToolsFolder))
                 {
-                    foreach (var tool in Database.Tools)
-                    {
-                        string[] files = Directory.GetFiles(ToolsFolder, tool.ExeName, SearchOption.AllDirectories); //LibraryGES.ApplicationLocation + "\\Tools"
-
-                        if (files.Length == 1)
-                        {
-                            tool.Location = files[0]; // If the tool.exe is found, set the location.
-                        }
-                    }
+                    return;
                 }
+                Dictionary<string, List<string>> filesByName = new(StringComparer.OrdinalIgnoreCase);
+
+                //Stopwatch LoadTimer = new Stopwatch();
+                //LoadTimer.Start();                
+                //Debug.WriteLine("*********");
+                //Debug.WriteLine("START: " + LoadTimer.Elapsed);
+                
+                //List<Task> LoadToolsTasks = new();
+                foreach (string file in Directory.EnumerateFiles(ToolsFolder, "*", SearchOption.AllDirectories))
+                {
+                    //LoadToolsTasks.Add(Task.Run(() =>
+                    //{
+                    //    string fileName = Path.GetFileName(file);
+
+                    //    if (!filesByName.TryGetValue(fileName, out List<string>? paths))
+                    //    {
+                    //        paths = new List<string>();
+                    //        filesByName[fileName] = paths;
+                    //    }
+
+                    //    paths.Add(file);
+                    //}));
+
+                    string fileName = Path.GetFileName(file);
+
+                    if (!filesByName.TryGetValue(fileName, out List<string>? paths))
+                    {
+                        paths = new List<string>();
+                        filesByName[fileName] = paths;
+                    }
+
+                    paths.Add(file);
+                }
+                //Task.WaitAll(LoadToolsTasks.ToArray());
+                //Debug.WriteLine("END: " + LoadTimer.Elapsed);
+                //Debug.WriteLine("*********");
             }
 
             void ClearEmptyToolLocations() 

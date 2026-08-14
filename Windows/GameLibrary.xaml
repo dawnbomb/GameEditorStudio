@@ -178,9 +178,14 @@
                     
                     <DockPanel Name="LoadingPanel" DockPanel.Dock="Top" Background="#FF1B1B1B" Visibility="Collapsed">
                         <StackPanel Margin="20" DockPanel.Dock="Top">
+                            <DockPanel HorizontalAlignment="Center" Background="Transparent">
+                                <Label x:Name="LoadingWatch" Margin="0,0,20,0" DockPanel.Dock="Left"/>
+                                <Label x:Name="LoadingTimer" Margin="20,0,0,5" DockPanel.Dock="Right"/>
+                            </DockPanel>
+                            <!--<Label x:Name="LoadingTimer" Margin="0,0,0,5" HorizontalAlignment="Center"/>-->
                             <Label x:Name="LoadingPartText" Content="Loading..." Margin="0,0,0,5" HorizontalAlignment="Center"/>
                             <Label x:Name="LoadingStatusText" Content="Loading..." Margin="0,0,0,5" HorizontalAlignment="Center"/>
-                            <ProgressBar x:Name="LoadingProgressBar" Height="20" Minimum="0" Maximum="100"/>
+                            <ProgressBar x:Name="LoadingProgressBar" Minimum="0" Maximum="100"/>
                         </StackPanel>
                         <StackPanel Name="LoadingFinalPanel" Margin="20" DockPanel.Dock="Top">
                             <Label Content="Finalizing some last things..." Margin="0,0,0,5" HorizontalAlignment="Center"/>

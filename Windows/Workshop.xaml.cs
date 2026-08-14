@@ -13,6 +13,7 @@ using System.Net;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -88,41 +89,79 @@ namespace GameEditorStudio
 
         private async Task AfterXamlLoads()
         {
+            Stopwatch WorkshopLoadTimer = Stopwatch.StartNew();
+
             this.Visibility = Visibility.Hidden;
             //Loaded -= AfterXamlLoads; // Optional, prevents running twice
 
             LoadWorkshopDatabaseCode LoadDatabase = new();
 
+            Task BackgroundTask = Task.Run(() => 
+            {
+                LoadDatabase.LoadAllWorkshopDocuments(WorkshopData);
+                LoadDatabase.LoadAllWorkshopNonGESTools(WorkshopData);
+            });
             
             Stopwatch timer1 = Stopwatch.StartNew();
             await LoadDatabase.LoadEveryEditorXMLIntoWorkshopData(this, WorkshopData); //Then we load the editor info into the database.
-            timer1.Stop(); Debug.WriteLine($"Load Workshop XML Finished in {timer1.ElapsedMilliseconds} ms");
+            LibraryGES.PrintTimer("Load Workshop XML Time: ", timer1);
 
-            
             //string BreakpointTest = "here";
 
             Stopwatch timer2 = Stopwatch.StartNew();
             LoadDatabase.GenerateAllEditorXAML(WorkshopData);
-            timer2.Stop(); Debug.WriteLine($"Generate All Editor Xamls Finished in {timer2.ElapsedMilliseconds} ms");
-
-            LoadDatabase.LoadAllWorkshopDocuments(WorkshopData);
-            LoadDatabase.LoadAllWorkshopNonGESTools(WorkshopData);
-
+            LibraryGES.PrintTimer("Generate all Editor Xamls Time: ", timer2);
+                        
             DTEMethods.UpdateHotbarForAllDTEEditors(WorkshopData); //Syncs the hotbar icon state between all DTE editors. 
-
-
 
             GC.RefreshMemoryLimit(); //Not sure if useful, it's a new .net8 feature to automatically increase memory limit as needed. Might reduce lag? Probably won't hurt? 
 
-            HomeControl.HomeSetup(WorkshopData); //Sets up the Home Tab.
-
             
 
-            this.Visibility = Visibility.Visible;
+            HomeControl.HomeSetup(WorkshopData); //Sets up the Home Tab.
 
+            BackgroundTask.Wait();
+
+            //Set Workshop Loading Time.
+            TimeSpan elapsed = WorkshopLoadTimer.Elapsed;
+            if (elapsed.TotalMinutes >= 1)
+            {
+                HomeControl.WorkshopLoadTimeLabel.Content = "Workshop Load Time: " + WorkshopLoadTimer.Elapsed.ToString(@"m\:ss\.ff") + " minutes!!!";
+            }
+            else 
+            {
+                HomeControl.WorkshopLoadTimeLabel.Content = "Workshop Load Time: " + WorkshopLoadTimer.Elapsed.ToString(@"s\.ff") + "s";
+            }
+                       
+
+            //DONE!
+            this.Visibility = Visibility.Visible;
             Database.GESMain.GESGrid.Children.Add(this);
             Database.GameLibrary.LoadingPanel.Visibility = Visibility.Collapsed;
             if (Properties.Settings.Default.WorkshopLoadSound == true && Properties.Settings.Default.AutoLoadLastProject == false) { PixelWPF.SoundEngine.PlayEtrianUHappy(); }
+
+
+
+            //Load (or not) the project.
+            if (Properties.Settings.Default.AutoLoadLastProject == true)
+            {
+                foreach (TreeViewItem item in HomeControl.ProjectsTreeView.Items)
+                {
+                    Project project = item.Tag as Project;
+                    if (project == null) { continue; }
+
+                    if (Properties.Settings.Default.LastProject == project.ProjectName)
+                    {
+                        item.IsSelected = true;
+                        HomeControl.HomeLoadProjectButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                        //return;
+                    }
+                }
+            }
+            if (WorkshopData.IsProjectLoaded == false)
+            {
+                HomeControl.HomeUnloadProjectButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            }
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
