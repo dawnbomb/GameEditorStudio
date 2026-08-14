@@ -17,9 +17,9 @@
                 <MenuItem Header="Save Project Documents  (the loaded project)"  Click="SaveTheLoadedProjectDocuments" Name="MenuSaveProjectDocuments" ToolTip="These are your own personal text files. &#xD;They are not shared with anyone else."/>
                 <MenuItem Header="Save Events" Click="SaveEvents" ToolTip="I wanna improve the event system in the future. Hmmm...." Name="MenuSaveEvents"/>
                 <Separator Style="{DynamicResource DashLineForMenu}"/>
-                <MenuItem Header="Create New Editor"  Click="FileNewEditor" Name="NewEditorItem" ToolTip="Create a new editor."/>
+                <MenuItem Click="FileNewEditor" Header="Create New Editor"  Name="NewEditorItem" ToolTip="Create a new editor."/>
                 <Separator Style="{DynamicResource DashLineForMenu}"/>
-                <MenuItem Header="Export ALL data table editors to excel files." Click="ExportEditors" Name="ItemExportEditors" ToolTip="Note that google sheets can import excel files! &#xD;&#xD;So you could totally use this to upload a game or romhack's info to the internet! :D" />
+                <MenuItem Click="ExportEditors" Header="Export ALL data table editors to excel files." Name="ItemExportEditors" ToolTip="Note that google sheets can import excel files! &#xD;&#xD;So you could totally use this to upload a game or romhack's info to the internet! :D" />
             </MenuItem>
             <MenuItem x:Name="ToolsMenu" Header="Tools" SubmenuOpened="ToolsMenuOpened">
                 <MenuItem Header = "Tools Setup" Click = "OpenToolsWindow" />

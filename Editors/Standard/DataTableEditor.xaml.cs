@@ -1,7 +1,6 @@
-﻿using Microsoft.VisualBasic;
-using PixelWPF;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Intrinsics.Arm;
 using System.Text;
@@ -16,6 +15,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Serialization;
+using Microsoft.VisualBasic;
+using PixelWPF;
 using WpfHexEditor;
 using static GameEditorStudio.Entry;
 
@@ -807,8 +808,68 @@ namespace GameEditorStudio
 
             TreeItem.Header = TextBlockItem;
 
+            
+            //List<Task> EntryUpdateTasks = new();
             foreach (DataTableEditorData DataTableData in DTEData.WorkshopXaml.WorkshopData.GameEditors.OfType<DataTableEditorData>()) //Super quick and dirty way to update entrys from other editors that are using this editors names. (Menu Link To Editor)
             {
+                //Task backgroundTask = Task.Run(() =>
+                //{
+                //    //this actually triggers for EVERY name item in an editor that is a name for entry X, IE this entire foreach loop is running 100+ times when loading a project...
+
+                //    //if (WorkshopData.IsProjectLoaded == false) { break; } //Do not if project is unloaded. Helps prevent a crash i'm to lazy to fix right now. 
+                //    //if (WorkshopData.IsProjectLoaded == true) { break; } //Do not if project is unloaded. Helps prevent a crash i'm to lazy to fix right now. 
+
+                //    foreach (Entry entry in DataTableData.MasterEntryList)
+                //    {
+                //        if (entry.NewSubType != EntrySubTypes.Menu) { continue; }
+                //        if (entry.EntryTypeMenu.LinkType != EntryTypeMenu.LinkTypes.Editor) { continue; }
+                //        if (entry.EntryTypeMenu.TextTableEditor == null) { continue; }
+                //        if (entry.EntryTypeMenu.TextTableEditor.LinkedDTEEditor == null) { continue; }
+                //        if (entry.EntryTypeMenu.TextTableEditor.LinkedDTEEditor != DTEData) { continue; }
+
+                //        {
+                //            if (entry.EntryByteDecimal == null) { return; }
+                //            //This stops a blank from being created for a dropdown because its loading before the ByteDecimal is loaded, but also probably other misc problems.
+                //            //IE i should totally not have this code chunk here, but im still to lazy to impliment this properly, so here goes this ultra bad answer i will regret later! :D
+                //        }
+
+                //        //So, If THIS EDITOR is THIS ENTRY's linked editor for a name list...
+                //        //DTEData.WorkshopXaml.WorkshopData.EntryManagerOLD.ChangeEntryType(DTEData.WorkshopXaml.WorkshopData, EntrySubTypes.Menu, DTEData.WorkshopXaml, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
+
+                //        if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List)
+                //        {
+                //            App.Current.Dispatcher.Invoke(() =>
+                //            {
+                //                DTEData.WorkshopXaml.WorkshopData.EntryManagerOLD.ChangeEntryType(DTEData.WorkshopXaml.WorkshopData, EntrySubTypes.Menu, DTEData.WorkshopXaml, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
+                //            });
+
+                //        }
+                //        if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.Dropdown)
+                //        {
+                //            App.Current.Dispatcher.Invoke(() =>
+                //            {
+                //                foreach (ComboBoxItem item in entry.EntryTypeMenu.Dropdown.Items)
+                //                {
+                //                    TextInfo textInfo = item.Tag as TextInfo;
+                //                    if (textInfo == ItemInfo)
+                //                    {
+                //                        item.Content = (textInfo.ItemIndex + entry.EntryTypeMenu.TextTableEditor.LinkedDTEEditor.NameTable.TextTableFirstNameID) + ": " + textInfo.ItemName; ;
+
+                //                    }
+
+                //                }
+                //            });
+
+
+                //        }
+
+                //    }
+                //});
+                //EntryUpdateTasks.Add(backgroundTask);
+
+
+
+
                 //this actually triggers for EVERY name item in an editor that is a name for entry X, IE this entire foreach loop is running 100+ times when loading a project...
 
                 //if (WorkshopData.IsProjectLoaded == false) { break; } //Do not if project is unloaded. Helps prevent a crash i'm to lazy to fix right now. 
@@ -816,21 +877,41 @@ namespace GameEditorStudio
 
                 foreach (Entry entry in DataTableData.MasterEntryList)
                 {
-                    if (entry.EntryTypeMenu.LinkType == EntryTypeMenu.LinkTypes.Editor && entry.EntryTypeMenu.TextTableEditor != null)
+                    if (entry.NewSubType != EntrySubTypes.Menu) { continue; }
+                    if (entry.EntryTypeMenu.LinkType != EntryTypeMenu.LinkTypes.Editor) { continue; }
+                    if (entry.EntryTypeMenu.TextTableEditor == null) { continue; }
+                    if (entry.EntryTypeMenu.TextTableEditor.LinkedDTEEditor == null) { continue; }
+                    if (entry.EntryTypeMenu.TextTableEditor.LinkedDTEEditor != DTEData) { continue; }
+
                     {
-                        if (entry.EntryTypeMenu.TextTableEditor.LinkedDTEEditor != null)
+                        if (entry.EntryByteDecimal == null) { return; }
+                        //This stops a blank from being created for a dropdown because its loading before the ByteDecimal is loaded, but also probably other misc problems.
+                        //IE i should totally not have this code chunk here, but im still to lazy to impliment this properly, so here goes this ultra bad answer i will regret later! :D
+                    }
+
+                    //So, If THIS EDITOR is THIS ENTRY's linked editor for a name list...
+                    //DTEData.WorkshopXaml.WorkshopData.EntryManagerOLD.ChangeEntryType(DTEData.WorkshopXaml.WorkshopData, EntrySubTypes.Menu, DTEData.WorkshopXaml, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
+
+                    if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List)
+                    {
+                        DTEData.WorkshopXaml.WorkshopData.EntryManagerOLD.ChangeEntryType(DTEData.WorkshopXaml.WorkshopData, EntrySubTypes.Menu, DTEData.WorkshopXaml, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
+                    }
+                    if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.Dropdown)
+                    {
+                        foreach (ComboBoxItem item in entry.EntryTypeMenu.Dropdown.Items)
                         {
-                            if (entry.EntryTypeMenu.TextTableEditor.LinkedDTEEditor == DTEData)
+                            TextInfo textInfo = item.Tag as TextInfo;
+                            if (textInfo == ItemInfo)
                             {
-                                if (entry.EntryByteDecimal == null) { return; } //This stops a blank from being created for a dropdown because its loading before the ByteDecimal is loaded, but also probably other misc problems.
-                                                                                //IE i should totally not have this code chunk here, but im still to lazy to impliment this properly, so here goes this ultra bad answer i will regret later! :D
-                                DTEData.WorkshopXaml.WorkshopData.EntryManagerOLD.ChangeEntryType(DTEData.WorkshopXaml.WorkshopData, EntrySubTypes.Menu, DTEData.WorkshopXaml, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
+                                item.Content = (textInfo.ItemIndex + entry.EntryTypeMenu.TextTableEditor.LinkedDTEEditor.NameTable.TextTableFirstNameID) + ": " + textInfo.ItemName; ;
                             }
                         }
-
                     }
+
                 }
+
             }
+            //await Task.WhenAll(EntryUpdateTasks);
         }
 
         private void ToggleSpreadsheet(object sender, RoutedEventArgs e)
@@ -854,6 +935,21 @@ namespace GameEditorStudio
             //}
         }
 
-        
+        private void ToggleRightSideBar(object sender, RoutedEventArgs e)
+        {
+            if (LastColumn.Width == new System.Windows.GridLength(0))
+            {
+                //RightBarToggle.Foreground = Brushes.White;
+                LastColumn.Width = new System.Windows.GridLength(500);
+                RightBarToggleMain.Visibility = Visibility.Collapsed;
+            }
+            else 
+            {
+                //RightBarToggle.Foreground = Brushes.Gray;
+                LastColumn.Width = new System.Windows.GridLength(0);
+                RightBarToggleMain.Visibility = Visibility.Visible;
+            }
+            
+        }
     }
 }

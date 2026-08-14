@@ -15,7 +15,7 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="500"/>
+            <ColumnDefinition Width="500" Name="LastColumn"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -44,20 +44,20 @@
 
             <Button Click="ToggleSpreadsheet" Content="Spreadsheet" DockPanel.Dock="Left" x:Name="SpreadsheetToggle" Margin="2,0,2,0" ToolTip="Lets you view everything like a spreadsheet. &#xD;&#xA;Column colors are based on entry colors." />
 
-
+            <Button Click="ToggleRightSideBar" Name="RightBarToggleMain" Content="Sidebar" Margin="0,0,0,0"  ToolTip="Toggles the right side bar." DockPanel.Dock="Right" Foreground="#FFA4A4A4" Visibility="Collapsed" />
             <Button Click="HelpButtonClicked" Content="Help / Tutorial"  DockPanel.Dock="Right" x:Name="HelpButton" Margin="2,0,2,0" Width="161"/>
         </DockPanel>
 
+        <DockPanel Grid.Column="4" Grid.Row="0" Margin="0,3,0,3" LastChildFill="False" >
+            <Button Click="ToggleRightSideBar" Name="RightBarToggleSide" Content="Sidebar" Margin="0,0,0,0"  ToolTip="Toggles the right side bar." DockPanel.Dock="Right" />
+        </DockPanel>
 
         <Grid x:Name="MainGrid" DockPanel.Dock="Top" Visibility="Collapsed">
-
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            
+            </Grid.ColumnDefinitions>            
         </Grid>
 
 

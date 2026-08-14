@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,8 +29,8 @@ namespace GameEditorStudio
 
         public static bool DebugMode { get; set; } = false; //Gets turned on when program starts if running from visual studio. Hides visibility of buttons related to upcoming features.
 
-        public static string VersionDate { get; set; } = "Augest 8 2026";
-        public static Version VersionNumber { get; set; } = new Version(0, 3, 7); //Version Numbers (in order) are Major.Minor.Build.Revision
+        public static string VersionDate { get; set; } = "Augest 14 2026";
+        public static Version VersionNumber { get; set; } = new Version(0, 3, 8); //Version Numbers (in order) are Major.Minor.Build.Revision
                                                                                      //Major is big releases.
                                                                                      //Minor is new features / content.
                                                                                      //Build is for Bugfixes or small changes.
@@ -670,6 +671,17 @@ namespace GameEditorStudio
             return null;
         }
 
+
+        public static void PrintTimer(string Text, Stopwatch watch) 
+        {
+            var elapsed = watch.Elapsed;
+
+            string timeText = elapsed.TotalSeconds >= 1
+                ? $"{elapsed.TotalSeconds:F2}s"
+                : $"{elapsed.TotalMilliseconds:F0}ms";
+
+            Debug.WriteLine($"{Text}{timeText}");
+        }
     }
 
 

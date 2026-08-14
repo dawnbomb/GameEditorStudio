@@ -95,8 +95,8 @@ namespace GameEditorStudio
                 }
 
                 //The names of each item. Item folders are ID 0 so the first item name might be a folder lol
-                EditorDataDecimalCurrent = EditorDataDecimalCurrent + Item.ItemIndex + ": " + Item.ItemName + ","; 
-                EditorDataHexCurrent = EditorDataHexCurrent + Item.ItemIndex + ": " + Item.ItemName + ",";
+                EditorDataDecimalCurrent = EditorDataDecimalCurrent + (Item.ItemIndex + DTEData.DataTableEditorData.NameTable.TextTableFirstNameID) + ": " + Item.ItemName + ","; 
+                EditorDataHexCurrent = EditorDataHexCurrent + (Item.ItemIndex + DTEData.DataTableEditorData.NameTable.TextTableFirstNameID) + ": " + Item.ItemName + ",";
                 
 
                 for (int c = 0; c != Columns; c++)
@@ -124,8 +124,8 @@ namespace GameEditorStudio
                         continue;
                     }
 
-                    EditorDataDecimalOrigonal = EditorDataDecimalOrigonal + Item.ItemIndex + ": " + Item.ItemName + ",";
-                    EditorDataHexOrigonal = EditorDataHexOrigonal + Item.ItemIndex + ": " + Item.ItemName + ",";
+                    EditorDataDecimalOrigonal = EditorDataDecimalOrigonal + (Item.ItemIndex + DTEData.DataTableEditorData.NameTable.TextTableFirstNameID) + ": " + Item.ItemName + ",";
+                    EditorDataHexOrigonal = EditorDataHexOrigonal + (Item.ItemIndex + DTEData.DataTableEditorData.NameTable.TextTableFirstNameID) + ": " + Item.ItemName + ",";
 
                     for (int c = 0; c != Columns; c++)
                     {

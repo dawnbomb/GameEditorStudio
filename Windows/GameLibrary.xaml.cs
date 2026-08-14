@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Drawing.Printing;
 using System.Globalization;
@@ -15,6 +16,8 @@ using System.Security.AccessControl;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Policy;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -31,7 +34,9 @@ using System.Xml;
 using System.Xml.Linq;
 using Microsoft.VisualBasic;
 using Microsoft.Win32;
+using OfficeOpenXml.Interfaces.SensitivityLabels;
 using Ookii.Dialogs.Wpf;
+using Windows.ApplicationModel.Background;
 using static Microsoft.IO.RecyclableMemoryStreamManager;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Path = System.IO.Path;
@@ -83,10 +88,28 @@ namespace GameEditorStudio
         //3: Window.Loaded
         //4: User Control.Loaded
 
+        
+        private Stopwatch watch = new Stopwatch(); // Calculates how much time has passed        
+        private DispatcherTimer timer = new DispatcherTimer(); // Ticks every few milliseconds to update the screen
+
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            // Update your label with the elapsed seconds and milliseconds
+            LoadingTimer.Content = watch.Elapsed.ToString(@"ss\.ff");
+        }
+                
+
         public GameLibrary()
         {
-            InitializeComponent();               
+            InitializeComponent();
+            watch.Start();
             Database.GameLibrary = this;
+            Dispatcher.InvokeAsync(async () => await PixelWPF.GithubUpdater.CheckForUpdatesAsync("GameEditorStudio", "dawnbomb/GameEditorStudio/releases/latest", LibraryGES.VersionNumber));
+
+            timer.Interval = TimeSpan.FromMilliseconds(10);
+            timer.Tick += Timer_Tick;
+            timer.Start();
+
 
             {   //I am intensionally leaving this existing but collapsed, and related code, incase i later want project related stuff existing again in the game library.
                 //ProjectsContent.Visibility = Visibility.Collapsed; //TEMP FOR TESTING
@@ -97,10 +120,9 @@ namespace GameEditorStudio
                 RecentWorkshopsContent.Visibility = Visibility.Collapsed;
             }
 
-            
+
 
             LoadDatabase LoadDatabase = new(); //Must happen before Setup Commands, because commands use tools.   
-            //LoadDatabase.LoadWiki();
             //LoadDatabase.LoadToolImageLocations(); //currently also causes a popup on launch of all images it detects.
             LoadDatabase.LoadThemes(); //Loads from Other/Themes - A theme is a list of colors for the UI. Users can create their own color themes. 
             LoadDatabase.LoadToolsList(); //Loads from Other/Tools.xml.            
@@ -108,23 +130,64 @@ namespace GameEditorStudio
             LoadDatabase.LoadCommonEventsList(); //Loads from Other/Common Events.xml.   
             //NOTE: LoadCommonEventsForWorkshop happens when the tools menu itself is opened,
             //as i don't currently support pre-loading every workshops data from the library, but common events are still for the "CURRENT" workshop.
-            LoadDatabase.LoadToolLocations(); //Load user's last known tool locations.
-            LoadDatabase.LoadEnabledCommonEvents(); //Loads from Settings/Common Events.xml the user's enabled common events.
+            Task backgroundTask = Task.Run(() =>
+            {
+                LoadDatabase.LoadToolLocations(); //Load user's last known tool locations.
+                LoadDatabase.LoadEnabledCommonEvents(); //Loads from Settings/Common Events.xml the user's enabled common events.
+                
+            });
+            //LibraryGES.PrintTimer("Game Library Setup Time: ", watch); 
             LoadDatabase.LoadWorkshops_INCLUDING_EVENTS(); //Events are loaded here. - - -  Does not fully load the workshops, that happens when one is launched. 
-            
+            //LibraryGES.PrintTimer("Game Library Setup Time: ", watch);
+
             RefreshWorkshopTree();
             RefreshRecentWorkshopTree();
 
-
-            Dispatcher.InvokeAsync(async () => await PixelWPF.GithubUpdater.CheckForUpdatesAsync("GameEditorStudio", "dawnbomb/GameEditorStudio/releases/latest", LibraryGES.VersionNumber));
-
             MainMenu.MenuLibrarySetup(this);
 
-            
-            
+
+
+
+
+            string defaulttext = "Welcome to my beta of Game Editor Studio! (GES)" +
+                "\n\nGES makes it easy to create, share, and use game editors! " +
+                "\n\nJoin the Discord! https://discord.gg/mhrZqjRyKx" +
+                "\nRecommend us to your friends! :3" +
+                "\n------" +
+                "\nTutorial:" +
+                "\nWorkshops (on the left) each represent a game." +
+                "\nA workshop contains all the Editors for that game. " +
+                "\nTo start, open a workshop, and check out the editors it has. " +
+                "\n(You can preview a workshop / it's editors, without having the game!)" +
+                "\n" +
+                "\nA \"Project\" is any mod, romhack, etc. Once your ready to create..." +
+                "\n1: In the workshop, click the New Project button. " +
+                "\n2: Give your project a name." +
+                "\n3: Set your project's input folder (the folder with your game files)." +
+                "\n4: Set your project's output folder (where your files will save to)." +
+                "\n5: Click Load Project! Your all Set!" +
+                "\n" +
+                "\nTIP 1: Most things in GES have right click options." +
+                "\nTIP 2: Setup your romhacking Tools in the Tools menu (top left)." +
+                "\nTIP 3: Some workshops have \"Events\", like \"Extract game files\"." +
+                "\n" +
+                "\nGood luck! Happy modding! :)" +
+                //"\n[#b778ff]Workshops" +
+                "\n-----" +
+                "\nGame Editor Studio is made with C# / WPF." +
+                "\nYou can join the dev team on discord!  " +
+                "\n(I could really use the help! <3)" +
+                "";
+            Dictionary<string, BitmapImage> images2 = new();
+            PixelWPF.LibraryText.TextToStackPanel(defaulttext, StackPanelForWorkshopDocument, images2);
+
+            LibraryGES.PrintTimer("Game Library Setup Time: ", watch);
         }
 
-
+        private void GameLibrarySetup() 
+        {
+        
+        }
 
 
 
@@ -366,11 +429,13 @@ namespace GameEditorStudio
 
         }
 
-        
 
 
         private void LaunchWorkshopPreviewMode(object sender, RoutedEventArgs e)
-        {
+        {            
+            watch.Reset();
+            watch.Start();
+
             if (SelectedWorkshop.CreatedVersion > LibraryGES.VersionNumber)
             {
                 PixelWPF.LibraryPixel.Notification("Workshop from future version of GES!",
@@ -392,55 +457,46 @@ namespace GameEditorStudio
                         "\n" +
                         "\nI won't stop you from *trying* to use it anyway, but just be aware and *VERY* careful of this."
                         );
-            }
-
-
-            {//Update recent workshops list.
-                if (LibraryGES.RecentWorkshops.Contains(SelectedWorkshop.WorkshopName)) { LibraryGES.RecentWorkshops.Remove(SelectedWorkshop.WorkshopName); }
-                LibraryGES.RecentWorkshops.Insert(0, SelectedWorkshop.WorkshopName);                
-                if (LibraryGES.RecentWorkshops.Count > 3) { LibraryGES.RecentWorkshops.RemoveAt(3); }
-                if (LibraryGES.RecentWorkshops.Count > 3) { LibraryGES.RecentWorkshops.RemoveAt(3); }
-                if (LibraryGES.RecentWorkshops.Count > 3) { LibraryGES.RecentWorkshops.RemoveAt(3); }
-
-                string NewRecentList = "";
-                bool first = true;
-                foreach (string name in LibraryGES.RecentWorkshops) 
-                {
-                    if (first == false) { NewRecentList += "|"; }
-                    NewRecentList += name;
-                    first = false;
-                }
-                Properties.Settings.Default.RecentWorkshops = NewRecentList;
-            }
-
-
-
-            {//Loading bar code 
-                LoadingFinalPanel.Visibility = Visibility.Collapsed;
-                LoadingPanel.Visibility = Visibility.Visible;
-                Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-            }
-
+            }            
             
-
-            if (SelectedWorkshop.WorkshopXaml != null) 
+            if (SelectedWorkshop.WorkshopXaml != null)
             {
                 Database.GESMain.GESGrid.Children.Add(SelectedWorkshop.WorkshopXaml);
                 LoadingPanel.Visibility = Visibility.Collapsed;
             }
             else
             {
-                Workshop TheWorkshop = new Workshop(SelectedWorkshop); //Thing One, the workshop
-                //Database.GESMain.GESGrid.Children.Add(TheWorkshop);
-                //LoadingPanel.Visibility = Visibility.Collapsed;
+                LoadingFinalPanel.Visibility = Visibility.Collapsed;
+                LoadingPanel.Visibility = Visibility.Visible;
+
+                Workshop TheWorkshop = new Workshop(SelectedWorkshop);
             }
-            //Workshop TheWorkshop = new Workshop(SelectedWorkshop); //Thing One, the workshop
-            //Database.GESMain.GESGrid.Children.Add(TheWorkshop);
 
-            Properties.Settings.Default.LastWorkshop = SelectedWorkshop.WorkshopName; //Set the workshop name in settings, so it can be used by other parts of the program. 
-            Properties.Settings.Default.Save();
+            Task backgroundTask = Task.Run(() =>
+            {
+                {//Update recent workshops list.
+                    if (LibraryGES.RecentWorkshops.Contains(SelectedWorkshop.WorkshopName)) { LibraryGES.RecentWorkshops.Remove(SelectedWorkshop.WorkshopName); }
+                    LibraryGES.RecentWorkshops.Insert(0, SelectedWorkshop.WorkshopName);
+                    if (LibraryGES.RecentWorkshops.Count > 3) { LibraryGES.RecentWorkshops.RemoveAt(3); }
+                    if (LibraryGES.RecentWorkshops.Count > 3) { LibraryGES.RecentWorkshops.RemoveAt(3); }
+                    if (LibraryGES.RecentWorkshops.Count > 3) { LibraryGES.RecentWorkshops.RemoveAt(3); }
 
-            
+                    string NewRecentList = "";
+                    bool first = true;
+                    foreach (string name in LibraryGES.RecentWorkshops)
+                    {
+                        if (first == false) { NewRecentList += "|"; }
+                        NewRecentList += name;
+                        first = false;
+                    }
+                    Properties.Settings.Default.RecentWorkshops = NewRecentList;
+                }
+
+                Properties.Settings.Default.LastWorkshop = SelectedWorkshop.WorkshopName; //Set the workshop name in settings, so it can be used by other parts of the program. 
+                Properties.Settings.Default.Save();
+            });
+
+
         }
 
 
@@ -755,16 +811,12 @@ namespace GameEditorStudio
         private void DocumentsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             TreeViewItem Item = LibraryDocumentsTree.SelectedItem as TreeViewItem;
-            if (Item == null) { return; }
+            if (Item == null) 
+            {                
+                return; 
+            }
 
-            string defaulttext = "Welcome to my early beta of Game Editor Studio! " +
-                "\n\nThis program lets you create and share game editors without knowing how to code! " +
-                "\n\nIt also has easy access to romhacking tools, and LOTS of QoL! " +
-                "\n(save often and report bugs / crashes on the discord)" +
-                "\n\n\n\nPS: Most things have right click options." +
-                "\n\n\n\nMade in C# / WPF / .Net10 " +
-                "\n\nTo join the dev team, reach out to me on discord! (Link top right) " +
-                "\nLets make game modding simple, easy, and fun! :)";
+            
 
             DocumentNameLabel.Content = Item.Header as string;           
                         
@@ -774,8 +826,8 @@ namespace GameEditorStudio
                       
             if (Item.Header as string == "READ ME" || Item.Header as string == "README" || Item.Header as string == "readme" || Item.Header as string == "read me") 
             {
-                DocumentNameLabel.Content = SelectedWorkshop.WorkshopName + " - " + Item.Header as string;
-                PixelWPF.LibraryText.TextToStackPanel(defaulttext, StackPanelForWorkshopDocument, images);
+                //DocumentNameLabel.Content = SelectedWorkshop.WorkshopName + " - " + Item.Header as string;
+                //PixelWPF.LibraryText.TextToStackPanel(defaulttext, StackPanelForWorkshopDocument, images);
             }
         }
         private void OpenProjectFolder(object sender, RoutedEventArgs e)

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -57,10 +58,7 @@ namespace GameEditorStudio
             RefreshProjectsTreeView();
 
             WorkshopXaml.ButtonHome.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); //Click the home tab, triggers the setting of the tab styles. 
-            if (WorkshopData.IsProjectLoaded == false) 
-            {
-                HomeUnloadProjectButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-            }
+            
 
             if (DocumentsControl.WorkshopDocumentsTreeView.Items.Count != 0) 
             {
@@ -68,27 +66,7 @@ namespace GameEditorStudio
                 item.IsSelected = true;
             }
 
-            if (Properties.Settings.Default.AutoLoadLastProject == true) 
-            {   
 
-                foreach (TreeViewItem item in ProjectsTreeView.Items) 
-                {   
-                    Project project = item.Tag as Project;
-                    if (project == null) { continue; }
-
-                    if (Properties.Settings.Default.LastProject == project.ProjectName) 
-                    {
-                        item.IsSelected = true;
-                        HomeLoadProjectButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                        return;
-                    }
-
-                    
-                }
-
-                if (Properties.Settings.Default.WorkshopLoadSound == true) { PixelWPF.SoundEngine.PlayEtrianUHappy(); }
-
-            }
         }
 
 
@@ -99,6 +77,8 @@ namespace GameEditorStudio
 
         public void LoadProject2(Project ProjectData)
         {
+            Stopwatch ProjectLoadTimer = Stopwatch.StartNew();
+
             LoadingPanel.Visibility = Visibility.Visible;
 
             if (ProjectData == null)
@@ -131,13 +111,13 @@ namespace GameEditorStudio
                 fileLoading.TryLoadAllGameFilesIntoWorkshopDatabase(WorkshopData);
             } //First we load workshop files into the database. } }
             catch { PixelWPF.LibraryPixel.Notification("Project Load Crash 2", ""); }
-            
-            timer1.Stop(); Debug.WriteLine($"Load Project Files Finished in {timer1.ElapsedMilliseconds} ms");
+
+            LibraryGES.PrintTimer("Project Files Loading Time: ", timer1);
 
             FileManager.RefreshFileTree();
 
             LoadWorkshopDatabaseCode LoadDatabase = new();
-            LoadDatabase.LoadAllProjectDocuments(WorkshopData);
+            Task BackgroundTask = Task.Run(() => LoadDatabase.LoadAllProjectDocuments(WorkshopData));
 
             WorkshopData.WorkshopXaml.MenusForToolsAndEvents.SetupTopMenuForProject(WorkshopData.WorkshopXaml);            
 
@@ -212,9 +192,9 @@ namespace GameEditorStudio
             Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
             LoadingFinalizingLabel.Visibility = Visibility.Visible;
 
-            foreach (DataTableEditorData TheEditor in WorkshopData.GameEditors.OfType<DataTableEditorData>()) //Sync Entry Decorations state & Sets Symbology for all DTE editors. 
+            foreach (DataTableEditorData DataTableEditor in WorkshopData.GameEditors.OfType<DataTableEditorData>()) //Sync Entry Decorations state & Sets Symbology for all DTE editors. 
             {//Fix this later, as im doing for all DTE, for all DTE. 
-                TheEditor.DataTableEditorData.DTEXaml.UpdateEntryDecorationsForAllEditors();
+                DataTableEditor.DataTableEditorData.DTEXaml.UpdateEntryDecorationsForAllEditors();
                 break;
             }
 
@@ -229,10 +209,37 @@ namespace GameEditorStudio
                 LabelCurrentProject.Content = ProjectData.ProjectName;
             }
 
+            BackgroundTask.Wait();
+
             LoadingPanel.Visibility = Visibility.Collapsed;
             LoadUIUI.Visibility = Visibility.Collapsed;
             WorkshopData.PreviewModeWarningMessage = false;
             LoadingFinalizingLabel.Visibility = Visibility.Collapsed;
+
+
+            TimeSpan elapsed = ProjectLoadTimer.Elapsed;
+            if (elapsed.TotalMinutes >= 1)
+            {
+                ProjectLoadTimeLabel.Content = "Project Load Time: " + ProjectLoadTimer.Elapsed.ToString(@"m\:ss\.ff") + " minutes!!!";
+            }
+            else
+            {
+                ProjectLoadTimeLabel.Content = "Project Load Time: " + ProjectLoadTimer.Elapsed.ToString(@"s\.ff") + "s";
+            }
+            if (WorkshopData.IsProjectLoaded == false) 
+            {
+                if (elapsed.TotalMinutes >= 1)
+                {
+                    ProjectLoadTimeLabel.Content = "Project Unload Time: " + ProjectLoadTimer.Elapsed.ToString(@"m\:ss\.ff") + " minutes!!!";
+                }
+                else
+                {
+                    ProjectLoadTimeLabel.Content = "Project Unload Time: " + ProjectLoadTimer.Elapsed.ToString(@"s\.ff") + "s";
+                }
+            }
+
+            LibraryGES.PrintTimer("Project Load Time: ", ProjectLoadTimer);
+
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,7 +24,7 @@ namespace GameEditorStudio
         //1: When the workshop is loaded, to load the database with XML info.
         //2: The below partial class when a editor is created, also to load a database with XML info, but also to trigger making a new editor with that info.
 
-        public void TryLoadAllGameFilesIntoWorkshopDatabase(WorkshopData WorkshopData) //Triggers when the workshop is launched.
+        public async void TryLoadAllGameFilesIntoWorkshopDatabase(WorkshopData WorkshopData) //Triggers when the workshop is launched.
         {
             //This method is ONLY loading the files into the workshop!
             //This method is NOT loading the files into any of the editors!
@@ -119,64 +120,83 @@ namespace GameEditorStudio
                 WorkshopData.WorkshopXaml.HomeControl.LoadingProgressBar.Value = 0;
                 WorkshopData.WorkshopXaml.HomeControl.LoadingPartText.Content = "Part 1: Loading Game Files...";
 
+                List<Task> LoadFilesTasks = new();
+
                 foreach (GameFile GameFile in WorkshopData.GameFiles)
                 {
-                    Database.GameLibrary.LoadingStatusText.Content = GameFile.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFiles.Count + ")";
-                    WorkshopData.WorkshopXaml.HomeControl.LoadingStatusText.Content = GameFile.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFiles.Count + ")";
-                    Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                    Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                    Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                    Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                    Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                    Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                    //Database.GameLibrary.LoadingStatusText.Content = GameFile.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFiles.Count + ")";
+                    //WorkshopData.WorkshopXaml.HomeControl.LoadingStatusText.Content = GameFile.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFiles.Count + ")";
+                    //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                    //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                    //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                    //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                    //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                    //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
 
-                    if (WorkshopData.LoadedProject.ProjectOutputDirectory != "" && File.Exists(Path.Combine(WorkshopData.LoadedProject.ProjectOutputDirectory, GameFile.FileLocation)))
+
+                    //LoadGameFile();
+                    LoadFilesTasks.Add(Task.Run(() => LoadGameFile()));
+
+                    void LoadGameFile() 
                     {
-                        string Location = WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + GameFile.FileLocation;
-                        GameFile.FileBytes = File.ReadAllBytes(WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + GameFile.FileLocation);
+                        if (WorkshopData.LoadedProject.ProjectOutputDirectory != "" && File.Exists(Path.Combine(WorkshopData.LoadedProject.ProjectOutputDirectory, GameFile.FileLocation)))
+                        {
+                            string Location = WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + GameFile.FileLocation;
+                            GameFile.FileBytes = File.ReadAllBytes(WorkshopData.LoadedProject.ProjectOutputDirectory + "\\" + GameFile.FileLocation);
+                        }
+                        else if (WorkshopData.LoadedProject.ProjectInputDirectory != "")
+                        {
+                            GameFile.FileBytes = File.ReadAllBytes(WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + GameFile.FileLocation);
+                        }
+                        else
+                        {
+                            return;
+                        }
                     }
-                    else if (WorkshopData.LoadedProject.ProjectInputDirectory != "")
-                    {
-                        GameFile.FileBytes = File.ReadAllBytes(WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + GameFile.FileLocation);
-                    }
-                    else
-                    {
-                        return;
-                    }
-                    loadcounter++;
-                    double percent = (loadcounter / max) * 100;
-                    int calc = (int)percent;
-                    Database.GameLibrary.LoadingProgressBar.Value = calc;
-                    WorkshopData.WorkshopXaml.HomeControl.LoadingProgressBar.Value = calc;
+
+                    
+                    //loadcounter++;
+                    //double percent = (loadcounter / max) * 100;
+                    //int calc = (int)percent;
+                    //Database.GameLibrary.LoadingProgressBar.Value = calc;
+                    //WorkshopData.WorkshopXaml.HomeControl.LoadingProgressBar.Value = calc;
                 }
                 
                 if (LibraryGES.AlsoLoadInputFiles == true) //INPUT VERSION LOADING
                 {
-                    WorkshopData.WorkshopXaml.HomeControl.LoadingPartText.Content = "Part 1.5: Loading Game Files (from input)...";
+                    //WorkshopData.WorkshopXaml.HomeControl.LoadingPartText.Content = "Part 1.5: Loading Game Files (from input)...";
                     foreach (GameFile GameFileFromInput in WorkshopData.GameFilesFromInput)
                     {
-                        Database.GameLibrary.LoadingStatusText.Content = GameFileFromInput.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFilesFromInput.Count + ")";
-                        WorkshopData.WorkshopXaml.HomeControl.LoadingStatusText.Content = GameFileFromInput.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFilesFromInput.Count + ")";
-                        Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                        Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                        Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                        Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                        Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                        Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
-                                                
-                        if (WorkshopData.LoadedProject.ProjectInputDirectory != "" && File.Exists(Path.Combine(WorkshopData.LoadedProject.ProjectInputDirectory, GameFileFromInput.FileLocation)))
-                        {
-                            string fullpath = WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + GameFileFromInput.FileLocation;
+                        //Database.GameLibrary.LoadingStatusText.Content = GameFileFromInput.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFilesFromInput.Count + ")";
+                        //WorkshopData.WorkshopXaml.HomeControl.LoadingStatusText.Content = GameFileFromInput.FileName + " (" + loadcounter.ToString() + "/" + WorkshopData.GameFilesFromInput.Count + ")";
+                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                        //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                                 
 
-                            //If i ever crash because of this again, make sure the program is building to x64 and not x86. 
-                            //x86 has a RAM limit of about 2~4GB.
-                            //x64 RAM limit is about 1 BILLION GB.
-                            GameFileFromInput.FileBytes = File.ReadAllBytes(fullpath);
+                        //LoadMirrorFile();
+                        LoadFilesTasks.Add(Task.Run(() => LoadMirrorFile()));
+
+                        void LoadMirrorFile() 
+                        {
+                            if (WorkshopData.LoadedProject.ProjectInputDirectory != "" && File.Exists(Path.Combine(WorkshopData.LoadedProject.ProjectInputDirectory, GameFileFromInput.FileLocation)))
+                            {
+                                string fullpath = WorkshopData.LoadedProject.ProjectInputDirectory + "\\" + GameFileFromInput.FileLocation;
+
+                                //If i ever crash because of this again, make sure the program is building to x64 and not x86. 
+                                //x86 has a RAM limit of about 2~4GB.
+                                //x64 RAM limit is about 1 BILLION GB.
+                                GameFileFromInput.FileBytes = File.ReadAllBytes(fullpath);
+                            }
+                            else
+                            {
+                                return;
+                            }
                         }
-                        else
-                        {                            
-                            return;
-                        }                        
+
 
 
                         //loadcounter++;
@@ -186,7 +206,7 @@ namespace GameEditorStudio
                         //WorkshopData.WorkshopXaml.HomeControl.LoadingProgressBar.Value = calc;
                     }
                 }
-                
+
 
                 //List<Task> loadFilesTasks = new();
 
@@ -212,6 +232,8 @@ namespace GameEditorStudio
 
                 //}
                 //await Task.WhenAll(loadFilesTasks);
+
+                Task.WaitAll(LoadFilesTasks.ToArray());
             }
             catch (Exception ex)
             {   
@@ -240,8 +262,9 @@ namespace GameEditorStudio
                 return;
             }
 
-            Database.GameLibrary.LoadingStatusText.Content = "Done~";
-            WorkshopData.WorkshopXaml.HomeControl.LoadingStatusText.Content = "Done~";
+            Database.GameLibrary.LoadingStatusText.Content = "Done!";
+            WorkshopData.WorkshopXaml.HomeControl.LoadingProgressBar.Value = 100;
+            WorkshopData.WorkshopXaml.HomeControl.LoadingStatusText.Content = "Done!";
             Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
             Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
             Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
