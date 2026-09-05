@@ -583,13 +583,9 @@ namespace GameEditorStudio
 
             void LoadToolLocationsFromToolsFolder()
             {
-
                 string ToolsFolder = Properties.Settings.Default.ToolsFolder;
+                if (!Directory.Exists(ToolsFolder)) { return; }
 
-                if (!Directory.Exists(ToolsFolder))
-                {
-                    return;
-                }
                 Dictionary<string, List<string>> filesByName = new(StringComparer.OrdinalIgnoreCase);
 
                 //Stopwatch LoadTimer = new Stopwatch();
@@ -615,6 +611,11 @@ namespace GameEditorStudio
 
                     string fileName = Path.GetFileName(file);
 
+                    if (fileName == "Example.exe") 
+                    {
+                        string testa = "sdfsdaf";
+                    }   
+
                     if (!filesByName.TryGetValue(fileName, out List<string>? paths))
                     {
                         paths = new List<string>();
@@ -626,6 +627,15 @@ namespace GameEditorStudio
                 //Task.WaitAll(LoadToolsTasks.ToArray());
                 //Debug.WriteLine("END: " + LoadTimer.Elapsed);
                 //Debug.WriteLine("*********");
+
+
+                foreach (Tool tool in Database.Tools)
+                {
+                    if (filesByName.TryGetValue(tool.ExeName, out List<string>? paths))
+                    {
+                        tool.Location = paths[0];
+                    }
+                }
             }
 
             void ClearEmptyToolLocations() 

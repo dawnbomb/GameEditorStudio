@@ -97,6 +97,7 @@ namespace GameEditorStudio
     public class Group : GridItem //Variables in here intensionally do not set =new(); because the editor middle rebuilds when changing tables.
     {
         public string GroupName { get; set; } = "New Group"; //XML The name of a column.
+        public string NoGroupName { get; set; } = "Group"; //Not XML, the default name when a group doesn't currently have a name.
         public string GroupTooltip { get; set; } = "";
         public Border GroupBorder { get; set; }
         public DockPanel GroupPanel { get; set; }

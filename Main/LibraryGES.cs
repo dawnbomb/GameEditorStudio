@@ -29,8 +29,8 @@ namespace GameEditorStudio
 
         public static bool DebugMode { get; set; } = false; //Gets turned on when program starts if running from visual studio. Hides visibility of buttons related to upcoming features.
 
-        public static string VersionDate { get; set; } = "Augest 14 2026";
-        public static Version VersionNumber { get; set; } = new Version(0, 3, 8); //Version Numbers (in order) are Major.Minor.Build.Revision
+        public static string VersionDate { get; set; } = "Augest 18 2026";
+        public static Version VersionNumber { get; set; } = new Version(0, 3, 9); //Version Numbers (in order) are Major.Minor.Build.Revision
                                                                                      //Major is big releases.
                                                                                      //Minor is new features / content.
                                                                                      //Build is for Bugfixes or small changes.
@@ -46,6 +46,7 @@ namespace GameEditorStudio
         public static bool ShowItemIndex { get; set; } = true;
         public static bool ShowHiddenEntrys { get; set; } = false;
         public static bool ShowSymbology { get; set; } = false;
+        public static bool ShowNameProjectDataPanel { get; set; } = false;
         public static bool ShowTranslationPanel { get; set; } = false;
         public static bool EntrysDropAbove { get; set; } = false; //Decides if new entrys drop above the selected entry, or below.
         public static bool EntryFrameIsVisible { get; set; } = true;

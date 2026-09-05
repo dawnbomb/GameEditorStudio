@@ -55,8 +55,16 @@ namespace GameEditorStudio
             TreeViewItem TItem = dtedata.EditorLeftBar.TreeView.SelectedItem as TreeViewItem;
             if (TItem != null) { SelectedItem = TItem.Tag as TextInfo; }
 
-            HexOrigonalOrder(null, null); //default to Hex Origonal order on load.            
-            
+            if (Properties.Settings.Default.SpreadsheetModeEditorHex == true) 
+            {
+                HexEditorOrder(null, null); //default to Hex Origonal order on load.   
+            }
+            if (Properties.Settings.Default.SpreadsheetModeEditorHex == false)
+            {
+                HexOrigonalOrder(null, null); //default to Hex Origonal order on load.   
+            }
+
+
         }
 
         public void HexOrigonalOrder(object sender, RoutedEventArgs e) { RefreshGrid(true, true); mode = "HexOrigonal"; }

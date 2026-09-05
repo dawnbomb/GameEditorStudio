@@ -165,6 +165,7 @@ namespace GameEditorStudio
                     
 
                     RightBar.PropertiesTextboxEditorName.Text = EditorClass.EditorName;
+                    RightBar.EditorTooltipTextbox.Text = EditorClass.EditorWorkshopTooltip;
 
                     DTEData.EditorRightBar.DocumentsControl.RefreshDocuments();
                     RightBar.EditorTabItem.IsSelected = true;

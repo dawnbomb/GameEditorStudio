@@ -142,8 +142,8 @@ namespace GameEditorStudio
             psi.WorkingDirectory = $"{NitroFolder}";
             psi.CreateNoWindow = true;
             psi.UseShellExecute = false;
-            psi.RedirectStandardOutput = true;
-            psi.RedirectStandardError = true;
+            //psi.RedirectStandardOutput = true;
+            //psi.RedirectStandardError = true;
 
             Process p = new Process();
             p.StartInfo = psi;

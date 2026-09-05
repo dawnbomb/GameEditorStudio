@@ -207,6 +207,7 @@ namespace GameEditorStudio
                             else { writer.WriteElementString("Type", "UNKNOWN"); }
                             writer.WriteElementString("Icon", editor.EditorIcon); //This is the name of the icon file that this editor uses.
                             writer.WriteElementString("Key", editor.EditorKey);
+                            writer.WriteElementString("Tooltip", editor.EditorWorkshopTooltip);
                             writer.WriteElementString("Seperator", "--------------------------------------------------------------------------------------------");
                             writer.WriteElementString("CreatedVersion", editor.CreatedDate.ToString());
                             writer.WriteElementString("CreatedDate", editor.CreatedDate);

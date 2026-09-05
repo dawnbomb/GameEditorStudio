@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         MinHeight="100" MinWidth="100">
     <Grid Style="{DynamicResource BorderGrid}" Background="#333333">
-        <ContentControl Margin="10,10,0,0" HorizontalAlignment="Left" Width="270" Height="250" VerticalAlignment="Top">
+        <ContentControl Margin="10,10,0,0" HorizontalAlignment="Left" Width="270" Height="210" VerticalAlignment="Top">
             <DockPanel>
                 <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                     <DockPanel Style="{DynamicResource ContentBar}">
@@ -20,7 +20,7 @@
             </DockPanel>
         </ContentControl>
 
-        <ContentControl Margin="10,270,0,0" HorizontalAlignment="Left" Width="270" Height="220" VerticalAlignment="Top">
+        <ContentControl Margin="10,230,0,0" HorizontalAlignment="Left" Width="270" Height="260" VerticalAlignment="Top">
             <DockPanel>
                 <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                     <DockPanel Style="{DynamicResource ContentBar}">
@@ -46,7 +46,7 @@
 
 
 
-                <TextBox Name="EventTooltipBox" DockPanel.Dock="Bottom"   Margin="10,8,10,8"  Text=" Note" TextChanged="EventTooltipTextChanged"  />
+                <TextBox TextChanged="EventTooltipTextChanged" Name="EventTooltipBox" DockPanel.Dock="Bottom"   Margin="10,8,10,8"  Text=" Note" AcceptsReturn="True" />
             </DockPanel>
         </ContentControl>
 

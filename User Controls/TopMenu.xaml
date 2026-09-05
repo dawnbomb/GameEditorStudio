@@ -77,6 +77,7 @@
                 <MenuItem Click="SaveSettings"  Header="Setting: Sound after project loads."  IsCheckable="True"    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=ProjectLoadSound, Mode=TwoWay}"  ToolTip="Plays a sound after a project finishes loading. Useful for watching youtube while waiting for loading to finish :P."/>
                 <MenuItem Click="SaveSettings"  Header="Setting: Sound after workshop loads."  IsCheckable="True"    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=WorkshopLoadSound, Mode=TwoWay}"  ToolTip="Plays a sound after a workshop finishes loading. Useful for watching youtube while waiting for loading to finish :P."/>
                 <MenuItem Click="SaveSettings"  Header="Setting: Auto-load last used project."  IsCheckable="True"    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AutoLoadLastProject, Mode=TwoWay}"  ToolTip="After a workshop has finished loading, automatically attempts to load the last project you loaded. &#xD;&#xD;The workshop loaded sound will be skipped."/>
+                <MenuItem Click="SaveSettings"  Header="Setting: Open spreadsheet mode in Editor Order."  IsCheckable="True"    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=SpreadsheetModeEditorHex, Mode=TwoWay}"  ToolTip="When opening an editor in spreadsheet mode, &#xD;open using editor name order instead of origonal name order."/>
 
 
                 

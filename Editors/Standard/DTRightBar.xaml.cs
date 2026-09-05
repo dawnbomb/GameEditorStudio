@@ -1620,7 +1620,10 @@ namespace GameEditorStudio
         }
 
 
-
+        private void EditorTooltipTextboxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            DTEData.EditorWorkshopTooltip = EditorTooltipTextbox.Text;            
+        }
 
 
 

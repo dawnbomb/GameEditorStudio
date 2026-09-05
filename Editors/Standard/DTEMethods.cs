@@ -1078,7 +1078,7 @@ namespace GameEditorStudio
                 MainName.Text = "";
                 EntryClass.EntryNameTextBlock.Visibility = Visibility.Collapsed;
             }
-            else if (EntryClass.Name == "" && EntryClass.Symbology.Content as string == " 0") 
+            else if (EntryClass.Name == "" && EntryClass.Symbology.Content as string == " 0" && EntryClass.Symbology.ToolTip.ToString().Contains("always", StringComparison.OrdinalIgnoreCase) ) 
             {
                 MainName.Text = "unused? " + EntryClass.RowOffset;
                 MainName.Foreground = Brushes.Gray;

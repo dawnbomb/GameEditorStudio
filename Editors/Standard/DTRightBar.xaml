@@ -144,7 +144,7 @@
                                             </DockPanel>
                                         </Border>
 
-                                        <Border DockPanel.Dock="Top">
+                                        <Border DockPanel.Dock="Top" >
                                             <DockPanel>
                                                 <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                                                     <DockPanel Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" LastChildFill="False" >
@@ -206,7 +206,7 @@
                                             </DockPanel>
                                         </Border>
 
-                                        <Border>
+                                        <Border DockPanel.Dock="Top">
                                             <DockPanel>
                                                 <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                                                     <DockPanel Style="{DynamicResource ContentBar}">
@@ -221,7 +221,17 @@
                                             </DockPanel>
                                         </Border>
 
+                                        <Border Name="RightBarEditorTooltipBorder" DockPanel.Dock="Top" >
+                                            <DockPanel>
+                                                <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                                                    <DockPanel  Style="{DynamicResource ContentBar}">
+                                                        <Label Content="Editor Tooltip" FontWeight="Bold"/>
+                                                    </DockPanel>
+                                                </Border>
 
+                                                <TextBox TextChanged="EditorTooltipTextboxTextChanged" MinHeight="100" x:Name="EditorTooltipTextbox" Margin="10" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+                                            </DockPanel>
+                                        </Border>
 
 
 
@@ -765,8 +775,7 @@
                                     <Label Name="LabelUniqueValueCount" Content="Unique Values: ?" Margin="25,0,5,0" DockPanel.Dock="Top" />
                                 </DockPanel>
                             </Border>
-                            <Label Content="This Info and Entry Symbology only work on &#xA;1 byte entrys. Support for 2+ bytes is later." Margin="5,2,5,2" DockPanel.Dock="Top" />
-                            
+
                             <local:UserControlCrossReference x:Name="CrossReferenceInfo" Margin="5,5,5,5" />
                         </DockPanel>
                     </Border>

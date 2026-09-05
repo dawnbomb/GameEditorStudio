@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Drawing.Printing;
 
 //using System.Drawing;
@@ -521,8 +522,11 @@ namespace GameEditorStudio
                 RightBar.PropertiesGroupColumnSpan.Text = GroupClass.ColumnSpan.ToString();
                 RightBar.PropertiesGroupRowSpan.Text = GroupClass.RowSpan.ToString();
 
-                e.Handled = true; // Prevents the event from bubbling up to the DockPanel, which would cause the entry to be selected instead of the group.
+                
 
+                e.Handled = true; // Prevents the event from bubbling up to the DockPanel, which would cause the entry to be selected instead of the group.
+                               
+                
             }
             void Group_MouseMove(object sender, MouseEventArgs e)
             {
@@ -737,6 +741,33 @@ namespace GameEditorStudio
 
                 DTEMethods.UpdateEditorGrids(EntryClass.ParentEditor.DataTableEditorData);
 
+                NewGroup.GroupLabel.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                {
+                    //Trigger Click Group so the new groups info is on right sidebar. 
+                    RoutedEvent = UIElement.MouseLeftButtonDownEvent
+                });
+
+
+                NewGroup.ParentEditor.DataTableEditorData.EditorRightBar.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Input, new Action(() =>
+                {
+                    NewGroup.ParentEditor.DataTableEditorData.EditorRightBar.PropertiesGroupNameBox.Focus();
+                    NewGroup.ParentEditor.DataTableEditorData.EditorRightBar.PropertiesGroupNameBox.SelectAll();
+                    //RightBar.PropertiesGroupNameBox.SelectAll();
+                    //Debug.WriteLine($"Focused: {NewGroup.ParentEditor.DataTableEditorData.EditorRightBar.PropertiesGroupNameBox.IsKeyboardFocused}");
+                }));
+
+                ////NewGroup.GroupLabel.RaiseEvent(new RoutedEventArgs(Button.MouseLe)); 
+                //NewGroup.ParentEditor.DataTableEditorData.EditorRightBar.PropertiesGroupNameBox.Focus();
+                ////NewGroup.ParentEditor.DataTableEditorData.EditorRightBar.PropertiesGroupNameBox.CaretIndex = 0;
+                //NewGroup.ParentEditor.DataTableEditorData.EditorRightBar.PropertiesGroupNameBox.SelectAll();
+
+                //NewGroup.ParentEditor.DataTableEditorData.EditorRightBar.PropertiesGroupNameBox.Dispatcher.BeginInvoke(() =>
+                //{
+                //    var textBox = NewGroup.ParentEditor.DataTableEditorData.EditorRightBar.PropertiesGroupNameBox;
+
+                //    textBox.Focus();
+                //    textBox.CaretIndex = textBox.Text.Length;
+                //});
 
             }
 

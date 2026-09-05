@@ -96,6 +96,31 @@ namespace GameEditorStudio
             }
         }
 
+        private void OpenToolsFolderButtonClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+
+                if (Directory.Exists(ToolsFolderTextbox.Text))
+                {
+                    System.Diagnostics.Process.Start("explorer.exe", ToolsFolderTextbox.Text);
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("We can't find where your tool folder is! :(" +
+                        "\n" +
+                        "\nThis error isn't really accounted for. Maybe you should save and restart the program?", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                }
+
+            }
+            catch
+            {
+                PixelWPF.LibraryPixel.NotificationGenericError();
+                return;
+            }
+        }
+
         public void SetupThisWorkshop() 
         {
             TreeViewItem Witem = new();
@@ -174,7 +199,32 @@ namespace GameEditorStudio
                     }
                 }
             }
+            if (WorkshopData != null) 
+            {
+                foreach (Event Event in WorkshopData.WorkshopEvents)
+                {
+                    //if (commonEvent.Workshop == false) { continue; }
 
+                    foreach (EventCommand Ecom in Event.CommandList)
+                    {
+                        if (Ecom.Command != null) 
+                        {
+                            foreach (Tool tool in Ecom.Command.RequiredToolsList)
+                            {
+                                if (!ToolsInUseByCommons.Contains(tool))
+                                {
+                                    ToolsInUseByCommons.Add(tool);
+                                }
+                            }
+                        }
+                        
+                    }                    
+                }
+            }
+            
+
+
+            //
             label.Content = "GES Tools in use by this workshop (" + ToolsInUseByCommons.Count + ")";
 
             try { SetupTools(ToolsInUseByCommons, false); }

@@ -21,7 +21,7 @@ namespace GameEditorStudio
     public class AutoModMathStep
     {
 
-        public AutoModSimpleMathPieces MathPiece { get; set; } = AutoModSimpleMathPieces.Plus;
+        public AutoModSimpleMathPieces MathPiece { get; set; } = AutoModSimpleMathPieces.Multiply;
         public string MathValue { get; set; } = "1";
         public Entry? EntryTarget { get; set; } = null;
 
