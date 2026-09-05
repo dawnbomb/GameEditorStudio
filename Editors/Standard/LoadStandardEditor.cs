@@ -62,6 +62,7 @@ namespace GameEditorStudio
             DTEData.WorkshopXaml = TheWorkshop;
             DTEData.WorkshopData = Database;
             DTEData.EditorName = Path.GetFileName(Path.GetDirectoryName(TargetXML));
+            DTEData.EditorWorkshopTooltip = xml.Element("Tooltip")?.Value ?? "";
             DTEData.EditorIcon = xml.Element("Icon")?.Value;
             DTEData.EditorKey = xml.Element("Key")?.Value;
 

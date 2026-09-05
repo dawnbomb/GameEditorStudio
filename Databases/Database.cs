@@ -164,6 +164,7 @@ namespace GameEditorStudio
         public Label EditorTabNameLabel { get; set; } //The label inside the Editor Tab. 
         public Image EditorTabImage { get; set; } //An old mechanic that i may re-add at a later time. Mostly dummied out for now.
         public string EditorIcon { get; set; } //XML
+        public string EditorWorkshopTooltip { get; set; } = ""; //XML
 
 
         //Meta Data

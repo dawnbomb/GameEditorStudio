@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameEditorStudio"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="250">
+             d:DesignHeight="600" d:DesignWidth="300">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -34,7 +34,7 @@
             <DockPanel>
                 <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
                     <DockPanel Style="{DynamicResource ContentBar}">
-                        <Label Content="Info" FontWeight="Bold"/>
+                        <Label Content="Name Info" FontWeight="Bold"/>
 
                         <Label Content="Chars: XX / YY" Name="LabelCharacterCount" FontWeight="Bold" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
                     </DockPanel>
@@ -65,7 +65,39 @@
 
         <!--<GridSplitter x:Name="TranslationSplitter" Style="{DynamicResource SplitterHorizontal}" Grid.Row="3"   />-->
 
-        <Border Grid.Row="4" x:Name="TranslationsPanelBorder" Visibility="Collapsed"> 
+        <Border Grid.Row="4" x:Name="PDataPanelBorder" Visibility="Collapsed">
+            <ContentControl Grid.Row="2" >
+                <DockPanel>
+                    <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
+                        <DockPanel Style="{DynamicResource ContentBar}">
+                            <Label Content="Project Name Info" FontWeight="Bold" ToolTip="This lets you set editor view only override info over the offical name data. &#xA;Such as when your project wants to give an enemy a nickname.  &#xA;Or when you make for a weapon *for this project*, or "/>
+                        </DockPanel>
+                    </Border>
+                    <Grid Margin="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Name" Grid.Row="0" Grid.Column="0"/>
+                        <Border Grid.Row="0" Grid.Column="0" Margin="3,0,4,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="This lets you edit the name of an item. &#xA;BE CAREFUL ABOUT USING SYMBOLS THE GAME DOESN'T RECONIZE!!! &#xA;Also: most games have a character limit for name length.&#xA; &#xA;If you want to give it a Nickname, use a note instead!"/>
+                        <TextBox x:Name="ItemProjectNameTextbox" Grid.Row="0" Grid.Column="1" Width="Auto" Margin="3" PreviewKeyDown="ItemNameboxPreviewKeyDown" KeyDown="ItemNameboxKeyDown" TextChanged="ItemNameboxTextChanged"/>
+
+                        <Label Content="Note" Grid.Row="1" Grid.Column="0"/>
+                        <Border Grid.Row="1" Grid.Column="0" Margin="3,0,4,3" BorderThickness="0,0,0,2" BorderBrush="#FFA4A4A4" ToolTip="Notes (to the right) appear as &#xA;orange text next to the item. &#xA;They do not save to the game, but &#xA;are useful for quick notes. &#xA; &#xA;For detailed notes, use the box below. &#xA;It creates a tooltip for the item. &#xA;Don't be afraid to have a LOT of text!. &#xA; &#xA;Note that BOTH types of notes are a part of the editor, &#xA;they are not a part of your project. &#xA;IE other people can see them when sharing a workshop."/>
+                        <TextBox x:Name="ItemProjectNoteTextbox" Grid.Row="1" Grid.Column="1" Margin="3" KeyDown="ItemNoteboxKeyDown" />
+
+                        <TextBox TextChanged="NotepadTextChanged" x:Name="ItemProjectNotepadTextbox" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" AcceptsReturn="True" ToolTip="This is where you write a tooltip for the item.&#xD;&#xA;Items with a tooltip appear underlined, and hovering the mouse on them shows the tooltip.&#xD;&#xA;It also supports linebreaks (the enter key), go nuts.&#xD;&#xA;Item Tooltips are part of the editor, not a mod / project, but support for that is coming later." />
+                    </Grid>
+                </DockPanel>
+            </ContentControl>
+        </Border>
+
+        <Border Grid.Row="5" x:Name="TranslationsPanelBorder" Visibility="Collapsed">
             <local:TranslationsPanel x:Name="TranslationsPanel"  />
         </Border>
 

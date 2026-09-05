@@ -25,7 +25,8 @@
                 <DockPanel DockPanel.Dock="Top">
                     <Label Content="Tools Folder:"/>
                     <Button Click="SetToolsFolderButtonClick" Content="Browse..."/>
-                    <TextBox Name="ToolsFolderTextbox" />
+                    <Button Click="OpenToolsFolderButtonClick" Content="Open" DockPanel.Dock="Right" Width="65"/>
+                    <TextBox Name="ToolsFolderTextbox" />                    
                 </DockPanel>
                 <DockPanel DockPanel.Dock="Top">
                     <Label DockPanel.Dock="Top" Content="Not required, but if a Tools folder is set, GES will auto detect tools inside it. (even tools in sub-folders)"  VerticalAlignment="Top" Foreground="#FFB1CC78"/>

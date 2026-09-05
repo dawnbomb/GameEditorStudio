@@ -1879,11 +1879,11 @@ namespace GameEditorStudio
             {
                 TheFirstNameNum = int.TryParse(FileFirstNameIDNothingTextBox.Text, out int value) ? value : 0;
             }
-                
 
+            Debug.Print("-------------");
             for (int i = TheFirstNameNum; i < lines.Length + TheFirstNameNum; i++)
-            {
-                sb.AppendLine(i.ToString());
+            {                
+                sb.AppendLine(i.ToString());                
             }
 
             ItemsNumBox.Text = sb.ToString();
@@ -2109,13 +2109,6 @@ namespace GameEditorStudio
                 }
                 else if (TheEntry.Endianness == "2B")
                 {
-                    if (isSigned)
-                        ValueNum = BitConverter.ToInt16(DTEData.DataTable.FileDataTable.FileBytes, offset);
-                    else
-                        ValueNum = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, offset);
-                }
-                else if (TheEntry.Endianness == "2L")
-                {
                     byte[] bytes = DTEData.DataTable.FileDataTable.FileBytes.Skip(offset).Take(2).ToArray();
                     Array.Reverse(bytes);
                     if (isSigned)
@@ -2123,14 +2116,15 @@ namespace GameEditorStudio
                     else
                         ValueNum = BitConverter.ToUInt16(bytes, 0);
                 }
-                else if (TheEntry.Endianness == "4B")
+                else if (TheEntry.Endianness == "2L")
                 {
+                    
                     if (isSigned)
-                        ValueNum = BitConverter.ToInt32(DTEData.DataTable.FileDataTable.FileBytes, offset);
+                        ValueNum = BitConverter.ToInt16(DTEData.DataTable.FileDataTable.FileBytes, offset);
                     else
-                        ValueNum = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, offset);
+                        ValueNum = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, offset);
                 }
-                else if (TheEntry.Endianness == "4L")
+                else if (TheEntry.Endianness == "4B")
                 {
                     byte[] bytes = DTEData.DataTable.FileDataTable.FileBytes.Skip(offset).Take(4).ToArray();
                     Array.Reverse(bytes);
@@ -2138,6 +2132,14 @@ namespace GameEditorStudio
                         ValueNum = BitConverter.ToInt32(bytes, 0);
                     else
                         ValueNum = BitConverter.ToUInt32(bytes, 0);
+                    
+                }
+                else if (TheEntry.Endianness == "4L")
+                {
+                    if (isSigned)
+                        ValueNum = BitConverter.ToInt32(DTEData.DataTable.FileDataTable.FileBytes, offset);
+                    else
+                        ValueNum = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, offset);
                 }
 
 
@@ -2168,6 +2170,12 @@ namespace GameEditorStudio
 
             long maxVal = UsedValues.Any() ? (long)UsedValues.Max() : 0;
             long size = Math.Max((long)ItemsEditBox.LineCount, maxVal + 1);
+
+            if (size > 15000) 
+            {
+                LibraryPixel.Notification("Kinda big / laggy","The result from this would have values at Lines above 15K. \n\nBecause my UI currently lags past 10K lines, i am temporarily setting a max of 15K lines for this function. \n\nI'll fix it... *way* later. (i have better things to improve on in this program).");
+                size = 15000; 
+            }
 
             var lines = ItemsEditBox.Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
             StringBuilder sb = new StringBuilder();

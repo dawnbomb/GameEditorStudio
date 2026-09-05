@@ -42,17 +42,15 @@ namespace GameEditorStudio
             WorkshopData = Database; //Sets the database to the one passed in.
             DTEData = editor as DataTableEditorData;
 
-            DebugShowALL.Visibility = Visibility.Collapsed; //Blue eyeball
-            DebugUpdateALLGrid.Visibility = Visibility.Collapsed; //grid force update button.
-            TranslationToggle.Visibility = Visibility.Collapsed; //Translation panel toggle button.
-            EntryVisibilityToggle.Visibility = Visibility.Collapsed; //Clean UI mode
+            
 
             if (LibraryGES.DebugMode == true) 
             {
-                DebugUpdateALLGrid.Visibility = Visibility.Visible;
-                DebugShowALL.Visibility = Visibility.Visible;
-                TranslationToggle.Visibility = Visibility.Visible;
-                EntryVisibilityToggle.Visibility = Visibility.Visible;
+                DebugShowALL.Visibility = Visibility.Collapsed; //Blue eyeball
+                DebugUpdateALLGrid.Visibility = Visibility.Collapsed; //grid force update button.
+                PDataToggle.Visibility = Visibility.Collapsed;
+                TranslationToggle.Visibility = Visibility.Collapsed; //Translation panel toggle button.
+                EntryVisibilityToggle.Visibility = Visibility.Collapsed; //Clean UI mode
             }
 
             DTEData.EditorLeftBar.DataTableEditorData = DTEData;
@@ -301,6 +299,34 @@ namespace GameEditorStudio
                         SetExpandedState(item.Items, expanded);
                     }
                 }
+            }
+        }
+
+        private void ToggleNameProjectDataPanel(object sender, RoutedEventArgs e)
+        {
+            if (LibraryGES.ShowNameProjectDataPanel == true)
+            {
+                LibraryGES.ShowNameProjectDataPanel = false;
+            }
+            else if (LibraryGES.ShowNameProjectDataPanel == false)
+            {
+                LibraryGES.ShowNameProjectDataPanel = true;
+            }
+
+            foreach (DataTableEditorData editor in WorkshopData.GameEditors.OfType<DataTableEditorData>())
+            {
+                if (LibraryGES.ShowNameProjectDataPanel == true)
+                {
+                    TheLeftBar asdas = editor.DataTableEditorData.EditorLeftBar.LeftBarXaml as TheLeftBar;
+                    asdas.PDataPanelBorder.Visibility = Visibility.Visible;
+                    //TranslationsPanelBorder
+                }
+                else if (LibraryGES.ShowNameProjectDataPanel == false)
+                {
+                    TheLeftBar asdas = editor.DataTableEditorData.EditorLeftBar.LeftBarXaml as TheLeftBar;
+                    asdas.PDataPanelBorder.Visibility = Visibility.Collapsed;
+                }
+
             }
         }
 
@@ -939,17 +965,26 @@ namespace GameEditorStudio
         {
             if (LastColumn.Width == new System.Windows.GridLength(0))
             {
-                //RightBarToggle.Foreground = Brushes.White;
-                LastColumn.Width = new System.Windows.GridLength(500);
-                RightBarToggleMain.Visibility = Visibility.Collapsed;
+                foreach (DataTableEditorData editor in WorkshopData.GameEditors.OfType<DataTableEditorData>())  //Set color
+                {
+                    editor.DTEXaml.LastColumn.Width = new System.Windows.GridLength(500);
+                    editor.DTEXaml.RightBarToggleMain.Visibility = Visibility.Collapsed;
+                }
+                
             }
-            else 
+            else
             {
-                //RightBarToggle.Foreground = Brushes.Gray;
-                LastColumn.Width = new System.Windows.GridLength(0);
-                RightBarToggleMain.Visibility = Visibility.Visible;
-            }
+                foreach (DataTableEditorData editor in WorkshopData.GameEditors.OfType<DataTableEditorData>())  //Set color
+                {
+
+                    editor.DTEXaml.LastColumn.Width = new System.Windows.GridLength(0);
+                    editor.DTEXaml.RightBarToggleMain.Visibility = Visibility.Visible;
+                }                
+            }           
+            
             
         }
+
+        
     }
 }
