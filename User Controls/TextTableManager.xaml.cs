@@ -558,8 +558,8 @@ namespace GameEditorStudio
             //Editor Setup
             SetupForNewDTEditorNamesOLD(database);
             EditorFileNameIDTextBox.Text = "0";
-            EditorNameIDLabel.Visibility = Visibility.Collapsed;
-            EditorFileNameIDTextBox.Visibility = Visibility.Collapsed;
+            //EditorNameIDLabel.Visibility = Visibility.Collapsed;
+            //EditorFileNameIDTextBox.Visibility = Visibility.Collapsed;
             if (EntryClass.EntryTypeMenu.TextTableEditor != null)
             {
                 if (EntryClass.EntryTypeMenu.TextTableEditor.LinkedDTEEditor != null) 
@@ -574,7 +574,7 @@ namespace GameEditorStudio
                         }
                     }
 
-                    EditorFileNameIDTextBox.Text = EntryClass.EntryTypeMenu.TextTableEditor.TextTableFirstNameID.ToString();
+                    //EditorFileNameIDTextBox.Text = EntryClass.EntryTypeMenu.TextTableEditor.TextTableFirstNameID.ToString();
                 }                
 
                 
@@ -1076,6 +1076,7 @@ namespace GameEditorStudio
             //DTEData.EditorTab.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 
             DTEData.DTEXaml.GenerateUI();
+            DTEData.DTEXaml.UpdateAllMenuEntrysToNewNamesList();
             Closethis();
         }
 
@@ -1468,13 +1469,12 @@ namespace GameEditorStudio
             Database = wdata;
 
             EditorsTreeView.Items.Clear();
-            foreach (var Editor2 in Database.GameEditors)
-            {
-                Editor Editor = Editor2;
+            foreach (DataTableEditorData editor in wdata.GameEditors.OfType<DataTableEditorData>())  //var Editor2 in Database.GameEditors
+            {   
 
                 TreeViewItem Item = new TreeViewItem();
-                Item.Header = Editor.EditorName;
-                Item.Tag = Editor;
+                Item.Header = editor.EditorName;
+                Item.Tag = editor;
 
                 EditorsTreeView.Items.Add(Item);
             }
@@ -1799,6 +1799,16 @@ namespace GameEditorStudio
 
         private void EditorsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
+            EditorNamesPreviewTextbox.Text = "Editor not selected, or editor has no name table???";
+
+            TreeViewItem Item = EditorsTreeView.SelectedItem as TreeViewItem;
+            if (Item == null) { return; }
+            Editor TheEditor = Item.Tag as Editor;
+            if (TheEditor == null) { return; }
+            if (TheEditor.DataTableEditorData.NameTable == null) { return; }
+
+            EditorFileNameIDTextBox.Text = TheEditor.DataTableEditorData.NameTable.TextTableFirstNameID.ToString();
+
             UpdateEditorNamespreview();
         }
 
@@ -2264,6 +2274,44 @@ namespace GameEditorStudio
         private void NothingFirstNameNumTextboxTextChanged(object sender, TextChangedEventArgs e)
         {
             UpdateNothingNumBox();
+        }
+
+        private void EditorInsertNameCheckboxChecked(object sender, RoutedEventArgs e)
+        {
+            EditorInsertNameTextTextbox.IsEnabled = true;
+            EditorInsertNameValueTextbox.IsEnabled= true;
+            EditorInsertNameDisplayNumberTextbox.IsEnabled = true;
+        }
+
+        private void EditorInsertNameCheckboxUnchecked(object sender, RoutedEventArgs e)
+        {
+            EditorInsertNameTextTextbox.IsEnabled = false;
+            EditorInsertNameValueTextbox.IsEnabled = false;
+            EditorInsertNameDisplayNumberTextbox.IsEnabled = false;
+        }
+
+        private void InheritFromLinkedEditorButtonClick(object sender, RoutedEventArgs e)
+        {
+            TreeViewItem Item = EditorsTreeView.SelectedItem as TreeViewItem;
+            if (Item == null) { return; }
+            Editor TheEditor = Item.Tag as Editor;
+            if (TheEditor == null) 
+            {
+                LibraryPixel.Notification("No editor selected","oops~");
+                return;
+            }
+
+            //TheEditor.DataTableEditorData.NameTable.TextTableFirstNameID = TheEditor.DataTableEditorData.
+
+            //EditorFileNameIDTextBox.Text = "0";
+            //LinkToEditorFirstNameValueTextbox.Text = "0";
+
+        }
+
+        private void ButtonOpenTextDumpHelperTool(object sender, RoutedEventArgs e)
+        {
+            TextDumpHelp textDumpHelp = new TextDumpHelp(DTEData);
+            
         }
     }
 }

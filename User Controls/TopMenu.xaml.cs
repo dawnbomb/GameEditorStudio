@@ -224,6 +224,7 @@ namespace GameEditorStudio
                 return;
             }
 
+            
             //MethodData methodData = new MethodData();
             //methodData.WorkshopData = WorkshopData; // Set the WorkshopData property to the current workshop data
             //CommandMethodsClass.SaveGameData(methodData);
@@ -235,6 +236,8 @@ namespace GameEditorStudio
                     MethodData ActionPack = new();
                     ActionPack.Command = Command;
                     ActionPack.mainMenu = this;
+
+                    //PixelWPF.LibraryPixel.NotificationNegative("Debug Message SG1", "Current Workshop's Name: \n" + WorkshopData.WorkshopName);                    
 
                     Command.TheMethod?.Invoke(ActionPack);  // Pass 'command' as the argument
                     return;
@@ -341,7 +344,7 @@ namespace GameEditorStudio
         private void ReloadToolLocations() //Appearently, if i remove a tool, the program actually notices immedietly anyway, but i wanted this here anyway because if forgot, and now i want it here to double make sure. ^^;
         {
             LoadDatabase LoadingDatabase = new();
-            LoadingDatabase.LoadToolLocations();
+            LoadingDatabase.LoadToolLocations(WorkshopData);
         }
 
         private void OpenToolsWindow(object sender, RoutedEventArgs e)
@@ -549,9 +552,9 @@ namespace GameEditorStudio
                 List<string> missingProjectResources = new List<string>();
                 bool conditionsMet = true;
                 bool BrokenEvent = false;
-                bool MissingRequirements = false;
-                bool CMDTHING = false;
-                bool NeedsLoadedProject = false;
+                bool MissingRequirements = false; //When a tool location is not set, or something similaur. 
+                bool CMDTHING = false; //check for if resource links are correctly assigned.
+                bool NeedsLoadedProject = false; //check for if this needs a project to be loaded (and not just selected)
                 bool MissingExpectedWorkshopToolKey = false;
 
                 foreach (EventCommand myCommand in Event.CommandList)
@@ -638,6 +641,38 @@ namespace GameEditorStudio
 
                         string effectiveResourceLocation = "";
 
+                        if (eventResource.ResourceType == EventResource.ResourceTypes.CMDGTool) 
+                        {
+                            Tool tool = Database.Tools.FirstOrDefault(tol => tol.Key == eventResource.Location); //PARENT key
+
+                            if (tool == null) { LibraryPixel.Notification("Event Condition Check Error 13", "Cant find GES tool.\n\nThis is almost surely a bug, please report it!"); }
+                            if (tool.Location == null) { }
+                            if (!File.Exists(tool.Location))
+                            {
+                                conditionsMet = false;
+                                MissingRequirements = true;
+                                missingTools.Add(tool.DisplayName);
+                                //missingProjectResources.Add(eventResource.Name ?? $"Resource {resourceKeyPair.Key}");
+                            }
+                            continue;
+                        }
+                        if (eventResource.ResourceType == EventResource.ResourceTypes.CMDWTool)
+                        {
+                            Tool tool = WorkshopData.WorkshopTools.FirstOrDefault(tol => tol.Key == eventResource.Location); //PARENT key
+
+                            if (tool == null) { LibraryPixel.Notification("Event Condition Check Error 14", "Cant find Workshop tool.\n\nThis is almost surely a bug, please report it!"); }
+                            if (tool.Location == null) { }
+                            if (!File.Exists(tool.Location))
+                            {
+                                conditionsMet = false;
+                                MissingRequirements = true;
+                                missingTools.Add(tool.DisplayName);
+                                //missingProjectResources.Add(eventResource.Name ?? $"Tool " + tool.DisplayName); //{resourceKeyPair.Key}
+                            }
+                            continue;
+                        }
+
+                        //Now, if resource is type of File or Folder.....
                         // Check if this resource is a child. IE if path is relative or absolute
                         if (eventResource.IsChild == true) //!string.IsNullOrEmpty(eventResource.ParentKey)
                         {

@@ -8,8 +8,14 @@
              d:DesignHeight="750" d:DesignWidth="900">
     <DockPanel Name="BackPanel">
         <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,3,0,2" Height="30">
-            <Button Name="LineIDToggle" Content="L-ID" Width="70" Margin="264,0,0,0" Click="ToggleLineID" ToolTip="Toggles Line ID Numbers On/Off."/>
+            <Button Name="LineIDToggle" Content="L-ID" Width="70" Margin="178,0,0,0" Click="ToggleLineID" ToolTip="Toggles Line ID Numbers On/Off."/>
             <Button Click="ToggleRightSideBar" Name="RightBarToggle" Content="Sidebar" Margin="0,0,0,0"  ToolTip="Toggles the right side bar." DockPanel.Dock="Right" Foreground="#FFA4A4A4"/>
+
+            <TextBox TextChanged="SearchBarTextChanged" KeyDown="SearchBarKeyDown" Name="SearchBar" Margin="16,2,5,2" TextWrapping="NoWrap" AcceptsReturn="False" Text="Search" MinWidth="300"/>
+            <Label Name="SearchResultLabel" Content="0 / 0" />
+            <Button Click="SearchPreviousClick" Content="Prev" Width="NaN"/>
+            <Button Click="SearchNextClick" Content="Next" Width="NaN"/>
+
         </DockPanel>
         <Grid x:Name="MainGrid" DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
@@ -26,7 +32,7 @@
                 <ScrollViewer  Background="Transparent" BorderThickness="0">
                     <DockPanel Background="Transparent" >
                         <TextBox Name="TheLineBox" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" DockPanel.Dock="Left" IsReadOnly="True" MinWidth="30" BorderThickness="0,0,2,0"/>
-                        <TextBox Name="TheTextBox" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden" DockPanel.Dock="Left" TextChanged="TextBoxTextChanged"  AcceptsReturn="True" BorderThickness="0"/>
+                        <TextBox Name="TheTextBox" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden" DockPanel.Dock="Left" TextChanged="TextBoxTextChanged" KeyDown="TextBoxKeyDown"  AcceptsReturn="True" BorderThickness="0" IsInactiveSelectionHighlightEnabled="True"/>
                     </DockPanel>
                 </ScrollViewer>
             </ContentControl>

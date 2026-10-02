@@ -21,7 +21,10 @@ namespace GameEditorStudio
 
 
         public static List<Tool> Tools { get; set; } = new();
-        public static List<Tool> WorkshopTools { get; set; } = new(); //A master list of ALL workshop tools the user set a path to. The actual list of a workshop's specific workshop tool list is in the workshop. 
+        public static List<Tool> MasterWorkshopTools { get; set; } = new(); //A master list of ALL workshop tools **the user currently has a valid path to**. For the list of ALL of a workshop's tools, that's inside the workshop. 
+        //I invented the MasterWorkshopTools list to deal with loading workshop tools last known location, because of a bug where they were not loading.
+        //But this shouldn't be my final answer. I should delete this from here when i have time and if possible, only use the ones inside workshops. 
+        
         public static List<Command> Commands { get; set; } = new();
         public static List<CommonEvent> CommonEvents { get; set; } = new(); //WORKSHOP COMMONS?
 
@@ -87,7 +90,7 @@ namespace GameEditorStudio
         public List<CommonEvent> WorkshopCommonEvents { get; set; } = new(); //WORKSHOP COMMONS?
         public List<Event> WorkshopEvents { get; set; } = new();
 
-        public List<Tool> WorkshopTools { get; set; } = new(); //XML //This is for Non-GES workshop tools.
+        public List<Tool> WorkshopTools { get; set; } = new(); //XML //This is for ALL Non-GES workshop tools. (Even the ones the user does not currently have a valid path to) 
 
         //////////////////////////////ADVANCED INFO AFTER OPENING WORKSHOP/////////////////////////////////////////////////////////////
         public Workshop WorkshopXaml { get; set; } //Set when a workshop is actually opened.

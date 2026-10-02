@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Linq;
+using PixelWPF;
 
 namespace GameEditorStudio
 {
@@ -134,6 +135,8 @@ namespace GameEditorStudio
             System.Windows.Media.Brush TheBrush = null;//(SolidColorBrush)(new BrushConverter().ConvertFrom("#131824")); //System.Windows.Media.Brushes.DarkSlateGray; //System.Windows.Media.Brushes.DarkSlateGray
 
             if (EventResource.ResourceType == EventResource.ResourceTypes.CMDText) { return; }
+            if (EventResource.ResourceType == EventResource.ResourceTypes.CMDWTool) { return; }
+            if (EventResource.ResourceType == EventResource.ResourceTypes.CMDGTool) { return; }
 
             DockPanel MainPanel = new();
             ResourcePanel.Children.Add(MainPanel);
@@ -144,7 +147,7 @@ namespace GameEditorStudio
             DockPanel TopPanel = new();
             DockPanel.SetDock(TopPanel, Dock.Top);
             MainPanel.Children.Add(TopPanel);
-            TopPanel.Height = 30;
+            TopPanel.MinHeight = 30;
             TopPanel.Margin = new Thickness(0, 3, 0, 2);
             TopPanel.LastChildFill = false;
             TopPanel.Background = TheBrush;
@@ -167,6 +170,9 @@ namespace GameEditorStudio
             {
                 if (MainPanel.Parent is not Panel parentPanel)
                     return;
+
+                bool ConfirmDelete = LibraryPixel.NotificationConfirm("Just making sure~", "Did you want to delete this resource?:\n" + EventResource.Name);
+                if (ConfirmDelete == false) { return; }
 
                 // Find events that are using this resource
                 var eventsUsingResource = new List<string>();
@@ -408,6 +414,13 @@ namespace GameEditorStudio
                 };
             }
 
+
+            Button OpenButton = new();
+            TopPanel.Children.Add(OpenButton);
+            DockPanel.SetDock(OpenButton, Dock.Right);
+            OpenButton.Width = 80;
+            OpenButton.Margin = new Thickness(0,0,3,0);
+            OpenButton.Content = "Open";
             
 
 
@@ -460,7 +473,8 @@ namespace GameEditorStudio
                 TopPanel.Children.Add(CheckBox);
                 DockPanel.SetDock(CheckBox, Dock.Left);
                 CheckBox.Content = "Require Exact Name";
-                CheckBox.Width = 150;
+                CheckBox.ToolTip = "If this is ON, users must select a resource with the \nexact same name when setting a project resource.";
+                //CheckBox.Width = 150;
                 CheckBox.Margin = new Thickness(10, 0, 0, 0);
                 CheckBox.Background = TheBrush;
                 if (EventResource.RequiredName == true) { CheckBox.IsChecked = true; BrowsePanel.Visibility = Visibility.Visible; BrowseButton.Visibility = Visibility.Visible; }
@@ -507,7 +521,8 @@ namespace GameEditorStudio
             TooltipTextbox.Text = EventResource.TooltipText;
             TopPanel.Children.Add(TooltipTextbox);
             DockPanel.SetDock(TooltipTextbox, Dock.Left);
-            TooltipTextbox.MinWidth = 80;
+            TooltipTextbox.MinWidth = 100;
+            TooltipTextbox.AcceptsReturn = true;
             TooltipTextbox.TextChanged += (sender, e) =>
             {
                 EventResource.TooltipText = TooltipTextbox.Text;
@@ -535,8 +550,163 @@ namespace GameEditorStudio
             Textbox.IsEnabled = false;
             Textbox.Text = EventResource.Location;
 
+
+            OpenButton.Click += (sender, e) =>
+            {
+                Project UserProject = workshopData.LoadedProject;
+                if (UserProject == null) //Setting the user project if its from library.
+                {
+                    GameLibrary library = Database.GameLibrary;
+
+                    if (library.ProjectsSelector.SelectedIndex < 0 || library.LibraryTreeOfWorkshops.SelectedItem == null)
+                    {
+                        PixelWPF.LibraryPixel.NotificationNegative("Error: No Project Selected.", "There isn't any project selected in the game library. Go select one first. Sorry :(");
+                        return;
+                    }
+                    UserProject = library.SelectedWorkshop.ProjectsList[library.ProjectsSelector.SelectedIndex];
+                }
+                                
+                
+
+                if (EventResource.IsChild == false)
+                {
+                    
+                    if (EventResource.ResourceType == EventResource.ResourceTypes.File)
+                    {
+                        string ParentFilePath = ""; //Where a relative file/folder starts it's search.
+
+                        foreach (ProjectEventResource ProjectResourceData in UserProject.ProjectEventResources) //Setting the Folder Start path using the project's set resource location.
+                        {
+                            if (EventResource.Key == ProjectResourceData.Key)
+                            {
+                                if (ProjectResourceData.Location == "" || ProjectResourceData.Location == null) //or directory exists
+                                {
+                                    PixelWPF.LibraryPixel.NotificationNegative("No File Location!", "Can't open location because no file is set.");
+                                    return;
+                                }
+                                if (!File.Exists(ProjectResourceData.Location)) //or directory exists
+                                {
+                                    PixelWPF.LibraryPixel.NotificationNegative("File Location is Missing?", "It seems like the File: \n(" + EventResource.Name + "), " +
+                                        "\nFile Location: \n(" + ProjectResourceData.Location + "), " +
+                                        "\n\ndoesn't exist anymore! IE a file does not exist at that location. " +
+                                        "\n\nGo fix that first! (Set a new location for it)" +
+                                        "\n\nIf this isn't true then i missed something T.T please report it :3");
+                                    return;
+                                }
+                                ParentFilePath = ProjectResourceData.Location;
+                            }
+                        }
+
+                        LibraryGES.OpenFileFolder(ParentFilePath);
+                        return;
+                    }
+                    else if (EventResource.ResourceType == EventResource.ResourceTypes.Folder)
+                    {
+                        string ParentFolderPath = ""; //Where a relative file/folder starts it's search.
+
+                        foreach (ProjectEventResource ProjectResourceData in UserProject.ProjectEventResources) //Setting the Folder Start path using the project's set resource location.
+                        {
+                            if (EventResource.Key == ProjectResourceData.Key)
+                            {
+                                if (ProjectResourceData.Location == "" || ProjectResourceData.Location == null) //or directory exists
+                                {
+                                    PixelWPF.LibraryPixel.NotificationNegative("No Folder Location!", "Can't open location because no folder is set.");
+                                    return;
+                                }
+                                if (!Directory.Exists(ProjectResourceData.Location)) //or directory exists
+                                {
+                                    PixelWPF.LibraryPixel.NotificationNegative("Folder Location is Missing?", "It seems like the folder: \n(" + EventResource.Name + "), " +
+                                        "\nFolder Location: \n(" + ProjectResourceData.Location + "), " +
+                                        "\n\ndoesn't exist anymore! IE a folder does not exist at that location. " +
+                                        "\n\nGo fix that first! (Set a new location for it)" +
+                                        "\n\nIf this isn't true then i missed something T.T please report it :3");
+                                    return;
+                                }
+                                ParentFolderPath = ProjectResourceData.Location;
+                            }
+                        }
+
+                        LibraryGES.OpenFolder(ParentFolderPath);
+                        return;
+                    }
+                    return;
+                }
+
+
+                if (EventResource.IsChild == true) 
+                {
+                    if (EventResource.ParentKey == "")
+                    {
+                        PixelWPF.LibraryPixel.NotificationNegative("No Parent Folder!", "Can't open child folder location because no parent folder is set.");
+                        return;
+                    }
+                }
+
+                string FolderStartPath = ""; //Where a relative file/folder starts it's search.
+
+
+                //IMPORTANT NOTE:
+                //
+                //I made the decision that when browsing for the location of a child File/Folder,
+                //that the user MUST first set the current project's resource location for the parent. I decided this because...
+                //1: It's good to start the file explorer at the location of the parent folder's location.
+                //2: It *feels* required if i want to allow the parent to not require a specific folder name,
+                //and also somehow know what parts of the path are to the parent location vs from the parent location. 
+
+
+
+
+                foreach (ProjectEventResource ProjectResourceData in UserProject.ProjectEventResources) //Setting the Folder Start path using the project's set resource location.
+                {
+                    if (EventResource.ParentKey == ProjectResourceData.Key)
+                    {
+                        EventResource resource = workshopData.WorkshopEventResources.FirstOrDefault(r => r.Key == EventResource.ParentKey);
+
+                        if (ProjectResourceData.Location == "" || ProjectResourceData.Location == null) //or directory exists
+                        {
+                            PixelWPF.LibraryPixel.NotificationNegative("No Parent Folder Location!", "Can't open child folder location because no parent folder is set.");
+                            return;
+                        }
+                        if (!Directory.Exists(ProjectResourceData.Location)) //or directory exists
+                        {
+                            PixelWPF.LibraryPixel.NotificationNegative("Parent Folder Location is Missing?", "It seems like the parent folder: \n(" + resource.Name + "), " +
+                                "\nParent Folder Location: \n(" + ProjectResourceData.Location + "), " +
+                                "\n\ndoesn't exist anymore! IE a folder does not exist at that location. " +
+                                "\n\nGo fix that first! (Set a new location for it)" +
+                                "\n\nIf this isn't true then i missed something T.T please report it :3");
+                            return;
+                        }
+                        FolderStartPath = ProjectResourceData.Location;
+                    }
+                }
+                                
+
+
+                if (EventResource.ResourceType == EventResource.ResourceTypes.File)
+                {
+                    LibraryGES.OpenFileFolder(FolderStartPath + "\\" + EventResource.Location);
+                    return;
+                }
+                else if (EventResource.ResourceType == EventResource.ResourceTypes.Folder)
+                {
+                    LibraryGES.OpenFolder(FolderStartPath + "\\" + EventResource.Location);
+                    return;
+                }
+                return;
+
+            };
+
             BrowseButton.Click += (sender, e) =>
             {
+                if (EventResource.IsChild == true) 
+                {
+                    if (EventResource.ParentKey == "") 
+                    {
+                        PixelWPF.LibraryPixel.NotificationNegative("No Parent Folder!","To set the location of a child file or child folder, first set what folder this is a child of.");
+                        return;
+                    }
+                }
+
                 string LocationString = ""; //The string that gets put into the box & saved.
                 string FolderStartPath = ""; //Where a relative file/folder starts it's search.
 
@@ -569,8 +739,8 @@ namespace GameEditorStudio
 
                         if (ProjectResourceData.Location == "" || ProjectResourceData.Location == null) //or directory exists
                         {
-                            PixelWPF.LibraryPixel.NotificationNegative("Error: Parents location is blank.", "To set the location of a child resource, first go and set the project resource location for the parent folder (" + resource.Name + ")." +
-                                "\n\nYes I know this is annoying, but after thinking this through A LOT, this really is the only way. I'M SORRYYY :(");
+                            PixelWPF.LibraryPixel.NotificationNegative("Error: Parent folder location is blank.", "Before setting the location of a child resource, first set the location of the parent folder \n(" + resource.Name + ")." +
+                                "\n\nI *know* this is annoying, but I thought about it a LOT, and this really is for the best. I'M SORRYYY :(");
                             return;
                         }
                         if (!Directory.Exists(ProjectResourceData.Location)) //or directory exists
@@ -610,6 +780,13 @@ namespace GameEditorStudio
                 //        EventResource.RequiredName = LocationString;
                 //    }
                 //}
+                if (LocationString == null || LocationString == "")
+                {
+                    PixelWPF.LibraryPixel.NotificationNegative("Selection not inside Parent Folder!", "A child file/folder must select something inside the parent folder." +
+                        "\n\nMaybe it was an accident, but you selected something outside that location." +
+                        "\n\n(Your selection will not be set)");
+                    return;
+                }
                 if (LocationString != null || LocationString != "")
                 {
                     Textbox.Text = LocationString;

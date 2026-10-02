@@ -212,6 +212,8 @@ namespace GameEditorStudio
                                 if (xmlEvent.Element("ResourceType")?.Value == "File") { EventResource.ResourceType = EventResource.ResourceTypes.File; }
                                 if (xmlEvent.Element("ResourceType")?.Value == "Folder") { EventResource.ResourceType = EventResource.ResourceTypes.Folder; }
                                 if (xmlEvent.Element("ResourceType")?.Value == "CMDText") { EventResource.ResourceType = EventResource.ResourceTypes.CMDText; }
+                                if (xmlEvent.Element("ResourceType")?.Value == "CMDWTool") { EventResource.ResourceType = EventResource.ResourceTypes.CMDWTool; }
+                                if (xmlEvent.Element("ResourceType")?.Value == "CMDGTool") { EventResource.ResourceType = EventResource.ResourceTypes.CMDGTool; }
                                 if (xmlEvent.Element("IsChild")?.Value == "False") { EventResource.IsChild = false; }
                                 if (xmlEvent.Element("IsChild")?.Value == "True") { EventResource.IsChild = true; }
 
@@ -357,16 +359,30 @@ namespace GameEditorStudio
                                                         CommandResource ResourceData = new();
                                                         ResourceData.Label = "Your Text";
                                                         ResourceData.Type = CommandResource.ResourceTypes.CMDText;
-                                                        //ResourceData.CMDString = resourceElement.Element("CMDText")?.Value;
                                                         myCommand.CMDList.Add(ResourceData);
 
                                                         ResourceData.CMDTextKey = resourceElement.Element("CMDTextKey")?.Value;
 
-                                                        //EventResource TextResource = new();
-                                                        //TextResource.Name = "CMD Text Resource";
-                                                        //TextResource.Key = PixelWPF.LibraryPixel.GenerateKey();
-                                                        //TextResource.ResourceType = EventResource.ResourceTypes.Text;
-                                                        //workshopData.WorkshopEventResources.Add(TextResource);
+                                                    }
+                                                    if (CMDType == "WTool")
+                                                    {
+                                                        CommandResource ResourceData = new();
+                                                        ResourceData.Label = "Workshop Tool";
+                                                        ResourceData.Type = CommandResource.ResourceTypes.WTool;
+                                                        myCommand.CMDList.Add(ResourceData);
+
+                                                        ResourceData.CMDWToolKey = resourceElement.Element("CMDWToolKey")?.Value;
+
+                                                    }
+                                                    if (CMDType == "GTool")
+                                                    {
+                                                        CommandResource ResourceData = new();
+                                                        ResourceData.Label = "GES Tool";
+                                                        ResourceData.Type = CommandResource.ResourceTypes.GTool;
+                                                        myCommand.CMDList.Add(ResourceData);
+
+                                                        ResourceData.CMDGToolKey = resourceElement.Element("CMDGToolKey")?.Value;
+
                                                     }
                                                 }
                                             }
@@ -518,7 +534,7 @@ namespace GameEditorStudio
 
         }
 
-        public void LoadToolLocations()
+        public void LoadToolLocations(WorkshopData? workshopdata)
         {
             
             if (Directory.Exists(LibraryGES.ApplicationLocation + "\\Settings")) 
@@ -539,6 +555,7 @@ namespace GameEditorStudio
             
             //STEP 2: Load tools in user's tools folder, and clear any set tool locations that are now invalid.             
             LoadToolLocationsFromToolsFolder();
+            if (workshopdata != null) { LoadWorkshopToolLocationsFromToolsFolder(workshopdata); }            
             ClearEmptyToolLocations(); 
 
             void LoadLastKnownToolLocations(XmlDocument doc) 
@@ -568,7 +585,7 @@ namespace GameEditorStudio
                     if (TheKey == "") { continue; }
                     if (TheLocation == null) { continue; }
                     if (TheLocation == "") { continue; }
-                    Tool? existingTool = Database.WorkshopTools.FirstOrDefault(t => t.Key == TheKey);
+                    Tool? existingTool = Database.MasterWorkshopTools.FirstOrDefault(t => t.Key == TheKey);
                     if (existingTool != null) { continue; }
                     if (!File.Exists(TheLocation)) { continue; }
 
@@ -577,7 +594,7 @@ namespace GameEditorStudio
                     tool.Key = WtoolNode["Key"]?.InnerText ?? tool.Key;
                     tool.Location = WtoolNode["Location"]?.InnerText ?? tool.Location;
 
-                    Database.WorkshopTools.Add(tool);
+                    Database.MasterWorkshopTools.Add(tool);
                 }
             }
 
@@ -638,6 +655,42 @@ namespace GameEditorStudio
                 }
             }
 
+            void LoadWorkshopToolLocationsFromToolsFolder(WorkshopData workshopdata)
+            {
+                string ToolsFolder = Properties.Settings.Default.ToolsFolder;
+                if (!Directory.Exists(ToolsFolder)) { return; }
+
+                Dictionary<string, List<string>> filesByName = new(StringComparer.OrdinalIgnoreCase);
+                                
+                foreach (string file in Directory.EnumerateFiles(ToolsFolder, "*", SearchOption.AllDirectories))
+                {                    
+
+                    string fileName = Path.GetFileName(file);
+
+                    if (fileName == "Example.exe")
+                    {
+                        string testa = "sdfsdaf";
+                    }
+
+                    if (!filesByName.TryGetValue(fileName, out List<string>? paths))
+                    {
+                        paths = new List<string>();
+                        filesByName[fileName] = paths;
+                    }
+
+                    paths.Add(file);
+                }
+               
+                foreach (Tool tool in workshopdata.WorkshopTools) //workshopdata.WorkshopTools   //Database.MasterWorkshopTools
+                {
+                    if (filesByName.TryGetValue(tool.ExeName, out List<string>? paths))
+                    {
+                        tool.Location = paths[0];
+
+                    }
+                }
+            }
+
             void ClearEmptyToolLocations() 
             {
                 foreach (var tool in Database.Tools)
@@ -667,9 +720,17 @@ namespace GameEditorStudio
 
             foreach (XElement XCommand in xml.Descendants("Command"))
             {
-                Command command = new();
+                
 
+                Command command = new();
+                
                 command.DisplayName = XCommand.Element("Name")?.Value;
+
+                if (command.DisplayName == "Rename File") 
+                {
+                    string sfsdfas = "";
+                }
+
                 command.Description = XCommand.Element("Description")?.Value;
                 command.Notepad = XCommand.Element("Notepad")?.Value;
                 command.Key = XCommand.Element("Key")?.Value;
@@ -698,9 +759,6 @@ namespace GameEditorStudio
                 
 
 
-                command.GameLibrary = gameLibrary;
-
-
                 Database.Commands.Add(command);
 
             }
@@ -727,17 +785,25 @@ namespace GameEditorStudio
 
 
 
+        //private CommandResource.ResourceTypes ParseResourceType(string resourceType)
+        //{
+        //    // You could enhance this to handle more types or unexpected inputs
+        //    return resourceType.Equals("Folder", StringComparison.OrdinalIgnoreCase) ?
+        //           CommandResource.ResourceTypes.Folder : CommandResource.ResourceTypes.File : CommandResource.ResourceTypes.Text;
+        //}
+
         private CommandResource.ResourceTypes ParseResourceType(string resourceType)
         {
-            // You could enhance this to handle more types or unexpected inputs
-            return resourceType.Equals("Folder", StringComparison.OrdinalIgnoreCase) ?
-                   CommandResource.ResourceTypes.Folder : CommandResource.ResourceTypes.File;
+            return resourceType?.ToLower() switch
+            {
+                "folder" => CommandResource.ResourceTypes.Folder,
+                "text" => CommandResource.ResourceTypes.Text,
+                _ => CommandResource.ResourceTypes.File // Default fallback
+            };
         }
 
 
 
-
-        
 
 
 

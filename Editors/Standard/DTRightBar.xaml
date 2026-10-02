@@ -352,7 +352,7 @@
                                 </TabItem>
                                 <TabItem Name="EntryTabItem" Header="Entry" Margin="0,0,0,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
                                     <DockPanel >
-                                        
+
                                         <Border DockPanel.Dock="Top">
                                             <DockPanel>
                                                 <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
@@ -420,7 +420,7 @@
                                                     <ComboBox DropDownClosed="PropertiesEntryType_DropDownClosed" x:Name="PropertiesEntryType" Grid.Row="5" Grid.Column="2" Margin="3"  >
                                                     </ComboBox>
 
-                                                    
+
                                                 </Grid>
                                             </DockPanel>
                                         </Border>
@@ -522,22 +522,25 @@
                                                 <TabItem Header="Menu" Name="EntryTab4">
                                                     <DockPanel>
                                                         <Border Style="{DynamicResource ContentBorder}" DockPanel.Dock="Top">
-                                                            <DockPanel Style="{DynamicResource ContentBar}" >
-                                                                <Label Content="Menu Properties" FontWeight="Bold" />
+                                                            <DockPanel Style="{DynamicResource ContentBar}" LastChildFill="False" >
+                                                                <Label Content="Menu Properties" FontWeight="Bold" DockPanel.Dock="Left" />
+                                                                <Button Click="MenuEntryOpenTextTableManager" Name="ButtonMenuManager" Content="Menu Manager" HorizontalAlignment="Left" Margin="10,3,10,0" VerticalAlignment="Top" Width="200" Height="28" DockPanel.Dock="Right" />
                                                             </DockPanel>
                                                         </Border>
 
                                                         <Grid >
-                                                            <Label Content="Menu Type" HorizontalAlignment="Left" Margin="9,1,0,0" VerticalAlignment="Top"/>
-                                                            <ComboBox x:Name="DropdownMenuType" HorizontalAlignment="Left" Margin="135,6,0,0" VerticalAlignment="Top"  DropDownClosed="PropertiesMenuType_DropDownClosed" Width="128">
+                                                            <Label Content="Menu Type" HorizontalAlignment="Left" Margin="10,1,0,0" VerticalAlignment="Top"/>
+                                                            <ComboBox x:Name="DropdownMenuType" HorizontalAlignment="Left" Margin="123,6,0,0" VerticalAlignment="Top"  DropDownClosed="PropertiesMenuType_DropDownClosed" Width="128">
                                                                 <ComboBoxItem Content="Dropdown" Name="MenuTypeItemDropdown"/>
                                                                 <ComboBoxItem Content="List" IsSelected="True" Name="MenuTypeItemList"/>
                                                             </ComboBox>
 
-                                                            <Button Click="MenuEntryOpenTextTableManager" Name="ButtonMenuManager" Content="Menu Manager" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="253" Height="30" />
 
 
-                                                            <Label Content="Editor link will &#xA;later support &#xD;&#xA;name notes :D" HorizontalAlignment="Left" Margin="263,-6,0,0" VerticalAlignment="Top"/>
+                                                            <Label Content="Dec:" Margin="10,40,0,0"/>
+                                                            <TextBox x:Name="MenuCurrentDexTextbox" HorizontalAlignment="Left" Margin="70,43,0,0" TextWrapping="NoWrap" Text="Dec Value" VerticalAlignment="Top" Width="146" IsEnabled="False"/>
+                                                            <Label Content="Hex:" Margin="261,39,0,1"/>
+                                                            <TextBox x:Name="MenuCurrentHexTextbox" HorizontalAlignment="Left" Margin="332,43,0,0" TextWrapping="NoWrap" Text="Coming Later" VerticalAlignment="Top" Width="146" IsEnabled="False"/>
 
                                                         </Grid>
                                                     </DockPanel>
@@ -559,7 +562,7 @@
                                                     <Label Content="Hex Address" Grid.Row="6" Grid.Column="1" Margin="0"/>
                                                     <TextBox x:Name="PropertiesEntryHexAddressTextbox" Grid.Row="6" Grid.Column="2" Margin="3" TextWrapping="Wrap" IsEnabled="False" DockPanel.Dock="Top"/>
                                                 </DockPanel>
-                                                
+
                                                 <Grid DockPanel.Dock="Top">
                                                     <Label Content="Decimal" HorizontalAlignment="Left" Margin="50,-1,0,0" VerticalAlignment="Top"/>
                                                     <Label Content="Hex" HorizontalAlignment="Left" Margin="191,-1,0,0" VerticalAlignment="Top"/>
@@ -601,7 +604,7 @@
                                                 <TextBox MinHeight="100" x:Name="EntryNoteTextbox" Margin="10" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" TextChanged="EntryNoteTextboxTextChanged"/>
                                             </DockPanel>
                                         </Border>
-                                        
+
                                     </DockPanel>
                                 </TabItem>
                                 <TabItem Name="MathboxTabItem" Header="Mathbox" Margin="0,0,1,0" FontSize="18"  Padding="9,0,9,0" BorderThickness="1,0,1,0">
@@ -650,7 +653,7 @@
 
                                                     <Label Content="Tooltip" Grid.Row="2" Grid.Column="1" Margin="0"/>
                                                     <TextBox TextChanged="PropertiesMathboxTooltipTextBox_TextChanged" x:Name="PropertiesMathboxTooltipBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Height="100" Margin="3" Text="" AcceptsReturn="True" TextWrapping="Wrap"  />
-                                                    
+
                                                     <!--Math Results-->
                                                     <Label Content="Math Result" Grid.Row="4" Grid.Column="1" Margin="0"/>
                                                     <TextBox Name="MathboxMathResultTextbox" Grid.Row="4" Grid.Column="2" Margin="3" TextWrapping="NoWrap" IsEnabled="False"  />
@@ -712,7 +715,7 @@
 
 
                                                     </DockPanel>
-                                                    
+
 
                                                 </Border>
                                             </DockPanel>
@@ -783,7 +786,7 @@
                 <TabItem Header="Auto Mod">
                     <local:AutoMod x:Name="AutoModControl"/>
                 </TabItem>
-                
+
                 <TabItem Header="Lists"  Name="ListTab" Tag="ListTab">
                     <!--LostFocus="ListLostFocus"-->
                     <Border>

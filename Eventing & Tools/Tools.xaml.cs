@@ -203,21 +203,47 @@ namespace GameEditorStudio
             {
                 foreach (Event Event in WorkshopData.WorkshopEvents)
                 {
-                    //if (commonEvent.Workshop == false) { continue; }
-
                     foreach (EventCommand Ecom in Event.CommandList)
                     {
                         if (Ecom.Command != null) 
                         {
                             foreach (Tool tool in Ecom.Command.RequiredToolsList)
                             {
+                                if (tool == null) 
+                                { 
+                                    PixelWPF.LibraryPixel.Notification("Command Unset Tool Requirement Crash!", "" +
+                                        "Command Name: \n\"" + Ecom.Command.DisplayName + "\"" +
+                                        "\n\nI (The dev of GES) forgot to set a required tool for this command. " +
+                                        "" +
+                                        "\n\nThe only other explanation, is in the future i may add support for users to create their own tool requirements, and maybe thats set wrong..." +
+                                        "but it's almost certinly my fault." +
+                                        "\n\nPlease report! :<" +
+                                        "\n\nBecause this is harmless on it's own, i won't force crash you. But GES will probably crash soon from something related to this."
+                                    ); 
+                                }
                                 if (!ToolsInUseByCommons.Contains(tool))
                                 {
                                     ToolsInUseByCommons.Add(tool);
                                 }
                             }
-                        }
-                        
+                            //foreach (CommandResource CR in Ecom.CMDList) 
+                            //{
+                            //    if (CR.CMDGToolKey != "") 
+                            //    {
+                            //        foreach (Tool tool in Database.Tools) 
+                            //        {
+                            //            if (CR.CMDGToolKey == tool.Key) 
+                            //            {
+                            //                if (!ToolsInUseByCommons.Contains(tool))
+                            //                {
+                            //                    ToolsInUseByCommons.Add(tool);
+                            //                    break;
+                            //                }
+                            //            }
+                            //        }
+                            //    }
+                            //}
+                        }                        
                     }                    
                 }
             }
@@ -225,7 +251,7 @@ namespace GameEditorStudio
 
 
             //
-            label.Content = "GES Tools in use by this workshop (" + ToolsInUseByCommons.Count + ")";
+            label.Content = "GES Tools in use by this workshop (" + ToolsInUseByCommons.Count + ")   (Tools used by Build-A-Command not here yet)";
 
             try { SetupTools(ToolsInUseByCommons, false); }
             catch { PixelWPF.LibraryPixel.Notification("Tools Crash 7", ""); }
@@ -655,9 +681,9 @@ namespace GameEditorStudio
 
             if (ForGESTools == false) 
             {
-                if (!Database.WorkshopTools.Any(t => t.Key == Tool.Key))
+                if (!Database.MasterWorkshopTools.Any(t => t.Key == Tool.Key))
                 {
-                    Database.WorkshopTools.Add(Tool);
+                    Database.MasterWorkshopTools.Add(Tool);
                 }
             }
 
@@ -682,7 +708,7 @@ namespace GameEditorStudio
                     writer.WriteElementString("Location", tool.Location);
                     writer.WriteEndElement();
                 }
-                foreach (Tool tool in Database.WorkshopTools)
+                foreach (Tool tool in Database.MasterWorkshopTools)
                 {
                     writer.WriteStartElement("WorkshopTool");
                     writer.WriteElementString("Name", tool.DisplayName.ToString());

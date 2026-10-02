@@ -31,6 +31,7 @@ using System.Security.Policy;
 using System.ComponentModel.Design;
 using GameEditorStudio;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using PixelWPF;
 //using System.Windows.Shapes;
 
 namespace GameEditorStudio
@@ -158,6 +159,7 @@ namespace GameEditorStudio
             string MoriFile = "";
             string UnpackFolder = "";
 
+            LibraryPixel.Notification("Instructions", "First, select the MORI file you want to unpack. \n\nAfterwards, a second popup select request will happen, thats to select the output folder. \n\n(For some reason, i can add text to the title of a window asking for a file, but not a folder... idk why, but im to lazy to figure it out, so this popup is my compromise, sorry~)");
 
             VistaOpenFileDialog fileDialog = new VistaOpenFileDialog();
             fileDialog.Title = "Select a MORI file to unpack"; // Set the dialog title
@@ -166,6 +168,8 @@ namespace GameEditorStudio
             {
                 MoriFile = fileDialog.FileName;
             }
+
+            
 
             VistaFolderBrowserDialog folderDialog = new VistaFolderBrowserDialog();
             //folderDialog.Title = "Select a MORI file to unpack"; // Set the dialog title

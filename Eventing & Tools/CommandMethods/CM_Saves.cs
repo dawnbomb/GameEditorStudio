@@ -114,11 +114,12 @@ namespace GameEditorStudio
 
         public static void SaveEditors(MethodData MethodData)
         {
-            if (MethodData.Command.WorkshopData == null)  //think about this more before adding it
+            if (MethodData.mainMenu.WorkshopData == null) 
             {
-                if (MethodData.mainMenu.WorkshopData == null) { PixelWPF.LibraryPixel.NotificationNegative("Weird Error", "Workshop not set...?"); }
+                PixelWPF.LibraryPixel.NotificationNegative("Workshop Not Found", "For some reason (a programming error) the workshop can't be found. \n\nPLEASE REPORT THIS \n(Especially if you can reproduce it). \n\n(PS To prevent a crash or data corruption, i won't allow you to save editors)");
                 return;
             }
+            
 
             WorkshopData Database = MethodData.mainMenu.WorkshopData;
             Workshop TheWorkshop = Database.WorkshopXaml;
@@ -942,37 +943,39 @@ namespace GameEditorStudio
             //I need to make it so for the entrys of the currently selected item, if a entry is edited, that it is saved.
             //Currently the user can just swap items back and forth to save to MemoryFile, and then here MemoryFile saves to your PC.
 
+
+            if (MethodData.mainMenu.WorkshopData == null)
+            {
+                PixelWPF.LibraryPixel.NotificationNegative("Workshop Not Found", "For some reason (a programming error) the workshop can't be found. \n\nPLEASE REPORT THIS \n(Especially if you can reproduce it). \n\n(PS To prevent a crash or data corruption, i won't allow you to save editors)");
+                return;
+            }            
+            if (MethodData.mainMenu.WorkshopData.IsProjectLoaded == false) 
+            {
+                PixelWPF.LibraryPixel.NotificationNegative("Cannot Save Game Data In Preview Mode", "You don't seem to have a project loaded, so you can't save the workshop's game files. (How did you even trigger this error?) \n\nCurrent Workshop's Name: \n" + MethodData.mainMenu.WorkshopData.WorkshopName);
+                return;
+            }
+
+            //PixelWPF.LibraryPixel.NotificationNegative("Debug Message S1", "Current Workshop's Name: \n" + MethodData.mainMenu.WorkshopData.WorkshopName);
             
-
-            if (MethodData.Command.WorkshopData == null)  //think about this more before adding it
-            {
-                if (MethodData.mainMenu.WorkshopData == null) { PixelWPF.LibraryPixel.NotificationNegative("Weird Error", "Workshop not set...?"); }
-                return;
-            }
-            if (MethodData.Command.WorkshopData.IsProjectLoaded == false) 
-            {
-                PixelWPF.LibraryPixel.NotificationNegative("Cannot Save Game Data In Preview Mode", "You don't seem to have a project loaded, so you can't save the workshop's game files. (How did you even trigger this error?)");
-                return;
-            }
-
 
             string SavePath = "";
 
-            if (MethodData.Command.WorkshopData.LoadedProject.ProjectOutputDirectory != "")
+            if (MethodData.mainMenu.WorkshopData.LoadedProject.ProjectOutputDirectory != "")
             {
                 //Make sure this actually exists!
-                SavePath = MethodData.Command.WorkshopData.LoadedProject.ProjectOutputDirectory;
+                SavePath = MethodData.mainMenu.WorkshopData.LoadedProject.ProjectOutputDirectory;
+                //PixelWPF.LibraryPixel.NotificationNegative("Debug Message S2", "Current Workshop's Name: \n" + MethodData.Command.WorkshopData.WorkshopName);
             }
-            else if (MethodData.Command.WorkshopData.LoadedProject.ProjectInputDirectory != "")
+            else if (MethodData.mainMenu.WorkshopData.LoadedProject.ProjectInputDirectory != "")
             {
-                SavePath = MethodData.Command.WorkshopData.LoadedProject.ProjectInputDirectory;
+                SavePath = MethodData.mainMenu.WorkshopData.LoadedProject.ProjectInputDirectory;
             }
             else 
             {
                 return;
             }
 
-            if (SavePath == MethodData.Command.WorkshopData.LoadedProject.ProjectInputDirectory) 
+            if (SavePath == MethodData.mainMenu.WorkshopData.LoadedProject.ProjectInputDirectory) 
             {
                 bool SaveToInput = PixelWPF.LibraryPixel.NotificationConfirm("Saving to INPUT Folder???", 
                     "You are about to save your game files to your project's INPUT folder, overwriting your origonal game files. " +
@@ -991,7 +994,7 @@ namespace GameEditorStudio
             //The GameFiles *usually* is already this, but it's possible to add a new file, not use it, and save.
             //The next time the user opens the workshop the file son't be in GameFiles because it's not in use, but that time the user saves game files, i think it still gets saved...?
 
-            foreach (GameFile gameFile in MethodData.Command.WorkshopData.GameFiles)
+            foreach (GameFile gameFile in MethodData.mainMenu.WorkshopData.GameFiles)
             {
                 
                 string TheFolderPath = Path.GetDirectoryName(Path.Combine(SavePath, gameFile.FileLocation));
@@ -1313,7 +1316,9 @@ namespace GameEditorStudio
                                         {
                                             writer.WriteStartElement("CMDResource");
                                             writer.WriteElementString("CMDType", cmdResource.Type.ToString());
-                                            writer.WriteElementString("CMDTextKey", cmdResource.CMDTextKey);                                            
+                                            writer.WriteElementString("CMDTextKey", cmdResource.CMDTextKey);
+                                            writer.WriteElementString("CMDWToolKey", cmdResource.CMDWToolKey);
+                                            writer.WriteElementString("CMDGToolKey", cmdResource.CMDGToolKey);
                                             writer.WriteEndElement(); //End Command
                                         }
                                         writer.WriteEndElement(); //End CMDResourceList
@@ -1414,6 +1419,14 @@ namespace GameEditorStudio
                                 if (eventResource.ResourceType == EventResource.ResourceTypes.Folder)
                                 {
                                     writer.WriteElementString("ResourceType", "Folder");
+                                }
+                                if (eventResource.ResourceType == EventResource.ResourceTypes.CMDWTool)
+                                {
+                                    writer.WriteElementString("ResourceType", "CMDWTool");
+                                }
+                                if (eventResource.ResourceType == EventResource.ResourceTypes.CMDGTool)
+                                {
+                                    writer.WriteElementString("ResourceType", "CMDGTool");
                                 }
                                 if (eventResource.ResourceType == EventResource.ResourceTypes.CMDText)
                                 {

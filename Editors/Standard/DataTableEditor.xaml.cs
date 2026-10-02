@@ -18,6 +18,7 @@ using System.Xml.Serialization;
 using Microsoft.VisualBasic;
 using PixelWPF;
 using WpfHexEditor;
+using WpfHexEditor.Core.Models;
 using static GameEditorStudio.Entry;
 
 namespace GameEditorStudio
@@ -260,7 +261,7 @@ namespace GameEditorStudio
             {
                 foreach (TreeViewItem TreeItem in LibraryGES.GetALLTreeViewItems(datatabledata.DataTableEditorData.EditorLeftBar.TreeView))
                 {
-                    ItemNameBuilder(TreeItem);
+                    ItemNameBuilder(TreeItem, true);
                 }
 
             }
@@ -718,15 +719,15 @@ namespace GameEditorStudio
                 LibraryGES.EntrysDropAbove = true;
             }
 
-            foreach (var editor in WorkshopData.GameEditors) 
+            foreach (DataTableEditorData DataTableData in WorkshopData.GameEditors.OfType<DataTableEditorData>()) 
             {
                 if (LibraryGES.EntrysDropAbove == true)
                 {
-                    UpDownToggleButton.Content = "^^";
+                    DataTableData.DTEXaml.UpDownToggleButton.Content = "^^";
                 }
                 if (LibraryGES.EntrysDropAbove == false)
                 {
-                    UpDownToggleButton.Content = "vv";
+                    DataTableData.DTEXaml.UpDownToggleButton.Content = "vv";
                 }
             }
                 
@@ -780,7 +781,7 @@ namespace GameEditorStudio
 
 
 
-        public void ItemNameBuilder(TreeViewItem TreeItem)
+        public void ItemNameBuilder(TreeViewItem TreeItem, bool UpdateMenus)
         {
             TextInfo ItemInfo = TreeItem.Tag as TextInfo;
             TextBlock TextBlockItem = new TextBlock();
@@ -816,6 +817,7 @@ namespace GameEditorStudio
 
             Run RunNote = new Run();
             RunNote.Text = " " + ItemInfo.ItemNote;
+            if (ItemInfo.ItemName == "") { RunNote.Text = ItemInfo.ItemNote; }
             RunNote.Foreground = Brushes.Orange; // Set the foreground to red   DeepSkyBlue
             TextBlockItem.Inlines.Add(RunNote);
 
@@ -834,73 +836,15 @@ namespace GameEditorStudio
 
             TreeItem.Header = TextBlockItem;
 
+            if(UpdateMenus == true) { UpdateAllMenuEntrysToNewNamesList(); }
             
-            //List<Task> EntryUpdateTasks = new();
+        }
+
+        public void UpdateAllMenuEntrysToNewNamesList() 
+        {            
+
             foreach (DataTableEditorData DataTableData in DTEData.WorkshopXaml.WorkshopData.GameEditors.OfType<DataTableEditorData>()) //Super quick and dirty way to update entrys from other editors that are using this editors names. (Menu Link To Editor)
-            {
-                //Task backgroundTask = Task.Run(() =>
-                //{
-                //    //this actually triggers for EVERY name item in an editor that is a name for entry X, IE this entire foreach loop is running 100+ times when loading a project...
-
-                //    //if (WorkshopData.IsProjectLoaded == false) { break; } //Do not if project is unloaded. Helps prevent a crash i'm to lazy to fix right now. 
-                //    //if (WorkshopData.IsProjectLoaded == true) { break; } //Do not if project is unloaded. Helps prevent a crash i'm to lazy to fix right now. 
-
-                //    foreach (Entry entry in DataTableData.MasterEntryList)
-                //    {
-                //        if (entry.NewSubType != EntrySubTypes.Menu) { continue; }
-                //        if (entry.EntryTypeMenu.LinkType != EntryTypeMenu.LinkTypes.Editor) { continue; }
-                //        if (entry.EntryTypeMenu.TextTableEditor == null) { continue; }
-                //        if (entry.EntryTypeMenu.TextTableEditor.LinkedDTEEditor == null) { continue; }
-                //        if (entry.EntryTypeMenu.TextTableEditor.LinkedDTEEditor != DTEData) { continue; }
-
-                //        {
-                //            if (entry.EntryByteDecimal == null) { return; }
-                //            //This stops a blank from being created for a dropdown because its loading before the ByteDecimal is loaded, but also probably other misc problems.
-                //            //IE i should totally not have this code chunk here, but im still to lazy to impliment this properly, so here goes this ultra bad answer i will regret later! :D
-                //        }
-
-                //        //So, If THIS EDITOR is THIS ENTRY's linked editor for a name list...
-                //        //DTEData.WorkshopXaml.WorkshopData.EntryManagerOLD.ChangeEntryType(DTEData.WorkshopXaml.WorkshopData, EntrySubTypes.Menu, DTEData.WorkshopXaml, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
-
-                //        if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List)
-                //        {
-                //            App.Current.Dispatcher.Invoke(() =>
-                //            {
-                //                DTEData.WorkshopXaml.WorkshopData.EntryManagerOLD.ChangeEntryType(DTEData.WorkshopXaml.WorkshopData, EntrySubTypes.Menu, DTEData.WorkshopXaml, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
-                //            });
-
-                //        }
-                //        if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.Dropdown)
-                //        {
-                //            App.Current.Dispatcher.Invoke(() =>
-                //            {
-                //                foreach (ComboBoxItem item in entry.EntryTypeMenu.Dropdown.Items)
-                //                {
-                //                    TextInfo textInfo = item.Tag as TextInfo;
-                //                    if (textInfo == ItemInfo)
-                //                    {
-                //                        item.Content = (textInfo.ItemIndex + entry.EntryTypeMenu.TextTableEditor.LinkedDTEEditor.NameTable.TextTableFirstNameID) + ": " + textInfo.ItemName; ;
-
-                //                    }
-
-                //                }
-                //            });
-
-
-                //        }
-
-                //    }
-                //});
-                //EntryUpdateTasks.Add(backgroundTask);
-
-
-
-
-                //this actually triggers for EVERY name item in an editor that is a name for entry X, IE this entire foreach loop is running 100+ times when loading a project...
-
-                //if (WorkshopData.IsProjectLoaded == false) { break; } //Do not if project is unloaded. Helps prevent a crash i'm to lazy to fix right now. 
-                //if (WorkshopData.IsProjectLoaded == true) { break; } //Do not if project is unloaded. Helps prevent a crash i'm to lazy to fix right now. 
-
+            {                
                 foreach (Entry entry in DataTableData.MasterEntryList)
                 {
                     if (entry.NewSubType != EntrySubTypes.Menu) { continue; }
@@ -916,28 +860,35 @@ namespace GameEditorStudio
                     }
 
                     //So, If THIS EDITOR is THIS ENTRY's linked editor for a name list...
-                    //DTEData.WorkshopXaml.WorkshopData.EntryManagerOLD.ChangeEntryType(DTEData.WorkshopXaml.WorkshopData, EntrySubTypes.Menu, DTEData.WorkshopXaml, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
+                    //PS: This is KINDA SLOW!
+                    DTEData.WorkshopXaml.WorkshopData.EntryManagerOLD.ChangeEntryType(DTEData.WorkshopXaml.WorkshopData, EntrySubTypes.Menu, DTEData.WorkshopXaml, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
 
-                    if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List)
-                    {
-                        DTEData.WorkshopXaml.WorkshopData.EntryManagerOLD.ChangeEntryType(DTEData.WorkshopXaml.WorkshopData, EntrySubTypes.Menu, DTEData.WorkshopXaml, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
-                    }
-                    if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.Dropdown)
-                    {
-                        foreach (ComboBoxItem item in entry.EntryTypeMenu.Dropdown.Items)
-                        {
-                            TextInfo textInfo = item.Tag as TextInfo;
-                            if (textInfo == ItemInfo)
-                            {
-                                item.Content = (textInfo.ItemIndex + entry.EntryTypeMenu.TextTableEditor.LinkedDTEEditor.NameTable.TextTableFirstNameID) + ": " + textInfo.ItemName; ;
-                            }
-                        }
-                    }
+
+                    //NOTE: The following code chunk was un-implimented because, i realized that when changing an editors name list
+                    //(Obvious if you change FirstName# and also removing the first name) that we create a fully new list of TextInfo's (including keys).
+                    //so the dropdown menus that are supposed to be linked will not update (Because textInfo != ItemInfo) and this cannot be resolved.
+                    //Therefor the below code should never be reimpimented. But i'm leaving it here anyway as a warning.
+                    //Moreover, the new name list could literally have diffrent names, or not be the same length. So, yeah, this will never ever work.
+                    //if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List)
+                    //{
+                    //    DTEData.WorkshopXaml.WorkshopData.EntryManagerOLD.ChangeEntryType(DTEData.WorkshopXaml.WorkshopData, EntrySubTypes.Menu, DTEData.WorkshopXaml, entry); //This might not even be the best way, or a good way, but i'm lazy atm and it fucking works.
+                    //}
+                    //if (entry.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.Dropdown)
+                    //{
+                    //    foreach (ComboBoxItem item in entry.EntryTypeMenu.Dropdown.Items)
+                    //    {
+                    //        TextInfo textInfo = item.Tag as TextInfo;
+                    //        if (textInfo == ItemInfo)
+                    //        {
+                    //            item.Content = (textInfo.ItemIndex + entry.EntryTypeMenu.TextTableEditor.LinkedDTEEditor.NameTable.TextTableFirstNameID) + ": " + textInfo.ItemName; ;
+                    //        }
+                    //    }
+                    //}
 
                 }
 
             }
-            //await Task.WhenAll(EntryUpdateTasks);
+            
         }
 
         private void ToggleSpreadsheet(object sender, RoutedEventArgs e)

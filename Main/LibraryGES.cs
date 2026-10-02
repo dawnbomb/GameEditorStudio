@@ -29,8 +29,8 @@ namespace GameEditorStudio
 
         public static bool DebugMode { get; set; } = false; //Gets turned on when program starts if running from visual studio. Hides visibility of buttons related to upcoming features.
 
-        public static string VersionDate { get; set; } = "Augest 18 2026";
-        public static Version VersionNumber { get; set; } = new Version(0, 3, 9); //Version Numbers (in order) are Major.Minor.Build.Revision
+        public static string VersionDate { get; set; } = "October 2 2026";
+        public static Version VersionNumber { get; set; } = new Version(0, 4, 0); //Version Numbers (in order) are Major.Minor.Build.Revision
                                                                                      //Major is big releases.
                                                                                      //Minor is new features / content.
                                                                                      //Build is for Bugfixes or small changes.
@@ -410,8 +410,7 @@ namespace GameEditorStudio
 
             foreach (KeyValuePair<int, string> Pair in ResourceKeys) //For each EventCommand resource...
             {
-                if (Pair.Value == "WTOOLS") { MethodData.ResourceLocations.Add("WTOOLS"); continue; }
-
+                
 
                 string FullPath = "";
 
@@ -433,6 +432,53 @@ namespace GameEditorStudio
                 {
                     FullPath = TheEventResource.Location;
                     MethodData.ResourceLocations.Add(FullPath);
+                    continue;
+                }
+                if (TheEventResource.ResourceType == EventResource.ResourceTypes.CMDWTool)
+                {
+                    FullPath = TheEventResource.Location;
+                    foreach (Tool wtool in TheMenu.WorkshopData.WorkshopTools)
+                    {
+                        if (wtool.Key == FullPath)
+                        {
+                            if (File.Exists(wtool.Location))
+                            {
+                                MethodData.ResourceLocations.Add(wtool.Location);
+                            }
+                            else 
+                            {
+                                MethodData.ResourceLocations.Add("(W-TOOL NOT SET: " + wtool.DisplayName + ")");
+                            }
+                            
+                        }
+                    }
+
+                    continue;
+                }
+                if (TheEventResource.ResourceType == EventResource.ResourceTypes.CMDGTool)
+                {
+                    FullPath = TheEventResource.Location;
+                    foreach (Tool gtool in Database.Tools)
+                    {
+                        if (gtool.Key == FullPath)
+                        {
+                            if (File.Exists(gtool.Location))
+                            {
+                                MethodData.ResourceLocations.Add(gtool.Location);
+                            }
+                            else
+                            {
+                                MethodData.ResourceLocations.Add("(GES-TOOL NOT SET: " + gtool.DisplayName + ")");
+                            }                            
+                        }
+                    }
+
+                    continue;
+                }
+
+                if (TheMenu.WorkshopData.SelectedProject == null)
+                {
+                    MethodData.ResourceLocations.Add("(NO PROJECT SELECTED)");
                     continue;
                 }
 

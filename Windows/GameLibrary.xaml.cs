@@ -132,7 +132,7 @@ namespace GameEditorStudio
             //as i don't currently support pre-loading every workshops data from the library, but common events are still for the "CURRENT" workshop.
             Task backgroundTask = Task.Run(() =>
             {
-                LoadDatabase.LoadToolLocations(); //Load user's last known tool locations.
+                LoadDatabase.LoadToolLocations(null); //Load user's last known tool locations.
                 LoadDatabase.LoadEnabledCommonEvents(); //Loads from Settings/Common Events.xml the user's enabled common events.
                 
             });

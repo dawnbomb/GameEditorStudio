@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.TextFormatting;
 using System.Windows.Shapes;
+using PixelWPF;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using static GameEditorStudio.EventsMenu;
 
@@ -201,6 +203,10 @@ namespace GameEditorStudio
                 return;
             }
 
+            if (!LibraryPixel.NotificationConfirm("Force Run Event?","This forces the event to run, ignoring all conditions (Tool requirements, resource path requirements, etc)" +
+                "\n\nRun this event?" +
+                "\n\n(To run it normally IE with requirement checks, run it from the Events menu, instead of this events manager)")) { return; }
+
             foreach (EventCommand eventCommand in CurrentEvent.CommandList)
             {                
 
@@ -272,7 +278,7 @@ namespace GameEditorStudio
             {
                 CMDStuff(TopPanel, EventCommand, commandDockPanel); //Adds buttons for the command prompt command to the Top Panel.
             }
-            if (EventCommand.Command.Key == "RunWorkshopTool")
+            if (EventCommand.Command.Key == "RunWorkshopTool" || EventCommand.Command.Key == "RunWorkshopToolWithFile" || EventCommand.Command.Key == "RunWorkshopToolWithFolder")
             {
                 SpecialWorkshopTool(TopPanel, EventCommand, commandDockPanel); //Adds UI for selecting a Non-GES workshop tool.
             }
@@ -337,28 +343,62 @@ namespace GameEditorStudio
         }
 
         private void CMDStuff(DockPanel TopPanel, EventCommand EventCommand, DockPanel commandDockPanel) 
-        {
-            Button ToolsPathBtn = new();
-            ToolsPathBtn.Content = "ToolsPath";
-            ToolsPathBtn.Width = 105;
-            ToolsPathBtn.Margin = new(4, 4, 4, 4);
-            DockPanel.SetDock(ToolsPathBtn, Dock.Right);
-            ToolsPathBtn.HorizontalAlignment = HorizontalAlignment.Right;
-            TopPanel.Children.Add(ToolsPathBtn);
-            ToolsPathBtn.Click += (sender, e) =>
+        {            
+            Button WorkshopToolBtn = new();
+            WorkshopToolBtn.Content = "Workshop Tool";
+            WorkshopToolBtn.Width = 155;
+            WorkshopToolBtn.Margin = new(4, 4, 4, 4);
+            DockPanel.SetDock(WorkshopToolBtn, Dock.Right);
+            WorkshopToolBtn.HorizontalAlignment = HorizontalAlignment.Right;
+            TopPanel.Children.Add(WorkshopToolBtn);
+            WorkshopToolBtn.Click += (sender, e) =>
             {
                 //This also happens in LoadDatabase.cs when loading the command prompt command into an event. Any changes here need to happen over there as well.
                 CommandResource ResourceData = new();
-                ResourceData.Label = "Workshop Tools Folder Path (Click help for more info) (YOU MUST COMPLETE THE PATH)";
-                ResourceData.Type = CommandResource.ResourceTypes.WTools;
+                ResourceData.Label = "Workshop Tool";
+                ResourceData.Type = CommandResource.ResourceTypes.WTool;
                 EventCommand.CMDList.Add(ResourceData);
 
-                EventCommand.ResourceKeys.Add(EventCommand.CMDList.Count, "WTOOLS"); //This is important, or the resource order won't be correct in the end. 
+                EventResource WToolResource = new();
+                WToolResource.Name = "WTool Resource";
+                WToolResource.Key = PixelWPF.LibraryPixel.GenerateKey();
+                WToolResource.ResourceType = EventResource.ResourceTypes.CMDWTool;
+                workshopData.WorkshopEventResources.Add(WToolResource);
+
+                ResourceData.CMDWToolKey = WToolResource.Key; // Link the command resource to the event resource
+
+                EventCommand.ResourceKeys.Add(EventCommand.CMDList.Count, WToolResource.Key);  //This is important, or the resource order won't be correct in the end. 
 
                 UpdateEventCommandsUI();
             };
 
-            
+            Button ToolButton = new();
+            ToolButton.Content = "GES Tool";
+            ToolButton.Width = 105;
+            ToolButton.Margin = new(4, 4, 4, 4);
+            DockPanel.SetDock(ToolButton, Dock.Right);
+            ToolButton.HorizontalAlignment = HorizontalAlignment.Right;
+            TopPanel.Children.Add(ToolButton);
+            ToolButton.Click += (sender, e) =>
+            {
+                //This also happens in LoadDatabase.cs when loading the command prompt command into an event. Any changes here need to happen over there as well.
+                CommandResource ResourceData = new();
+                ResourceData.Label = "GES Tool";
+                ResourceData.Type = CommandResource.ResourceTypes.GTool;
+                EventCommand.CMDList.Add(ResourceData);
+
+                EventResource GToolResource = new();
+                GToolResource.Name = "GTool Resource";
+                GToolResource.Key = PixelWPF.LibraryPixel.GenerateKey();
+                GToolResource.ResourceType = EventResource.ResourceTypes.CMDGTool;
+                workshopData.WorkshopEventResources.Add(GToolResource);
+
+                ResourceData.CMDGToolKey = GToolResource.Key; // Link the command resource to the event resource
+
+                EventCommand.ResourceKeys.Add(EventCommand.CMDList.Count, GToolResource.Key);  //This is important, or the resource order won't be correct in the end. 
+
+                UpdateEventCommandsUI();
+            };
 
             Button FolderResourcePathBtn = new();
             FolderResourcePathBtn.Content = "Folder";
@@ -429,28 +469,43 @@ namespace GameEditorStudio
             };
 
             Button HelpBtn = new();
-            HelpBtn.Content = "Help!";
-            HelpBtn.Width = 70;
-            HelpBtn.Margin = new(0, 4, 4, 4);
-            DockPanel.SetDock(HelpBtn, Dock.Right);
-            HelpBtn.HorizontalAlignment = HorizontalAlignment.Right;
+            HelpBtn.Content = "Tutorial!";
+            HelpBtn.Width = 110;
+            HelpBtn.Margin = new(20, 4, 4, 4);
+            DockPanel.SetDock(HelpBtn, Dock.Left);
+            HelpBtn.HorizontalAlignment = HorizontalAlignment.Left;
             TopPanel.Children.Add(HelpBtn);
             HelpBtn.Click += (sender, e) =>
             {
-                PixelWPF.LibraryPixel.Notification("Command Prompt Help",
-                    "This command lets you send one (and only one) final text line to run in command prompt. " +
-                    "As command prompt has all kinds of things a user could want to do with it, there are has some special controls." +
+                PixelWPF.LibraryPixel.Notification("Build-A-Command Tutorial",
+                    "This command lets build a code piece that gets sent to run in command prompt. Great for slightly more complex things, run any program with any number of file / folder requirements!" +
                     "\n" +
+                    "\n----------------------------" +
                     "\nThe File / Folder buttons: " +
-                    "\nThese add the location of the selected resource to the final text. This location text is always surrounded with \"quotation marks\" because command prompt requires quotation marks for locations.  If you select a child resource, you get the Parent Location + Child Location." +
+                    "\nAdd the location of a file / folder resource to the final text. " +
+                    "\n" +   
+                    "\nTools / Workshop Tools:" +
+                    "\nAdd the location of a tool.exe." +
                     "\n" +
                     "\nThe Text Button:" +
-                    "\nThis lets you add your own custom text. " +
+                    "\nThis lets you add your own custom text. It is annoyingly common for most game modding tools to ask users to use specific text commands with command prompt. " +
                     "\n" +
-                    "\nTools Path:" +
-                    "\nThis control adds a PARTIAL LOCATION PATH to the Workshop's Tools folder. This is where you can put third party programs that are workshop specific, such as a tool to unpack a game specific filetype. IMPORTANT: This is only a path UPTO the tools folder. It's up to you to add the rest of the path by adding text afterwards. Your text MUST end with \" to complete the path. " +
+                    "\nNOTE 1: " +
+                    "\nThe Final Text lets you preview the exact text that gets sent to command prompt when the event is actually run." +
                     "\n" +
-                    "\nYou can use the Check Final Text button to see what would be sent to command prompt when the event is actually run. ");
+                    "\nNOTE 2: " +
+                    "\nLocations are always surrounded with \"quotation marks\" because command prompt requires it (this not a bug).  " +
+                    "\nIf you select a child resource, you get the \"Parent Location + Child Location.\"" +
+                    "\n" +
+                    "\n" +
+                    "\nREALLY IMPORTANT TIP:" +
+                    "\nDo NOT mistakenly think Auto-Close mode (close command prompt when task is complete) is \"just better\". " +
+                    "\nFor many tasks, the user would *VERY MUCH* like to see command prompt SAY that it's finished." +
+                    "\nDO NOT IGNORE THIS ADVICE! USE WITH CAUTION!" +
+                    "\n" +
+                    "\nFINAL NOTE: " +
+                    "\nThe program waits for CMD to close before it continues running the event (or running at all). " +
+                    "");
             };
 
 
@@ -509,46 +564,77 @@ namespace GameEditorStudio
             //label.Padding = new(25, 0, 25, 0);
             //ResourcePanel.Children.Add(label);
             //DockPanel.SetDock(label, Dock.Left);
-
-            TextBox finalbox = new();
+            //
+            RichTextBox finalbox = new();
+            EventCommand.FinalTextbox = finalbox;
+            //TextBox finalbox = EventCommand.FinalTextbox;
             //finalbox.IsEnabled = false;
-            finalbox.ToolTip = finalbox.Text;
-            finalbox.TextWrapping = TextWrapping.Wrap;
+            //finalbox.ToolTip = finalbox.Text;
+            //finalbox.TextWrapping = TextWrapping.Wrap;
 
-            Button finalBtn = new();
-            finalBtn.Content = " Check final text ";
-            finalBtn.Margin = new(2);
-            DockPanel.SetDock(finalBtn, Dock.Left);
-            ResourcePanel.Children.Add(finalBtn);
-            finalBtn.Click += (sender, e) =>
-            {
-                MethodData methodData = LibraryGES.TransformKeysToLocations(EventCommand.ResourceKeys, EventResources, MainMenu, EventCommand);
-
-                finalbox.Text = "";
-
-                foreach (string resource in methodData.ResourceLocations)
-                {
-                    if (!string.IsNullOrEmpty(resource))
-                    {
-                        string astring = resource;
-                        astring = LibraryGES.PathQuoter(astring);
-
-                        if (astring == "WTOOLS")
-                        {
-                            finalbox.Text = finalbox.Text + "\"" + LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\Tools\\";
-                        }
-                        else 
-                        {
-                            finalbox.Text = finalbox.Text + astring + " ";
-                        }
-                            
-                    }
-                }
-            };
+            Label finaltextLbl = new();
+            finaltextLbl.Content = " Final Text: ";
+            finaltextLbl.Margin = new(2);
+            DockPanel.SetDock(finaltextLbl, Dock.Left);
+            ResourcePanel.Children.Add(finaltextLbl);
 
             ResourcePanel.Children.Add(finalbox); //Needs to be after finalBtn to show up right.
 
+            UpdateFinalCMDText(EventCommand);
 
+
+        }
+
+        public void UpdateFinalCMDText(EventCommand EventCommand)
+        {
+            MethodData methodData = LibraryGES.TransformKeysToLocations(EventCommand.ResourceKeys, EventResources, MainMenu, EventCommand);
+
+            RichTextBox FinalTextbox = EventCommand.FinalTextbox;
+            if (FinalTextbox == null) { return; }
+
+
+            //FinalTextbox.Text = "";
+
+            // Ensure the RichTextBox has a document with a paragraph to write into
+            if (FinalTextbox.Document.Blocks.FirstBlock is not Paragraph paragraph)
+            {
+                paragraph = new Paragraph();
+                FinalTextbox.Document.Blocks.Clear();
+                FinalTextbox.Document.Blocks.Add(paragraph);
+            }
+            else
+            {
+                paragraph.Inlines.Clear(); // Clear previous runs if needed
+            }
+
+            foreach (string LocationText in methodData.ResourceLocations)
+            {
+                if (!string.IsNullOrEmpty(LocationText))
+                {
+                    string astring = LocationText;
+                    astring = LibraryGES.PathQuoter(astring);
+
+                    Run textRun = new Run(astring + " ");
+
+                    // Check if the text is one of the warning messages
+                    if (astring.Contains("NOT SET:"))
+                    {
+                        textRun.Foreground = Brushes.Red;
+                    }
+
+                    paragraph.Inlines.Add(textRun);
+                }
+            }
+
+            //if (astring == "WTOOL")
+            //{
+            //    FinalTextbox.Text = FinalTextbox.Text + "\"" + "Workshop Tool!" + "\"";
+            //    //FinalTextbox.Text = FinalTextbox.Text + "\"" + LibraryGES.ApplicationLocation + "\\Workshops\\" + workshopData.WorkshopName + "\\Tools\\";
+            //}
+            //else
+            //{
+            //    FinalTextbox.Text = FinalTextbox.Text + astring + " ";
+            //}
         }
 
         public void CreateResourceRowOnPanel(CommandResource CommandResourceData, DockPanel dockPanel, EventCommand EventCommand, int i) 
@@ -574,7 +660,7 @@ namespace GameEditorStudio
             ResourcePanel.Children.Add(label);
             DockPanel.SetDock(label, Dock.Left);
 
-            if (CommandResourceData.Type == CommandResource.ResourceTypes.WTools) { return; }
+            
 
             Button Dbutton = new(); //for CMD command only
             if (EventCommand.CMDList.Count != 0) //IF COMMAND PROMPT, MAKE A CHECKBOX FOR SURROUNDING PATH WITH QUOTES
@@ -618,12 +704,14 @@ namespace GameEditorStudio
                 {
                     TheEventResource.Location = stringbox.Text;
                     EventCommand.ResourceKeys[i] = TheEventResource.Key; // Clear the resource key for text resources
+                    UpdateFinalCMDText(EventCommand);
                 };
                 //EventCommand.ResourceKeys[i] = TheEventResource.Key;
 
                 return;
             }
             
+            //Everything below here assume it's a dropdown / combobox thing.
 
 
             ComboBox ResourceBox = new();
@@ -637,58 +725,206 @@ namespace GameEditorStudio
             ResourceBox.Items.Add(EmptyItem);
             ResourceBox.SelectedItem = EmptyItem; //Default is None
 
+            if (CommandResourceData.Type == CommandResource.ResourceTypes.WTool) 
+            {
+                EventResource TheEventResource = null;
+                foreach (EventResource er in EventResources)
+                {
+                    if (er.Key == CommandResourceData.CMDWToolKey)
+                    {
+                        TheEventResource = er;
+                        break;
+                    }
+                }
+
+                                
+                foreach (Tool WTool in workshopData.WorkshopTools)
+                {
+                    ComboBoxItem Item = new();
+                    Item.Tag = WTool;
+
+                    Grid itemGrid = new Grid
+                    {
+                        Background = Brushes.Transparent
+                    };
+
+                    // Define column widths with MinWidth so text expands gracefully if needed
+                    itemGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto, MinWidth = 320 });  // DisplayName column
+                    itemGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto, MinWidth = 320 }); // ExeName column
+                    itemGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });                  // Warning column
+
+                    // 1. Column 0: Display Name
+                    TextBlock nameText = new TextBlock
+                    {
+                        Text = WTool.DisplayName
+                    };
+                    Grid.SetColumn(nameText, 0);
+                    itemGrid.Children.Add(nameText);
+
+                    // 2. Column 1: Exe Name
+                    TextBlock exeText = new TextBlock
+                    {
+                        Text = $"({WTool.ExeName})",
+                        Foreground = Brushes.Gray,
+                        Margin = new Thickness(10, 0, 0, 0) // Margin to keep distance from Column 0
+                    };
+                    Grid.SetColumn(exeText, 1);
+                    itemGrid.Children.Add(exeText);
+
+                    // 3. Column 2: Location Warning
+                    if (!File.Exists(WTool.Location))
+                    {
+                        TextBlock warningText = new TextBlock
+                        {
+                            Text = "(Location not set!)",
+                            Foreground = Brushes.Red,
+                            Margin = new Thickness(10, 0, 0, 0)
+                        };
+                        Grid.SetColumn(warningText, 2);
+                        itemGrid.Children.Add(warningText);
+                    }
+
+                    Item.Content = itemGrid;
+                    ResourceBox.Items.Add(Item);
+
+                    if (WTool.Key == TheEventResource.Location)
+                    {
+                        Item.IsSelected = true;
+                    }
+                }
+
+
+                ResourceBox.DropDownClosed += (sender, e) =>
+                {
+                    ComboBox comboBox = sender as ComboBox;
+                    ComboBoxItem selectedItem = comboBox.SelectedItem as ComboBoxItem;
+                    if (selectedItem.Content == "None")
+                    {                        
+                        EventCommand.ResourceKeys[i] = ""; // Update the existing key                        
+                    }
+                    else
+                    {
+                        //EventResource ItemEventResource = selectedItem.Tag as EventResource;
+                        //EventCommand.ResourceKeys[i] = ItemEventResource.Key; // Update the existing key
+
+                        Tool WTool = selectedItem.Tag as Tool;
+                        TheEventResource.Location = WTool.Key;
+                        EventCommand.ResourceKeys[i] = TheEventResource.Key;
+                    }
+                    UpdateFinalCMDText(EventCommand);
+                };
+                return;             
+            }
+            if (CommandResourceData.Type == CommandResource.ResourceTypes.GTool)
+            {
+                EventResource TheEventResource = null;
+                foreach (EventResource er in EventResources)
+                {
+                    if (er.Key == CommandResourceData.CMDGToolKey)
+                    {
+                        TheEventResource = er;
+                        break;
+                    }
+                }
+
+                                
+                foreach (Tool GTool in Database.Tools)
+                {
+                    ComboBoxItem Item = new();
+                    Item.Tag = GTool;
+
+                    Grid itemGrid = new Grid
+                    {
+                        Background = Brushes.Transparent
+                    };
+
+                    // Use MinWidth instead of fixed Width so columns expand if text is too long
+                    itemGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto, MinWidth = 320 });  // DisplayName column
+                    itemGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto, MinWidth = 320 }); // ExeName column
+                    itemGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });                  // Warning column
+
+                    // 1. Column 0: Display Name
+                    TextBlock nameText = new TextBlock
+                    {
+                        Text = GTool.DisplayName
+                    };
+                    Grid.SetColumn(nameText, 0);
+                    itemGrid.Children.Add(nameText);
+
+                    // 2. Column 1: Exe Name
+                    TextBlock exeText = new TextBlock
+                    {
+                        Text = $"({GTool.ExeName})",
+                        Foreground = Brushes.Gray,
+                        Margin = new Thickness(10, 0, 0, 0) // Small margin so text doesn't touch Column 0
+                    };
+                    Grid.SetColumn(exeText, 1);
+                    itemGrid.Children.Add(exeText);
+
+                    // 3. Column 2: Location Warning
+                    if (!File.Exists(GTool.Location))
+                    {
+                        TextBlock warningText = new TextBlock
+                        {
+                            Text = "(Location not set!)",
+                            Foreground = Brushes.Red,
+                            Margin = new Thickness(10, 0, 0, 0)
+                        };
+                        Grid.SetColumn(warningText, 2);
+                        itemGrid.Children.Add(warningText);
+                    }
+
+                    Item.Content = itemGrid;
+                    ResourceBox.Items.Add(Item);
+
+                    if (GTool.Key == TheEventResource.Location)
+                    {
+                        Item.IsSelected = true;
+                    }
+                }
+
+
+                ResourceBox.DropDownClosed += (sender, e) =>
+                {
+                    ComboBox comboBox = sender as ComboBox;
+                    ComboBoxItem selectedItem = comboBox.SelectedItem as ComboBoxItem;
+                    if (selectedItem.Content == "None")
+                    {                        
+                        EventCommand.ResourceKeys[i] = ""; // Update the existing key                        
+                    }
+                    else
+                    {
+                        //EventResource ItemEventResource = selectedItem.Tag as EventResource;
+                        //EventCommand.ResourceKeys[i] = ItemEventResource.Key; // Update the existing key
+
+                        Tool GTool = selectedItem.Tag as Tool;
+                        TheEventResource.Location = GTool.Key;
+                        EventCommand.ResourceKeys[i] = TheEventResource.Key;
+                    }
+                    UpdateFinalCMDText(EventCommand);
+                };
+                return;
+            }
+
+
+
             foreach (EventResource EventResource in EventResources) 
             {
                 string MYNAME = EventResource.Name;
 
-                if (CommandResourceData.Type == CommandResource.ResourceTypes.File && (EventResource.ResourceType == EventResource.ResourceTypes.Folder))
+                if (CommandResourceData.Type == CommandResource.ResourceTypes.File && (EventResource.ResourceType != EventResource.ResourceTypes.File))
                 {
                     continue;
                 }
-                if (CommandResourceData.Type == CommandResource.ResourceTypes.Folder && (EventResource.ResourceType == EventResource.ResourceTypes.File))
+                if (CommandResourceData.Type == CommandResource.ResourceTypes.Folder && (EventResource.ResourceType != EventResource.ResourceTypes.Folder))
                 {
                     continue;
                 }
-                if (EventResource.ResourceType == EventResource.ResourceTypes.CMDText) 
-                {
-                    continue;
-                }
-
-                //string TheThingy = ""; //The file/folder we are actually using.
-
-                //if (EventResource.RequiredName == true)
+                //if (EventResource.ResourceType == EventResource.ResourceTypes.CMDText) 
                 //{
-                //    TheThingy = EventResource.Location;
-
-                //    if (EventResource.Location == "") 
-                //    {
-                //        TheThingy = "ERROR";
-                //    }
+                //    continue;
                 //}
-                //else if (EventResource.RequiredName == false) 
-                //{
-                //    ProjectEventResource ProjectResource = MainMenu.WorkshopData.SelectedProject.ProjectEventResources.Find(thing => thing.Key == EventResource.Key);
-
-                //    if (ProjectResource != null)
-                //    {
-                //        string sdfsdf = System.IO.Path.GetFileName(ProjectResource.Location);
-                //        TheThingy = sdfsdf;
-
-                //        if (sdfsdf == "" || sdfsdf == null)
-                //        {
-                //            TheThingy = "ERROR";
-                //        }
-
-                        
-                //    }
-                //    else if (ProjectResource == null)
-                //    {
-                //        if (EventResource.IsChild == true)
-                //        {
-                //            TheThingy = System.IO.Path.GetFileName(EventResource.Location);
-                //        }
-                //    }
-                //}
+                               
                 
                 TextBlock tex = new();
                 ComboBoxItem Item = new();
@@ -753,7 +989,7 @@ namespace GameEditorStudio
                     //make gpt figure this out T.T  
                     //i want to set the resource to "". but whats even happening and coding on reos couch is uncomfy D:
                     //What happens if event resource nolonger exists? (for events window, and for command execute?)
-                    EventResource ItemEventResource = selectedItem.Tag as EventResource;
+                    //EventResource ItemEventResource = selectedItem.Tag as EventResource;
                     EventCommand.ResourceKeys[i] = ""; // Update the existing key
                 }
                 else
@@ -761,17 +997,9 @@ namespace GameEditorStudio
                     EventResource ItemEventResource = selectedItem.Tag as EventResource;
                     EventCommand.ResourceKeys[i] = ItemEventResource.Key; // Update the existing key
 
-                    //// Check if the dictionary already has the key
-                    //if (EventCommand.ResourceKeys.ContainsKey(i))
-                    //{
-                    //    EventCommand.ResourceKeys[i] = ItemEventResource.ResourceKey; // Update the existing key
-                    //}
-                    //else
-                    //{
-                    //    EventCommand.ResourceKeys.Add(i, ItemEventResource.ResourceKey); // Add new key-value pair
-                    //}
 
                 }
+                UpdateFinalCMDText(EventCommand);
             };
 
             

@@ -220,7 +220,7 @@ namespace GameEditorStudio
             
             foreach (TreeViewItem TreeViewItemK in LibraryGES.GetALLTreeViewItems(DTEData.EditorLeftBar.TreeView))
             {
-                DTEData.DTEXaml.ItemNameBuilder(TreeViewItemK); //Doing this here to make sure folder item counts work as intended.
+                DTEData.DTEXaml.ItemNameBuilder(TreeViewItemK, true); //Doing this here to make sure folder item counts work as intended.
             }
 
             e.Handled = true;
@@ -421,7 +421,7 @@ namespace GameEditorStudio
 
             ItemInfo.ItemName = ItemNameTextbox.Text;
             ItemInfo.ItemNote = ItemNoteTextbox.Text;
-            DTEData.DTEXaml.ItemNameBuilder(selectedItem);
+            DTEData.DTEXaml.ItemNameBuilder(selectedItem, true);
 
 
 
@@ -543,7 +543,7 @@ namespace GameEditorStudio
                     ItemInfo.TreeItem = TreeItem;
                     //This literally just sets the tree item header, but theres actually a lot of item customiation so
                     //it gets it's own method in workshop.cs so the user can customize it then re-run the method.
-                    DTEData.DTEXaml.ItemNameBuilder(TreeItem);
+                    //DTEData.DTEXaml.ItemNameBuilder(TreeItem, false);
 
                     if (ItemInfo.IsChild == true)
                     {
@@ -601,7 +601,7 @@ namespace GameEditorStudio
 
                         TreeView.Items.Insert(selectedIndex, FolderItem);
                         FolderItem.Items.Add(TreeViewItem);
-                        DTEData.DTEXaml.ItemNameBuilder(FolderItem); //Created the Header text as a TextBlockItem
+                        DTEData.DTEXaml.ItemNameBuilder(FolderItem, true); //Created the Header text as a TextBlockItem
 
 
                         FolderItem.IsExpanded = true;
@@ -629,6 +629,8 @@ namespace GameEditorStudio
                     }
 
                 }
+
+                
             }
 
 
@@ -636,9 +638,9 @@ namespace GameEditorStudio
 
             foreach (TreeViewItem TreeViewItemK in LibraryGES.GetALLTreeViewItems(DTEData.EditorLeftBar.TreeView))
             {
-                DTEData.DTEXaml.ItemNameBuilder(TreeViewItemK); //Doing this again here to make sure folder item counts work as intended.
+                DTEData.DTEXaml.ItemNameBuilder(TreeViewItemK, false); //Doing this again here to make sure folder item counts work as intended.
             }
-
+            DTEData.DTEXaml.UpdateAllMenuEntrysToNewNamesList();
 
             //Select the first name item in the left bar. 
             foreach (TreeViewItem item in ItemsTree.Items)
@@ -1105,7 +1107,7 @@ namespace GameEditorStudio
                 {
                     // Update the Name property with the text from the TextBox
                     selectedInfo.ItemWorkshopTooltip = ItemNotepadTextbox.Text;
-                    DTEData.DTEXaml.ItemNameBuilder(selectedItem);
+                    DTEData.DTEXaml.ItemNameBuilder(selectedItem, true);
                 }
             }
         }       

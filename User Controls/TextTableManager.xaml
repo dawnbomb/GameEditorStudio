@@ -47,7 +47,7 @@
                                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  LastChildFill="False" Background="#FF3E3E3E">
                                             <Label Content="Info" FontWeight="Bold" />
                                             <!--<Button Click="DataFileOpenCustomCharacterTablePanel" Content="Edit custom char set" Margin="3" Width="210" DockPanel.Dock="Right" Height="31" VerticalAlignment="Top"/>-->
-                                            
+
                                         </DockPanel>
                                         <Grid Background="#FF252525">
                                             <Label Content="Row Size" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top"/>
@@ -109,7 +109,7 @@
                                         <DockPanel Name="DataFileRightPanel" DockPanel.Dock="Top" Visibility="Collapsed">
                                             <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                                 <Label Content="Link to DataFile Tutorial." FontWeight="Bold" Background="#FF505050" />
-                                            </DockPanel>                                            
+                                            </DockPanel>
                                             <ScrollViewer Name="MainScrollViewer" DockPanel.Dock="Top">
                                                 <DockPanel>
                                                     <DockPanel DockPanel.Dock="Top"  >
@@ -201,7 +201,7 @@
 
 
                                             </ScrollViewer>
-                                        </DockPanel>                                        
+                                        </DockPanel>
                                     </Grid>
                                 </Border>
                                 <Button Content=" Save and Exit " Click="ButtonClickSaveTextTable" HorizontalAlignment="Left" Margin="635,605,0,0" VerticalAlignment="Top"  Height="50" Width="250"/>
@@ -297,24 +297,42 @@
 
                                 </Border>
 
-                                <Border Margin="289,10,0,0" HorizontalAlignment="Left" Width="273" Height="172" VerticalAlignment="Top">
+                                <Border Margin="289,10,0,0" HorizontalAlignment="Left" Width="387" Height="410" VerticalAlignment="Top">
                                     <DockPanel>
                                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                             <Label Content="Info" FontWeight="Bold" />
                                         </DockPanel>
                                         <Grid Background="#FF1F1F1F">
-                                            <Label x:Name="EditorNameIDLabel" Content="First Name #" HorizontalAlignment="Left" Margin="7,7,0,0" VerticalAlignment="Top"/>
-                                            <TextBox x:Name="EditorFileNameIDTextBox" HorizontalAlignment="Left" Margin="150,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="103" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="EditorFirstNameIDTextboxTextChanged"/>
-                                            <Label Name="EditorMenuLinkFirstIDExplainLabel" Content="Menus linking to editor&#xA;inherit FirstName# from&#xA;that editor's name table" HorizontalAlignment="Center" Margin="0,41,0,0" VerticalAlignment="Top" Background="#FF182327" Foreground="#FF92F5F7" Width="255"/>
+                                            <Label x:Name="EditorNameIDLabel" Content="First Name#" HorizontalAlignment="Left" Margin="7,7,0,0" VerticalAlignment="Top"/>
+                                            <TextBox x:Name="EditorFileNameIDTextBox" HorizontalAlignment="Left" Margin="227,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104" Text="0" PreviewTextInput="TextboxPreviewTextInput" TextChanged="EditorFirstNameIDTextboxTextChanged" IsEnabled="False"/>
+
+
+
+                                            <CheckBox Content="Insert an extra first name" HorizontalAlignment="Left" Margin="7,148,0,0" VerticalAlignment="Top"  Checked="EditorInsertNameCheckboxChecked" Unchecked="EditorInsertNameCheckboxUnchecked"/>
+
+
+                                            <TextBox Name="EditorInsertNameTextTextbox" HorizontalAlignment="Left" Margin="211,190,0,0" TextWrapping="Wrap" Text="None" VerticalAlignment="Top" Width="120" IsEnabled="False"/>
+                                            <TextBox Name="EditorInsertNameValueTextbox" HorizontalAlignment="Left" Margin="211,266,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" IsEnabled="False"/>
+                                            <Label Content="Inserted Name Text" HorizontalAlignment="Left" Margin="8,187,0,0" VerticalAlignment="Top"/>
+                                            <Label Content="Inserted Name Value" HorizontalAlignment="Left" Margin="7,260,0,0" VerticalAlignment="Top"/>
+                                            <Label Content="First Name Value" HorizontalAlignment="Left" Margin="7,40,0,0" VerticalAlignment="Top"/>
+                                            <TextBox Name="LinkToEditorFirstNameValueTextbox" HorizontalAlignment="Left" Margin="227,43,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="104"/>
+                                            <Label Content="More Info" HorizontalAlignment="Left" Margin="279,143,0,0" VerticalAlignment="Top"/>
+                                            <Label Content="Inserted Display #" HorizontalAlignment="Left" Margin="8,221,0,0" VerticalAlignment="Top"/>
+                                            <TextBox Name="EditorInsertNameDisplayNumberTextbox" HorizontalAlignment="Left" Margin="211,227,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" IsEnabled="False"/>
+                                            <Label Content="=============================" HorizontalAlignment="Left" Margin="10,118,0,0" VerticalAlignment="Top"/>
+                                            <Button Content="Click to inherit both from the &#xD;&#xA;selected editor's name table." HorizontalAlignment="Left" Margin="36,79,0,0" VerticalAlignment="Top"  Click="InheritFromLinkedEditorButtonClick"/>
                                             <!--<CheckBox Name="MenuInheritNameFirstIDCheckbox" Content="Use Name Table's First ID" HorizontalAlignment="Center" VerticalAlignment="Center"/>-->
+
+                                            <Label Name="EditorMenuLinkFirstIDExplainLabel" Content="For now, Menus linking to editors&#xA;inherit the FirstName# from that &#xA;editor's name table.&#xA;&#xA;A planned later update will expand&#xA;linking menus to editors.&#xD;&#xA;(and menu entrys in general)&#xA;&#xA;(This text block is covering up&#xA;some upcoming customization &#xA;settings, i'll finish them later)&#xD;&#xA;&#xA;blah blah blah blah blah blah blahhhhh" HorizontalAlignment="Left" Margin="7,43,0,0" VerticalAlignment="Top" Background="#FF182327" Foreground="#FF92F5F7" Width="366" Height="319"/>
                                         </Grid>
                                     </DockPanel>
                                 </Border>
 
-                                <Border Margin="289,200,0,0" Height="354" VerticalAlignment="Top" HorizontalAlignment="Left" Width="273">
+                                <Border Margin="289,440,0,10" HorizontalAlignment="Left" Width="387">
                                     <DockPanel>
                                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
-                                            <Label Content="Name List Preview  (changes are not saved)" FontWeight="Bold" />
+                                            <Label Content="Name List Preview" FontWeight="Bold" />
                                         </DockPanel>
                                         <ScrollViewer >
                                             <TextBox Name="EditorNamesPreviewTextbox" TextWrapping="Wrap" Text="(First select a editor...) "  />
@@ -322,7 +340,7 @@
                                     </DockPanel>
                                 </Border>
 
-                                <Border Margin="577,10,10,0" Height="544" VerticalAlignment="Top">
+                                <Border Margin="710,10,10,0" Height="544" VerticalAlignment="Top">
                                     <DockPanel>
                                         <DockPanel Style="{DynamicResource HeaderDock}" DockPanel.Dock="Top"  >
                                             <Label Content="Link to Editor Tutorial." FontWeight="Bold" />
@@ -331,14 +349,14 @@
                                             <DockPanel Background="#FF1F1F1F">
                                                 <TextBox TextWrapping="Wrap" Text="This one is really simple. It lets you use a list of names from an already existing editor. This is best used when creating a dropdown menu for an entry, to &quot;Select&quot; something. For example, A game where the enemys have a weapon slot, or where classes have a spell list. " Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"  />
                                                 <TextBox x:Name="EditLinkFirstNameIDHelpText" TextWrapping="Wrap" Text="First Name ID#:&#xD;&#xA;This is asking what number value is the first name in the list. Sometimes a game won't have it be 0 or 1 like it is in the editor. This USUALLY requires trial and error until you guess the correct number, so unless you  get lucky and the expected value is 0, expect this to take awhile. ^^; &#xD;&#xA;&#xD;&#xA;Note to self: Create a really good example tutorial for this later...&#xA;" Margin="10,10,10,10" Focusable="False" Background="{x:Null}" BorderBrush="{x:Null}" IsHitTestVisible="False"  DockPanel.Dock="Top"   />
-
+                                                <Label Content="Editor link will &#xA;later support &#xD;&#xA;name notes :D" HorizontalAlignment="Left" Margin="263,-6,0,0" VerticalAlignment="Top" Background="#FF283158"/>
                                             </DockPanel>
 
                                         </ScrollViewer>
                                     </DockPanel>
                                 </Border>
-                                <Button Content=" Save and Exit " HorizontalAlignment="Left" Margin="635,588,0,0" VerticalAlignment="Top" Click="ButtonClickSaveTextTable" Height="50" Width="250"/>
-                                <Button Content="Set no table and exit" HorizontalAlignment="Left" Margin="599,676,0,0" VerticalAlignment="Top" Click="ButtonClickDeleteTextTable" Height="30" Width="322"/>
+                                <Button Content=" Save and Exit " HorizontalAlignment="Left" Margin="733,589,0,0" VerticalAlignment="Top" Click="ButtonClickSaveTextTable" Height="50" Width="250"/>
+                                <Button Content="Set no table and exit" HorizontalAlignment="Left" Margin="698,675,0,0" VerticalAlignment="Top" Click="ButtonClickDeleteTextTable" Height="30" Width="322"/>
                             </Grid>
                         </TabItem>
                         <TabItem Header="Link to Nothing" Name="Tab1" Tag="Nothing">
@@ -421,6 +439,7 @@
                                     </Border>
                                     <Button Click="ButtonClickSaveTextTable" Content=" Save and Exit " HorizontalAlignment="Left" Margin="536,587,0,0" VerticalAlignment="Top" Height="50" Width="250"/>
                                     <Button Click="ButtonClickDeleteTextTable" Content="Set no table and exit" HorizontalAlignment="Left" Margin="512,671,0,0" VerticalAlignment="Top" Height="30" Width="322"/>
+                                    <Button Content="Open&#xD;&#xA;Text dump&#xD;&#xA;Helper tool" HorizontalAlignment="Left" Margin="873,587,0,0" VerticalAlignment="Top" Click="ButtonOpenTextDumpHelperTool"/>
                                 </Grid>
                             </Grid>
                             <!--List to Nothing-->

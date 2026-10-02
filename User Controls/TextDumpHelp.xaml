@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="GameEditorStudio.TextDumpHelp"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameEditorStudio"
+             mc:Ignorable="d" 
+             d:DesignHeight="650" d:DesignWidth="1100">
+    <Grid>
+        <Label Content="Paste your hexes your trying to get names from here" HorizontalAlignment="Left" Margin="10,1,0,0" VerticalAlignment="Top"/>
+        <TextBox TextChanged="HexDataTextboxTextChanged" Name="HexDataTextbox" HorizontalAlignment="Left" Margin="10,35,0,10" TextWrapping="Wrap" Text="TextBox" Width="362" AcceptsReturn="True" />
+
+        <TextBox Name="NextLineTextbox" HorizontalAlignment="Left" Margin="508,71,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="00"/>
+
+        <ScrollViewer Margin="386,139,0,10" HorizontalAlignment="Left" Width="331">
+            <TextBox Name="ResultTextbox"  TextWrapping="Wrap" Text="TextBox"  AcceptsReturn="True"/>
+        </ScrollViewer>
+
+        <Button Click="Exit" Content="Exit" HorizontalAlignment="Left" Margin="607,1,0,0" VerticalAlignment="Top" Width="87"/>
+        <Label Content="Next line byte (Can be multiple bytes)" HorizontalAlignment="Left" Margin="405,38,0,0" VerticalAlignment="Top"/>
+        <ScrollViewer Margin="722,139,10,10">
+            <TextBox Name="ConvertTextbox"  TextWrapping="Wrap" Text="TextBox" />
+        </ScrollViewer>
+        <Button Click="ConvertToHalfWidth" Content="Convert to half width" HorizontalAlignment="Left" Margin="816,75,0,0" VerticalAlignment="Top"/>
+        <Button Click="ConvertToFullWidth" Content="Convert to full width" HorizontalAlignment="Left" Margin="816,106,0,0" VerticalAlignment="Top"/>
+        <Label Content="Results" HorizontalAlignment="Left" Margin="472,102,0,0" VerticalAlignment="Top"/>
+        <Label Content="For now, assumes Shift-JIS" HorizontalAlignment="Left" Margin="816,10,0,0" VerticalAlignment="Top"/>
+
+    </Grid>
+</UserControl>

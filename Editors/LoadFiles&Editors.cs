@@ -333,7 +333,7 @@ namespace GameEditorStudio.Loading
 
                 workshopData.WorkshopTools.Add(tool);
 
-                Tool? existingTool = Database.WorkshopTools.FirstOrDefault(t => t.Key == tool.Key);
+                Tool? existingTool = Database.MasterWorkshopTools.FirstOrDefault(t => t.Key == tool.Key);
                 if (existingTool != null)
                 {
                     tool.Location = existingTool.Location;

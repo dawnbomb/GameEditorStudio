@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameEditorStudio"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="500" d:DesignWidth="800">
     <Grid>
         <Label Content="CLICK THIS -> " HorizontalAlignment="Left" Margin="10,2,0,0" VerticalAlignment="Top"/>
         <Button Click="HelpButtonClick"  Content="Help!" HorizontalAlignment="Left" Margin="167,7,0,0" VerticalAlignment="Top"/>
@@ -31,24 +31,25 @@
                 <Border Style="{DynamicResource ContentBorder}"  DockPanel.Dock="Top">
                     <DockPanel LastChildFill="False" Style="{DynamicResource ContentBar}" DockPanel.Dock="Top" >
                         <Label Content="Tool Info" FontWeight="Bold" />
+                        <Label Content="No Tool Selected!" Name="NoToolSelectedLabel" FontWeight="Bold" Background="#FF632020"  Height="26" Padding="5,1,5,0"/>
                     </DockPanel>
                 </Border>
                 <Grid Name="ToolInfoPanel" Background="#FF21211F">
                     <Label Content="Display Name:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                    <TextBox TextChanged="ToolDisplayNameTextChanged" Name="ToolDisplayNameTextbox" HorizontalAlignment="Left" Margin="155,13,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="190"/>
+                    <TextBox TextChanged="ToolDisplayNameTextChanged" Name="ToolDisplayNameTextbox" HorizontalAlignment="Left" Margin="155,13,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="190"  IsEnabled="False"/>
                     <Label Content="Name of tool .exe:" HorizontalAlignment="Left" Margin="10,52,0,0" VerticalAlignment="Top"/>
-                    <TextBox TextChanged="ToolExeTextChanged" Name="ToolExeTextbox" Margin="199,55,10,0" TextWrapping="NoWrap" VerticalAlignment="Top"/>
+                    <TextBox TextChanged="ToolExeTextChanged" Name="ToolExeTextbox" Margin="199,55,10,0" TextWrapping="NoWrap" VerticalAlignment="Top"  IsEnabled="False"/>
 
                     <Label Content="Description (Doubles as Tooltip)" HorizontalAlignment="Left" Margin="10,91,0,0" VerticalAlignment="Top"/>
-                    <TextBox TextChanged="DescriptionTextChanged" Name="DescriptionTextbox" Margin="10,130,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="73"/>
+                    <TextBox TextChanged="DescriptionTextChanged" Name="DescriptionTextbox" Margin="10,130,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="76" IsEnabled="False" AcceptsReturn="True"/>
 
                     <Label Content="Download Link" HorizontalAlignment="Left" Margin="12,208,0,0" VerticalAlignment="Top"/>
-                    <TextBox TextChanged="LinkTextChanged" Name="DownloadLinkTextbox" Margin="11,242,11,0" TextWrapping="NoWrap" VerticalAlignment="Top"/>
+                    <TextBox TextChanged="LinkTextChanged" Name="DownloadLinkTextbox" Margin="11,242,11,0" TextWrapping="NoWrap" VerticalAlignment="Top" IsEnabled="False"/>
 
                     <Label Content="Notes (Never shown anywhere else, basically dev notes)" HorizontalAlignment="Left" Margin="12,275,0,0" VerticalAlignment="Top"/>
-                    <TextBox TextChanged="NotesTextChanged" Name="NotesTextbox" Margin="10,309,10,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-                    
-                    <Button Click="DeleteClick" Name="DeleteButton" Content="Delete" HorizontalAlignment="Left" Margin="428,15,0,0" VerticalAlignment="Top"/>
+                    <TextBox TextChanged="NotesTextChanged" Name="NotesTextbox" Margin="10,309,10,17" TextWrapping="Wrap" IsEnabled="False" AcceptsReturn="True"/>
+
+                    <Button Click="DeleteClick" Name="DeleteButton" Content="Delete" HorizontalAlignment="Left" Margin="428,15,0,0" VerticalAlignment="Top" IsEnabled="False"/>
 
 
 
