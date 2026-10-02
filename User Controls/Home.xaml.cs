@@ -311,13 +311,15 @@ namespace GameEditorStudio
             if (TextBoxInputDirectory.Text != "" & !Directory.Exists(TextBoxInputDirectory.Text)) 
             {
                 LabelForMissingProjectInput.Visibility = Visibility.Visible;
+                //If i ever expand this to a more complex check, i also need to update the code when the user sets a input folder.
             }
             LabelForMissingProjectOutput.Visibility = Visibility.Collapsed;
             if (TextBoxOutputDirectory.Text != "" & !Directory.Exists(TextBoxOutputDirectory.Text))
             {
                 LabelForMissingProjectOutput.Visibility = Visibility.Visible;
+                //If i ever expand this to a more complex check, i also need to update the code when the user sets a output folder.
             }
-            
+
         }
 
 
@@ -539,6 +541,7 @@ namespace GameEditorStudio
                     TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
 
                     CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
+                    LabelForMissingProjectInput.Visibility = Visibility.Collapsed;
                 }
                 else if (WorkshopData.ProjectsRequireSameFolderName == true && WorkshopData.WorkshopInputDirectory != Path.GetFileName(FolderSelect.SelectedPath))
                 {
@@ -564,6 +567,7 @@ namespace GameEditorStudio
                     TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
 
                     CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
+                    LabelForMissingProjectInput.Visibility = Visibility.Collapsed;
 
                 }
 
@@ -583,6 +587,7 @@ namespace GameEditorStudio
                     TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
 
                     CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
+                    LabelForMissingProjectInput.Visibility = Visibility.Collapsed;
                 }
                 else if (WorkshopData.ProjectsRequireSameFolderName == false && WorkshopData.WorkshopInputDirectory != "" && NameHasSpaces == false && WorkshopData.WorkshopInputDirectory != Path.GetFileName(FolderSelect.SelectedPath))
                 {
@@ -603,6 +608,7 @@ namespace GameEditorStudio
                     TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
 
                     CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
+                    LabelForMissingProjectInput.Visibility = Visibility.Collapsed;
                 }
                 else if (WorkshopData.ProjectsRequireSameFolderName == false && WorkshopData.WorkshopInputDirectory != "" && NameHasSpaces == true && WorkshopData.WorkshopInputDirectory != Path.GetFileName(FolderSelect.SelectedPath))
                 {
@@ -618,6 +624,7 @@ namespace GameEditorStudio
                     TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
 
                     CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
+                    LabelForMissingProjectInput.Visibility = Visibility.Collapsed;
                 }                
                 else if (WorkshopData.ProjectsRequireSameFolderName == false && WorkshopData.WorkshopInputDirectory == "")
                 {
@@ -633,6 +640,7 @@ namespace GameEditorStudio
                     TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
 
                     CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
+                    LabelForMissingProjectInput.Visibility = Visibility.Collapsed;
 
                 }
                 else if (WorkshopData.ProjectsRequireSameFolderName == false)
@@ -647,6 +655,7 @@ namespace GameEditorStudio
                     TextBoxInputDirectory.Text = FolderSelect.SelectedPath;
 
                     CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
+                    LabelForMissingProjectInput.Visibility = Visibility.Collapsed;
                 }
 
 
@@ -697,6 +706,7 @@ namespace GameEditorStudio
                 TextBoxOutputDirectory.Text = FolderSelect.SelectedPath;  
 
                 CommandMethodsClass.SaveProjectXML(WorkshopData.SelectedProject, WorkshopData);
+                LabelForMissingProjectOutput.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -785,15 +795,10 @@ namespace GameEditorStudio
 
             foreach (EventResource WorkshopEventResource in WorkshopData.WorkshopEventResources)
             {
-                if (WorkshopEventResource.IsChild == true)
-                {
-                    continue;
-                }
-                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.CMDText)
-                {
-                    continue;
-                }
-
+                if (WorkshopEventResource.IsChild == true) { continue; }
+                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.CMDText) { continue; }
+                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.CMDWTool) { continue; }
+                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.CMDGTool) { continue; }
 
 
 

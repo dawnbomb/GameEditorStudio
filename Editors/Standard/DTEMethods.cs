@@ -973,6 +973,46 @@ namespace GameEditorStudio
             }
         }
 
+        public static string EntryDec2Hex(Entry entry) 
+        {
+            if (entry.ParentEditor.DataTableEditorData.WorkshopData.IsProjectLoaded == false) { return "ED2H ERROR"; }
+            if (entry.EntryValueOnProjectLoadFromOutput != "") { return "ED2H ERROR"; }
+
+            DataTableEditorData DTEData = entry.ParentEditor.DataTableEditorData;
+
+            if (entry.Endianness == "1")
+            {
+                return DTEData.DataTable.FileDataTable.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * entry.DataTableRowSize) + entry.RowOffset].ToString("D"); //
+                //EntryClass.EntryValueOnProjectLoadFromOutput = 
+                //InputFile.FileBytes[DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset].ToString("D");
+            }
+            //else if (EntryClass.Endianness == "2B")
+            //{
+            //    ushort value2 = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+            //    ushort swappedValue2 = (ushort)IPAddress.HostToNetworkOrder((short)value2); // Swap the endianness
+            //    EntryClass.EntryValueOnProjectLoadFromOutput = swappedValue2.ToString("D");
+            //}
+            //else if (EntryClass.Endianness == "4B")
+            //{
+            //    uint value = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset);
+            //    byte[] valueBytes = BitConverter.GetBytes(value);
+            //    Array.Reverse(valueBytes);
+            //    uint swappedValue = BitConverter.ToUInt32(valueBytes, 0);
+            //    EntryClass.EntryValueOnProjectLoadFromOutput = swappedValue.ToString("D");
+            //}
+            //else if (EntryClass.Endianness == "2L")
+            //{
+            //    EntryClass.EntryValueOnProjectLoadFromOutput = BitConverter.ToUInt16(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+
+            //}
+            //else if (EntryClass.Endianness == "4L")
+            //{
+            //    EntryClass.EntryValueOnProjectLoadFromOutput = BitConverter.ToUInt32(DTEData.DataTable.FileDataTable.FileBytes, DTEData.DataTable.DataTableStart + (DTEData.TableRowIndex * EntryClass.DataTableRowSize) + EntryClass.RowOffset).ToString("D");
+
+            //}
+            return "ED2H ERROR";
+        }
+
         public static void UpdateEntryValueHistory(Entry EntryClass) 
         {
             if (EntryClass.ParentEditor.WorkshopData.IsProjectLoaded == false) { return; }

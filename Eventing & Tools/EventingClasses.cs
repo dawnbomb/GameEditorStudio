@@ -77,11 +77,7 @@ namespace GameEditorStudio
         
         public PointerToMethod TheMethod { get; set; } //the code that runs when this Command is called.
         
-
-        
-
-        public WorkshopData WorkshopData { get; set; }
-        public GameLibrary GameLibrary { get; set; }
+                
 
     }
 
@@ -136,6 +132,7 @@ namespace GameEditorStudio
         //Resource 1's Key, Resource 2's Key, etc. These keys match the ones in EventResource (right below this)
 
         public List<CommandResource> CMDList { get; set; } = new();
+        public RichTextBox FinalTextbox { get; set; } = null;
         public string WorkshopToolKey { get; set; } = "";
 
     }
@@ -167,7 +164,7 @@ namespace GameEditorStudio
         public string TooltipText { get; set; } = "";
 
 
-        public enum ResourceTypes { File, Folder, WTools, CMDText }
+        public enum ResourceTypes { File, Folder, CMDGTool, CMDWTool, CMDText }
 
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -185,9 +182,11 @@ namespace GameEditorStudio
         public string Label { get; set; } = "Name";
         public ResourceTypes Type { get; set; } = ResourceTypes.File;
         public bool IsOptional { get; set; } = false; //Technically unused, i'm only checking if it's optional, but i never actually set any to optional. 
-        public enum ResourceTypes { File, Folder, WTools, CMDText }
+        public enum ResourceTypes { File, Folder, Text, GTool, WTool, CMDText }
 
         public string CMDTextKey { get; set; } = ""; //The key of the resource this is filling in for. Matches EventResource Key.
+        public string CMDGToolKey { get; set; } = "";//Similuar to CMDTextKey
+        public string CMDWToolKey { get; set; } = "";//Similuar to CMDTextKey
     }
 
 

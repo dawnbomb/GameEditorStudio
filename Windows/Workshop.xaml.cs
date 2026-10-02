@@ -77,11 +77,7 @@ namespace GameEditorStudio
             WorkshopData.WorkshopXaml = this;
             HomeControl.FileManager.WorkshopXaml = this;
             WorkshopData.WorkshopXaml.MenusForToolsAndEvents.WorkshopData = WorkshopData; //Menu Set WorkshopData.
-            
-            foreach (Command command in Database.Commands)
-            {
-                command.WorkshopData = WorkshopData;
-            }
+                        
 
             //Loaded += AfterXamlLoads;
             AfterXamlLoads(); //This is an async method

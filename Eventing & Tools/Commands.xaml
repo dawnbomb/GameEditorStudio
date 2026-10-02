@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameEditorStudio"
         mc:Ignorable="d"
-        Title="Event Commands" Height="610" Width="750">
+        Title="Event Commands" Height="720" Width="780">
     <DockPanel >
 
         <ContentControl Height="125" Margin="10,10,10,10"  DockPanel.Dock="Bottom">

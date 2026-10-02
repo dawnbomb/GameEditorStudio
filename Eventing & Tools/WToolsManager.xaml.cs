@@ -118,6 +118,15 @@ namespace GameEditorStudio
 
         private void ToolTreeSelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
+            ToolDisplayNameTextbox.IsEnabled = false;
+            DeleteButton.IsEnabled = false;
+            ToolExeTextbox.IsEnabled = false;
+            DescriptionTextbox.IsEnabled = false;
+            DownloadLinkTextbox.IsEnabled = false;
+            NotesTextbox.IsEnabled = false;
+            NoToolSelectedLabel.Visibility = Visibility.Visible;
+
+
             CurrentItem = null;
             CurrentTool = null;
             SetNoTool();
@@ -132,6 +141,14 @@ namespace GameEditorStudio
             
 
             SetTool();
+
+            ToolDisplayNameTextbox.IsEnabled = true;
+            DeleteButton.IsEnabled = true;
+            ToolExeTextbox.IsEnabled = true;
+            DescriptionTextbox.IsEnabled = true;
+            DownloadLinkTextbox.IsEnabled = true;
+            NotesTextbox.IsEnabled = true;
+            NoToolSelectedLabel.Visibility = Visibility.Collapsed;
         }
 
         private void SetNoTool() 

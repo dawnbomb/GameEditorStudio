@@ -364,9 +364,9 @@ namespace GameEditorStudio
             ComboBoxItemFolder.Content = "Folder";
             TheComboBox.Items.Add(ComboBoxItemFolder);
 
-            //ComboBoxItem ComboBoxItemText = new ComboBoxItem();
-            //ComboBoxItemText.Content = "Text";
-            //TheComboBox.Items.Add(ComboBoxItemText);
+            ComboBoxItem ComboBoxItemText = new ComboBoxItem();
+            ComboBoxItemText.Content = "Text";
+            TheComboBox.Items.Add(ComboBoxItemText);
 
             if (RequiredResource.Type == CommandResource.ResourceTypes.File)
             {
@@ -376,10 +376,10 @@ namespace GameEditorStudio
             {
                 ComboBoxItemFolder.IsSelected = true;
             }
-            //if (RequiredResource.Type == CommandResource.ResourceTypes.Text)
-            //{
-            //    ComboBoxItemText.IsSelected = true;
-            //}
+            if (RequiredResource.Type == CommandResource.ResourceTypes.Text)
+            {
+                ComboBoxItemText.IsSelected = true;
+            }
 
 
 

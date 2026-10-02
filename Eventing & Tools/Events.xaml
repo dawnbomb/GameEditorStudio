@@ -33,7 +33,7 @@
                 </DockPanel>
                 <DockPanel DockPanel.Dock="Top" Margin="10,2,10,0" Height="30">
                     <Button Content="Delete Event" DockPanel.Dock="Right"    Width="135" Click="DeleteEventButton" />
-                    <Button Content="Run Event" DockPanel.Dock="Left" HorizontalAlignment="Left"   Width="108" Click="RunEventButton"/>
+                    <Button Content="Run Event" DockPanel.Dock="Left" HorizontalAlignment="Left"   Width="108" Click="RunEventButton" ToolTip="Force Runs the event (Ignoring all conditions). (Use responsibly~)"/>
                 </DockPanel>
                 <DockPanel DockPanel.Dock="Top" Margin="10,5,10,0" Height="30">
                     <Button Content="Move up" DockPanel.Dock="Left"    Width="108" Click="ButtonMoveEventUp" />

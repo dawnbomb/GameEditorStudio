@@ -151,7 +151,7 @@ namespace GameEditorStudio
             foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(DTEData.EditorLeftBar.TreeView))
             {
                 TextInfo ItemInfo = TreeViewItem.Tag as TextInfo;
-                DTEData.DTEXaml.ItemNameBuilder(TreeViewItem);
+                DTEData.DTEXaml.ItemNameBuilder(TreeViewItem, true);
 
             }
         }
@@ -193,7 +193,7 @@ namespace GameEditorStudio
                 foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(DTEData.EditorLeftBar.TreeView))
                 {
                     TextInfo ItemInfo = TreeViewItem.Tag as TextInfo;
-                    DTEData.DTEXaml.ItemNameBuilder(TreeViewItem);
+                    DTEData.DTEXaml.ItemNameBuilder(TreeViewItem, true);
 
                 }
             }
@@ -231,7 +231,7 @@ namespace GameEditorStudio
                 foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(DTEData.EditorLeftBar.TreeView))
                 {
                     TextInfo ItemInfo = TreeViewItem.Tag as TextInfo;
-                    DTEData.DTEXaml.ItemNameBuilder(TreeViewItem);
+                    DTEData.DTEXaml.ItemNameBuilder(TreeViewItem, true);
 
                 }
             }
@@ -272,7 +272,7 @@ namespace GameEditorStudio
                 foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(DTEData.EditorLeftBar.TreeView))
                 {
                     TextInfo ItemInfo = TreeViewItem.Tag as TextInfo;
-                    DTEData.DTEXaml.ItemNameBuilder(TreeViewItem);
+                    DTEData.DTEXaml.ItemNameBuilder(TreeViewItem, true);
 
                 }
             }
@@ -311,7 +311,7 @@ namespace GameEditorStudio
                 foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(DTEData.EditorLeftBar.TreeView))
                 {
                     TextInfo ItemInfo = TreeViewItem.Tag as TextInfo;
-                    DTEData.DTEXaml.ItemNameBuilder(TreeViewItem);
+                    DTEData.DTEXaml.ItemNameBuilder(TreeViewItem, true);
 
                 }
                 LibraryGES.UpdateTextboxColors(PropertiesEditorFirstNameNumber, DTEData.NameTable.TextTableFirstNameID.ToString());
@@ -393,7 +393,7 @@ namespace GameEditorStudio
                     foreach (TreeViewItem TreeViewItem in LibraryGES.GetALLTreeViewItems(DTEData.EditorLeftBar.TreeView))
                     {
                         TextInfo ItemInfo = TreeViewItem.Tag as TextInfo;
-                        DTEData.DTEXaml.ItemNameBuilder(TreeViewItem);
+                        DTEData.DTEXaml.ItemNameBuilder(TreeViewItem, true);
 
                     }
 

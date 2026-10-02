@@ -443,6 +443,14 @@ namespace GameEditorStudio
         ////////Link to Editor Only////////
         public DataTableEditorData ?LinkedDTEEditor { get; set; } //When a text table is pulling names from another editor, this is that linked editor. 
 
+
+        public int TextTableFirstNameValue { get; set; } = 0;
+        public bool UseExtraName { get; set; } = false;
+        public string ExtraNameText = "None";
+        public int ExtraNameDisplayNumber = 0;
+        public int ExtraNameValueNumber = 0;
+
+
         public string PreviousLinkedEditorName { get; set; } = ""; //XML - The linked editor's name. Used only to preverve the info between loading and saving again when the linked editor is missing. 
         public string PreviousLinkedEditorKey { get; set; } = ""; //XML - The linked editor's key. Used only to preverve the info between loading and saving again when the linked editor is missing. 
 

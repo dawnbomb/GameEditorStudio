@@ -747,7 +747,8 @@ namespace GameEditorStudio
 
                     ComboBoxItem FakeItem = new();
                     //FakeItem.Content = MenuText; //found above
-                    FakeItem.Content = (int.Parse(EntryClass.EntryByteDecimal) + StartNum) + ": ???" ; //found above
+                    //FakeItem.Content = (int.Parse(EntryClass.EntryByteDecimal) + StartNum) + ": ???" ; //found above
+                    FakeItem.Content = (int.Parse(EntryClass.EntryByteDecimal) + StartNum) + ": ???"; //found above
                     FakeItem.Foreground = Brushes.Red; //Red text for unknown value
                     EntryClass.EntryTypeMenu.Dropdown.Foreground = Brushes.Red; //Red text for unknown value
                     EntryClass.EntryTypeMenu.Dropdown.Items.Add(FakeItem);
@@ -1672,6 +1673,7 @@ namespace GameEditorStudio
 
         public void CreateMenu(Entry EntryClass, Workshop TheWorkshop)
         {
+            
             if (EntryClass.EntryTypeMenu == null)
             {
                 EntryClass.EntryTypeMenu = new();
@@ -1932,6 +1934,8 @@ namespace GameEditorStudio
             if (TheWorkshop.IsPreviewMode == true) { ListButton.Content = "Preview Mode"; return; }
             if (TheWorkshop.IsPreviewMode == true) { ListButton.IsEnabled = false; }
         }
+
+        
 
         public void CreateDropDown(Entry EntryClass, Workshop Workshop)
         {
@@ -2514,7 +2518,12 @@ namespace GameEditorStudio
                 RightBar.DropdownMenuType.IsEnabled = true;
                 if (EntryClass.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.Dropdown) { RightBar.MenuTypeItemDropdown.IsSelected = true; }
                 else if (EntryClass.EntryTypeMenu.MenuType == EntryTypeMenu.MenuTypes.List) { RightBar.MenuTypeItemList.IsSelected = true; }
-                
+
+                RightBar.MenuCurrentDexTextbox.Text = EntryClass.EntryByteDecimal;
+                //RightBar.MenuCurrentHexTextbox.Text = DTEMethods.EntryDec2Hex(EntryClass);
+                //MenuCurrentDexTextbox
+
+
             }
             else //failsafe
             {
