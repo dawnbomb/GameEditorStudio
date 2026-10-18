@@ -13,8 +13,7 @@
     <Application.Resources>   
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/PixelWPF;component/PixelDictionary.xaml" />
-                
+                <ResourceDictionary Source="pack://application:,,,/PixelWPF;component/PixelDictionary.xaml" />                
                 <ResourceDictionary Source="Styles/GES Colors.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="{x:Type Window}" BasedOn="{StaticResource DarkModeWindowStyle}"/>

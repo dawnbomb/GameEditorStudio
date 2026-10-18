@@ -153,35 +153,47 @@
                     <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                         <CheckBox Name="NoteCheckbox" Content="Name Note" DockPanel.Dock="Left" Margin="2,2,15,2" ToolTip="Show item notes as part of name." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
                         <CheckBox Name="MergeCheckbox" Content="Merge multibyte Entrys" DockPanel.Dock="Left" Margin="2,2,15,2" ToolTip="This makes multi-byte entrys appear as 1 column." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
-                        <CheckBox Name="Mute00Checkbox" Content="Mute 00" DockPanel.Dock="Left" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
-                        <CheckBox Name="HalfMuteFFCheckbox" Content="Half Mute FF" DockPanel.Dock="Left" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
-                        <CheckBox Name="BluePercentsCheckbox" Content="Blue 50,100,150" DockPanel.Dock="Left" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
-                        <CheckBox Name="RedLowNumbersCheckbox" Content="Red under 16" DockPanel.Dock="Left" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
-                        <CheckBox Name="Yellow1Checkbox" Content="Yellow 1" DockPanel.Dock="Left" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
+                        
                         <Label Content="Note: This is a hex viewer, NOT a hex editor!" Foreground="#FF959648"/>
                         <!--<CheckBox Name="100sCheckbox" Content="Orange if dec ends with 00 (100, 200, 300, )" DockPanel.Dock="Left" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>-->
+                        <Button Click="ToggleSidebar" Name="SidebarButton" Content="Sidebar" DockPanel.Dock="Right"/>
                     </DockPanel>
                     
 
                     
                 </DockPanel>
             </Border>
+
+            <DockPanel>
+                <Border Name="TheSidebar" DockPanel.Dock="Right" Width="175">
+                    <DockPanel LastChildFill="False">
+                        <CheckBox Name="Mute00Checkbox" Content="Mute 00" DockPanel.Dock="Top" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
+                        <CheckBox Name="HalfMuteFFCheckbox" Content="Half Mute FF" DockPanel.Dock="Top" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
+                        <CheckBox Name="BluePercentsCheckbox" Content="Blue 50,100,150" DockPanel.Dock="Top" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
+                        <CheckBox Name="RedLowNumbersCheckbox" Content="Red under 16" DockPanel.Dock="Top" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
+                        <CheckBox Name="Yellow1Checkbox" Content="Yellow 1" DockPanel.Dock="Top" Margin="2,2,15,2" ToolTip="This makes all cells with only 0s in them, become gray." Checked="TriggerRefreshGrid" Unchecked="TriggerRefreshGrid" IsChecked="True"/>
+                    </DockPanel>
+                </Border>
+                
+
+                <DataGrid Name="MainDataGrid" 
+            FrozenColumnCount="1"                  
+            EnableColumnVirtualization="True"          
+            EnableRowVirtualization="True"
+            VirtualizingStackPanel.VirtualizationMode="Recycling"
+            DockPanel.Dock="Left"
             
-            <DataGrid Name="MainDataGrid" 
-                      FrozenColumnCount="1"                  
-                      EnableColumnVirtualization="True"          
-                      EnableRowVirtualization="True"
-                      VirtualizingStackPanel.VirtualizationMode="Recycling"
-                      DockPanel.Dock="Top"
-                      
-                      ScrollViewer.CanContentScroll="True"
-          VirtualizingStackPanel.IsVirtualizingWhenGrouping="True"
-          VirtualizingPanel.CacheLengthUnit="Item"
-          VirtualizingPanel.CacheLength="0,0"
-                      
-                      AutoGenerateColumns="True"  
-                      GridLinesVisibility="All" 
-                      CanUserResizeColumns="False"/>
+            ScrollViewer.CanContentScroll="True"
+VirtualizingStackPanel.IsVirtualizingWhenGrouping="True"
+VirtualizingPanel.CacheLengthUnit="Item"
+VirtualizingPanel.CacheLength="0,0"
+            
+            AutoGenerateColumns="True"  
+            GridLinesVisibility="All" 
+            CanUserResizeColumns="False"/>
+                
+            </DockPanel>
+            
             
         </DockPanel>
         

@@ -424,7 +424,7 @@ namespace GameEditorStudio
 
         public string TextTableKey { get; set; } = PixelWPF.LibraryPixel.GenerateKey(); //Unused. This is only here incase it's needed in the future. (I cant think of any scenario where this would be required)
 
-        public int TextTableFirstNameID { get; set; } = 1; //XML - The display number the name list starts at. Usually 0 or 1. (But not always).
+        public int TextTableFirstNameID { get; set; } = 0; //XML - The display number the name list starts at. Usually 0 or 1. (But not always).
 
         ////////Name Table Only////////
         //Also used in menu nothing and menu other thing? //Do not use with MenuNothing or MenuEditor.

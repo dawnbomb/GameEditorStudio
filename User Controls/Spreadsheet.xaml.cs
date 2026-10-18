@@ -231,10 +231,19 @@ namespace GameEditorStudio
             }
         }
 
-
-
-        
-
+        private void ToggleSidebar(object sender, RoutedEventArgs e)
+        {
+            if (TheSidebar.Visibility == Visibility.Visible) 
+            {
+                TheSidebar.Visibility = Visibility.Collapsed;
+                SidebarButton.Foreground = Brushes.Gray;
+            }
+            else 
+            {
+                TheSidebar.Visibility = Visibility.Visible;
+                SidebarButton.Foreground = Brushes.White;
+            }
+        }
     }
 
 

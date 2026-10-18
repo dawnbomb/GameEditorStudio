@@ -996,7 +996,7 @@ namespace GameEditorStudio
         private void HideNameCheckboxChecked(object sender, RoutedEventArgs e)
         {
             DTEData.EntryClass.IsNameHidden = true;
-            PropertiesNameBox.IsEnabled = false;
+            //PropertiesNameBox.IsEnabled = false;
             DTEMethods.UpdateEntryName(DTEData.EntryClass);
             DTEMethods.UpdateEditorGrids(DTEData.EntryClass.ParentEditor.DataTableEditorData);
         }
@@ -1004,7 +1004,7 @@ namespace GameEditorStudio
         private void HideNameCheckboxUnchecked(object sender, RoutedEventArgs e)
         {
             DTEData.EntryClass.IsNameHidden = false;
-            PropertiesNameBox.IsEnabled = true;
+            //PropertiesNameBox.IsEnabled = true;
             DTEMethods.UpdateEntryName(DTEData.EntryClass);
             DTEMethods.UpdateEditorGrids(DTEData.EntryClass.ParentEditor.DataTableEditorData);
         }
@@ -1391,25 +1391,25 @@ namespace GameEditorStudio
             DTEData.EntryClass.RowSpan = 1;
             if (NewEntryType == Entry.EntrySubTypes.BitFlag) { DTEData.EntryClass.RowSpan = 8; }
 
-            if (NewEntryType == Entry.EntrySubTypes.Menu) //Cancel method IF: A Menu-Type entry wants to become size-4.
-            {
-                if (PropertiesEntryByteSizeComboBox.Text == "4 Bytes Little Endian" || PropertiesEntryByteSizeComboBox.Text == "4 Bytes Big Endian")
-                {
+            //if (NewEntryType == Entry.EntrySubTypes.Menu) //Cancel method IF: A Menu-Type entry wants to become size-4.
+            //{
+            //    if (PropertiesEntryByteSizeComboBox.Text == "4 Bytes Little Endian" || PropertiesEntryByteSizeComboBox.Text == "4 Bytes Big Endian")
+            //    {
 
-                    string FindEntryType = DTEData.EntryClass.NewSubType.ToString();  //Entry Type Dropdown Menu.
-                    foreach (ComboBoxItem item in PropertiesEntryType.Items)
-                    {
-                        if (item.Content.ToString() == FindEntryType)
-                        {
-                            PropertiesEntryType.SelectedItem = item;
-                            break;
-                        }
-                    }
+            //        string FindEntryType = DTEData.EntryClass.NewSubType.ToString();  //Entry Type Dropdown Menu.
+            //        foreach (ComboBoxItem item in PropertiesEntryType.Items)
+            //        {
+            //            if (item.Content.ToString() == FindEntryType)
+            //            {
+            //                PropertiesEntryType.SelectedItem = item;
+            //                break;
+            //            }
+            //        }
 
-                    return;
-                }
+            //        return;
+            //    }
 
-            }
+            //}
 
 
             DTEData.WorkshopXaml.WorkshopData.EntryManagerOLD.ChangeEntryType(DTEData.WorkshopXaml.WorkshopData, NewEntryType, DTEData.WorkshopXaml, DTEData.EntryClass);
@@ -1701,6 +1701,66 @@ namespace GameEditorStudio
             DTEData.MathboxClass.IsNameHidden = false;
             PropertiesMathboxNameBox.IsEnabled = true;
             DTEData.MathboxClass.Mathbox.UpdateNameDisplay();
+            DTEMethods.UpdateEditorGrids(DTEData.EntryClass.ParentEditor.DataTableEditorData);
+        }
+
+        private void RowTransposeButtonClick(object sender, RoutedEventArgs e)
+        {
+            Category category = DTEData.CategoryClass;
+
+            if (category == null) return;
+            if (category?.GridItems == null) return;
+
+            var itemsToProcess = new Stack<GridItem>(category.GridItems);
+
+            while (itemsToProcess.Count > 0)
+            {
+                var item = itemsToProcess.Pop();
+                if (item == null) continue;
+
+                // 1. Swap coordinates
+                (item.Column, item.Row) = (item.Row, item.Column);
+
+                // 2. Push child items onto stack if this is a Group
+                if (item is Group group && group.GridItems != null)
+                {
+                    foreach (var childItem in group.GridItems)
+                    {
+                        itemsToProcess.Push(childItem);
+                    }
+                }
+            }
+
+            DTEMethods.UpdateEditorGrids(DTEData.EntryClass.ParentEditor.DataTableEditorData);
+        }
+
+        private void GroupTransposeButtonClick(object sender, RoutedEventArgs e)
+        {
+            Group group = DTEData.GroupClass;
+
+            if (group == null || group.GridItems == null) return;
+
+            // Start stack directly with the group's child items
+            var itemsToProcess = new Stack<GridItem>(group.GridItems);
+
+            while (itemsToProcess.Count > 0)
+            {
+                var item = itemsToProcess.Pop();
+                if (item == null) continue;
+
+                // 1. Swap coordinates
+                (item.Column, item.Row) = (item.Row, item.Column);
+
+                // 2. Push child items onto stack if this child is also a nested Group
+                if (item is Group childGroup && childGroup.GridItems != null)
+                {
+                    foreach (var nestedItem in childGroup.GridItems)
+                    {
+                        itemsToProcess.Push(nestedItem);
+                    }
+                }
+            }
+
             DTEMethods.UpdateEditorGrids(DTEData.EntryClass.ParentEditor.DataTableEditorData);
         }
     }
