@@ -548,6 +548,28 @@ namespace GameEditorStudio
                     EntryClass.Symbology.Content = "!!!";
                     EntryClass.Symbology.ToolTip = "This entry is probably not a checkbox, it has more then 2 possible values.   ValueA: " + ValueA + " ValueB: " + ValueB + " ValueX: " + ValueX;
                 }
+
+                else if (IsAlwaysZero == true)
+                {
+                    EntryClass.Symbology.Foreground = Brushes.Orange;
+                    EntryClass.Symbology.Content = " 0";
+                    EntryClass.Symbology.ToolTip = "This entry is always zero.\n\nSometimes this means its actually part of a 2+ byte entry.";
+                }
+                else if (IsAlwaysOne == true)
+                {
+                    EntryClass.Symbology.Foreground = Brushes.Orange;
+                    EntryClass.Symbology.Content = " 1";
+                    EntryClass.Symbology.ToolTip = "This entry is always 1.\n\nSometimes this means its actually part of a 2+ byte entry.";
+
+                }
+                else if (IsAlwaysValueX == true)
+                {
+                    EntryClass.Symbology.Foreground = Brushes.Orange;
+                    EntryClass.Symbology.Content = " X";
+                    EntryClass.Symbology.ToolTip = "This entry's value is always " + ValueX + ".";
+                }
+
+
                 else if (EntryClass.Bytes == 1 && EntryClass.NewSubType == Entry.EntrySubTypes.NumberBox && B1NoValuesAre128to199 == true && B1_3PercentAbove128 == true) //Is Probably Negative  // && B1_4PercentBelow127 == true
                 {
                     EntryClass.Symbology.Foreground = Brushes.Gray;
@@ -592,25 +614,7 @@ namespace GameEditorStudio
                     EntryClass.Symbology.ToolTip = "This is PROBABLY a bitflag.\n\n50% of values (that are not 0 or 1) are exactly 2,4,8,16,32,64, or 128.\nAtleast 10% of values are 1 or 0, and atleast 10% are 2,4,8,16,32,64, or 128.\nThis is at the very least, extremely suspicious.";
                 }
 
-                else if (IsAlwaysZero == true)
-                {
-                    EntryClass.Symbology.Foreground = Brushes.Orange;
-                    EntryClass.Symbology.Content = " 0";
-                    EntryClass.Symbology.ToolTip = "This entry is always zero.\n\nSometimes this means its actually part of a 2+ byte entry.";
-                }                
-                else if (IsAlwaysOne == true)
-                {
-                    EntryClass.Symbology.Foreground = Brushes.Orange;
-                    EntryClass.Symbology.Content = " 1";
-                    EntryClass.Symbology.ToolTip = "This entry is always 1.\n\nSometimes this means its actually part of a 2+ byte entry.";
-
-                }
-                else if (IsAlwaysValueX == true)
-                {
-                    EntryClass.Symbology.Foreground = Brushes.Orange;
-                    EntryClass.Symbology.Content = " X";
-                    EntryClass.Symbology.ToolTip = "This entry's value is always " + ValueX + ".";
-                }
+                
                 else if (IsCheckbox == true)
                 {
                     EntryClass.Symbology.Foreground = Brushes.Orange;

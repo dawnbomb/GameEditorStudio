@@ -30,7 +30,7 @@ namespace GameEditorStudio
         public static bool DebugMode { get; set; } = false; //Gets turned on when program starts if running from visual studio. Hides visibility of buttons related to upcoming features.
 
         public static string VersionDate { get; set; } = "October 2 2026";
-        public static Version VersionNumber { get; set; } = new Version(0, 4, 0); //Version Numbers (in order) are Major.Minor.Build.Revision
+        public static Version VersionNumber { get; set; } = new Version(0, 4, 1); //Version Numbers (in order) are Major.Minor.Build.Revision
                                                                                      //Major is big releases.
                                                                                      //Minor is new features / content.
                                                                                      //Build is for Bugfixes or small changes.

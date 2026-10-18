@@ -21,6 +21,7 @@ using System.Windows.Threading;
 using GameEditorStudio.Loading;
 using Microsoft.VisualBasic;
 using Ookii.Dialogs.Wpf;
+using PixelWPF;
 using WpfHexEditor;
 using WpfHexEditor.Core.Models;
 using Path = System.IO.Path;
@@ -807,6 +808,21 @@ namespace GameEditorStudio
                 DockPanel.SetDock(MainPanel, Dock.Top);
                 MainPanel.Margin = new Thickness(4, 2, 4, 7);
                 MainPanel.Background = Brushes.Transparent;
+                MainPanel.AllowDrop = true;
+                MainPanel.DragOver += (sender, e) =>
+                {
+                    if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                    {
+                        e.Effects = DragDropEffects.Copy;
+                    }
+                    else
+                    {
+                        e.Effects = DragDropEffects.None;
+                    }
+                    e.Handled = true;
+                };
+                
+                
 
                 DockPanel TopPanel = new();
                 DockPanel.SetDock(TopPanel, Dock.Top);
@@ -973,8 +989,50 @@ namespace GameEditorStudio
                     if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false)
                     { TheString = LibraryGES.GetSelectedFolderPath("Select a Folder"); }  //TYPE IF
 
+                    TrySetFileOrFolderAsProjectResource(TheString);
+                };
+                MainPanel.Drop += (sender, e) =>
+                {
+                    if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                    {
+                        // Get array of dropped paths (files or folders)
+                        string[] droppedPaths = (string[])e.Data.GetData(DataFormats.FileDrop);
 
+                        if (droppedPaths != null && droppedPaths.Length > 0)
+                        {
+                            // Take the first item dragged in
+                            string theString = droppedPaths[0];
 
+                            if (File.Exists(theString))
+                            {
+                                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.File && WorkshopEventResource.IsChild == false)
+                                {
+                                    TrySetFileOrFolderAsProjectResource(theString);
+                                }
+                                else 
+                                {
+                                    LibraryPixel.NotificationNegative("Not a File!","You selected a Folder, but this wants a File!\n\nYour Selection:\n" + theString);
+                                }
+                                
+                            }
+                            else if (Directory.Exists(theString))
+                            {
+                                if (WorkshopEventResource.ResourceType == EventResource.ResourceTypes.Folder && WorkshopEventResource.IsChild == false)
+                                { 
+                                    TrySetFileOrFolderAsProjectResource(theString); 
+                                }
+                                else
+                                {
+                                    LibraryPixel.NotificationNegative("Not a Folder!", "You selected a File, but this wants a Folder!\n\nYour Selection:\n" + theString);
+                                }
+                            }                            
+                            
+                        }
+                    }
+                };
+
+                void TrySetFileOrFolderAsProjectResource(string TheString) 
+                {
                     if (TheString != null && TheString != "")
                     {
                         if (WorkshopEventResource.RequiredName == true)
@@ -1010,7 +1068,7 @@ namespace GameEditorStudio
                         }
                         else
                         {
-                            
+
                             foreach (ProjectEventResource ProjectEventResource in UserProject.ProjectEventResources) //Copy 2
                             {
                                 if (WorkshopEventResource.Key == ProjectEventResource.Key)
@@ -1030,8 +1088,7 @@ namespace GameEditorStudio
 
 
                     }
-
-                };
+                }
 
             }
         }

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows;
@@ -518,6 +519,8 @@ namespace GameEditorStudio
             contextMenu.Items.Add(MenuItemCreateNewItem2);
             MenuItemCreateNewItem2.Click += (sender, e) => { ExportItemNamesCurrentToTextFile(); };
             //MenuItemCreateNewItem2.Click += (sender, e) => TheWorkshop.ExportItemNamesCurrentToTextFile(EditorClass);
+
+            HistoryTree.Items.Clear();
         }
 
         private void ItemsSetup()
@@ -821,14 +824,94 @@ namespace GameEditorStudio
                 //EManager.UpdateEntryHexProperties(DTEData); //This also updates the cross reference sheet.
                 FirstTime = false;
             }
-                        
+
             //TranslationsPanel translationsPanel = this.TranslationsPanel;
             //await translationsPanel.UpdateTranslationsPanel(data);
-
+            UpdateHistory(selectedItem);
 
         }
 
+        private void HistoryTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (WorkshopXaml.TreeViewSelectionEnabled == false) //I disable selection effects sometimes when modifying items in the collection while it is open.
+            {
+                return;
+            }
 
+            TreeViewItem selectedItem = e.NewValue as TreeViewItem;
+            if (selectedItem == null) { return; }
+            TextInfo data = selectedItem.Tag as TextInfo;
+
+            SearchBar.Text = "";
+            RoutedEventArgs newEventArgs = new RoutedEventArgs(FrameworkElement.LostFocusEvent);
+            SearchBar.RaiseEvent(newEventArgs);
+
+            TreeViewItem? NItem = FindTreeViewItemRecursive(ItemsTree.Items, data);
+            if (NItem != null)
+            {
+                NItem.IsSelected = true;
+                NItem.BringIntoView();
+            }
+            if (NItem == null) { return; }
+
+            TreeViewItem? FindTreeViewItemRecursive(ItemCollection items, object tagData)
+            {
+                foreach (var obj in items)
+                {
+                    if (obj is TreeViewItem tvi)
+                    {
+                        // Check if this item matches
+                        if (tvi.Tag == tagData)
+                            return tvi;
+
+                        // Search inside its children recursively
+                        var found = FindTreeViewItemRecursive(tvi.Items, tagData);
+                        if (found != null)
+                            return found;
+                    }
+                }
+                return null;
+            }
+        }
+
+        public void UpdateHistory(TreeViewItem CurrentItem) 
+        {
+            TreeViewItem ?NowItem = HistoryTree.SelectedItem as TreeViewItem;
+            if (NowItem != null) { NowItem.IsSelected = false; }
+
+            TextInfo data = CurrentItem.Tag as TextInfo;
+            //DTEData.EditorLeftBar.ItemNameTextBox.Text = data.ItemName.TrimEnd('\0');
+            //DTEData.EditorLeftBar.ItemNoteTextbox.Text = data.ItemNote;
+            //DTEData.EditorLeftBar.ItemNotepadTextbox.Text = data.ItemWorkshopTooltip;
+            if (data.IsFolder == true) { return; }
+
+            
+
+            TreeViewItem NewHistoryItem = new();
+            NewHistoryItem.Tag = CurrentItem.Tag;
+
+            DTEData.DTEXaml.ItemNameBuilder(NewHistoryItem, false);
+
+            //If already in history, remove it.
+            TreeViewItem ?HItem = HistoryTree.Items.Cast<TreeViewItem>().FirstOrDefault(item => item.Tag == NewHistoryItem.Tag);
+            if (HItem != null)
+            {
+                HistoryTree.Items.Remove(HItem);
+            }
+
+            HistoryTree.Items.Insert(0, NewHistoryItem); //Add to newest in history.
+
+            //Remove everything in history past name item 15. 
+            for (int i = HistoryTree.Items.Count - 1; i > 14; i--)
+            {
+                HistoryTree.Items.RemoveAt(i);
+            }
+
+            //And finally make sure the newest item appears selected. 
+            HistoryTree.SelectedItemChanged -= HistoryTreeSelectedItemChanged;
+            NewHistoryItem.IsSelected = true;
+            HistoryTree.SelectedItemChanged += HistoryTreeSelectedItemChanged;
+        }
 
 
 
@@ -959,6 +1042,7 @@ namespace GameEditorStudio
 
             if (!string.IsNullOrEmpty(searchText) && searchText != "🔎 Search.....")
             {
+                //HistoryTree.IsEnabled = false;
                 if (string.IsNullOrEmpty(searchText))
                 {
                     ItemsTree.Items.Filter = null;
@@ -994,21 +1078,16 @@ namespace GameEditorStudio
             }
             else
             {
+                //HistoryTree.IsEnabled = true;
                 // Reset the filter when the search text is empty or the placeholder
                 ItemsTree.Items.Filter = null;
 
                 if (ItemsTree.SelectedItem is TreeViewItem selectedItem)
                 {
                     selectedItem.BringIntoView();
-                }
+                }                
             }
 
-            //SearchBar.TextChanged += (sender, e) =>
-            //{
-                
-
-
-            //};
         }
 
         private void ItemNameboxPreviewKeyDown(object sender, KeyEventArgs e)
@@ -1087,30 +1166,76 @@ namespace GameEditorStudio
             if (ItemsTree.SelectedItem == null) { return; }
 
             UpdateNameCharacterCount();
-        }        
+        }
+
+
 
         
-
-        
-
-        private void NotepadTextChanged(object sender, TextChangedEventArgs e)
+        private readonly Dictionary<TextInfo, CancellationTokenSource> _debounceTokens = new();
+        private async void NotepadTextChanged(object sender, TextChangedEventArgs e)
         {
             if (ItemsTree.SelectedItem == null) { return; }
-
             TreeViewItem selectedItem = DTEData.DataTableEditorData.EditorLeftBar.TreeView.SelectedItem as TreeViewItem;
-            if (selectedItem != null)
+            if (selectedItem == null) { return; }
+            TextInfo selectedInfo = selectedItem.Tag as TextInfo;
+            if (selectedInfo == null) { return; }
+            //Now we setup a debounce timer. Basically, we wait for the user to stop typing before running ItemNameBuilder
+            //because running it every key stroke causes lag.
+            //PS i vibe coded this because fuck this. v.v
+
+
+
+            // If the text in the textbox matches what's already saved, 
+            // this is just the selection loading text—ignore it.
+            if (selectedInfo.ItemWorkshopTooltip == ItemNotepadTextbox.Text) { return; }
+
+            // 1. Update the data model immediately
+            selectedInfo.ItemWorkshopTooltip = ItemNotepadTextbox.Text;
+
+            // 2. Cancel any pending timer ONLY for THIS specific item
+            if (_debounceTokens.TryGetValue(selectedInfo, out var existingCts))
             {
-                //selectedItem.ToolTip = ItemNotepadTextbox.Text;
-                // Get the selected ItemInfo class
-                TextInfo selectedInfo = selectedItem.Tag as TextInfo;
-                if (selectedInfo != null)
-                {
-                    // Update the Name property with the text from the TextBox
-                    selectedInfo.ItemWorkshopTooltip = ItemNotepadTextbox.Text;
-                    DTEData.DTEXaml.ItemNameBuilder(selectedItem, true);
-                }
+                existingCts.Cancel();
+                _debounceTokens.Remove(selectedInfo);
             }
-        }       
+
+            // 3. Create a new independent timer for this item
+            var cts = new CancellationTokenSource();
+            _debounceTokens[selectedInfo] = cts;
+
+            // Capture references for the async delay
+            var targetItem = selectedItem;
+            var targetText = ItemNotepadTextbox.Text;
+
+            try
+            {
+                // Wait for 0.3 seconds
+                await Task.Delay(300, cts.Token);
+
+                // Clean up dictionary entry when done
+                _debounceTokens.Remove(selectedInfo);
+
+                // 4. Run ItemNameBuilder for this item, 
+                // even if the user has already clicked away to a different item!
+                DTEData.DTEXaml.ItemNameBuilder(targetItem, true);
+            }
+            catch (TaskCanceledException)
+            {
+                // This only triggers if typing continued for THIS specific item. Safe to ignore.
+            }
+        }
+        //private void NotepadTextChanged(object sender, TextChangedEventArgs e)
+        //{
+        //    if (ItemsTree.SelectedItem == null) { return; }
+        //    TreeViewItem selectedItem = DTEData.DataTableEditorData.EditorLeftBar.TreeView.SelectedItem as TreeViewItem;
+        //    if (selectedItem == null) { return;  }            
+        //    TextInfo selectedInfo = selectedItem.Tag as TextInfo;
+        //    if (selectedInfo == null) { return; }
+
+        //    // Update the Name property with the text from the TextBox
+        //    selectedInfo.ItemWorkshopTooltip = ItemNotepadTextbox.Text;
+        //    DTEData.DTEXaml.ItemNameBuilder(selectedItem, true);
+        //}
 
 
 
@@ -1157,15 +1282,6 @@ namespace GameEditorStudio
             
         }
 
-
-
-
-
-
-
-
-
-
-
+        
     }
 }

@@ -279,6 +279,7 @@
                                                     <Label Name="DebugCatLabelColumns" Grid.Row="5" Grid.Column="1" Content="Columns" HorizontalAlignment="Left" Margin="5,0,0,0"  VerticalAlignment="Top" IsEnabled="False"/>
                                                     <TextBox Name="DebugCatTextboxRows" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Left" Margin="0,2,0,0"  TextWrapping="Wrap" Text="Debug Mode" VerticalAlignment="Top" Width="120" IsEnabled="False"/>
                                                     <TextBox Name="DebugCatTextboxColumns" Grid.Row="5" Grid.Column="2" HorizontalAlignment="Left" Margin="0,2,0,0"  TextWrapping="Wrap" Text="Debug Mode" VerticalAlignment="Top" Width="120" IsEnabled="False"/>
+                                                    <Button Click="RowTransposeButtonClick" Grid.Column="1" Content="Transpose (Diagonally Flip) Category" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,5,0,0" Grid.Row="6" VerticalAlignment="Top" ToolTip="To Transpose, means to diagonally flip something. &#xA;So rows become columns, and columns become rows. &#xA;(Just click the fucking button and see what happens, click again to undo)"/>
                                                 </Grid>
                                             </DockPanel>
                                         </Border>
@@ -345,6 +346,7 @@
                                                     <Label Content="(Upcoming feature)" Grid.Row="7" Grid.Column="2" />
                                                     <Label Content="Secondary Color"  Grid.Row="8" Grid.Column="1" />
                                                     <Label Content="(Upcoming feature)" Grid.Row="8" Grid.Column="2" />
+                                                    <Button Click="GroupTransposeButtonClick" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="9" Content="Transpose (Diagonally Flip) Group"  HorizontalAlignment="Center" Margin="0,5,0,0"  VerticalAlignment="Top" ToolTip="To Transpose, means to diagonally flip something. &#xA;So rows become columns, and columns become rows. &#xA;(Just click the fucking button and see what happens, click again to undo)"/>
                                                 </Grid>
                                             </DockPanel>
                                         </Border>

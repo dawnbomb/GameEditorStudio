@@ -36,6 +36,7 @@ using Microsoft.VisualBasic;
 using Microsoft.Win32;
 using OfficeOpenXml.Interfaces.SensitivityLabels;
 using Ookii.Dialogs.Wpf;
+using PixelWPF;
 using Windows.ApplicationModel.Background;
 using static Microsoft.IO.RecyclableMemoryStreamManager;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -435,6 +436,10 @@ namespace GameEditorStudio
         {            
             watch.Reset();
             watch.Start();
+
+            PixelWPF.PixelStartup.ApplyCursor();
+
+            if (SelectedWorkshop == null) { LibraryPixel.Notification("No workshop selected",":p"); return; }
 
             if (SelectedWorkshop.CreatedVersion > LibraryGES.VersionNumber)
             {

@@ -626,7 +626,7 @@ namespace GameEditorStudio
                 }
 
 
-
+                DTEMethods.UpdateEditorGrids(DataTableData);
 
             }
 
